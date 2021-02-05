@@ -15,7 +15,6 @@
         android:id="@+id/toolbar"
         />
 
-
      <com.google.android.material.textfield.TextInputEditText
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
@@ -34,16 +33,33 @@
          android:id="@+id/input_text_box"
          />
 
-     <com.google.android.material.button.MaterialButton
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintTop_toBottomOf="@id/input_text_box"
-         android:layout_marginTop="5dp"
-         android:text="@string/generate_text"
-         android:id="@+id/generate_btn"
-         />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/generate_text"
+            android:id="@+id/generate_btn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/share_btn"
+            app:layout_constraintTop_toBottomOf="@id/input_text_box"
+            app:layout_constraintBottom_toTopOf="@+id/qr_generated_img"
+
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="5dp"
+            android:text="@string/share_text"
+            android:id="@+id/share_btn"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@+id/generate_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/input_text_box"
+            app:layout_constraintBottom_toTopOf="@+id/qr_generated_img"
+            />
 
      <androidx.appcompat.widget.AppCompatImageView
          android:layout_width="250dp"
@@ -51,7 +67,6 @@
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintTop_toBottomOf="@id/generate_btn"
-         app:layout_constraintBottom_toTopOf="@id/colors_layout_wrapper"
          android:layout_marginTop="8dp"
          android:id="@+id/qr_generated_img"
          />
@@ -63,7 +78,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/qr_generated_img"
-        app:layout_constraintBottom_toTopOf="@id/share_btn"
+        app:layout_constraintBottom_toTopOf="parent"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="8dp"
@@ -76,10 +91,6 @@
         <com.google.android.material.button.MaterialButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/qr_generated_img"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="5dp"
             app:backgroundTint="@color/purple_200"
             android:layout_gravity="end"
@@ -99,17 +110,6 @@
 
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/qr_generated_img"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="5dp"
-        android:text="@string/share_text"
-        android:id="@+id/share_btn"
-        android:visibility="gone"
-        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
