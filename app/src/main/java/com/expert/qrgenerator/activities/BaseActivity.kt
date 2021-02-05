@@ -10,6 +10,7 @@ import com.google.zxing.WriterException
 
 open class BaseActivity : AppCompatActivity() {
 
+    //TODO Put in separate class helper
     companion object{
 
          fun generateQRCode(text: String): Bitmap {

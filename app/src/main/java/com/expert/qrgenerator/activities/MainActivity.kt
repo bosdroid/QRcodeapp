@@ -71,6 +71,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.white))
     }
 
+    //TODO need comments and description explanation
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.generate_btn -> {
@@ -113,6 +114,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    //TODO need comments and description explanation
     private fun shareImage(){
         //Save the image inside the APPLICTION folder
         val mediaStorageDir = File(externalCacheDir.toString() + "Image.png")
@@ -137,6 +139,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
     }
 
+    //TODO need comments and description explanation
     var previous_position = -1
     private fun renderColorsRecyclerview(){
         colorsRecyclerView.layoutManager = LinearLayoutManager(context,RecyclerView.HORIZONTAL, false)
