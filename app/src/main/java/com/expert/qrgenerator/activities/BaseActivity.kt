@@ -11,7 +11,7 @@ import com.google.zxing.WriterException
 open class BaseActivity : AppCompatActivity() {
 
     companion object{
-
+         // Comment
          fun generateQRCode(text: String): Bitmap {
             val width = 500
             val height = 500
