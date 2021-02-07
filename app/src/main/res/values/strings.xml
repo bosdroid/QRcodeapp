@@ -4,4 +4,5 @@
     <string name="generate_text">GENERATE</string>
     <string name="share_text">Share</string>
     <string name="color_text">Colors</string>
+    <string name="background_text">Image</string>
 </resources>
