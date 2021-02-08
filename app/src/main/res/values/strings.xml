@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">QR Generator</string>
     <string name="input_hint_text">Enter text</string>
-    <string name="generate_text">GENERATE</string>
+    <string name="generate_text">Generate</string>
     <string name="share_text">Share</string>
-    <string name="color_text">Colors</string>
+    <string name="color_text">Color</string>
     <string name="background_text">Image</string>
+    <string name="logo_text">Logo</string>
+    <string name="text_text">Text</string>
 </resources>
