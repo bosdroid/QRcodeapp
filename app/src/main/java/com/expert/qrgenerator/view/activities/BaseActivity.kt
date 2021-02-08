@@ -1,4 +1,4 @@
-package com.expert.qrgenerator.activities
+package com.expert.qrgenerator.view.activities
 
 import android.content.Context
 import android.graphics.Bitmap

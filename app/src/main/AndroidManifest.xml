@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
     <application
         android:allowBackup="false"
@@ -19,7 +21,7 @@
         tools:replace="android:allowBackup">
         <activity
             android:windowSoftInputMode="adjustPan"
-            android:name=".activities.MainActivity">
+            android:name="com.expert.qrgenerator.view.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

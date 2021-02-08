@@ -2,23 +2,25 @@ package com.expert.qrgenerator.utils
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.view.View
-import com.vipul.hp_hp.library.Layout_to_Image
-
-
-
 
 
 class ImageManager {
 
-    companion object{
-        // LAYOUT TO IMAGE IS A LIBRARY OBJECT THAT WILL CONVERT THE SPECIFIC LAYOUT TO IMAGE
-        var layout_to_image:Layout_to_Image? = null
+    companion object {
 
         // THIS FUNCTION WILL CONVERT BITMAP IMAGE FROM VIEW
-        fun loadBitmapFromView(context: Context,view: View): Bitmap? {
-           layout_to_image = Layout_to_Image(context,view)
-           return layout_to_image!!.convert_layout()
+        fun loadBitmapFromView(context: Context, _view: View): Bitmap? {
+            _view.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            )
+            val bitmap = Bitmap.createBitmap(_view.width, _view.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            _view.draw(canvas)
+
+            return bitmap
         }
     }
 

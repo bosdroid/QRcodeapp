@@ -1,4 +1,4 @@
-package com.expert.qrgenerator.activities
+package com.expert.qrgenerator.view.activities
 
 import android.content.Context
 import android.content.Intent
@@ -10,26 +10,28 @@ import android.os.StrictMode
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
-import android.view.Gravity
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.ColorAdapter
 import com.expert.qrgenerator.adapters.ImageAdapter
-import com.expert.qrgenerator.utils.ColorManager
 import com.expert.qrgenerator.utils.ImageManager
+import com.expert.qrgenerator.viewmodel.MainActivityViewModel
+import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
-import com.google.firebase.database.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -50,14 +52,13 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     private lateinit var shareBtn: FloatingActionButton
     private lateinit var qrText: MaterialTextView
     private lateinit var qrImageWrapperLayout: RelativeLayout
-    private var qr_image: Bitmap? = null
+    private var qrImage: Bitmap? = null
     private lateinit var colorAdapter: ColorAdapter
     private lateinit var imageAdapter: ImageAdapter
     private var colorList = mutableListOf<String>()
     private var imageList = mutableListOf<String>()
     private var inputText: String? = null
-    private lateinit var databaseReference: DatabaseReference
-    private var imageUri: Uri? = null
+    private lateinit var viewModel: MainActivityViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,24 +78,14 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
         context = this
+
+        viewModel = ViewModelProviders.of(
+            this,
+            ViewModelFactory(MainActivityViewModel()).createFor<ViewModel>()
+        )[MainActivityViewModel::class.java]
+
         toolbar = findViewById(R.id.toolbar)
-        databaseReference = FirebaseDatabase.getInstance().reference
-        colorList.addAll(ColorManager.createColorList(context))
-
         inputBox = findViewById(R.id.input_text_box)
-        inputBox.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s!!.isNotEmpty()) {
-                    inputText = s.toString()
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
         generateBtn = findViewById(R.id.generate_btn)
         generateBtn.setOnClickListener(this)
         backgroundImageBtn = findViewById(R.id.background_btn)
@@ -108,6 +99,21 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         shareBtn.setOnClickListener(this)
         qrText = findViewById(R.id.qr_text)
         qrImageWrapperLayout = findViewById(R.id.qr_image_wrapper_layout)
+
+        // START THE TEXTBOX LISTENER FOR SAVING UPDATED TEXT IN inputText VARIABLE
+        inputBox.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s!!.isNotEmpty()) {
+                    inputText = s.toString()
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
@@ -124,16 +130,29 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             R.id.generate_btn -> {
                 if (!TextUtils.isEmpty(inputText)) {
 
-                    qr_image = generateQRWithBackgroundImage(context, inputText!!, "", "")
+                    qrImage = generateQRWithBackgroundImage(context, inputText!!, "", "")
                     qrText.text = inputText
-                    qrGeneratedImage.setImageBitmap(qr_image)
-                    shareBtn.visibility = View.VISIBLE
+                    qrGeneratedImage.setImageBitmap(qrImage)
+
+                    if (shareBtn.visibility == View.INVISIBLE)
+                    {
+                        shareBtn.visibility = View.VISIBLE
+                    }
 
                 }
             }
             // SHARE BTN WILL CALL THE SHARE IMAGE FUNCTION
             R.id.share_btn -> {
-                shareImage()
+                MaterialAlertDialogBuilder(context)
+                    .setMessage("Are you sure you want to share this QR Image?")
+                    .setCancelable(false)
+                    .setNegativeButton("Cancel"){dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("Share"){dialog, which ->
+                        shareImage()
+                    }
+                    .create().show()
             }
             // COLOR BTN WILL HANDLE THE COLOR LIST
             R.id.color_btn -> {
@@ -171,14 +190,15 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         if (colorsRecyclerView.visibility == View.VISIBLE) {
             colorsRecyclerView.visibility = View.GONE
         }
-        qrImageWrapperLayout.gravity = Gravity.CENTER
-        val layout_bitmap_image = ImageManager.loadBitmapFromView(context,qrImageWrapperLayout)
 
-        val mediaStorageDir = File(externalCacheDir.toString() + "final_qr_image.png")
+        val layout_bitmap_image = ImageManager.loadBitmapFromView(context,qrImageWrapperLayout)
+        val fileName = "final_qr_image_"+System.currentTimeMillis()+".jpg"
+        val mediaStorageDir = File(externalCacheDir.toString(),fileName)
 
         try {
-            val outputStream = FileOutputStream(mediaStorageDir.toString())
-            layout_bitmap_image!!.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            val outputStream = FileOutputStream(mediaStorageDir.toString(),false)
+            layout_bitmap_image!!.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            outputStream.flush()
             outputStream.close()
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
@@ -188,7 +208,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
         // HERE START THE SHARE INTENT
         val waIntent = Intent(Intent.ACTION_SEND)
-        imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             waIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             FileProvider.getUriForFile(
                 this,
@@ -197,6 +217,9 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
         } else {
             Uri.fromFile(mediaStorageDir)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            waIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         if (imageUri != null) {
             waIntent.type = "image/*"
@@ -218,6 +241,15 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         colorAdapter = ColorAdapter(context, colorList)
         colorsRecyclerView.adapter = colorAdapter
 
+        viewModel.callColorList(context)
+        viewModel.getColorList().observe(this, Observer { colors ->
+            if (colors != null)
+            {
+                colorList.addAll(colors)
+                colorAdapter.notifyDataSetChanged()
+            }
+        })
+
         // CLICK ON EACH COLOR ITEM
         colorAdapter.setOnItemClickListener(object : ColorAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
@@ -226,12 +258,12 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                     if (previous_position != position) {
                         previous_position = position
 
-                        qr_image = generateQRWithBackgroundImage(
+                        qrImage = generateQRWithBackgroundImage(
                             context,
                             inputText!!,
                             colorList[position], ""
                         )
-                        qrGeneratedImage.setImageBitmap(qr_image)
+                        qrGeneratedImage.setImageBitmap(qrImage)
                     }
                 }
 
@@ -252,40 +284,30 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         imageAdapter = ImageAdapter(context, imageList)
         backgroundImageRecyclerView.adapter = imageAdapter
 
-        // CLICK ON EACH COLOR ITEM
+        viewModel.callBackgroundImages(context)
+        viewModel.getBackgroundImages().observe(this, Observer { list ->
+            if (list != null)
+            {
+                imageList.addAll(list)
+                imageAdapter.notifyDataSetChanged()
+            }
+        })
+
+        // CLICK ON EACH IMAGE ITEM
         imageAdapter.setOnItemClickListener(object : ImageAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (!TextUtils.isEmpty(inputText)) {
                     if (previous_position != position) {
                         previous_position = position
-                        qr_image = generateQRWithBackgroundImage(
+                        qrImage = generateQRWithBackgroundImage(
                             context,
                             inputText!!,
                             "", imageList[position]
                         )
-                        qrGeneratedImage.setImageBitmap(qr_image)
+                        qrGeneratedImage.setImageBitmap(qrImage)
                     }
                 }
             }
         })
-
-        databaseReference.child("backgroundImages")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        for (postSnapshot in dataSnapshot.children) {
-                            val url = postSnapshot.getValue(String::class.java)
-                            imageList.add(url!!)
-                        }
-                        imageAdapter.notifyDataSetChanged()
-                        Log.d("TEST199", imageList.toString())
-                    }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w("TEST199", "loadPost:onCancelled", databaseError.toException())
-                }
-            })
-
     }
 }
