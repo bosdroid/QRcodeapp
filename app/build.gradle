@@ -80,4 +80,7 @@ dependencies {
 
     // FILE DOWNLOADER LIBRARY
     implementation 'com.mindorks.android:prdownloader:0.6.0'
+
+    // GSON LIBRARY
+    implementation 'com.google.code.gson:gson:2.8.6'
 }

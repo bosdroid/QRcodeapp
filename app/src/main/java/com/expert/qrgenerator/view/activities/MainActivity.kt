@@ -1,7 +1,9 @@
 package com.expert.qrgenerator.view.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -10,9 +12,14 @@ import android.os.StrictMode
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -22,13 +29,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.downloader.request.DownloadRequest
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.ColorAdapter
 import com.expert.qrgenerator.adapters.FontAdapter
 import com.expert.qrgenerator.adapters.ImageAdapter
 import com.expert.qrgenerator.adapters.LogoAdapter
 import com.expert.qrgenerator.model.Fonts
+import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
+import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.viewmodel.MainActivityViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
@@ -36,10 +46,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
+import java.util.*
 
 
 class MainActivity : BaseActivity(), View.OnClickListener {
@@ -47,17 +55,18 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
     private lateinit var primaryInputBoxView: TextInputEditText
-    private lateinit var secondaryInputBoxView:TextInputEditText
+    private lateinit var secondaryInputBoxView: TextInputEditText
     private lateinit var generateBtn: MaterialButton
-    private lateinit var colorBtn: MaterialButton
-    private lateinit var logoBtn:MaterialButton
-    private lateinit var textBtn:MaterialButton
-    private lateinit var backgroundImageBtn: MaterialButton
+    private lateinit var colorBtn: LinearLayout
+    private lateinit var logoBtn: LinearLayout
+    private lateinit var textBtn: LinearLayout
+    private lateinit var backgroundImageBtn: LinearLayout
     private lateinit var colorsRecyclerView: RecyclerView
     private lateinit var backgroundImageRecyclerView: RecyclerView
     private lateinit var qrGeneratedImage: AppCompatImageView
     private lateinit var shareBtn: FloatingActionButton
     private lateinit var qrTextView: MaterialTextView
+    private lateinit var qrSignTextView: MaterialTextView
     private lateinit var qrImageWrapperLayout: RelativeLayout
     private lateinit var textLayoutWrapper: LinearLayout
     private lateinit var logoImageRecyclerView: RecyclerView
@@ -71,9 +80,13 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     private var imageList = mutableListOf<String>()
     private var logoList = mutableListOf<String>()
     private var fontList = mutableListOf<Fonts>()
-    private var primaryInputText: String? = null
+    private var image_previous_position = -1
+    private var logo_previous_position = -1
+    private var primaryInputText: String = " "
     private var secondaryInputText: String? = null
     private lateinit var viewModel: MainActivityViewModel
+    private var intentType: String? = null
+    private var prDownloader: DownloadRequest? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,6 +134,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         shareBtn = findViewById(R.id.share_btn)
         shareBtn.setOnClickListener(this)
         qrTextView = findViewById(R.id.qr_text)
+        qrSignTextView = findViewById(R.id.qr_sign_text)
         qrImageWrapperLayout = findViewById(R.id.qr_image_wrapper_layout)
         textLayoutWrapper = findViewById(R.id.text_font_layout_wrapper)
 
@@ -160,7 +174,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     private fun setUpToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar!!.title = getString(R.string.app_name)
-        toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.white))
+        toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
     }
 
     // THIS FUNCTION WILL HANDLE ALL THE VIEWS CLICK LISTENER
@@ -168,16 +182,16 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         when (v!!.id) {
             // GENERATE BTN WILL MANIPULATE THE QR IMAGE
             R.id.generate_btn -> {
-                if (!TextUtils.isEmpty(primaryInputText)) {
+//                if (!TextUtils.isEmpty(primaryInputText)) {
 
-                    qrImage = generateQRWithBackgroundImage(context, primaryInputText!!, "", "", "")
-                    qrGeneratedImage.setImageBitmap(qrImage)
-
-                    if (shareBtn.visibility == View.INVISIBLE) {
-                        shareBtn.visibility = View.VISIBLE
-                    }
-
+                qrImage = generateQRWithBackgroundImage(context, primaryInputText, "", "", "")
+                qrGeneratedImage.setImageBitmap(qrImage)
+                qrSignTextView.visibility = View.VISIBLE
+                if (shareBtn.visibility == View.INVISIBLE) {
+                    shareBtn.visibility = View.VISIBLE
                 }
+
+//                }
             }
             // SHARE BTN WILL CALL THE SHARE IMAGE FUNCTION
             R.id.share_btn -> {
@@ -320,6 +334,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
     }
 
+
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL COLOR LIST
     private fun renderColorsRecyclerview() {
         var previous_position = -1
@@ -329,14 +344,19 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             false
         )
         colorsRecyclerView.hasFixedSize()
+        val customColorList = Constants.readColorFile(context)
+        if (customColorList.isNotEmpty()) {
+            val localColorList = customColorList.trim().split(" ")
+            colorList.addAll(localColorList)
+        }
         colorAdapter = ColorAdapter(context, colorList)
         colorsRecyclerView.adapter = colorAdapter
 
         viewModel.callColorList(context)
         viewModel.getColorList().observe(this, Observer { colors ->
             if (colors != null) {
-                colorList.addAll(colors)
-                colorAdapter.notifyDataSetChanged()
+                colorList.addAll(colorList.size, colors)
+                colorAdapter.notifyItemRangeInserted(colorList.size, colors.size)
             }
         })
 
@@ -350,7 +370,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
                         qrImage = generateQRWithBackgroundImage(
                             context,
-                            primaryInputText!!,
+                            primaryInputText,
                             colorList[position], "", ""
                         )
                         qrGeneratedImage.setImageBitmap(qrImage)
@@ -358,27 +378,77 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                 }
 
             }
+
+            // CLICK ON ADD BUTTON TO GET CUSTOM COLOR INPUT
+            override fun onAddItemClick(position: Int) {
+                val colorDialogView =
+                    LayoutInflater.from(context).inflate(R.layout.color_input_dialog, null)
+
+                val colorInputBox =
+                    colorDialogView.findViewById<TextInputEditText>(R.id.custom_color_input_box)
+                val cancelBtn =
+                    colorDialogView.findViewById<MaterialButton>(R.id.custom_color_cancel_btn)
+                val addBtn = colorDialogView.findViewById<MaterialButton>(R.id.custom_color_add_btn)
+
+                val builder = MaterialAlertDialogBuilder(context)
+                builder.setCancelable(false)
+                builder.setView(colorDialogView)
+                val alert = builder.create()
+                alert.show()
+
+                cancelBtn.setOnClickListener { alert.dismiss() }
+                addBtn.setOnClickListener {
+                    val inputText = colorInputBox.text.toString()
+                    if (!TextUtils.isEmpty(inputText)) {
+                        if (inputText.contains("#")) {
+                            Toast.makeText(
+                                context,
+                                "Please enter the Color Value without having #",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            if (inputText.length == 6) {
+                                colorList.add(0, inputText)
+                                previous_position += 1
+                                colorAdapter.updateAdapter(0)
+                                Constants.writeColorValueToFile("$inputText ", context)
+                                alert.dismiss()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Please enter the valid Color Value!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(context, "Please enter the Color Value!", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            }
         })
 
     }
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL BACKGROUND IMAGE LIST
     private fun renderBackgroundImageRecyclerview() {
-        var previous_position = -1
         backgroundImageRecyclerView.layoutManager = LinearLayoutManager(
             context,
             RecyclerView.HORIZONTAL,
             false
         )
         backgroundImageRecyclerView.hasFixedSize()
+        val localBackgroundImageList = Constants.getAllBackgroundImages(context)
+        imageList.addAll(localBackgroundImageList)
         imageAdapter = ImageAdapter(context, imageList)
         backgroundImageRecyclerView.adapter = imageAdapter
 
         viewModel.callBackgroundImages(context)
         viewModel.getBackgroundImages().observe(this, Observer { list ->
             if (list != null) {
-                imageList.addAll(list)
-                imageAdapter.notifyDataSetChanged()
+                imageList.addAll(imageList.size, list)
+                imageAdapter.notifyItemRangeInserted(imageList.size, list.size)
             }
         })
 
@@ -386,14 +456,42 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         imageAdapter.setOnItemClickListener(object : ImageAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (!TextUtils.isEmpty(primaryInputText)) {
-                    if (previous_position != position) {
-                        previous_position = position
+                    if (image_previous_position != position) {
+                        image_previous_position = position
                         qrImage = generateQRWithBackgroundImage(
                             context,
-                            primaryInputText!!,
+                            primaryInputText,
                             "", imageList[position], ""
                         )
                         qrGeneratedImage.setImageBitmap(qrImage)
+                    }
+                }
+            }
+
+            override fun onAddItemClick(position: Int) {
+                intentType = "background"
+
+                val backgroundImageDialogView = LayoutInflater.from(context)
+                    .inflate(R.layout.background_image_hint_layout, null)
+                val builder = MaterialAlertDialogBuilder(context)
+                builder.setCancelable(false)
+                builder.setView(backgroundImageDialogView)
+                val alert = builder.create()
+                alert.show()
+
+                val cancelBtn =
+                    backgroundImageDialogView.findViewById<MaterialButton>(R.id.custom_image_cancel_btn)
+                val choseBtn =
+                    backgroundImageDialogView.findViewById<MaterialButton>(R.id.custom_image_add_btn)
+                cancelBtn.setOnClickListener { alert.dismiss() }
+                choseBtn.setOnClickListener {
+                    if (RuntimePermissionHelper.checkPermission(
+                            context,
+                            Constants.READ_STORAGE_PERMISSION
+                        )
+                    ) {
+                        alert.dismiss()
+                        getImageFromLocalStorage()
                     }
                 }
             }
@@ -402,21 +500,22 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL LOGO IMAGE LIST
     private fun renderLogoImagesRecyclerview() {
-        var previous_position = -1
         logoImageRecyclerView.layoutManager = LinearLayoutManager(
             context,
             RecyclerView.HORIZONTAL,
             false
         )
         logoImageRecyclerView.hasFixedSize()
+        val localLogoImageList = Constants.getAllLogoImages(context)
+        logoList.addAll(localLogoImageList)
         logoAdapter = LogoAdapter(context, logoList)
         logoImageRecyclerView.adapter = logoAdapter
 
         viewModel.callLogoImages(context)
         viewModel.getLogoImages().observe(this, Observer { list ->
             if (list != null) {
-                logoList.addAll(list)
-                logoAdapter.notifyDataSetChanged()
+                logoList.addAll(logoList.size, list)
+                logoAdapter.notifyItemRangeInserted(logoList.size, list.size)
             }
         })
 
@@ -424,14 +523,42 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         logoAdapter.setOnItemClickListener(object : LogoAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 if (!TextUtils.isEmpty(primaryInputText)) {
-                    if (previous_position != position) {
-                        previous_position = position
+                    if (logo_previous_position != position) {
+                        logo_previous_position = position
                         qrImage = generateQRWithBackgroundImage(
                             context,
-                            primaryInputText!!,
+                            primaryInputText,
                             "", "", logoList[position]
                         )
                         qrGeneratedImage.setImageBitmap(qrImage)
+                    }
+                }
+            }
+
+            override fun onAddItemClick(position: Int) {
+                intentType = "logo"
+
+                val logoImageDialogView =
+                    LayoutInflater.from(context).inflate(R.layout.logo_image_hint_layout, null)
+                val builder = MaterialAlertDialogBuilder(context)
+                builder.setCancelable(false)
+                builder.setView(logoImageDialogView)
+                val alert = builder.create()
+                alert.show()
+
+                val cancelBtn =
+                    logoImageDialogView.findViewById<MaterialButton>(R.id.custom_image_cancel_btn)
+                val choseBtn =
+                    logoImageDialogView.findViewById<MaterialButton>(R.id.custom_image_add_btn)
+                cancelBtn.setOnClickListener { alert.dismiss() }
+                choseBtn.setOnClickListener {
+                    if (RuntimePermissionHelper.checkPermission(
+                            context,
+                            Constants.READ_STORAGE_PERMISSION
+                        )
+                    ) {
+                        alert.dismiss()
+                        getImageFromLocalStorage()
                     }
                 }
             }
@@ -453,8 +580,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         viewModel.callFontList(context)
         viewModel.getFontList().observe(this, Observer { list ->
             if (list != null) {
-                if(fontList.size > 0)
-                {
+                if (fontList.size > 0) {
                     fontList.clear()
                 }
                 fontList.addAll(list)
@@ -474,5 +600,113 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                 }
             }
         })
+    }
+
+    // THIS FUNCTION WILL CALL THE IMAGE INTENT
+    private fun getImageFromLocalStorage() {
+        val fileIntent = Intent(Intent.ACTION_PICK)
+        fileIntent.type = "image/*"
+        resultLauncher.launch(fileIntent)
+    }
+
+    // THIS RESULT LAUNCHER WILL CALL THE ACTION PICK FROM FILES FOR BACKGROUND AND LOGO IMAGE
+    var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val size = ImageManager.getImageWidthHeight(context, data!!.data!!)
+                val imageWidth = size.split(",")[0].toInt()
+                val imageHeight = size.split(",")[1].toInt()
+
+                if (intentType.equals("background")) {
+                    if (imageWidth > 800 && imageHeight > 800) {
+                        showAlert(
+                            context,
+                            "Please select the background image having size 800x800!"
+                        )
+                    } else {
+                        saveImageInLocalStorage(data.data!!)
+                    }
+                } else {
+                    if (imageWidth > 500 && imageHeight > 500) {
+                        showAlert(
+                            context,
+                            "Please select the logo image having size 500x500!"
+                        )
+                    } else {
+                        saveImageInLocalStorage(data.data!!)
+                    }
+
+                }
+
+            }
+        }
+
+    // THIS FUNCTION WILL SAVE THE IMAGE IN LOCAL STORAGE
+    private fun saveImageInLocalStorage(uri: Uri) {
+        var filePath: String? = null
+        var fileName: String? = null
+
+        if (intentType.equals("background")) {
+            filePath = context.externalCacheDir.toString() + "/BackgroundImages"
+            fileName = "qr_background_image_" + System.currentTimeMillis() + ".jpg"
+        } else {
+            filePath = context.externalCacheDir.toString() + "/LogoImages"
+            fileName = "qr_logo_image_" + System.currentTimeMillis() + ".jpg"
+        }
+        val dir = File(filePath)
+        dir.mkdir()
+
+        val newFile = File(dir, fileName)
+
+        val realPath = ImageManager.getRealPathFromUri(context, uri)
+        if (intentType.equals("background")) {
+            imageList.add(0, realPath!!)
+            image_previous_position += 1
+            imageAdapter.updateAdapter(0)
+        } else {
+            logoList.add(0, realPath!!)
+            logo_previous_position += 1
+            logoAdapter.updateAdapter(0)
+        }
+
+        val selectImageBitmap = getBitmapFromURL(context, realPath)
+        try {
+            val out = FileOutputStream(newFile)
+            selectImageBitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            out.flush()
+            out.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            Constants.READ_STORAGE_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getImageFromLocalStorage()
+                } else {
+                    MaterialAlertDialogBuilder(context)
+                        .setMessage("Please allow the READ EXTERNAL STORAGE permission for use own Image in QR Image.")
+                        .setCancelable(false)
+                        .setPositiveButton("Ok") { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .create().show()
+                }
+            }
+            else -> {
+
+            }
+        }
     }
 }

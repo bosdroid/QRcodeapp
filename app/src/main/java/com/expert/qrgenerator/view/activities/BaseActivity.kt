@@ -1,16 +1,15 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.Typeface
+import android.graphics.*
+import android.net.Uri
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.request.DownloadRequest
+import com.expert.qrgenerator.utils.ImageManager
 import com.github.sumimakito.awesomeqr.AwesomeQrRenderer
 import com.github.sumimakito.awesomeqr.option.RenderOption
 import com.github.sumimakito.awesomeqr.option.background.StillBackground
@@ -65,7 +64,7 @@ open class BaseActivity : AppCompatActivity() {
             }
             val background = StillBackground()
             if (bgImage.isNotEmpty()) {
-                previoudBackgroundImage = getBitmapFromURL(bgImage)
+                previoudBackgroundImage = getBitmapFromURL(context, bgImage)
                 background.bitmap = previoudBackgroundImage
                 renderOption.background = background // set a background
             } else {
@@ -77,7 +76,7 @@ open class BaseActivity : AppCompatActivity() {
 
             val logo = Logo()
             if (logoUrl.isNotEmpty()) {
-                previousLogo = getBitmapFromURL(logoUrl)
+                previousLogo = getBitmapFromURL(context, logoUrl)
                 logo.bitmap = previousLogo
                 renderOption.logo = logo // set a logo
             } else {
@@ -114,61 +113,81 @@ open class BaseActivity : AppCompatActivity() {
 
 
         // THIS FUNCTION WILL DOWNLOAD IMAGE FROM URL AND CONVERT INTO BITMAP FOR BACKGROUND
-        private fun getBitmapFromURL(src: String?): Bitmap? {
-            return try {
-                val url = URL(src)
-                val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-                connection.doInput = true
-                connection.connect()
-                val input: InputStream = connection.inputStream
-                BitmapFactory.decodeStream(input)
-            } catch (e: IOException) {
-                // Log exception
-                null
+        fun getBitmapFromURL(context: Context, src: String?): Bitmap? {
+            if (src!!.contains("http") || src.contains("https")) {
+                return try {
+                    val url = URL(src)
+                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                    connection.doInput = true
+                    connection.connect()
+                    val input: InputStream = connection.inputStream
+                    BitmapFactory.decodeStream(input)
+                } catch (e: IOException) {
+                    // Log exception
+                    null
+                }
+            } else {
+
+                return try {
+                    val input: InputStream = context.contentResolver.openInputStream(Uri.fromFile(File(src)))!!
+                    val bitmap = BitmapFactory.decodeStream(input)
+                    input.close()
+                    val degree: Int = ImageManager.getBitmapDegree(Uri.fromFile(File(src)).toString())
+                    return ImageManager.rotateBitmapByDegree(bitmap, degree)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    null
+                }
             }
         }
-
         // THIS FUNCTION WILL SET THE FONT FAMILY
         fun setFontFamily(context: Context, view: MaterialTextView, path: String) {
-           if (path.contains("http") || path.contains("https"))
-           {
-               val extension = path.substring(path.lastIndexOf("."), path.indexOf("?"))
-               val fileName = "tempFont$extension"
-               val filePath = context.externalCacheDir.toString() + "/fonts"
-               val downloadFile = File(filePath, fileName)
-               if (downloadFile.exists()) {
-                   downloadFile.delete()
-               }
+            if (path.contains("http") || path.contains("https")) {
+                val extension = path.substring(path.lastIndexOf("."), path.indexOf("?"))
+                val fileName = "tempFont$extension"
+                val filePath = context.externalCacheDir.toString() + "/fonts"
+                val downloadFile = File(filePath, fileName)
+                if (downloadFile.exists()) {
+                    downloadFile.delete()
+                }
 
-               prDownloader = PRDownloader.download(path, filePath, fileName)
-                   .build()
-                   .setOnStartOrResumeListener {
+                prDownloader = PRDownloader.download(path, filePath, fileName)
+                    .build()
+                    .setOnStartOrResumeListener {
 
-                   }
-               prDownloader!!.start(object : OnDownloadListener {
-                   override fun onDownloadComplete() {
-                       val face = Typeface.createFromFile(downloadFile)
-                       view.typeface = face
-                   }
+                    }
+                prDownloader!!.start(object : OnDownloadListener {
+                    override fun onDownloadComplete() {
+                        val face = Typeface.createFromFile(downloadFile)
+                        view.typeface = face
+                    }
 
-                   override fun onError(error: Error?) {
-                       Log.d("TEST199", error.toString())
-                   }
-               })
-           }
-            else
-           {
-               MaterialAlertDialogBuilder(context)
-                   .setMessage("Something went wrong, please check the font file exists and the URL is correct!")
-                   .setCancelable(false)
-                   .setPositiveButton("Ok") { dialog, which ->
-                      dialog.dismiss()
-                   }
-                   .create().show()
-           }
+                    override fun onError(error: Error?) {
+                        Log.d("TEST199", error.toString())
+                    }
+                })
+            } else {
+                MaterialAlertDialogBuilder(context)
+                    .setMessage("Something went wrong, please check the font file exists and the URL is correct!")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .create().show()
+            }
 
         }
 
+        // THIS FUNCTION WILL ALERT THE DIFFERENT MESSAGES
+        fun showAlert(context: Context, message: String) {
+            MaterialAlertDialogBuilder(context)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Ok") { dialog, which ->
+                    dialog.dismiss()
+                }
+                .create().show()
+        }
 
     }
 
