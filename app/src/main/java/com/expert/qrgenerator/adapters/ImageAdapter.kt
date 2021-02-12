@@ -96,7 +96,7 @@ class ImageAdapter(var context: Context,var imageList:List<String>) : RecyclerVi
                 }
             }
             else->{
-                   Log.d("TEST199POSITION","$position,${holder.layoutPosition}")
+
                    val image = imageList[position-1]
 
                 val viewHolder = holder as ItemViewHolder

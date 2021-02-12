@@ -25,6 +25,7 @@ class LogoAdapter(var context: Context, var logoList: List<String>) :
 
     var mListener: OnItemClickListener? = null
     var mContext = context
+    var isIconUpdate:Boolean = false
 
     companion object {
         var selected_position = -1
@@ -75,6 +76,11 @@ class LogoAdapter(var context: Context, var logoList: List<String>) :
         }
     }
 
+    fun updateIcon(flag:Boolean)
+    {
+        isIconUpdate = flag
+    }
+
     fun updateAdapter(position: Int){
         selected_position +=1
         notifyItemInserted(position)
@@ -98,7 +104,6 @@ class LogoAdapter(var context: Context, var logoList: List<String>) :
             }
             else -> {
 
-                Log.d("TEST199POSITION","$position,${holder.layoutPosition}")
                 val image = logoList[position-1]
                 val viewHolder = holder as ItemViewHolder
 
@@ -111,7 +116,7 @@ class LogoAdapter(var context: Context, var logoList: List<String>) :
                     val uri: Uri =  Uri.parse(image)
                     viewHolder.image.setImageURI(uri)
                 }
-                if (selected_position == position) {
+                if (selected_position == position && isIconUpdate) {
                     viewHolder.icon.visibility = View.VISIBLE
                 } else {
                     viewHolder.icon.visibility = View.INVISIBLE

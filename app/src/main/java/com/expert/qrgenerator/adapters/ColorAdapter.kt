@@ -21,6 +21,7 @@ class ColorAdapter(var context: Context, var colorList: List<String>) :RecyclerV
     }
     var mListener: OnItemClickListener?=null
     var mContext = context
+    var isIconUpdate:Boolean = false
 
     companion object{
         var selected_position = -1
@@ -64,6 +65,11 @@ class ColorAdapter(var context: Context, var colorList: List<String>) :RecyclerV
         notifyDataSetChanged()
     }
 
+    fun updateIcon(flag:Boolean)
+    {
+        isIconUpdate = flag
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == 0)
         {
@@ -105,11 +111,10 @@ class ColorAdapter(var context: Context, var colorList: List<String>) :RecyclerV
                 }
             }
             else->{
-                Log.d("TEST199POSITION","$position,${holder.layoutPosition}")
                 val color = colorList[position-1]
                 val viewHolder = holder as ItemViewHolder
                 viewHolder.colorBtn.setBackgroundColor(Color.parseColor("#$color"))
-                if (selected_position == position)
+                if (selected_position == position && isIconUpdate)
                 {
                     viewHolder.icon.visibility = View.VISIBLE
                 }

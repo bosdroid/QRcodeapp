@@ -16,10 +16,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.RadioGroup
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -29,13 +30,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.downloader.request.DownloadRequest
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.adapters.ColorAdapter
-import com.expert.qrgenerator.adapters.FontAdapter
-import com.expert.qrgenerator.adapters.ImageAdapter
-import com.expert.qrgenerator.adapters.LogoAdapter
+import com.expert.qrgenerator.adapters.*
 import com.expert.qrgenerator.model.Fonts
+import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
@@ -46,23 +44,23 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.google.gson.Gson
 import java.io.*
-import java.util.*
 
 
 class MainActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
-    private lateinit var primaryInputBoxView: TextInputEditText
     private lateinit var secondaryInputBoxView: TextInputEditText
-    private lateinit var generateBtn: MaterialButton
+    private lateinit var typesBtn: LinearLayout
     private lateinit var colorBtn: LinearLayout
     private lateinit var logoBtn: LinearLayout
     private lateinit var textBtn: LinearLayout
     private lateinit var backgroundImageBtn: LinearLayout
     private lateinit var colorsRecyclerView: RecyclerView
     private lateinit var backgroundImageRecyclerView: RecyclerView
+    private lateinit var qrTypesRecyclerView: RecyclerView
     private lateinit var qrGeneratedImage: AppCompatImageView
     private lateinit var shareBtn: FloatingActionButton
     private lateinit var qrTextView: MaterialTextView
@@ -76,17 +74,24 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var logoAdapter: LogoAdapter
     private lateinit var fontAdapter: FontAdapter
+    private lateinit var typesAdapter: TypesAdapter
     private var colorList = mutableListOf<String>()
     private var imageList = mutableListOf<String>()
     private var logoList = mutableListOf<String>()
     private var fontList = mutableListOf<Fonts>()
+    private var qrTypeList = mutableListOf<QRTypes>()
     private var image_previous_position = -1
     private var logo_previous_position = -1
-    private var primaryInputText: String = " "
+    private var encodedTextData: String = " "
     private var secondaryInputText: String? = null
     private lateinit var viewModel: MainActivityViewModel
     private var intentType: String? = null
-    private var prDownloader: DownloadRequest? = null
+    private var bAlert: androidx.appcompat.app.AlertDialog? = null
+    private var lAlert: androidx.appcompat.app.AlertDialog? = null
+    private var isBackgroundSet: Boolean = false
+    private var dialogAlert: androidx.appcompat.app.AlertDialog? = null
+    private var dialogView: View? = null
+    private var wifiSecurity = "None"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,10 +103,12 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
         initViews()
         setUpToolbar()
+        renderQRTypesRecyclerview()
         renderColorsRecyclerview()
         renderBackgroundImageRecyclerview()
         renderLogoImagesRecyclerview()
         renderFontRecyclerview()
+
     }
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
@@ -114,18 +121,18 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         )[MainActivityViewModel::class.java]
 
         toolbar = findViewById(R.id.toolbar)
-        primaryInputBoxView = findViewById(R.id.primary_input_text_box)
         secondaryInputBoxView = findViewById(R.id.secondary_input_text_box)
-        generateBtn = findViewById(R.id.generate_btn)
-        generateBtn.setOnClickListener(this)
         backgroundImageBtn = findViewById(R.id.background_btn)
         backgroundImageBtn.setOnClickListener(this)
+        typesBtn = findViewById(R.id.types_btn)
+        typesBtn.setOnClickListener(this)
         colorBtn = findViewById(R.id.color_btn)
         colorBtn.setOnClickListener(this)
         logoBtn = findViewById(R.id.logo_btn)
         logoBtn.setOnClickListener(this)
         textBtn = findViewById(R.id.text_btn)
         textBtn.setOnClickListener(this)
+        qrTypesRecyclerView = findViewById(R.id.types_recycler_view)
         colorsRecyclerView = findViewById(R.id.colors_recycler_view)
         backgroundImageRecyclerView = findViewById(R.id.background_images_recycler_view)
         logoImageRecyclerView = findViewById(R.id.logo_images_recycler_view)
@@ -138,20 +145,6 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         qrImageWrapperLayout = findViewById(R.id.qr_image_wrapper_layout)
         textLayoutWrapper = findViewById(R.id.text_font_layout_wrapper)
 
-        // START THE TEXT BOX LISTENER FOR SAVING UPDATED TEXT IN primaryInputText VARIABLE
-        primaryInputBoxView.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s!!.isNotEmpty()) {
-                    primaryInputText = s.toString()
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
 
         // START THE TEXT BOX LISTENER FOR SAVING UPDATED TEXT IN secondaryInputText VARIABLE
         secondaryInputBoxView.addTextChangedListener(object : TextWatcher {
@@ -168,6 +161,14 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             override fun afterTextChanged(s: Editable?) {
             }
         })
+
+        // GENERATE DEFAULT QR IMAGE
+        qrImage = generateQRWithBackgroundImage(context, encodedTextData, "000000", "", "")
+        qrGeneratedImage.setImageBitmap(qrImage)
+        qrSignTextView.visibility = View.VISIBLE
+        if (shareBtn.visibility == View.INVISIBLE) {
+            shareBtn.visibility = View.VISIBLE
+        }
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
@@ -180,18 +181,24 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     // THIS FUNCTION WILL HANDLE ALL THE VIEWS CLICK LISTENER
     override fun onClick(v: View?) {
         when (v!!.id) {
-            // GENERATE BTN WILL MANIPULATE THE QR IMAGE
-            R.id.generate_btn -> {
-//                if (!TextUtils.isEmpty(primaryInputText)) {
-
-                qrImage = generateQRWithBackgroundImage(context, primaryInputText, "", "", "")
-                qrGeneratedImage.setImageBitmap(qrImage)
-                qrSignTextView.visibility = View.VISIBLE
-                if (shareBtn.visibility == View.INVISIBLE) {
-                    shareBtn.visibility = View.VISIBLE
+            R.id.types_btn -> {
+                if (backgroundImageRecyclerView.visibility == View.VISIBLE) {
+                    backgroundImageRecyclerView.visibility = View.GONE
                 }
-
-//                }
+                if (logoImageRecyclerView.visibility == View.VISIBLE) {
+                    logoImageRecyclerView.visibility = View.GONE
+                }
+                if (textLayoutWrapper.visibility == View.VISIBLE) {
+                    textLayoutWrapper.visibility = View.GONE
+                }
+                if (colorsRecyclerView.visibility == View.VISIBLE) {
+                    colorsRecyclerView.visibility = View.GONE
+                }
+                if (qrTypesRecyclerView.visibility == View.VISIBLE) {
+                    qrTypesRecyclerView.visibility = View.GONE
+                } else {
+                    qrTypesRecyclerView.visibility = View.VISIBLE
+                }
             }
             // SHARE BTN WILL CALL THE SHARE IMAGE FUNCTION
             R.id.share_btn -> {
@@ -208,6 +215,9 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             }
             // COLOR BTN WILL HANDLE THE COLOR LIST
             R.id.color_btn -> {
+                if (qrTypesRecyclerView.visibility == View.VISIBLE) {
+                    qrTypesRecyclerView.visibility = View.GONE
+                }
                 if (backgroundImageRecyclerView.visibility == View.VISIBLE) {
                     backgroundImageRecyclerView.visibility = View.GONE
                 }
@@ -225,6 +235,9 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             }
             // BACKGROUND BTN WILL HANDLE THE BACKGROUND IMAGE LIST
             R.id.background_btn -> {
+                if (qrTypesRecyclerView.visibility == View.VISIBLE) {
+                    qrTypesRecyclerView.visibility = View.GONE
+                }
                 if (colorsRecyclerView.visibility == View.VISIBLE) {
                     colorsRecyclerView.visibility = View.GONE
                 }
@@ -242,6 +255,9 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             }
             // BACKGROUND BTN WILL HANDLE THE LOGO IMAGE LIST
             R.id.logo_btn -> {
+                if (qrTypesRecyclerView.visibility == View.VISIBLE) {
+                    qrTypesRecyclerView.visibility = View.GONE
+                }
                 if (backgroundImageRecyclerView.visibility == View.VISIBLE) {
                     backgroundImageRecyclerView.visibility = View.GONE
                 }
@@ -259,7 +275,9 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             }
             // TEXT BTN WILL HANDLE THE TEXT WITH FONT LAYOUT
             R.id.text_btn -> {
-
+                if (qrTypesRecyclerView.visibility == View.VISIBLE) {
+                    qrTypesRecyclerView.visibility = View.GONE
+                }
                 if (backgroundImageRecyclerView.visibility == View.VISIBLE) {
                     backgroundImageRecyclerView.visibility = View.GONE
                 }
@@ -334,6 +352,218 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
     }
 
+    // THIS FUNCTION WILL DISPLAY THE HORZIZONTAL QR TYPES LIST
+    private fun renderQRTypesRecyclerview() {
+        qrTypesRecyclerView.layoutManager = LinearLayoutManager(
+            context,
+            RecyclerView.HORIZONTAL,
+            false
+        )
+        qrTypesRecyclerView.hasFixedSize()
+        qrTypeList.addAll(Constants.getQRTypes())
+        typesAdapter = TypesAdapter(context, qrTypeList)
+        qrTypesRecyclerView.adapter = typesAdapter
+        typesAdapter.setOnItemClickListener(object : TypesAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int) {
+                val qrType = qrTypeList[position]
+                dialogView = Constants.getLayout(context, position)
+                val builder = MaterialAlertDialogBuilder(context)
+                builder.setCancelable(false)
+                builder.setView(dialogView)
+                dialogAlert = builder.create()
+                dialogAlert!!.show()
+                dialogView!!.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+                    .setOnClickListener { dialogAlert!!.dismiss() }
+                dialogView!!.findViewById<MaterialButton>(R.id.dialog_add_btn)
+                    .setOnClickListener {
+                        when (qrType.position) {
+                            0 -> {
+                                val textInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.text_input_field)
+                                encodedTextData = textInputBox.text.toString()
+                                regenerateQrImage(dialogAlert!!)
+                            }
+                            1 -> {
+                                val websiteInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.website_input_field)
+                                encodedTextData = websiteInputBox.text.toString()
+                                regenerateQrImage(dialogAlert!!)
+                            }
+                            2 -> {
+                                val contactNameInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.contact_name_input_field)
+                                val contactPhoneNumberInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.contact_phone_input_field)
+                                val contactEmailInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.contact_email_input_field)
+                                val contactCompanyInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.contact_company_input_field)
+                                val contactJobTitleInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.contact_job_input_field)
+                                val contactAddressInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.contact_address_input_field)
+                                val contactDetailInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.contact_detail_input_field)
+                                val hashMap = hashMapOf<String, String>()
+                                hashMap["name"] = contactNameInputBox.text.toString()
+                                hashMap["phone_number"] = contactPhoneNumberInputBox.text.toString()
+                                hashMap["email"] = contactEmailInputBox.text.toString()
+                                hashMap["company"] = contactCompanyInputBox.text.toString()
+                                hashMap["job_title"] = contactJobTitleInputBox.text.toString()
+                                hashMap["address"] = contactAddressInputBox.text.toString()
+                                hashMap["detail"] = contactDetailInputBox.text.toString()
+                                encodedTextData = Gson().toJson(hashMap)
+                                regenerateQrImage(dialogAlert!!)
+
+                            }
+                            3 -> {
+                                val wifiNetWorkName =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.wifi_name_input_field)
+                                val wifiPassword =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.wifi_password_input_field)
+                                val wifiSecurityGroup =
+                                    dialogView!!.findViewById<RadioGroup>(R.id.securityGroup)
+                                wifiSecurityGroup.setOnCheckedChangeListener { group, checkedId ->
+                                    when (checkedId) {
+                                        R.id.radioButton -> {
+                                            wifiSecurity = "WPA/WPA2"
+                                        }
+                                        R.id.radioButton2 -> {
+                                            wifiSecurity = "WEP"
+                                        }
+                                        R.id.radioButton3 -> {
+                                            wifiSecurity = "None"
+                                        }
+                                        else -> {
+
+                                        }
+                                    }
+                                }
+                                val hashMap = hashMapOf<String, String>()
+                                hashMap["wifi_name"] = wifiNetWorkName.text.toString()
+                                hashMap["wifi_password"] = wifiPassword.text.toString()
+                                hashMap["wifi_security"] = wifiSecurity
+                                encodedTextData = Gson().toJson(hashMap)
+                                regenerateQrImage(dialogAlert!!)
+
+                            }
+                            4 -> {
+                                val phoneInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.phone_input_field)
+                                encodedTextData = phoneInputBox.text.toString()
+                                regenerateQrImage(dialogAlert!!)
+                            }
+                            5 -> {
+                                val smsRecipientInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.sms_recipient_input_field)
+                                val smsMessageInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.sms_message_input_field)
+                                val hashMap = hashMapOf<String, String>()
+                                hashMap["recipient"] = smsRecipientInputBox.text.toString()
+                                hashMap["message"] = smsMessageInputBox.text.toString()
+                                encodedTextData = Gson().toJson(hashMap)
+                                regenerateQrImage(dialogAlert!!)
+                            }
+                            6 -> {
+                                val instagramInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.instagram_input_field)
+                                encodedTextData = instagramInputBox.text.toString()
+                                regenerateQrImage(dialogAlert!!)
+                            }
+                            7 -> {
+                                val whatsappInputBox =
+                                    dialogView!!.findViewById<TextInputEditText>(R.id.whatsapp_input_field)
+                                encodedTextData = whatsappInputBox.text.toString()
+                                regenerateQrImage(dialogAlert!!)
+                            }
+                            else -> {
+
+                            }
+                        }
+                    }
+            }
+        })
+    }
+
+    // THIS FUNCTION WILL RE GENERATE THE QR IMAGE AFTER CHANGE TYPE OF INPUTS
+    private fun regenerateQrImage(alert: AlertDialog) {
+        qrImage = generateQRWithBackgroundImage(
+            context,
+            encodedTextData,
+            "",
+            "",
+            ""
+        )
+        qrGeneratedImage.setImageBitmap(qrImage)
+        alert.dismiss()
+    }
+
+    // THIS FUNCTION WILL DISPLAY THE HORIZONTAL BACKGROUND IMAGE LIST
+    private fun renderBackgroundImageRecyclerview() {
+        backgroundImageRecyclerView.layoutManager = LinearLayoutManager(
+            context,
+            RecyclerView.HORIZONTAL,
+            false
+        )
+        backgroundImageRecyclerView.hasFixedSize()
+        val localBackgroundImageList = Constants.getAllBackgroundImages(context)
+        imageList.addAll(localBackgroundImageList)
+        imageAdapter = ImageAdapter(context, imageList)
+        backgroundImageRecyclerView.adapter = imageAdapter
+
+        viewModel.callBackgroundImages(context)
+        viewModel.getBackgroundImages().observe(this, Observer { list ->
+            if (list != null) {
+                imageList.addAll(imageList.size, list)
+                imageAdapter.notifyItemRangeInserted(imageList.size, list.size)
+            }
+        })
+
+        // CLICK ON EACH IMAGE ITEM
+        imageAdapter.setOnItemClickListener(object : ImageAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int) {
+//                if (!TextUtils.isEmpty(primaryInputText)) {
+                if (image_previous_position != position) {
+                    image_previous_position = position
+                    qrImage = generateQRWithBackgroundImage(
+                        context,
+                        encodedTextData,
+                        "", imageList[position], ""
+                    )
+                    qrGeneratedImage.setImageBitmap(qrImage)
+                    isBackgroundSet = qrImage != null
+                }
+//                }
+            }
+
+            override fun onAddItemClick(position: Int) {
+                intentType = "background"
+
+                val backgroundImageDialogView = LayoutInflater.from(context)
+                    .inflate(R.layout.background_image_hint_layout, null)
+                val builder = MaterialAlertDialogBuilder(context)
+                builder.setCancelable(false)
+                builder.setView(backgroundImageDialogView)
+                bAlert = builder.create()
+                bAlert!!.show()
+
+                val cancelBtn =
+                    backgroundImageDialogView.findViewById<MaterialButton>(R.id.custom_image_cancel_btn)
+                val choseBtn =
+                    backgroundImageDialogView.findViewById<MaterialButton>(R.id.custom_image_add_btn)
+                cancelBtn.setOnClickListener { bAlert!!.dismiss() }
+                choseBtn.setOnClickListener {
+                    if (RuntimePermissionHelper.checkPermission(
+                            context,
+                            Constants.READ_STORAGE_PERMISSION
+                        )
+                    ) {
+                        getImageFromLocalStorage()
+                    }
+                }
+            }
+        })
+    }
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL COLOR LIST
     private fun renderColorsRecyclerview() {
@@ -363,19 +593,24 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         // CLICK ON EACH COLOR ITEM
         colorAdapter.setOnItemClickListener(object : ColorAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (!TextUtils.isEmpty(primaryInputText)) {
-
+//                if (!TextUtils.isEmpty(primaryInputText)) {
+                if (isBackgroundSet) {
+                    colorAdapter.updateIcon(true)
                     if (previous_position != position) {
                         previous_position = position
 
                         qrImage = generateQRWithBackgroundImage(
                             context,
-                            primaryInputText,
+                            encodedTextData,
                             colorList[position], "", ""
                         )
                         qrGeneratedImage.setImageBitmap(qrImage)
                     }
+                } else {
+                    colorAdapter.updateIcon(false)
+                    showAlert(context, "Please select the background Image first!")
                 }
+//                }
 
             }
 
@@ -431,73 +666,6 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
     }
 
-    // THIS FUNCTION WILL DISPLAY THE HORIZONTAL BACKGROUND IMAGE LIST
-    private fun renderBackgroundImageRecyclerview() {
-        backgroundImageRecyclerView.layoutManager = LinearLayoutManager(
-            context,
-            RecyclerView.HORIZONTAL,
-            false
-        )
-        backgroundImageRecyclerView.hasFixedSize()
-        val localBackgroundImageList = Constants.getAllBackgroundImages(context)
-        imageList.addAll(localBackgroundImageList)
-        imageAdapter = ImageAdapter(context, imageList)
-        backgroundImageRecyclerView.adapter = imageAdapter
-
-        viewModel.callBackgroundImages(context)
-        viewModel.getBackgroundImages().observe(this, Observer { list ->
-            if (list != null) {
-                imageList.addAll(imageList.size, list)
-                imageAdapter.notifyItemRangeInserted(imageList.size, list.size)
-            }
-        })
-
-        // CLICK ON EACH IMAGE ITEM
-        imageAdapter.setOnItemClickListener(object : ImageAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                if (!TextUtils.isEmpty(primaryInputText)) {
-                    if (image_previous_position != position) {
-                        image_previous_position = position
-                        qrImage = generateQRWithBackgroundImage(
-                            context,
-                            primaryInputText,
-                            "", imageList[position], ""
-                        )
-                        qrGeneratedImage.setImageBitmap(qrImage)
-                    }
-                }
-            }
-
-            override fun onAddItemClick(position: Int) {
-                intentType = "background"
-
-                val backgroundImageDialogView = LayoutInflater.from(context)
-                    .inflate(R.layout.background_image_hint_layout, null)
-                val builder = MaterialAlertDialogBuilder(context)
-                builder.setCancelable(false)
-                builder.setView(backgroundImageDialogView)
-                val alert = builder.create()
-                alert.show()
-
-                val cancelBtn =
-                    backgroundImageDialogView.findViewById<MaterialButton>(R.id.custom_image_cancel_btn)
-                val choseBtn =
-                    backgroundImageDialogView.findViewById<MaterialButton>(R.id.custom_image_add_btn)
-                cancelBtn.setOnClickListener { alert.dismiss() }
-                choseBtn.setOnClickListener {
-                    if (RuntimePermissionHelper.checkPermission(
-                            context,
-                            Constants.READ_STORAGE_PERMISSION
-                        )
-                    ) {
-                        alert.dismiss()
-                        getImageFromLocalStorage()
-                    }
-                }
-            }
-        })
-    }
-
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL LOGO IMAGE LIST
     private fun renderLogoImagesRecyclerview() {
         logoImageRecyclerView.layoutManager = LinearLayoutManager(
@@ -522,17 +690,24 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         // CLICK ON EACH IMAGE ITEM
         logoAdapter.setOnItemClickListener(object : LogoAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (!TextUtils.isEmpty(primaryInputText)) {
+//                if (!TextUtils.isEmpty(primaryInputText)) {
+                if (isBackgroundSet) {
+                    logoAdapter.updateIcon(true)
                     if (logo_previous_position != position) {
                         logo_previous_position = position
                         qrImage = generateQRWithBackgroundImage(
                             context,
-                            primaryInputText,
+                            encodedTextData,
                             "", "", logoList[position]
                         )
                         qrGeneratedImage.setImageBitmap(qrImage)
                     }
+                } else {
+                    logoAdapter.updateIcon(false)
+                    showAlert(context, "Please select the background Image first!")
                 }
+
+//                }
             }
 
             override fun onAddItemClick(position: Int) {
@@ -543,21 +718,20 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                 val builder = MaterialAlertDialogBuilder(context)
                 builder.setCancelable(false)
                 builder.setView(logoImageDialogView)
-                val alert = builder.create()
-                alert.show()
+                lAlert = builder.create()
+                lAlert!!.show()
 
                 val cancelBtn =
                     logoImageDialogView.findViewById<MaterialButton>(R.id.custom_image_cancel_btn)
                 val choseBtn =
                     logoImageDialogView.findViewById<MaterialButton>(R.id.custom_image_add_btn)
-                cancelBtn.setOnClickListener { alert.dismiss() }
+                cancelBtn.setOnClickListener { lAlert!!.dismiss() }
                 choseBtn.setOnClickListener {
                     if (RuntimePermissionHelper.checkPermission(
                             context,
                             Constants.READ_STORAGE_PERMISSION
                         )
                     ) {
-                        alert.dismiss()
                         getImageFromLocalStorage()
                     }
                 }
@@ -592,12 +766,19 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         fontAdapter.setOnItemClickListener(object : FontAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val font = fontList[position]
-                if (previous_position != position) {
-                    previous_position = position
-                    if (!TextUtils.isEmpty(secondaryInputBoxView.text.toString())) {
-                        setFontFamily(context, qrTextView, font.fontFile)
+                if (isBackgroundSet) {
+                    fontAdapter.updateIcon(true)
+                    if (previous_position != position) {
+                        previous_position = position
+                        if (!TextUtils.isEmpty(secondaryInputBoxView.text.toString())) {
+                            setFontFamily(context, qrTextView, font.fontFile)
+                        }
                     }
+                } else {
+                    fontAdapter.updateIcon(false)
+                    showAlert(context, "Please select the background Image first!")
                 }
+
             }
         })
     }
@@ -612,7 +793,14 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     // THIS RESULT LAUNCHER WILL CALL THE ACTION PICK FROM FILES FOR BACKGROUND AND LOGO IMAGE
     var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (bAlert!!.isShowing) {
+                bAlert!!.dismiss()
+            }
+            if (lAlert!!.isShowing) {
+                lAlert!!.dismiss()
+            }
             if (result.resultCode == Activity.RESULT_OK) {
+
                 val data: Intent? = result.data
                 val size = ImageManager.getImageWidthHeight(context, data!!.data!!)
                 val imageWidth = size.split(",")[0].toInt()
@@ -652,7 +840,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             fileName = "qr_background_image_" + System.currentTimeMillis() + ".jpg"
         } else {
             filePath = context.externalCacheDir.toString() + "/LogoImages"
-            fileName = "qr_logo_image_" + System.currentTimeMillis() + ".jpg"
+            fileName = "qr_logo_image_" + System.currentTimeMillis() + ".png"
         }
         val dir = File(filePath)
         dir.mkdir()

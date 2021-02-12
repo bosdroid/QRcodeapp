@@ -47,8 +47,7 @@ open class BaseActivity : AppCompatActivity() {
             renderOption.borderWidth = 20 // width of the empty space around the QR code
             renderOption.ecl = ErrorCorrectionLevel.M
             renderOption.patternScale = 0.35f // (optional) specify a scale for patterns
-            renderOption.roundedPatterns =
-                true // (optional) if true, blocks will be drawn as dots instead
+            renderOption.roundedPatterns = true // (optional) if true, blocks will be drawn as dots instead
             renderOption.clearBorder =
                 true // if set to true, the background will NOT be drawn on the border area
             val color = com.github.sumimakito.awesomeqr.option.color.Color()
@@ -102,6 +101,7 @@ open class BaseActivity : AppCompatActivity() {
             }
         }
 
+
         // THIS FUNCTION WILL CONVERT THE DRAWABLE IMAGE TO BITMAP
         private fun getDrawableToBitmap(context: Context, image: Int): Bitmap {
 
@@ -129,10 +129,12 @@ open class BaseActivity : AppCompatActivity() {
             } else {
 
                 return try {
-                    val input: InputStream = context.contentResolver.openInputStream(Uri.fromFile(File(src)))!!
+                    val input: InputStream =
+                        context.contentResolver.openInputStream(Uri.fromFile(File(src)))!!
                     val bitmap = BitmapFactory.decodeStream(input)
                     input.close()
-                    val degree: Int = ImageManager.getBitmapDegree(Uri.fromFile(File(src)).toString())
+                    val degree: Int =
+                        ImageManager.getBitmapDegree(Uri.fromFile(File(src)).toString())
                     return ImageManager.rotateBitmapByDegree(bitmap, degree)
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -140,6 +142,7 @@ open class BaseActivity : AppCompatActivity() {
                 }
             }
         }
+
         // THIS FUNCTION WILL SET THE FONT FAMILY
         fun setFontFamily(context: Context, view: MaterialTextView, path: String) {
             if (path.contains("http") || path.contains("https")) {

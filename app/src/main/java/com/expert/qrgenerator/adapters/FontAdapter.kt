@@ -19,12 +19,18 @@ class FontAdapter(var context: Context, var fontList:List<Fonts>):RecyclerView.A
     }
     var mListener: OnItemClickListener?=null
     var mContext = context
+    var isIconUpdate:Boolean = false
     companion object{
         var selected_position = -1
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener){
         this.mListener = listener
+    }
+
+    fun updateIcon(flag:Boolean)
+    {
+        isIconUpdate = flag
     }
 
     class ItemViewHolder(itemView: View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView)
@@ -53,7 +59,7 @@ class FontAdapter(var context: Context, var fontList:List<Fonts>):RecyclerView.A
         val font = fontList[position]
 
         Glide.with(context).load(font.fontImage).into(holder.image)
-        if (selected_position == position)
+        if (selected_position == position && isIconUpdate)
         {
             holder.icon.visibility = View.VISIBLE
         }

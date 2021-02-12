@@ -39,15 +39,15 @@
                     android:gravity="center_vertical"
                     >
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/generate_btn"
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/switch_button"
                         android:layout_marginEnd="16dp"
                         android:layout_marginRight="16dp"
-                        android:text="@string/generate_text"
                         android:layout_gravity="right|end"
                         />
+
                 </androidx.appcompat.widget.Toolbar>
 
             </com.google.android.material.appbar.AppBarLayout>
@@ -57,11 +57,31 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/primary_input_text_box"
+                app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 android:id="@+id/buttons_layout_wrapper"
                 android:baselineAligned="false">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:id="@+id/types_btn"
+                    >
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/qr_types"
+                        android:scaleType="fitCenter"
+                        />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/types_text"
+                        />
+                </LinearLayout>
               <LinearLayout
                   android:layout_width="0dp"
                   android:layout_height="wrap_content"
@@ -144,93 +164,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/primary_input_text_box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/input_text_field_design"
-                android:hint="@string/input_hint_text"
-                android:padding="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/app_bar_layout" />
-
-<!--            <androidx.appcompat.widget.AppCompatImageButton-->
-<!--                android:id="@+id/background_btn"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="48dp"-->
-<!--                android:src="@drawable/background"-->
-<!--                app:backgroundTint="@color/purple_200"-->
-<!--                android:scaleType="fitCenter"-->
-<!--                android:layout_marginTop="5dp"-->
-<!--                android:layout_marginLeft="16dp"-->
-<!--                android:layout_marginStart="16dp"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintEnd_toStartOf="@id/color_btn"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/primary_input_text_box" />-->
-
-<!--            <androidx.appcompat.widget.AppCompatImageButton-->
-<!--                android:id="@+id/color_btn"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="48dp"-->
-<!--                android:src="@drawable/paint"-->
-<!--                android:scaleType="fitCenter"-->
-<!--                android:layout_margin="5dp"-->
-<!--                android:text="@string/color_text"-->
-<!--                app:backgroundTint="@color/purple_200"-->
-<!--                app:layout_constraintStart_toEndOf="@id/background_btn"-->
-<!--                app:layout_constraintEnd_toStartOf="@id/text_btn"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/primary_input_text_box" />-->
-
-<!--            <androidx.appcompat.widget.AppCompatImageButton-->
-<!--                android:id="@+id/text_btn"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="48dp"-->
-<!--                android:layout_margin="5dp"-->
-<!--                android:src="@drawable/text"-->
-<!--                android:text="@string/text_text"-->
-<!--                android:scaleType="fitCenter"-->
-<!--                app:backgroundTint="@color/purple_200"-->
-<!--                app:layout_constraintEnd_toStartOf="@id/logo_btn"-->
-<!--                app:layout_constraintStart_toEndOf="@id/color_btn"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/primary_input_text_box" />-->
-
-
-<!--            <androidx.appcompat.widget.AppCompatImageButton-->
-<!--                android:id="@+id/logo_btn"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="48dp"-->
-<!--                android:layout_marginTop="5dp"-->
-<!--                android:layout_marginEnd="16dp"-->
-<!--                android:layout_marginRight="16dp"-->
-<!--                android:src="@drawable/sign"-->
-<!--                android:scaleType="fitCenter"-->
-<!--                android:text="@string/generate_text"-->
-<!--                android:background="@color/purple_200"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toEndOf="@id/text_btn"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/primary_input_text_box"-->
-<!--                />-->
-
-<!--            <com.google.android.material.button.MaterialButton-->
-<!--                android:id="@+id/logo_btn"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:minWidth="0dp"-->
-<!--                android:minHeight="0dp"-->
-<!--                android:layout_marginTop="5dp"-->
-<!--                android:layout_marginEnd="16dp"-->
-<!--                android:layout_marginRight="16dp"-->
-<!--                android:text="@string/logo_text"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/generate_btn" />-->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -268,6 +201,22 @@
                     tools:listitem="@layout/font_family_item_row" />
             </LinearLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/types_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
+                app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
+                tools:listitem="@layout/types_item_row" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/colors_recycler_view"

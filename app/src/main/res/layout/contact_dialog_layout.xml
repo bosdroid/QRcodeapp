@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"
+        android:text="Contact:"
+        android:id="@+id/dialog_heading"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_heading"
+        android:layout_marginTop="8dp"
+        android:id="@+id/contact_layout_wrapper"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_goneMarginTop="8dp"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_name_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:padding="5dp"
+            android:hint="Name"
+            android:gravity="start"
+            />
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_phone_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:padding="5dp"
+            android:hint="Phone Number"
+            android:inputType="number"
+            android:gravity="start"
+            android:layout_marginTop="10dp"
+            />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_email_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:padding="5dp"
+            android:hint="Email"
+            android:gravity="start"
+            android:layout_marginTop="10dp"
+            />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_company_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:padding="5dp"
+            android:hint="Company"
+            android:gravity="start"
+            android:layout_marginTop="10dp"
+            />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_job_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:padding="5dp"
+            android:hint="Job Title"
+            android:gravity="start"
+            android:layout_marginTop="10dp"
+            />
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_address_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:padding="5dp"
+            android:hint="Address"
+            android:gravity="start"
+            android:layout_marginTop="10dp"
+            />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/contact_detail_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:padding="5dp"
+            android:hint="Detail"
+            android:gravity="start"
+            android:layout_marginTop="10dp"
+            />
+    </LinearLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/dialog_cancel_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contact_layout_wrapper"
+        app:layout_constraintEnd_toStartOf="@id/dialog_add_btn"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:id="@+id/dialog_add_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contact_layout_wrapper"
+        app:layout_constraintStart_toEndOf="@id/dialog_cancel_btn"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
