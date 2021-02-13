@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
+import android.telephony.PhoneNumberUtils
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -386,8 +387,15 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                             1 -> {
                                 val websiteInputBox =
                                     dialogView!!.findViewById<TextInputEditText>(R.id.website_input_field)
-                                encodedTextData = websiteInputBox.text.toString()
-                                regenerateQrImage(dialogAlert!!)
+                                    if (websiteInputBox.text.toString().contains("http") || websiteInputBox.text.toString().contains("https"))
+                                    {
+                                        encodedTextData = websiteInputBox.text.toString()
+                                        regenerateQrImage(dialogAlert!!)
+                                    }
+                                    else
+                                    {
+                                        showAlert(context,"Please enter the correct format of url!")
+                                    }
                             }
                             2 -> {
                                 val contactNameInputBox =
@@ -404,15 +412,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                                     dialogView!!.findViewById<TextInputEditText>(R.id.contact_address_input_field)
                                 val contactDetailInputBox =
                                     dialogView!!.findViewById<TextInputEditText>(R.id.contact_detail_input_field)
-                                val hashMap = hashMapOf<String, String>()
-                                hashMap["name"] = contactNameInputBox.text.toString()
-                                hashMap["phone_number"] = contactPhoneNumberInputBox.text.toString()
-                                hashMap["email"] = contactEmailInputBox.text.toString()
-                                hashMap["company"] = contactCompanyInputBox.text.toString()
-                                hashMap["job_title"] = contactJobTitleInputBox.text.toString()
-                                hashMap["address"] = contactAddressInputBox.text.toString()
-                                hashMap["detail"] = contactDetailInputBox.text.toString()
-                                encodedTextData = Gson().toJson(hashMap)
+                                encodedTextData = "MECARD:N:${contactNameInputBox.text.toString()};TEL:${contactPhoneNumberInputBox.text.toString()};EMAIL:${contactEmailInputBox.text.toString()};COMPANY:${contactCompanyInputBox.text.toString()};;"
                                 regenerateQrImage(dialogAlert!!)
 
                             }
@@ -439,18 +439,14 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                                         }
                                     }
                                 }
-                                val hashMap = hashMapOf<String, String>()
-                                hashMap["wifi_name"] = wifiNetWorkName.text.toString()
-                                hashMap["wifi_password"] = wifiPassword.text.toString()
-                                hashMap["wifi_security"] = wifiSecurity
-                                encodedTextData = Gson().toJson(hashMap)
+                                encodedTextData = "WIFI:T:$wifiSecurity;S:$wifiNetWorkName;P:$wifiPassword;;"
                                 regenerateQrImage(dialogAlert!!)
 
                             }
                             4 -> {
                                 val phoneInputBox =
                                     dialogView!!.findViewById<TextInputEditText>(R.id.phone_input_field)
-                                encodedTextData = phoneInputBox.text.toString()
+                                encodedTextData = "tel:${phoneInputBox.text.toString()}"
                                 regenerateQrImage(dialogAlert!!)
                             }
                             5 -> {
@@ -458,23 +454,30 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                                     dialogView!!.findViewById<TextInputEditText>(R.id.sms_recipient_input_field)
                                 val smsMessageInputBox =
                                     dialogView!!.findViewById<TextInputEditText>(R.id.sms_message_input_field)
-                                val hashMap = hashMapOf<String, String>()
-                                hashMap["recipient"] = smsRecipientInputBox.text.toString()
-                                hashMap["message"] = smsMessageInputBox.text.toString()
-                                encodedTextData = Gson().toJson(hashMap)
+                                encodedTextData = "sms:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
                                 regenerateQrImage(dialogAlert!!)
                             }
                             6 -> {
                                 val instagramInputBox =
                                     dialogView!!.findViewById<TextInputEditText>(R.id.instagram_input_field)
-                                encodedTextData = instagramInputBox.text.toString()
+                                encodedTextData = "instagram://user?username=${instagramInputBox.text.toString()}"
                                 regenerateQrImage(dialogAlert!!)
                             }
                             7 -> {
                                 val whatsappInputBox =
                                     dialogView!!.findViewById<TextInputEditText>(R.id.whatsapp_input_field)
-                                encodedTextData = whatsappInputBox.text.toString()
-                                regenerateQrImage(dialogAlert!!)
+                               val phone = whatsappInputBox.text.toString()
+
+                                if (phone.substring(0,1) == "+")
+                                {
+                                    encodedTextData = "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
+                                    regenerateQrImage(dialogAlert!!)
+                                }
+                                else
+                                {
+                                    showAlert(context,"Please enter the correct phone number with country code!")
+                                }
+
                             }
                             else -> {
 
