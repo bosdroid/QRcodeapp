@@ -412,7 +412,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                                     dialogView!!.findViewById<TextInputEditText>(R.id.contact_address_input_field)
                                 val contactDetailInputBox =
                                     dialogView!!.findViewById<TextInputEditText>(R.id.contact_detail_input_field)
-                                encodedTextData = "MECARD:N:${contactNameInputBox.text.toString()};TEL:${contactPhoneNumberInputBox.text.toString()};EMAIL:${contactEmailInputBox.text.toString()};COMPANY:${contactCompanyInputBox.text.toString()};;"
+                                encodedTextData = "BEGIN:VCARD\nN:${contactNameInputBox.text.toString()}\nTEL:${contactPhoneNumberInputBox.text.toString()}\nTITLE:${contactJobTitleInputBox.text.toString()}\nEMAIL:${contactEmailInputBox.text.toString()}\nORG:${contactCompanyInputBox.text.toString()}\nADR:${contactAddressInputBox.text.toString()}\nNOTE:${contactDetailInputBox.text.toString()}\nEND:VCARD"
                                 regenerateQrImage(dialogAlert!!)
 
                             }
@@ -439,7 +439,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                                         }
                                     }
                                 }
-                                encodedTextData = "WIFI:T:$wifiSecurity;S:$wifiNetWorkName;P:$wifiPassword;;"
+                                encodedTextData = "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString()};P:${wifiPassword.text.toString()};;"
                                 regenerateQrImage(dialogAlert!!)
 
                             }
@@ -454,7 +454,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                                     dialogView!!.findViewById<TextInputEditText>(R.id.sms_recipient_input_field)
                                 val smsMessageInputBox =
                                     dialogView!!.findViewById<TextInputEditText>(R.id.sms_message_input_field)
-                                encodedTextData = "sms:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
+                                encodedTextData = "smsto:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
                                 regenerateQrImage(dialogAlert!!)
                             }
                             6 -> {
