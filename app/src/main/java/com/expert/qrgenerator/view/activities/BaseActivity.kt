@@ -22,6 +22,8 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 open class BaseActivity : AppCompatActivity() {
@@ -45,7 +47,7 @@ open class BaseActivity : AppCompatActivity() {
             renderOption.content = text // content to encode
             renderOption.size = 800 // size of the final QR code image
             renderOption.borderWidth = 20 // width of the empty space around the QR code
-            renderOption.ecl = ErrorCorrectionLevel.M
+//            renderOption.ecl = ErrorCorrectionLevel.M
             renderOption.patternScale = 0.35f // (optional) specify a scale for patterns
             renderOption.roundedPatterns = true // (optional) if true, blocks will be drawn as dots instead
             renderOption.clearBorder =
@@ -111,6 +113,13 @@ open class BaseActivity : AppCompatActivity() {
             )
         }
 
+        // THIS FUNCTION WILL RETURN THE DATE TIME STRING FROM TIMESTAMP
+        fun getDateTimeFromTimeStamp(timeStamp: Long):String
+        {
+            val c: Date = Date(timeStamp)
+            val df = SimpleDateFormat("yyyy-MM-dd-k:mm", Locale.getDefault())
+            return df.format(c).toUpperCase(Locale.ENGLISH)
+        }
 
         // THIS FUNCTION WILL DOWNLOAD IMAGE FROM URL AND CONVERT INTO BITMAP FOR BACKGROUND
         fun getBitmapFromURL(context: Context, src: String?): Bitmap? {

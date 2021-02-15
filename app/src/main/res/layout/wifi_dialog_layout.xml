@@ -58,6 +58,46 @@
             android:gravity="start"
             />
 
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:gravity="center_horizontal"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            >-->
+<!--          <androidx.appcompat.widget.AppCompatButton-->
+<!--              android:layout_width="wrap_content"-->
+<!--              android:layout_height="wrap_content"-->
+<!--              app:backgroundTint="@color/gray"-->
+<!--              android:text="WPA/WPA2"-->
+<!--              android:id="@+id/wpa_wpa2"-->
+<!--              android:textColor="@color/white"-->
+<!--              android:clickable="true"-->
+<!--              />-->
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:backgroundTint="@color/gray"-->
+<!--                android:text="WEP"-->
+<!--                android:layout_marginLeft="3dp"-->
+<!--                android:layout_marginStart="3dp"-->
+<!--                android:id="@+id/wep"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:clickable="true"-->
+<!--                />-->
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:backgroundTint="@color/gray"-->
+<!--                android:layout_marginLeft="3dp"-->
+<!--                android:layout_marginStart="3dp"-->
+<!--                android:text="None"-->
+<!--                android:id="@+id/none"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:clickable="true"-->
+<!--                />-->
+<!--        </LinearLayout>-->
+
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -72,16 +112,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="WPA/WPA2"
-                android:id="@+id/radioButton"
+                android:id="@+id/wpa"
                 android:layout_gravity="center_horizontal"
                 android:padding="5dp"
+                android:checked="true"
                 />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="WEP"
-                android:id="@+id/radioButton2"
+                android:id="@+id/wep"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
                 android:padding="5dp"
@@ -91,11 +132,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="NONE"
-                android:id="@+id/radioButton3"
+                android:id="@+id/none"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
                 android:padding="5dp"
-                android:checked="true"
                 />
         </RadioGroup>
     </LinearLayout>

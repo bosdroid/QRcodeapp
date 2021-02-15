@@ -32,6 +32,7 @@ class ImageManager {
             return bitmap
         }
 
+        // THIS FUNCTION WILL RETURN THE IMAGE SIZE
         fun getImageSize(context: Context, uri: Uri?): String? {
             var fileSize: String? = null
             val cursor: Cursor? = context.contentResolver.query(uri!!, null, null, null, null, null)
@@ -50,6 +51,7 @@ class ImageManager {
             return fileSize
         }
 
+        // THIS FUNCTION WILL RETURN THE IMAGE WIDTH AND HEIGHT
         fun getImageWidthHeight(context: Context, uri: Uri):String {
             val options = BitmapFactory.Options()
             options.inJustDecodeBounds = true
@@ -62,6 +64,8 @@ class ImageManager {
             val imageWidth = options.outWidth
             return "$imageWidth,$imageHeight"
         }
+
+        // THIS FUNCTION WILL RETURN THE IMAGE LOCAL URI
         fun getRealPathFromUri(context: Context, contentUri: Uri?): String? {
             var cursor: Cursor? = null
             return try {
@@ -75,26 +79,7 @@ class ImageManager {
             }
         }
 
-        fun getFileFromMediaUri(ac: Context, uri: Uri): File? {
-            if (uri.scheme.toString().compareTo("content") == 0) {
-                val cr = ac.contentResolver
-                val cursor =
-                    cr.query(uri, null, null, null, null) // Find from database according to Uri
-                if (cursor != null) {
-                    cursor.moveToFirst()
-                    val filePath =
-                        cursor.getString(cursor.getColumnIndex("_data")) // Get picture path
-                    cursor.close()
-                    if (filePath != null) {
-                        return File(filePath)
-                    }
-                }
-            } else if (uri.scheme.toString().compareTo("file") == 0) {
-                return File(uri.toString().replace("file://", ""))
-            }
-            return null
-        }
-
+        // THIS FUNCTION WILL RETURN THE SELECT IMAGE ANGLE
         fun getBitmapDegree(path: String?): Int {
             var degree = 0
             try {
@@ -116,6 +101,7 @@ class ImageManager {
             return degree
         }
 
+        // THIS FUNCTION WILL USE THE IMAGE ROTATION
         fun rotateBitmapByDegree(bm: Bitmap, degree: Int): Bitmap {
             var returnBm: Bitmap? = null
 
