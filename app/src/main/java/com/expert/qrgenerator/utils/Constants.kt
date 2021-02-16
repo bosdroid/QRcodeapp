@@ -49,6 +49,8 @@ class Constants {
 
         // THIS FUNCTION WILL GET ALL THE BACKGROUND IMAGE THAT USER HAVE SELECTED FROM EXTERNAL STORAGE
         private fun getFilesFromBackgroundImagesFolder(dir: File): MutableList<String> {
+            //TODO Does it has to be in constants?
+
             val fileList = mutableListOf<String>()
             val listFile = dir.listFiles()
             if (listFile != null && listFile.isNotEmpty()) {
@@ -67,6 +69,8 @@ class Constants {
 
         // THIS FUNCTION WILL GET ALL THE LOGO IMAGE THAT USER HAVE SELECTED FROM EXTERNAL STORAGE
         private fun getFilesFromLogoFolder(dir: File): MutableList<String> {
+            //TODO Does it has to be in constants?
+
             val fileList = mutableListOf<String>()
             val listFile = dir.listFiles()
             if (listFile != null && listFile.isNotEmpty()) {
@@ -85,6 +89,8 @@ class Constants {
 
         // THIS FUNCTION WILL SAVE THE CUSTOM COLOR FILE
         fun writeColorValueToFile(data: String, context: Context) {
+            //TODO Does it has to be in constants?
+
             try {
                 val outputStreamWriter = OutputStreamWriter(
                     context.openFileOutput(
@@ -101,6 +107,7 @@ class Constants {
 
         // THIS FUNCTION WILL READ THE CUSTOM COLOR FILE
         fun readColorFile(context: Context): String {
+            //TODO Does it has to be in constants?
             var ret = ""
             try {
                 val inputStream: InputStream? = context.openFileInput("color.txt")
@@ -166,6 +173,7 @@ class Constants {
                             }
                 }
                 1->{
+                    //TODO Can we optimize this code?
                     val websiteView = LayoutInflater.from(context).inflate(R.layout.website_dialog_layout,null)
                     val websiteInputBox =
                             websiteView!!.findViewById<TextInputEditText>(R.id.website_input_field)
@@ -187,6 +195,8 @@ class Constants {
                             }
                 }
                 2->{
+                    //TODO Can we optimize this code?
+
                     val contactView = LayoutInflater.from(context).inflate(R.layout.contact_dialog_layout,null)
                     val contactNameInputBox =
                             contactView!!.findViewById<TextInputEditText>(R.id.contact_name_input_field)
@@ -215,6 +225,8 @@ class Constants {
                             }
                 }
                 3->{
+                    //TODO Can we optimize this code?
+
                     val wifiView = LayoutInflater.from(context).inflate(R.layout.wifi_dialog_layout,null)
                     val wifiNetWorkName =
                             wifiView!!.findViewById<TextInputEditText>(R.id.wifi_name_input_field)
@@ -251,6 +263,8 @@ class Constants {
                             }
                 }
                 4->{
+                    //TODO Can we optimize this code?
+
                     val phoneView = LayoutInflater.from(context).inflate(R.layout.phone_dialog_layout,null)
                     val phoneInputBox =
                             phoneView!!.findViewById<TextInputEditText>(R.id.phone_input_field)
@@ -268,6 +282,8 @@ class Constants {
                             }
                 }
                 5->{
+                    //TODO Can we optimize this code?
+
                     val smsView = LayoutInflater.from(context).inflate(R.layout.sms_dialog_layout,null)
                     val smsRecipientInputBox =
                             smsView!!.findViewById<TextInputEditText>(R.id.sms_recipient_input_field)
@@ -286,6 +302,8 @@ class Constants {
                             }
                 }
                 6->{
+                    //TODO Can we optimize this code?
+
                     val instagramView = LayoutInflater.from(context).inflate(R.layout.instagram_dialog_layout,null)
                     val instagramInputBox =
                             instagramView!!.findViewById<TextInputEditText>(R.id.instagram_input_field)
@@ -303,6 +321,8 @@ class Constants {
                             }
                 }
                 7->{
+                    //TODO Can we optimize this code?
+
                     val whatsappView = LayoutInflater.from(context).inflate(R.layout.whatsapp_dialog_layout,null)
                     val whatsappInputBox =
                             whatsappView!!.findViewById<TextInputEditText>(R.id.whatsapp_input_field)

@@ -10,6 +10,7 @@ import com.expert.qrgenerator.repository.DataRepository
 
 class MainActivityViewModel : ViewModel() {
 
+    //TODO Need to move all logic here or in helpers classes
     private var colorList = MutableLiveData<List<String>>()
     private var backgroundImageList = MutableLiveData<List<String>>()
     private var logoImageList = MutableLiveData<List<String>>()

@@ -8,7 +8,7 @@ import com.expert.qrgenerator.utils.Constants
 import com.google.firebase.database.*
 
 class DataRepository {
-
+    //TODO Need to remove code duplication
     private lateinit var databaseReference: DatabaseReference
 
     init {

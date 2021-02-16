@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="color_values">
+        <item>ffffff</item>
         <item>000000</item>
-        <item>333300</item>
-        <item>3399ff</item>
-        <item>669999</item>
-        <item>006600</item>
-        <item>cc33ff</item>
-        <item>9999ff</item>
-        <item>660066</item>
         <item>ff0000</item>
-        <item>cc6600</item>
-        <item>cccc00</item>
-        <item>999966</item>
-        <item>333300</item>
-        <item>ff99cc</item>
+        <item>ff00ea</item>
+        <item>3000ff</item>
+        <item>00c0ff</item>
+        <item>00ff72</item>
+        <item>fcff00</item>
+        <item>D50000</item>
+        <item>C51162</item>
+        <item>AA00FF</item>
+        <item>6200EA</item>
+        <item>304FFE</item>
+        <item>2962FF</item>
         <item>ff3399</item>
+        <item>82B1FF</item>
+        <item>0091EA</item>
+        <item>00B8D4</item>
+        <item>00BFA5</item>
+        <item>00C853</item>
+        <item>64DD17</item>
+        <item>AEEA00</item>
+        <item>FFD600</item>
+        <item>FFAB00</item>
+        <item>FF6D00</item>
+        <item>4E342E</item>
+        <item>616161</item>
     </string-array>
 </resources>

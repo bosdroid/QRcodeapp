@@ -16,7 +16,7 @@ import java.io.IOException
 
 
 class ImageManager {
-
+    //TODO Image process handling in mainactivity duplicating?
     companion object {
 
         // THIS FUNCTION WILL CONVERT BITMAP IMAGE FROM VIEW

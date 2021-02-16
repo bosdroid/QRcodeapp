@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 
 class RuntimePermissionHelper {
 
-
+    //TODO We got permission checks in main activity duplicating?
     companion object{
 
         fun checkPermission(context: Context,permission:String):Boolean{

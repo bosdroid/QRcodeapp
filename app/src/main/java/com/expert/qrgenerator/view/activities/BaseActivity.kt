@@ -3,6 +3,7 @@ package com.expert.qrgenerator.view.activities
 import android.content.Context
 import android.graphics.*
 import android.net.Uri
+import android.telephony.mbms.DownloadRequest
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.downloader.Error
@@ -27,6 +28,7 @@ import java.util.*
 
 
 open class BaseActivity : AppCompatActivity() {
+    //TODO Remove all unsused code and imports
 
     companion object {
         var previoudBackgroundImage: Bitmap? = null
@@ -121,6 +123,8 @@ open class BaseActivity : AppCompatActivity() {
             return df.format(c).toUpperCase(Locale.ENGLISH)
         }
 
+        //TODO Does it have to be in base activity?
+
         // THIS FUNCTION WILL DOWNLOAD IMAGE FROM URL AND CONVERT INTO BITMAP FOR BACKGROUND
         fun getBitmapFromURL(context: Context, src: String?): Bitmap? {
             if (src!!.contains("http") || src.contains("https")) {
@@ -152,6 +156,7 @@ open class BaseActivity : AppCompatActivity() {
             }
         }
 
+        //TODO Does it have to be in base activity?
         // THIS FUNCTION WILL SET THE FONT FAMILY
         fun setFontFamily(context: Context, view: MaterialTextView, path: String) {
             if (path.contains("http") || path.contains("https")) {

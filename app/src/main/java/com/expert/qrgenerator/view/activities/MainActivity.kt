@@ -49,9 +49,11 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.gson.Gson
 import java.io.*
+import java.util.Observer
 
 
 class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
+    //TODO Please remove all unused code and imports
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
@@ -180,6 +182,8 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
 
     // THIS FUNCTION WILL HANDLE ALL THE VIEWS CLICK LISTENER
     override fun onClick(v: View?) {
+        //TODO Need to create function that will manipulate visibility depends on parameters
+        //TODO Too much code duplication
         when (v!!.id) {
             R.id.types_btn -> {
                 if (backgroundImageRecyclerView.visibility == View.VISIBLE) {
@@ -301,6 +305,8 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
 
     // THIS FUNCTION WILL SAVE AND SHARE THE FINAL QR IMAGE GETTING FROM CACHE DIRECTORY
     private fun shareImage() {
+        //TODO Create separate handler for sharing process
+
         if (backgroundImageRecyclerView.visibility == View.VISIBLE) {
             backgroundImageRecyclerView.visibility = View.GONE
         }
@@ -314,6 +320,7 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
             textLayoutWrapper.visibility = View.GONE
         }
 
+        //TODO Please explain how this part works
         val layout_bitmap_image = ImageManager.loadBitmapFromView(context, qrImageWrapperLayout)
         val fileName = "final_qr_image_" + getDateTimeFromTimeStamp(System.currentTimeMillis()) + ".jpg"
         val mediaStorageDir = File(externalCacheDir.toString(), fileName)
@@ -354,6 +361,7 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
 
     // THIS FUNCTION WILL DISPLAY THE HORZIZONTAL QR TYPES LIST
     private fun renderQRTypesRecyclerview() {
+        //TODO What is the purpose?
         qrTypesRecyclerView.layoutManager = LinearLayoutManager(
                 context,
                 RecyclerView.HORIZONTAL,
@@ -373,6 +381,7 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
 
     // THIS FUNCTION WILL RE GENERATE THE QR IMAGE AFTER CHANGE TYPE OF INPUTS
     private fun regenerateQrImage(text:String) {
+        //TODO Put all generator related logic in separate QRGenerator class
         encodedTextData = text
         qrImage = generateQRWithBackgroundImage(
                 context,
@@ -386,6 +395,7 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL BACKGROUND IMAGE LIST
     private fun renderBackgroundImageRecyclerview() {
+        //TODO What is the purpose?
         backgroundImageRecyclerView.layoutManager = LinearLayoutManager(
                 context,
                 RecyclerView.HORIZONTAL,
@@ -627,6 +637,7 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL FONT LIST
     private fun renderFontRecyclerview() {
+        //TODO Can we optimize these render methods in some recyclerFactory to avoid code duplicates?
         var previous_position = -1
         fontRecyclerView.layoutManager = LinearLayoutManager(
                 context,
@@ -671,6 +682,7 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
 
     // THIS FUNCTION WILL CALL THE IMAGE INTENT
     private fun getImageFromLocalStorage() {
+        //TODO put in separate storageHelper class
         val fileIntent = Intent(Intent.ACTION_PICK)
         fileIntent.type = "image/*"
         resultLauncher.launch(fileIntent)
@@ -691,7 +703,7 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
                     val size = ImageManager.getImageWidthHeight(context, data!!.data!!)
                     val imageWidth = size.split(",")[0].toInt()
                     val imageHeight = size.split(",")[1].toInt()
-
+                    //TODO Please add some comments what happens here
                     if (intentType.equals("background")) {
                         if (imageWidth > 800 && imageHeight > 800) {
                             showAlert(
@@ -718,6 +730,8 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnCompleteAction {
 
     // THIS FUNCTION WILL SAVE THE IMAGE IN LOCAL STORAGE
     private fun saveImageInLocalStorage(uri: Uri) {
+        //TODO put in separate storageHelper class
+        //TODO Need comments to understand whats happens here
         var filePath: String? = null
         var fileName: String? = null
 
