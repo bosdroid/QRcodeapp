@@ -58,9 +58,12 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal"
                 android:id="@+id/buttons_layout_wrapper"
+                android:padding="5dp"
+                android:background="#fff"
+                android:elevation="4dp"
                 android:baselineAligned="false">
                 <LinearLayout
                     android:layout_width="0dp"
@@ -85,7 +88,7 @@
               <LinearLayout
                   android:layout_width="0dp"
                   android:layout_height="wrap_content"
-                  android:layout_weight="1"
+                  android:layout_weight="1.2"
                   android:orientation="vertical"
                   android:gravity="center"
                   android:id="@+id/background_btn"
@@ -275,6 +278,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/colors_recycler_view"
+                android:layout_marginTop="10dp"
                 android:background="@color/white"
                 android:id="@+id/qr_image_wrapper_layout"
                 >

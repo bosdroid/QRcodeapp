@@ -9,9 +9,13 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.util.Log
 import android.view.View
 import androidx.exifinterface.media.ExifInterface
+import com.expert.qrgenerator.view.activities.BaseActivity
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.io.IOException
 
 
@@ -19,8 +23,8 @@ class ImageManager {
 
     companion object {
 
-        // THIS FUNCTION WILL CONVERT BITMAP IMAGE FROM VIEW
-        fun loadBitmapFromView(context: Context, _view: View): Bitmap? {
+        // THIS FUNCTION WILL CONVERT BITMAP IMAGE FROM VIEW AND SAVE INTO LOCAL DIRECTORY
+        fun loadBitmapFromView(context: Context, _view: View): File {
             _view.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
@@ -29,27 +33,23 @@ class ImageManager {
             val canvas = Canvas(bitmap)
             _view.draw(canvas)
 
-            return bitmap
-        }
+            val fileName = "final_qr_image_" + BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis()) + ".jpg"
+            val fileDir = File(context.externalCacheDir.toString(), fileName)
 
-        // THIS FUNCTION WILL RETURN THE IMAGE SIZE
-        fun getImageSize(context: Context, uri: Uri?): String? {
-            var fileSize: String? = null
-            val cursor: Cursor? = context.contentResolver.query(uri!!, null, null, null, null, null)
             try {
-                if (cursor != null && cursor.moveToFirst()) {
-
-                    // get file size
-                    val sizeIndex: Int = cursor.getColumnIndex(OpenableColumns.SIZE)
-                    if (!cursor.isNull(sizeIndex)) {
-                        fileSize = cursor.getString(sizeIndex)
-                    }
-                }
-            } finally {
-                cursor!!.close()
+                val outputStream = FileOutputStream(fileDir.toString(), false)
+                bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                outputStream.flush()
+                outputStream.close()
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-            return fileSize
+
+            return fileDir
         }
+
 
         // THIS FUNCTION WILL RETURN THE IMAGE WIDTH AND HEIGHT
         fun getImageWidthHeight(context: Context, uri: Uri):String {
@@ -66,7 +66,7 @@ class ImageManager {
         }
 
         // THIS FUNCTION WILL RETURN THE IMAGE LOCAL URI
-        fun getRealPathFromUri(context: Context, contentUri: Uri?): String? {
+        private fun getRealPathFromUri(context: Context, contentUri: Uri?): String? {
             var cursor: Cursor? = null
             return try {
                 val proj = arrayOf(MediaStore.Images.Media.DATA)
@@ -121,6 +121,48 @@ class ImageManager {
             }
             return returnBm
         }
+
+        // THIS FUNCTION WILL SAVE CUSTOM SELECTED IMAGE IN LOCAL APP DIRECTORY
+        fun saveImageInLocalStorage(context: Context,uri: Uri,type:String):String{
+            var filePath: String? = null
+            var fileName: String? = null
+
+            if (type == "background") {
+                filePath = context.externalCacheDir.toString() + "/BackgroundImages"
+                fileName =
+                    "qr_background_image_" + BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis()) + ".jpg"
+            } else {
+                filePath = context.externalCacheDir.toString() + "/LogoImages"
+                fileName =
+                    "qr_logo_image_" + BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis()) + ".png"
+            }
+            val dir = File(filePath)
+            dir.mkdir()
+
+            val newFile = File(dir, fileName)
+
+            val realPath = getRealPathFromUri(context, uri)
+
+            val selectImageBitmap = BaseActivity.getBitmapFromURL(context, realPath)
+            try {
+                val out = FileOutputStream(newFile)
+                if (type == "background")
+                {
+                    selectImageBitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                }
+                else
+                {
+                    selectImageBitmap!!.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+                out.flush()
+                out.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            Log.d("TEST199",realPath!!)
+            return realPath
+        }
+
     }
 
 

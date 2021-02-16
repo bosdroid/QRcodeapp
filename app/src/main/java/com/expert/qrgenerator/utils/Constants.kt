@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.utils
 
 import android.content.Context
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -315,12 +316,15 @@ class Constants {
                             .setOnClickListener { dialogAlert!!.dismiss() }
                     whatsappView.findViewById<MaterialButton>(R.id.dialog_add_btn)
                             .setOnClickListener {
-                                if (phone.substring(0, 1) == "+") {
-                                    encodedData = "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
-                                    completeListener!!.onTypeSelected(encodedData)
-                                    dialogAlert!!.dismiss()
-                                } else {
-                                    BaseActivity.showAlert(context, "Please enter the correct phone number with country code!")
+                                if (!TextUtils.isEmpty(whatsappInputBox.text.toString()))
+                                {
+                                    if (phone.substring(0, 1) == "+") {
+                                        encodedData = "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
+                                        completeListener!!.onTypeSelected(encodedData)
+                                        dialogAlert!!.dismiss()
+                                    } else {
+                                        BaseActivity.showAlert(context, "Please enter the correct phone number with country code!")
+                                    }
                                 }
                             }
                 }

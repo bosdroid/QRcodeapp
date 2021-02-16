@@ -142,9 +142,9 @@ open class BaseActivity : AppCompatActivity() {
                         context.contentResolver.openInputStream(Uri.fromFile(File(src)))!!
                     val bitmap = BitmapFactory.decodeStream(input)
                     input.close()
-                    val degree: Int =
-                        ImageManager.getBitmapDegree(Uri.fromFile(File(src)).toString())
-                    return ImageManager.rotateBitmapByDegree(bitmap, degree)
+//                    val degree: Int =
+//                        ImageManager.getBitmapDegree(Uri.fromFile(File(src)).toString())
+                    return bitmap//ImageManager.rotateBitmapByDegree(bitmap, degree)
                 } catch (e: IOException) {
                     e.printStackTrace()
                     null
