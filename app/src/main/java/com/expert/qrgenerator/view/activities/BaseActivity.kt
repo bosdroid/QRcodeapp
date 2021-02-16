@@ -1,7 +1,10 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -9,14 +12,12 @@ import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.request.DownloadRequest
-import com.expert.qrgenerator.utils.ImageManager
 import com.github.sumimakito.awesomeqr.AwesomeQrRenderer
 import com.github.sumimakito.awesomeqr.option.RenderOption
 import com.github.sumimakito.awesomeqr.option.background.StillBackground
 import com.github.sumimakito.awesomeqr.option.logo.Logo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -29,9 +30,9 @@ import java.util.*
 open class BaseActivity : AppCompatActivity() {
 
     companion object {
-        var previoudBackgroundImage: Bitmap? = null
-        var previousColor: Int? = null
-        var previousLogo: Bitmap? = null
+        private var previousBackgroundImage: Bitmap? = null
+        private var previousColor: Int? = null
+        private var previousLogo: Bitmap? = null
         private var prDownloader: DownloadRequest? = null
 
         //THIS FUNCTION WILL GENERATE THE FINAL QR IMAGE
@@ -65,12 +66,12 @@ open class BaseActivity : AppCompatActivity() {
             }
             val background = StillBackground()
             if (bgImage.isNotEmpty()) {
-                previoudBackgroundImage = getBitmapFromURL(context, bgImage)
-                background.bitmap = previoudBackgroundImage
+                previousBackgroundImage = getBitmapFromURL(context, bgImage)
+                background.bitmap = previousBackgroundImage
                 renderOption.background = background // set a background
             } else {
-                if (previoudBackgroundImage != null) {
-                    background.bitmap = previoudBackgroundImage
+                if (previousBackgroundImage != null) {
+                    background.bitmap = previousBackgroundImage
                     renderOption.background = background // set a background
                 }
             }
@@ -87,9 +88,9 @@ open class BaseActivity : AppCompatActivity() {
                 }
             }
 
-            try {
+            return try {
                 val result = AwesomeQrRenderer.render(renderOption)
-                return if (result.bitmap != null) {
+                if (result.bitmap != null) {
                     // play with the bitmap
                     result.bitmap!!
                 } else {
@@ -99,24 +100,24 @@ open class BaseActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 // Oops, something gone wrong.
-                return null
+                null
             }
         }
 
 
-        // THIS FUNCTION WILL CONVERT THE DRAWABLE IMAGE TO BITMAP
-        private fun getDrawableToBitmap(context: Context, image: Int): Bitmap {
-
-            return BitmapFactory.decodeResource(
-                context.resources,
-                image
-            )
-        }
+        // THIS FUNCTION WILL CONVERT THE DRAWABLE IMAGE TO BITMAP (I KEEP THIS FOR FUTURE USE)
+//        private fun getDrawableToBitmap(context: Context, image: Int): Bitmap {
+//
+//            return BitmapFactory.decodeResource(
+//                context.resources,
+//                image
+//            )
+//        }
 
         // THIS FUNCTION WILL RETURN THE DATE TIME STRING FROM TIMESTAMP
         fun getDateTimeFromTimeStamp(timeStamp: Long):String
         {
-            val c: Date = Date(timeStamp)
+            val c = Date(timeStamp)
             val df = SimpleDateFormat("yyyy-MM-dd-k:mm", Locale.getDefault())
             return df.format(c).toUpperCase(Locale.ENGLISH)
         }
@@ -138,13 +139,10 @@ open class BaseActivity : AppCompatActivity() {
             } else {
 
                 return try {
-                    val input: InputStream =
-                        context.contentResolver.openInputStream(Uri.fromFile(File(src)))!!
+                    val input: InputStream = context.contentResolver.openInputStream(Uri.fromFile(File(src)))!!
                     val bitmap = BitmapFactory.decodeStream(input)
                     input.close()
-//                    val degree: Int =
-//                        ImageManager.getBitmapDegree(Uri.fromFile(File(src)).toString())
-                    return bitmap//ImageManager.rotateBitmapByDegree(bitmap, degree)
+                    return bitmap
                 } catch (e: IOException) {
                     e.printStackTrace()
                     null

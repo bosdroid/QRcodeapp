@@ -1,15 +1,10 @@
 package com.expert.qrgenerator.adapters
 
 import android.content.Context
-import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
@@ -17,16 +12,14 @@ import com.expert.qrgenerator.model.QRTypes
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
 
-class TypesAdapter(val context: Context, var qrTypesList: List<QRTypes>) :
+class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>) :
     RecyclerView.Adapter<TypesAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(position: Int)
     }
 
-    var mListener: OnItemClickListener? = null
-    var mContext = context
-    var isIconUpdate: Boolean = false
+    private var mListener: OnItemClickListener? = null
 
     companion object {
         var selected_position = -1
@@ -40,9 +33,9 @@ class TypesAdapter(val context: Context, var qrTypesList: List<QRTypes>) :
         itemView
     ) {
 
-        val parentLayout = itemView.findViewById<MaterialCardView>(R.id.types_parent_layout)
-        val typeImage = itemView.findViewById<AppCompatImageView>(R.id.type_image)
-        val typeText = itemView.findViewById<MaterialTextView>(R.id.type_text)
+        val parentLayout: MaterialCardView = itemView.findViewById(R.id.types_parent_layout)
+        val typeImage: AppCompatImageView = itemView.findViewById(R.id.type_image)
+        val typeText: MaterialTextView = itemView.findViewById(R.id.type_text)
 
     }
 

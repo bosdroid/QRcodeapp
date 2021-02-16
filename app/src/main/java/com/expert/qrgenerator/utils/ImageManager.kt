@@ -5,13 +5,10 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Matrix
 import android.net.Uri
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
-import androidx.exifinterface.media.ExifInterface
 import com.expert.qrgenerator.view.activities.BaseActivity
 import java.io.File
 import java.io.FileNotFoundException
@@ -71,55 +68,12 @@ class ImageManager {
             return try {
                 val proj = arrayOf(MediaStore.Images.Media.DATA)
                 cursor = context.contentResolver.query(contentUri!!, proj, null, null, null)
-                val column_index = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                val columnIndex = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
                 cursor.moveToFirst()
-                cursor.getString(column_index)
+                cursor.getString(columnIndex)
             } finally {
                 cursor?.close()
             }
-        }
-
-        // THIS FUNCTION WILL RETURN THE SELECT IMAGE ANGLE
-        fun getBitmapDegree(path: String?): Int {
-            var degree = 0
-            try {
-                // Read the picture from the specified path and obtain its EXIF information
-                val exifInterface = ExifInterface(path!!)
-                // Get rotation information for pictures
-                val orientation: Int = exifInterface.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL
-                )
-                when (orientation) {
-                    ExifInterface.ORIENTATION_ROTATE_90 -> degree = 90
-                    ExifInterface.ORIENTATION_ROTATE_180 -> degree = 180
-                    ExifInterface.ORIENTATION_ROTATE_270 -> degree = 270
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            return degree
-        }
-
-        // THIS FUNCTION WILL USE THE IMAGE ROTATION
-        fun rotateBitmapByDegree(bm: Bitmap, degree: Int): Bitmap {
-            var returnBm: Bitmap? = null
-
-            // Generate rotation matrix according to rotation angle
-            val matrix = Matrix()
-            matrix.postRotate(degree.toFloat())
-            try {
-                // Rotate the original image according to the rotation matrix and get a new image
-                returnBm = Bitmap.createBitmap(bm, 0, 0, bm.width, bm.height, matrix, true)
-            } catch (e: OutOfMemoryError) {
-            }
-            if (returnBm == null) {
-                returnBm = bm
-            }
-            if (bm != returnBm) {
-                bm.recycle()
-            }
-            return returnBm
         }
 
         // THIS FUNCTION WILL SAVE CUSTOM SELECTED IMAGE IN LOCAL APP DIRECTORY

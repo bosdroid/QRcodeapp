@@ -2,7 +2,6 @@ package com.expert.qrgenerator.adapters
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +11,8 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
-import java.io.File
 
-class LogoAdapter(var context: Context, var logoList: List<String>) :
+class LogoAdapter(var context: Context, private var logoList: List<String>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
@@ -23,9 +21,8 @@ class LogoAdapter(var context: Context, var logoList: List<String>) :
         fun onAddItemClick(position: Int)
     }
 
-    var mListener: OnItemClickListener? = null
-    var mContext = context
-    var isIconUpdate:Boolean = false
+    private var mListener: OnItemClickListener? = null
+    private var isIconUpdate:Boolean = false
 
     companion object {
         var selected_position = -1
@@ -38,41 +35,32 @@ class LogoAdapter(var context: Context, var logoList: List<String>) :
     class ItemViewHolder(itemView: View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(
         itemView
     ) {
-        val image: AppCompatImageView
-        val bgLayout: RelativeLayout
-        val icon: AppCompatImageView
+        val image: AppCompatImageView = itemView.findViewById(R.id.image_item)
+        val icon: AppCompatImageView = itemView.findViewById(R.id.image_selected_icon)
 
-        init {
-            image = itemView.findViewById(R.id.image_item)
-            bgLayout = itemView.findViewById(R.id.parent_layout)
-            icon = itemView.findViewById(R.id.image_selected_icon)
-        }
     }
 
     class AddItemViewHolder(itemView: View, mListener: OnItemClickListener) :
         RecyclerView.ViewHolder(itemView) {
-        val addCardViewBtn: CardView
+        val addCardViewBtn: CardView = itemView.findViewById(R.id.add_card_view)
 
-        init {
-            addCardViewBtn = itemView.findViewById(R.id.add_card_view)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == 0) {
+        return if (viewType == 0) {
             val view = LayoutInflater.from(parent.context).inflate(
                 R.layout.add_item_layout,
                 parent,
                 false
             )
-            return AddItemViewHolder(view, mListener!!)
+            AddItemViewHolder(view, mListener!!)
         } else {
             val view = LayoutInflater.from(parent.context).inflate(
                 R.layout.image_item_row,
                 parent,
                 false
             )
-            return ItemViewHolder(view, mListener!!)
+            ItemViewHolder(view, mListener!!)
         }
     }
 

@@ -23,8 +23,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,7 +41,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
-import java.io.*
 
 
 class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
@@ -78,8 +75,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
     private var logoList = mutableListOf<String>()
     private var fontList = mutableListOf<Fonts>()
     private var qrTypeList = mutableListOf<QRTypes>()
-    private var image_previous_position = -1
-    private var logo_previous_position = -1
+    private var imagePreviousPosition = -1
+    private var logoPreviousPosition = -1
     private var encodedTextData: String = " "
     private var secondaryInputText: String? = null
     private lateinit var viewModel: MainActivityViewModel
@@ -112,7 +109,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
 
         viewModel = ViewModelProviders.of(
             this,
-            ViewModelFactory(MainActivityViewModel()).createFor<ViewModel>()
+            ViewModelFactory(MainActivityViewModel()).createFor()
         )[MainActivityViewModel::class.java]
 
         toolbar = findViewById(R.id.toolbar)
@@ -362,7 +359,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         backgroundImageRecyclerView.adapter = imageAdapter
 
         viewModel.callBackgroundImages(context)
-        viewModel.getBackgroundImages().observe(this, Observer { list ->
+        viewModel.getBackgroundImages().observe(this, { list ->
             if (list != null) {
                 imageList.addAll(imageList.size, list)
                 imageAdapter.notifyItemRangeInserted(imageList.size, list.size)
@@ -372,8 +369,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         // CLICK ON EACH IMAGE ITEM
         imageAdapter.setOnItemClickListener(object : ImageAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (image_previous_position != position || !isBackgroundSet) {
-                    image_previous_position = position
+                if (imagePreviousPosition != position || !isBackgroundSet) {
+                    imagePreviousPosition = position
                     qrImage = generateQRWithBackgroundImage(
                         context,
                         encodedTextData,
@@ -431,7 +428,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         colorsRecyclerView.adapter = colorAdapter
 
         viewModel.callColorList(context)
-        viewModel.getColorList().observe(this, Observer { colors ->
+        viewModel.getColorList().observe(this, { colors ->
             if (colors != null) {
                 colorList.addAll(colorList.size, colors)
                 colorAdapter.notifyItemRangeInserted(colorList.size, colors.size)
@@ -523,7 +520,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         logoImageRecyclerView.adapter = logoAdapter
 
         viewModel.callLogoImages(context)
-        viewModel.getLogoImages().observe(this, Observer { list ->
+        viewModel.getLogoImages().observe(this, { list ->
             if (list != null) {
                 logoList.addAll(logoList.size, list)
                 logoAdapter.notifyItemRangeInserted(logoList.size, list.size)
@@ -535,8 +532,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
             override fun onItemClick(position: Int) {
                 if (isBackgroundSet) {
                     logoAdapter.updateIcon(true)
-                    if (logo_previous_position != position || isBackgroundSet) {
-                        logo_previous_position = position
+                    if (logoPreviousPosition != position || isBackgroundSet) {
+                        logoPreviousPosition = position
                         qrImage = generateQRWithBackgroundImage(
                             context,
                             encodedTextData,
@@ -593,7 +590,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         fontRecyclerView.adapter = fontAdapter
 
         viewModel.callFontList(context)
-        viewModel.getFontList().observe(this, Observer { list ->
+        viewModel.getFontList().observe(this, { list ->
             if (list != null) {
                 if (fontList.size > 0) {
                     fontList.clear()
@@ -662,7 +659,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
                         // THIS CODE WILL GET THE CUSTOM BACKGROUND IMAGE PATH AND SAVE INTO imageList
                         val filePath = ImageManager.saveImageInLocalStorage(context,data.data!!,"background")
                         imageList.add(0, filePath)
-                        image_previous_position += 1
+                        imagePreviousPosition += 1
                         imageAdapter.updateAdapter(0)
                     }
                 } else {
@@ -675,7 +672,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
                         // THIS CODE WILL GET THE CUSTOM LOGO IMAGE PATH AND SAVE INTO logoList
                         val filePath = ImageManager.saveImageInLocalStorage(context,data.data!!,"logo")
                         logoList.add(0, filePath)
-                        logo_previous_position += 1
+                        logoPreviousPosition += 1
                         logoAdapter.updateAdapter(0)
                     }
 

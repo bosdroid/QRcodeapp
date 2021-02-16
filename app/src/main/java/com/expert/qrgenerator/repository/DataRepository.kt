@@ -9,23 +9,19 @@ import com.google.firebase.database.*
 
 class DataRepository {
 
-    private lateinit var databaseReference: DatabaseReference
-
-    init {
-        databaseReference = FirebaseDatabase.getInstance().reference
-    }
+    private var databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     companion object {
         lateinit var context: Context
 
-        private var dataRespository: DataRepository? = null
+        private var dataRepository: DataRepository? = null
 
         fun getInstance(mContext: Context): DataRepository {
             context = mContext
-            if (dataRespository == null) {
-                dataRespository = DataRepository()
+            if (dataRepository == null) {
+                dataRepository = DataRepository()
             }
-            return dataRespository!!
+            return dataRepository!!
         }
     }
 

@@ -2,7 +2,6 @@ package com.expert.qrgenerator.adapters
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,17 +11,16 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
-import java.io.File
 
-class ImageAdapter(var context: Context,var imageList:List<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ImageAdapter(var context: Context, private var imageList:List<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
 
     interface OnItemClickListener{
         fun onItemClick(position: Int)
         fun onAddItemClick(position: Int)
     }
-    var mListener: OnItemClickListener?=null
-    var mContext = context
+    private var mListener: OnItemClickListener?=null
+
     companion object{
         var selected_position = -1
     }
@@ -35,23 +33,14 @@ class ImageAdapter(var context: Context,var imageList:List<String>) : RecyclerVi
         itemView
     )
     {
-        val image: AppCompatImageView
-        val bgLayout: RelativeLayout
-        val icon : AppCompatImageView
+        val image: AppCompatImageView = itemView.findViewById(R.id.image_item)
+        val icon : AppCompatImageView = itemView.findViewById(R.id.image_selected_icon)
 
-        init {
-            image = itemView.findViewById(R.id.image_item)
-            bgLayout = itemView.findViewById(R.id.parent_layout)
-            icon = itemView.findViewById(R.id.image_selected_icon)
-        }
     }
 
     class AddItemViewHolder(itemView: View, mListener: OnItemClickListener):RecyclerView.ViewHolder(itemView){
-        val addCardViewBtn: CardView
+        val addCardViewBtn: CardView = itemView.findViewById(R.id.add_card_view)
 
-        init {
-            addCardViewBtn = itemView.findViewById(R.id.add_card_view)
-        }
     }
 
     fun updateAdapter(position: Int){

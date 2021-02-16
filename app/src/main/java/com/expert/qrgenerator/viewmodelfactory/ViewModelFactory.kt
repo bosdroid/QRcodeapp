@@ -18,7 +18,7 @@ class ViewModelFactory(model: ViewModel?) : ViewModelProvider.Factory{
         throw IllegalArgumentException("unexpected model class $modelClass")
     }
 
-    fun <T : ViewModel?> createFor(): ViewModelProvider.Factory? {
+    fun createFor(): ViewModelProvider.Factory {
         return object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(model!!.javaClass)) {

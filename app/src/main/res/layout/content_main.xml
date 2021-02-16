@@ -45,7 +45,7 @@
                         android:id="@+id/switch_button"
                         android:layout_marginEnd="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_gravity="right|end"
+                        android:layout_gravity="end"
                         />
 
                 </androidx.appcompat.widget.Toolbar>

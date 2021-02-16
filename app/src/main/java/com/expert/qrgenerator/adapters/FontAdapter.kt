@@ -11,15 +11,14 @@ import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.Fonts
 
-class FontAdapter(var context: Context, var fontList:List<Fonts>):RecyclerView.Adapter<FontAdapter.ItemViewHolder>() {
+class FontAdapter(var context: Context, private var fontList:List<Fonts>):RecyclerView.Adapter<FontAdapter.ItemViewHolder>() {
 
 
     interface OnItemClickListener{
         fun onItemClick(position: Int)
     }
-    var mListener: OnItemClickListener?=null
-    var mContext = context
-    var isIconUpdate:Boolean = false
+    private var mListener: OnItemClickListener?=null
+    private var isIconUpdate:Boolean = false
     companion object{
         var selected_position = -1
     }
@@ -35,15 +34,9 @@ class FontAdapter(var context: Context, var fontList:List<Fonts>):RecyclerView.A
 
     class ItemViewHolder(itemView: View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView)
     {
-        val image: AppCompatImageView
-        val bgLayout: RelativeLayout
-        val icon : AppCompatImageView
+        val image: AppCompatImageView = itemView.findViewById(R.id.font_item)
+        val icon : AppCompatImageView = itemView.findViewById(R.id.selected_icon)
 
-        init {
-            image = itemView.findViewById(R.id.font_item)
-            bgLayout = itemView.findViewById(R.id.parent_layout)
-            icon = itemView.findViewById(R.id.selected_icon)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {

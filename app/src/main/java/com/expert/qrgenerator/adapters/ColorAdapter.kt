@@ -2,7 +2,6 @@ package com.expert.qrgenerator.adapters
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,15 +12,14 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 
-class ColorAdapter(var context: Context, var colorList: List<String>) :RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ColorAdapter(var context: Context, private var colorList: List<String>) :RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     interface OnItemClickListener{
         fun onItemClick(position: Int)
         fun onAddItemClick(position: Int)
     }
-    var mListener: OnItemClickListener?=null
-    var mContext = context
-    var isIconUpdate:Boolean = false
+    private var mListener: OnItemClickListener?=null
+    private var isIconUpdate:Boolean = false
 
     companion object{
         var selected_position = -1
@@ -35,28 +33,13 @@ class ColorAdapter(var context: Context, var colorList: List<String>) :RecyclerV
         itemView
     )
     {
-        val colorBtn:AppCompatButton
-        val bgLayout:RelativeLayout
-        val icon :AppCompatImageView
-
-        init {
-            colorBtn = itemView.findViewById(R.id.color_item)
-            bgLayout = itemView.findViewById(R.id.parent_layout)
-            icon = itemView.findViewById(R.id.selected_icon)
-//            colorBtn.setOnClickListener {
-//
-//                mListener.onItemClick(layoutPosition)
-//
-//            }
-        }
+        val colorBtn:AppCompatButton = itemView.findViewById(R.id.color_item)
+        val icon :AppCompatImageView = itemView.findViewById(R.id.selected_icon)
     }
 
     class AddItemViewHolder(itemView: View, mListener: OnItemClickListener):RecyclerView.ViewHolder(itemView){
-         val addCardViewBtn:CardView
+         val addCardViewBtn:CardView = itemView.findViewById(R.id.add_card_view)
 
-         init {
-             addCardViewBtn = itemView.findViewById(R.id.add_card_view)
-         }
     }
 
     fun updateAdapter(position: Int){

@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import com.expert.qrgenerator.R
@@ -25,9 +24,8 @@ class Constants {
         const val firebaseFonts = "fonts"
         const val READ_STORAGE_REQUEST_CODE = 100
         const val READ_STORAGE_PERMISSION = "android.permission.READ_EXTERNAL_STORAGE"
-        const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
-        const val LOGO_IMAGE_PATH = "LogoImages"
-        const val COLOR_PATH = "Colors"
+        private const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
+        private const val LOGO_IMAGE_PATH = "LogoImages"
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)
@@ -117,7 +115,7 @@ class Constants {
                     ret = stringBuilder.toString()
                 }
             } catch (e: FileNotFoundException) {
-                Log.e("login activity", "File not found: " + e.toString())
+                Log.e("login activity", "File not found: $e")
             } catch (e: IOException) {
                 Log.e("login activity", "Can not read file: $e")
             }
@@ -140,10 +138,10 @@ class Constants {
         }
 
         // THIS FUNCTION WILL SHOW THE DIALOG LAYOUT
-        var dialogAlert: AlertDialog? = null
-        var encodedData:String = ""
-        var completeListener:OnCompleteAction?=null
-        var wifiSecurity = "WPA"
+        private var dialogAlert: AlertDialog? = null
+        private var encodedData:String = ""
+        private var completeListener:OnCompleteAction?=null
+        private var wifiSecurity = "WPA"
         fun getLayout(context: Context,position:Int){
               completeListener = context as OnCompleteAction
             val builder = MaterialAlertDialogBuilder(context)
