@@ -33,6 +33,7 @@ import com.expert.qrgenerator.model.Fonts
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
+import com.expert.qrgenerator.utils.QRGenerator
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.viewmodel.MainActivityViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
@@ -155,7 +156,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         })
 
         // GENERATE DEFAULT QR IMAGE WHEN APP IS OPEN
-        qrImage = generateQRWithBackgroundImage(context, encodedTextData, "000000", "", "")
+        qrImage = QRGenerator.generatorQRImage(context, encodedTextData, "000000", "", "")
         qrGeneratedImage.setImageBitmap(qrImage)
         qrSignTextView.visibility = View.VISIBLE
         if (shareBtn.visibility == View.INVISIBLE) {
@@ -186,7 +187,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
                         dialog.dismiss()
                     }
                     .setPositiveButton("Share") { dialog, which ->
-                        shareImage()
+                        viewVisibleInvisible(5)
+                        ImageManager.shareImage(context,qrImageWrapperLayout)
                     }
                     .create().show()
             }
@@ -285,36 +287,9 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         }
     }
 
-    // THIS FUNCTION WILL SAVE AND SHARE THE FINAL QR IMAGE GETTING FROM CACHE DIRECTORY
-    private fun shareImage() {
-        viewVisibleInvisible(5)
-        val finalQRImageFile = ImageManager.loadBitmapFromView(context, qrImageWrapperLayout)
-
-        // HERE START THE SHARE INTENT
-        val waIntent = Intent(Intent.ACTION_SEND)
-        val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            waIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-            FileProvider.getUriForFile(
-                this,
-                applicationContext.packageName + ".fileprovider", finalQRImageFile
-            )
-
-        } else {
-            Uri.fromFile(finalQRImageFile)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            waIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        if (imageUri != null) {
-            waIntent.type = "image/*"
-            waIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
-            startActivity(Intent.createChooser(waIntent, "Share with"))
-        }
-
-    }
-
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL QR TYPES LIST
     private fun renderQRTypesRecyclerview() {
+        // THIS LINE OF CODE WILL SET THE RECYCLERVIEW ORIENTATION (HORIZONTAL OR VERTICAL)
         qrTypesRecyclerView.layoutManager = LinearLayoutManager(
             context,
             RecyclerView.HORIZONTAL,
@@ -332,21 +307,9 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         })
     }
 
-    // THIS FUNCTION WILL RE GENERATE THE QR IMAGE AFTER CHANGE TYPE OF INPUTS
-    private fun regenerateQrImage(text: String) {
-        encodedTextData = text
-        qrImage = generateQRWithBackgroundImage(
-            context,
-            encodedTextData,
-            "",
-            "",
-            ""
-        )
-        qrGeneratedImage.setImageBitmap(qrImage)
-    }
-
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL BACKGROUND IMAGE LIST
     private fun renderBackgroundImageRecyclerview() {
+        // THIS LINE OF CODE WILL SET THE RECYCLERVIEW ORIENTATION (HORIZONTAL OR VERTICAL)
         backgroundImageRecyclerView.layoutManager = LinearLayoutManager(
             context,
             RecyclerView.HORIZONTAL,
@@ -371,7 +334,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
             override fun onItemClick(position: Int) {
                 if (imagePreviousPosition != position || !isBackgroundSet) {
                     imagePreviousPosition = position
-                    qrImage = generateQRWithBackgroundImage(
+                    qrImage = QRGenerator.generatorQRImage(
                         context,
                         encodedTextData,
                         "", imageList[position], ""
@@ -413,13 +376,14 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL COLOR LIST
     private fun renderColorsRecyclerview() {
         var previousPosition = -1
+        // THIS LINE OF CODE WILL SET THE RECYCLERVIEW ORIENTATION (HORIZONTAL OR VERTICAL)
         colorsRecyclerView.layoutManager = LinearLayoutManager(
             context,
             RecyclerView.HORIZONTAL,
             false
         )
         colorsRecyclerView.hasFixedSize()
-        val customColorList = Constants.readColorFile(context)
+        val customColorList = ImageManager.readColorFile(context)
         if (customColorList.isNotEmpty()) {
             val localColorList = customColorList.trim().split(" ")
             colorList.addAll(localColorList)
@@ -443,7 +407,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
                     if (previousPosition != position) {
                         previousPosition = position
 
-                        qrImage = generateQRWithBackgroundImage(
+                        qrImage = QRGenerator.generatorQRImage(
                             context,
                             encodedTextData,
                             colorList[position], "", ""
@@ -486,7 +450,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
                                 colorList.add(0, inputText)
                                 previousPosition += 1
                                 colorAdapter.updateAdapter(0)
-                                Constants.writeColorValueToFile("$inputText ", context)
+                                ImageManager.writeColorValueToFile("$inputText ", context)
                                 alert.dismiss()
                             } else {
                                 Toast.makeText(
@@ -508,6 +472,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL LOGO IMAGE LIST
     private fun renderLogoImagesRecyclerview() {
+        // THIS LINE OF CODE WILL SET THE RECYCLERVIEW ORIENTATION (HORIZONTAL OR VERTICAL)
         logoImageRecyclerView.layoutManager = LinearLayoutManager(
             context,
             RecyclerView.HORIZONTAL,
@@ -534,7 +499,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
                     logoAdapter.updateIcon(true)
                     if (logoPreviousPosition != position || isBackgroundSet) {
                         logoPreviousPosition = position
-                        qrImage = generateQRWithBackgroundImage(
+                        qrImage = QRGenerator.generatorQRImage(
                             context,
                             encodedTextData,
                             "", "", logoList[position]
@@ -580,6 +545,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL FONT LIST
     private fun renderFontRecyclerview() {
         var previousPosition = -1
+        // THIS LINE OF CODE WILL SET THE RECYCLERVIEW ORIENTATION (HORIZONTAL OR VERTICAL)
         fontRecyclerView.layoutManager = LinearLayoutManager(
             context,
             RecyclerView.HORIZONTAL,
@@ -711,6 +677,14 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
 
     // THIS METHOD WILL CALL AFTER SELECT THE QR TYPE WITH INPUT DATA
     override fun onTypeSelected(data: String) {
-        regenerateQrImage(data)
+        encodedTextData = data
+        qrImage = QRGenerator.generatorQRImage(
+                context,
+                encodedTextData,
+                "",
+                "",
+                ""
+        )
+        qrGeneratedImage.setImageBitmap(qrImage)
     }
 }

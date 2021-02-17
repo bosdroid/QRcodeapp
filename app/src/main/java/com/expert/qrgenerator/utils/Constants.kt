@@ -38,90 +38,13 @@ class Constants {
 
         // THIS FUNCTION WILL RETURN THE ALL THE EXTERNAL BACKGROUND IMAGES
         fun getAllBackgroundImages(context: Context): List<String> {
-            return getFilesFromBackgroundImagesFolder(getBackgroundImageFolderFile(context))
+            return ImageManager.getFilesFromBackgroundImagesFolder(getBackgroundImageFolderFile(context))
         }
 
         // THIS FUNCTION WILL RETURN THE ALL THE EXTERNAL LOGO IMAGES
         fun getAllLogoImages(context: Context): List<String> {
-            return getFilesFromLogoFolder(getLogoImageFolderFile(context))
+            return ImageManager.getFilesFromLogoFolder(getLogoImageFolderFile(context))
         }
-
-        // THIS FUNCTION WILL GET ALL THE BACKGROUND IMAGE THAT USER HAVE SELECTED FROM EXTERNAL STORAGE
-        private fun getFilesFromBackgroundImagesFolder(dir: File): MutableList<String> {
-            val fileList = mutableListOf<String>()
-            val listFile = dir.listFiles()
-            if (listFile != null && listFile.isNotEmpty()) {
-                for (file in listFile) {
-                    if (file.isDirectory) {
-                        getFilesFromBackgroundImagesFolder(file)
-                    } else {
-                        if (file.name.endsWith(".jpg")) {
-                            fileList.add(file.absolutePath)
-                        }
-                    }
-                }
-            }
-            return fileList
-        }
-
-        // THIS FUNCTION WILL GET ALL THE LOGO IMAGE THAT USER HAVE SELECTED FROM EXTERNAL STORAGE
-        private fun getFilesFromLogoFolder(dir: File): MutableList<String> {
-            val fileList = mutableListOf<String>()
-            val listFile = dir.listFiles()
-            if (listFile != null && listFile.isNotEmpty()) {
-                for (file in listFile) {
-                    if (file.isDirectory) {
-                        getFilesFromLogoFolder(file)
-                    } else {
-                        if (file.name.endsWith(".png")) {
-                            fileList.add(file.absolutePath)
-                        }
-                    }
-                }
-            }
-            return fileList
-        }
-
-        // THIS FUNCTION WILL SAVE THE CUSTOM COLOR FILE
-        fun writeColorValueToFile(data: String, context: Context) {
-            try {
-                val outputStreamWriter = OutputStreamWriter(
-                    context.openFileOutput(
-                        "color.txt",
-                        Context.MODE_APPEND
-                    )
-                )
-                outputStreamWriter.write(data)
-                outputStreamWriter.close()
-            } catch (e: IOException) {
-                Log.e("Exception", "File write failed: $e")
-            }
-        }
-
-        // THIS FUNCTION WILL READ THE CUSTOM COLOR FILE
-        fun readColorFile(context: Context): String {
-            var ret = ""
-            try {
-                val inputStream: InputStream? = context.openFileInput("color.txt")
-                if (inputStream != null) {
-                    val inputStreamReader = InputStreamReader(inputStream)
-                    val bufferedReader = BufferedReader(inputStreamReader)
-                    var receiveString: String? = ""
-                    val stringBuilder = StringBuilder()
-                    while (bufferedReader.readLine().also { receiveString = it } != null) {
-                        stringBuilder.append(receiveString)
-                    }
-                    inputStream.close()
-                    ret = stringBuilder.toString()
-                }
-            } catch (e: FileNotFoundException) {
-                Log.e("login activity", "File not found: $e")
-            } catch (e: IOException) {
-                Log.e("login activity", "Can not read file: $e")
-            }
-            return ret
-        }
-
 
         // THIS FUNCTION WILL RETURN THE TYPES LIST
         fun getQRTypes():List<QRTypes>{

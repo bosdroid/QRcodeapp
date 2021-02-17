@@ -30,89 +30,7 @@ import java.util.*
 open class BaseActivity : AppCompatActivity() {
 
     companion object {
-        private var previousBackgroundImage: Bitmap? = null
-        private var previousColor: Int? = null
-        private var previousLogo: Bitmap? = null
         private var prDownloader: DownloadRequest? = null
-
-        //THIS FUNCTION WILL GENERATE THE FINAL QR IMAGE
-        fun generateQRWithBackgroundImage(
-            context: Context,
-            text: String,
-            col: String,
-            bgImage: String,
-            logoUrl: String
-        ): Bitmap? {
-            val renderOption = RenderOption()
-
-            renderOption.content = text // content to encode
-            renderOption.size = 800 // size of the final QR code image
-            renderOption.borderWidth = 20 // width of the empty space around the QR code
-//            renderOption.ecl = ErrorCorrectionLevel.M
-            renderOption.patternScale = 0.35f // (optional) specify a scale for patterns
-            renderOption.roundedPatterns = true // (optional) if true, blocks will be drawn as dots instead
-            renderOption.clearBorder =
-                true // if set to true, the background will NOT be drawn on the border area
-            val color = com.github.sumimakito.awesomeqr.option.color.Color()
-            if (col.isNotEmpty()) {
-                previousColor = Color.parseColor("#$col")
-                color.dark = previousColor!!
-                renderOption.color = color // set a color palette for the QR code
-            } else {
-                if (previousColor != null) {
-                    color.dark = previousColor!!
-                    renderOption.color = color
-                }
-            }
-            val background = StillBackground()
-            if (bgImage.isNotEmpty()) {
-                previousBackgroundImage = getBitmapFromURL(context, bgImage)
-                background.bitmap = previousBackgroundImage
-                renderOption.background = background // set a background
-            } else {
-                if (previousBackgroundImage != null) {
-                    background.bitmap = previousBackgroundImage
-                    renderOption.background = background // set a background
-                }
-            }
-
-            val logo = Logo()
-            if (logoUrl.isNotEmpty()) {
-                previousLogo = getBitmapFromURL(context, logoUrl)
-                logo.bitmap = previousLogo
-                renderOption.logo = logo // set a logo
-            } else {
-                if (previousLogo != null) {
-                    logo.bitmap = previousLogo
-                    renderOption.logo = logo // set a logo
-                }
-            }
-
-            return try {
-                val result = AwesomeQrRenderer.render(renderOption)
-                if (result.bitmap != null) {
-                    // play with the bitmap
-                    result.bitmap!!
-                } else {
-                    // Oops, something gone wrong.
-                    null
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // Oops, something gone wrong.
-                null
-            }
-        }
-
-
-        // THIS FUNCTION WILL CONVERT THE DRAWABLE IMAGE TO BITMAP (I KEEP THIS FOR FUTURE USE)
-//        private fun getDrawableToBitmap(context: Context, image: Int): Bitmap {
-//
-//            return BitmapFactory.decodeResource(
-//                context.resources,
-//                image
-//            )
-//        }
 
         // THIS FUNCTION WILL RETURN THE DATE TIME STRING FROM TIMESTAMP
         fun getDateTimeFromTimeStamp(timeStamp: Long):String
@@ -120,34 +38,6 @@ open class BaseActivity : AppCompatActivity() {
             val c = Date(timeStamp)
             val df = SimpleDateFormat("yyyy-MM-dd-k:mm", Locale.getDefault())
             return df.format(c).toUpperCase(Locale.ENGLISH)
-        }
-
-        // THIS FUNCTION WILL DOWNLOAD IMAGE FROM URL AND CONVERT INTO BITMAP FOR BACKGROUND
-        fun getBitmapFromURL(context: Context, src: String?): Bitmap? {
-            if (src!!.contains("http") || src.contains("https")) {
-                return try {
-                    val url = URL(src)
-                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-                    connection.doInput = true
-                    connection.connect()
-                    val input: InputStream = connection.inputStream
-                    BitmapFactory.decodeStream(input)
-                } catch (e: IOException) {
-                    // Log exception
-                    null
-                }
-            } else {
-
-                return try {
-                    val input: InputStream = context.contentResolver.openInputStream(Uri.fromFile(File(src)))!!
-                    val bitmap = BitmapFactory.decodeStream(input)
-                    input.close()
-                    return bitmap
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    null
-                }
-            }
         }
 
         // THIS FUNCTION WILL SET THE FONT FAMILY
