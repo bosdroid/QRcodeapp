@@ -228,7 +228,6 @@ class Constants {
                     val whatsappView = LayoutInflater.from(context).inflate(R.layout.whatsapp_dialog_layout,null)
                     val whatsappInputBox =
                             whatsappView!!.findViewById<TextInputEditText>(R.id.whatsapp_input_field)
-                    val phone = whatsappInputBox.text.toString()
 
                     builder.setView(whatsappView)
                     dialogAlert = builder.create()
@@ -239,6 +238,7 @@ class Constants {
                             .setOnClickListener {
                                 if (!TextUtils.isEmpty(whatsappInputBox.text.toString()))
                                 {
+                                    val phone = whatsappInputBox.text.toString()
                                     if (phone.substring(0, 1) == "+") {
                                         encodedData = "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
                                         completeListener!!.onTypeSelected(encodedData)
