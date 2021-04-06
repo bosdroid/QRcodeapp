@@ -1,5 +1,5 @@
 package com.expert.qrgenerator.interfaces
 
 interface OnCompleteAction {
-    fun onTypeSelected(data:String)
+    fun onTypeSelected(data:String,position:Int)
 }

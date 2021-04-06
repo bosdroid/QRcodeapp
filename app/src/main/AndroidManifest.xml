@@ -3,45 +3,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.expert.qrgenerator">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
     <application
         android:allowBackup="false"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
-        android:hardwareAccelerated="true"
-        android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.QRGenerator"
+        android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
+        <activity android:name=".view.activities.DynamicQrActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.activities.MainActivity"/>
+        </activity>
+        <activity android:name=".view.activities.BarcodeHistoryActivity">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.activities.MainActivity"/>
+        </activity>
         <activity
-            android:windowSoftInputMode="adjustPan"
-            android:name="com.expert.qrgenerator.view.activities.MainActivity">
+            android:name=".view.activities.MainActivity"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!--File Provider-->
+        </activity> <!-- File Provider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
     </application>
 
 </manifest>

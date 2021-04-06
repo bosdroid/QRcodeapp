@@ -1,5 +1,6 @@
 package com.expert.qrgenerator.viewmodel
 
+import JSONResponse
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.Fonts
 import com.expert.qrgenerator.repository.DataRepository
+import com.expert.qrgenerator.retrofit.ApiRepository
+import com.google.gson.JsonObject
 
 class MainActivityViewModel : ViewModel() {
 
@@ -14,6 +17,7 @@ class MainActivityViewModel : ViewModel() {
     private var backgroundImageList = MutableLiveData<List<String>>()
     private var logoImageList = MutableLiveData<List<String>>()
     private var fontList = MutableLiveData<List<Fonts>>()
+    private var dynamicQrCodeResponse = MutableLiveData<JsonObject>()
 
     // THIS FUNCTION WILL CREATE AND SAVE THE COLOR LIST
     fun callColorList(context: Context) {
@@ -58,6 +62,14 @@ class MainActivityViewModel : ViewModel() {
     // THIS FUNCTION WILL RETURN THE FONT LIST
     fun getFontList():LiveData<List<Fonts>>{
         return fontList
+    }
+
+    fun createDynamicQrCode(context:Context,body:HashMap<String,String>){
+        dynamicQrCodeResponse = ApiRepository.getInstance(context).createDynamicQrCode(body)
+    }
+
+    fun getDynamicQrCode():MutableLiveData<JsonObject>{
+        return dynamicQrCodeResponse
     }
 
 }

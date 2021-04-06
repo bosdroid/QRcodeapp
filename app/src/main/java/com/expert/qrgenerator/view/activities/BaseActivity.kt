@@ -7,11 +7,14 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.util.Log
+import android.view.LayoutInflater
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.request.DownloadRequest
+import com.expert.qrgenerator.R
 import com.github.sumimakito.awesomeqr.AwesomeQrRenderer
 import com.github.sumimakito.awesomeqr.option.RenderOption
 import com.github.sumimakito.awesomeqr.option.background.StillBackground
@@ -31,6 +34,7 @@ open class BaseActivity : AppCompatActivity() {
 
     companion object {
         private var prDownloader: DownloadRequest? = null
+        var alert: AlertDialog? = null
 
         // THIS FUNCTION WILL RETURN THE DATE TIME STRING FROM TIMESTAMP
         fun getDateTimeFromTimeStamp(timeStamp: Long):String
@@ -87,6 +91,24 @@ open class BaseActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }
                 .create().show()
+        }
+
+        fun startLoading(context: Context)
+        {
+            val builder = MaterialAlertDialogBuilder(context)
+            val layout = LayoutInflater.from(context).inflate(R.layout.custom_loading, null)
+            builder.setView(layout)
+            builder.setCancelable(false)
+            alert = builder.create()
+            alert!!.show()
+        }
+
+        fun dismiss()
+        {
+            if (alert != null)
+            {
+                alert!!.dismiss()
+            }
         }
 
     }

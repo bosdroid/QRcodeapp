@@ -39,15 +39,6 @@
                     android:gravity="center_vertical"
                     >
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/switch_button"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_gravity="end"
-                        />
-
                 </androidx.appcompat.widget.Toolbar>
 
             </com.google.android.material.appbar.AppBarLayout>
@@ -167,6 +158,19 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/dynamic_switch_button"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_gravity="end"
+                android:text="Dynamic Mode  "
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
+                />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -174,7 +178,7 @@
                 android:id="@+id/text_font_layout_wrapper"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
                 app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
                 android:visibility="gone"
                 >
@@ -217,7 +221,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
                 app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
                 tools:listitem="@layout/types_item_row" />
 
@@ -234,7 +238,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
                 app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
                 tools:listitem="@layout/color_item_row" />
 
@@ -251,7 +255,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
                 app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
                 tools:listitem="@layout/image_item_row" />
 
@@ -268,7 +272,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
                 app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
                 tools:listitem="@layout/image_item_row" />
 

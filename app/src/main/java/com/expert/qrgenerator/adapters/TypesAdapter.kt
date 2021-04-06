@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.adapters
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +20,9 @@ class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>)
         fun onItemClick(position: Int)
     }
 
+
     private var mListener: OnItemClickListener? = null
+    private var isEnableDisable: Boolean = false
 
     companion object {
         var selected_position = -1
@@ -37,6 +40,12 @@ class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>)
         val typeImage: AppCompatImageView = itemView.findViewById(R.id.type_image)
         val typeText: MaterialTextView = itemView.findViewById(R.id.type_text)
 
+    }
+
+    // THIS FUNCTION WILL ENABLE AND DISABLE QR TYPES ON SWITCH CHANGE
+    fun disableEnableViews(flag: Boolean) {
+        isEnableDisable = flag
+        notifyDataSetChanged()
     }
 
 
@@ -62,14 +71,22 @@ class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>)
         holder.typeImage.setImageResource(type.image)
         holder.typeText.text = type.name
 
-        if (selected_position == position)
+        if (isEnableDisable && position != 1)
         {
-            holder.parentLayout.strokeColor = ContextCompat.getColor(context,R.color.black)
-            holder.parentLayout.strokeWidth = 2
+            holder.parentLayout.isEnabled = false
+            holder.parentLayout.alpha = 0.8f
         }
         else
         {
-            holder.parentLayout.strokeColor = ContextCompat.getColor(context,R.color.white)
+            holder.parentLayout.isEnabled = true
+            holder.parentLayout.alpha = 1.0f
+        }
+
+        if (selected_position == position) {
+            holder.parentLayout.strokeColor = ContextCompat.getColor(context, R.color.black)
+            holder.parentLayout.strokeWidth = 2
+        } else {
+            holder.parentLayout.strokeColor = ContextCompat.getColor(context, R.color.white)
             holder.parentLayout.strokeWidth = 0
         }
 
