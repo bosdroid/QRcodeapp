@@ -49,6 +49,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
 
     }
 
+    // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
         context = this
         viewModel = ViewModelProviders.of(
@@ -69,6 +70,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
         adapter.setOnClickListener(this)
     }
 
+    // THIS FUNCTION WILL SET UP THE TOP ACTIONBAR
     private fun setUpToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -76,9 +78,8 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
         toolbar.setTitleTextColor(Color.parseColor("#000000"))
     }
 
+    // THIS FUNCTION WILL DISPLAY THE LIST OF CREATED DYNAMIC QR CODE
     private fun displayDynamicQrCodes() {
-
-
         appViewModel.getAllDynamicQrCodes().observe(this, Observer { list ->
 
             if (list != null && list.isEmpty()) {
@@ -88,7 +89,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
                 dynamicQrList.clear()
                 emptyView.visibility = View.GONE
                 dynamicQrRecyclerView.visibility = View.VISIBLE
-                Log.d("TEST199",list.toString())
+
                 dynamicQrList.addAll(list)
                 adapter.notifyDataSetChanged()
             }
@@ -96,6 +97,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
 
     }
 
+    // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -105,14 +107,16 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
         }
     }
 
+    // THIS FUNCTION WILL HANDLE THE DYNAMIC QR CODE LIST FOR UPDATE
     override fun onItemClick(position: Int) {
         val dynamicQr = dynamicQrList[position]
         updateDynamicQrUrl(dynamicQr)
     }
 
 
+    // THIS FUNCTION WILL POP UP WITH EXISTING URL FOR INPUT NEW UPDATED URL
     private fun updateDynamicQrUrl(selectedDynamicUrl: QREntity){
-        Log.d("TEST199",selectedDynamicUrl.toString())
+
         val dynamicUrlUpdateView = LayoutInflater.from(context).inflate(R.layout.update_dynamic_url_dialog_layout, null)
         val updateInputBox = dynamicUrlUpdateView!!.findViewById<TextInputEditText>(R.id.dynamic_url_update_input_field)
         val cancelBtn = dynamicUrlUpdateView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
@@ -138,6 +142,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
 
                 val inputValue = updateInputBox.text.toString()
 
+                // THIS IS THE TESTING USER DATA FOR DYNAMIC QR CODE GENERATION
                 val hashMap = hashMapOf<String, String>()
                 hashMap["login"] = selectedDynamicUrl.login
                 hashMap["qrId"] = selectedDynamicUrl.qrId

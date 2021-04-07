@@ -27,7 +27,7 @@ class ApiRepository {
         }
     }
 
-    // START HERE ALL THE API FUNCTIONS
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING DYNAMIC QR
      fun createDynamicQrCode(body: HashMap<String, String>): MutableLiveData<JsonObject> {
         val res = MutableLiveData<JsonObject>()
         val bodyJson = Gson().toJsonTree(body).asJsonObject
