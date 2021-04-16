@@ -9,9 +9,10 @@ import android.graphics.Canvas
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Base64
+import android.util.Base64OutputStream
 import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.core.content.FileProvider
 import com.expert.qrgenerator.view.activities.BaseActivity
@@ -81,7 +82,7 @@ class ImageManager {
         }
 
         // THIS FUNCTION WILL SAVE CUSTOM SELECTED IMAGE IN LOCAL APP DIRECTORY
-        fun saveImageInLocalStorage(context: Context,uri: Uri,type:String):String{
+        fun saveImageInLocalStorage(context: Context, uri: Uri, type: String):String{
             var filePath: String? = null
             var fileName: String? = null
 
@@ -117,7 +118,7 @@ class ImageManager {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            Log.d("TEST199",realPath!!)
+            Log.d("TEST199", realPath!!)
             return realPath
         }
 
@@ -138,7 +139,13 @@ class ImageManager {
             } else {
 
                 return try {
-                    val input: InputStream = context.contentResolver.openInputStream(Uri.fromFile(File(src)))!!
+                    val input: InputStream = context.contentResolver.openInputStream(
+                        Uri.fromFile(
+                            File(
+                                src
+                            )
+                        )
+                    )!!
                     val bitmap = BitmapFactory.decodeStream(input)
                     input.close()
                     return bitmap
@@ -199,10 +206,10 @@ class ImageManager {
         fun writeColorValueToFile(data: String, context: Context) {
             try {
                 val outputStreamWriter = OutputStreamWriter(
-                        context.openFileOutput(
-                                "color.txt",
-                                Context.MODE_APPEND
-                        )
+                    context.openFileOutput(
+                        "color.txt",
+                        Context.MODE_APPEND
+                    )
                 )
                 outputStreamWriter.write(data)
                 outputStreamWriter.close()
@@ -236,7 +243,7 @@ class ImageManager {
         }
 
         // THIS FUNCTION WILL SAVE AND SHARE THE FINAL QR IMAGE GETTING FROM CACHE DIRECTORY
-         fun shareImage(context: Context,qrImageWrapperLayout:RelativeLayout) {
+         fun shareImage(context: Context, qrImageWrapperLayout: RelativeLayout) {
 
             val finalQRImageFile = loadBitmapFromView(context, qrImageWrapperLayout)
 
@@ -245,8 +252,8 @@ class ImageManager {
             val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 waIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
                 FileProvider.getUriForFile(
-                        context,
-                        context.applicationContext.packageName + ".fileprovider", finalQRImageFile
+                    context,
+                    context.applicationContext.packageName + ".fileprovider", finalQRImageFile
                 )
 
             } else {
@@ -261,6 +268,20 @@ class ImageManager {
                 context.startActivity(Intent.createChooser(waIntent, "Share with"))
             }
 
+        }
+
+
+        // THIS FUNCTION WILL CONVERT THE IMAGE INTO BASE64 STRING
+        fun convertImageToBase64(context: Context, uri: Uri):String{
+            return FileInputStream(getRealPathFromUri(context,uri)).use { inputStream ->
+                ByteArrayOutputStream().use { outputStream ->
+                    Base64OutputStream(outputStream, Base64.NO_WRAP).use { base64FilterStream ->
+                        inputStream.copyTo(base64FilterStream)
+                        base64FilterStream.close()
+                        outputStream.toString()
+                    }
+                }
+            }
         }
 
     }

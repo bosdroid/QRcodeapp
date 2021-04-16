@@ -13,4 +13,5 @@
         android:id="@+id/dynamic_qr"
         app:showAsAction="never"
         />
+
 </menu>

@@ -12,4 +12,9 @@ interface ApiServices {
     @POST("service/user/add")
     fun createDynamicQrCode(@Body body: JsonObject):Call<JsonObject>
 
+    // THIS IS THE POST REQUEST SERVICE FOR CREATING DYNAMIC QR CODE
+    @POST("service/webpage/create/template1")
+    fun createCouponQrCode(@Body body: JsonObject):Call<JsonObject>
+
+
 }

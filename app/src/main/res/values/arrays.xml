@@ -17,4 +17,18 @@
         <item>ff99cc</item>
         <item>ff3399</item>
     </string-array>
+
+    <string-array name="sale_badge_options">
+        <item>10% OFF</item>
+        <item>30% OFF</item>
+        <item>50% OFF</item>
+        <item>2 FOR 1</item>
+        <item>SALE</item>
+        <item>Custom</item>
+    </string-array>
+    <string-array name="redeem_options">
+        <item>Redeem Now</item>
+        <item>Shop</item>
+        <item>Custom</item>
+    </string-array>
 </resources>

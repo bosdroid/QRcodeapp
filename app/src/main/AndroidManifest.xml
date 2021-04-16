@@ -21,15 +21,29 @@
         android:theme="@style/Theme.QRGenerator"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
-        <activity android:name=".view.activities.DynamicQrActivity">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activities.MainActivity"/>
-        </activity>
-        <activity android:name=".view.activities.BarcodeHistoryActivity">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activities.MainActivity"/>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".view.activities.CouponQrActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.activities.MainActivity" />
         </activity>
         <activity
+            android:screenOrientation="portrait"
+            android:name=".view.activities.DynamicQrActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.activities.MainActivity" />
+        </activity>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".view.activities.BarcodeHistoryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.activities.MainActivity" />
+        </activity>
+        <activity
+            android:screenOrientation="portrait"
             android:name=".view.activities.MainActivity"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>

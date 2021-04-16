@@ -336,9 +336,27 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         typesAdapter.setOnItemClickListener(object : TypesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val qrType = qrTypeList[position]
-                Constants.getLayout(context, position)
+                if (position == 8){
+                    val intent = Intent(context,CouponQrActivity::class.java)
+                    couponResultLauncher.launch(intent)
+                }
+                else{
+                    Constants.getLayout(context, position)
+                }
+
             }
         })
+    }
+
+    // THIS COUPON RESULT LAUNCHER WILL HANDLE AFTER CREATING COUPON QR WITH API
+    private var couponResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+            val data: Intent? = result.data
+            if (data!!.hasExtra("COUPON_URL")){
+                onTypeSelected(data.getStringExtra("COUPON_URL")!!,0)
+            }
+        }
     }
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL BACKGROUND IMAGE LIST

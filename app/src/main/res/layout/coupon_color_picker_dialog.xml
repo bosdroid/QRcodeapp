@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/eightDpMargin"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="Personalize your coupon page by selecting some colors"
+            android:textColor="@color/black"
+            android:textSize="@dimen/mediumText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sixtyDpMargin"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/eightDpMargin"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Primary color"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/mediumText" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/defaultDpMargin"
+                    android:gravity="center_vertical"
+
+                    >
+                   <com.google.android.material.textfield.TextInputEditText
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:padding="5dp"
+                       android:text="#455A64"
+                       android:id="@+id/coupon_primary_color_tf"
+                       android:background="@drawable/input_text_field_design"
+                       />
+                    <LinearLayout
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:orientation="vertical"
+                        android:background="@drawable/input_text_field_design"
+                        >
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#455A64"
+                            android:layout_margin="5dp"
+                            android:id="@+id/coupon_primary_color_btn"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/eightDpMargin"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Button color"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/mediumText" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/defaultDpMargin"
+                    android:gravity="center_vertical"
+
+                    >
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:padding="5dp"
+                        android:text="#e91e63"
+                        android:background="@drawable/input_text_field_design"
+                        android:id="@+id/coupon_button_color_tf"
+                        />
+                    <LinearLayout
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:orientation="vertical"
+                        android:background="@drawable/input_text_field_design"
+                        >
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#e91e63"
+                            android:layout_margin="5dp"
+                            android:id="@+id/coupon_button_color_btn"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/sixtyDpMargin"
+            >
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:layout_margin="@dimen/eightDpMargin"
+                android:id="@+id/coupon_color_cancel_btn"
+                />
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Save"
+                android:layout_margin="@dimen/eightDpMargin"
+                android:id="@+id/coupon_color_save_btn"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

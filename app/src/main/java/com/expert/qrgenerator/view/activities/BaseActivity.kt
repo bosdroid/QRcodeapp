@@ -111,6 +111,13 @@ open class BaseActivity : AppCompatActivity() {
             }
         }
 
+        fun getDateFromTimeStamp(timeStamp: Long):String
+        {
+            val c: Date = Date(timeStamp)
+            val df = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+            return df.format(c).toUpperCase(Locale.ENGLISH)
+        }
+
     }
 
 }

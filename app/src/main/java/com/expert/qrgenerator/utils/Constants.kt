@@ -4,18 +4,16 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.view.activities.BaseActivity
-import com.expert.qrgenerator.view.activities.MainActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
-import java.io.*
+import java.io.File
 
 class Constants {
 
@@ -64,6 +62,7 @@ class Constants {
             list.add(QRTypes(R.drawable.ic_sms, "SMS", 5))
             list.add(QRTypes(R.drawable.instagram, "Instagram", 6))
             list.add(QRTypes(R.drawable.whatsapp, "Whatsapp", 7))
+            list.add(QRTypes(R.drawable.ic_coupon, "Coupon", 8))
             return list
         }
 
@@ -109,7 +108,10 @@ class Constants {
                     websiteView.findViewById<MaterialButton>(R.id.dialog_add_btn)
                         .setOnClickListener {
 
-                            if (websiteInputBox.text.toString().contains("http") || websiteInputBox.text.toString().contains("https")
+                            if (websiteInputBox.text.toString()
+                                    .contains("http") || websiteInputBox.text.toString().contains(
+                                    "https"
+                                )
                                 || websiteInputBox.text.toString().contains("www")
                             ) {
 
@@ -286,5 +288,14 @@ class Constants {
 
         }
 
+        fun d(TAG: String?, message: String) {
+            val maxLogSize = 20000
+            for (i in 0..message.length / maxLogSize) {
+                val start = i * maxLogSize
+                var end = (i + 1) * maxLogSize
+                end = if (end > message.length) message.length else end
+                Log.d(TAG, message.substring(start, end))
+            }
+        }
     }
 }
