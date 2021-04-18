@@ -355,6 +355,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
             val data: Intent? = result.data
             if (data!!.hasExtra("COUPON_URL")){
                 onTypeSelected(data.getStringExtra("COUPON_URL")!!,0)
+                showAlert(context,"Coupon QR template generated successfully and encoded in QR Image!")
             }
         }
     }

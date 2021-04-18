@@ -334,6 +334,55 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
     // THIS FUNCTION WILL VALIDATE ALL THE COUPON INPUT DATA
     private fun validation(): Boolean {
+        if (coupon_company_name.isEmpty()){
+            showAlert(context,"Please edit the company name!")
+            return false
+        } else if (coupon_background_color.isEmpty()){
+            showAlert(context,"Please edit the background color!")
+            return false
+        } else if (coupon_header_image.isEmpty()){
+            showAlert(context,"Please edit the header image!")
+            return false
+        } else if (coupon_sale_badge_button_text.isEmpty()){
+            showAlert(context,"Please edit the sale badge text!")
+            return false
+        } else if (coupon_sale_badge_button_color.isEmpty()){
+            showAlert(context,"Please edit the sale badge button color!")
+            return false
+        } else if (coupon_headline_text.isEmpty()){
+            showAlert(context,"Please edit the coupon headline!")
+            return false
+        } else if (coupon_description_text.isEmpty()){
+            showAlert(context,"Please edit the coupon description!")
+            return false
+        } else if (coupon_get_button_text.isEmpty()){
+            showAlert(context,"Please edit the coupon get button text!")
+            return false
+        } else if (coupon_get_button_color.isEmpty()){
+            showAlert(context,"Please edit the coupon get button color!")
+            return false
+        } else if (coupon_code_text.isEmpty()){
+            showAlert(context,"Please edit the coupon code text!")
+            return false
+        } else if (coupon_code_text_color.isEmpty()){
+            showAlert(context,"Please edit the coupon code text color!")
+            return false
+        } else if (coupon_valid_date.isEmpty()){
+            showAlert(context,"Please edit the coupon valid date!")
+            return false
+        } else if (coupon_terms_condition_text.isEmpty()){
+            showAlert(context,"Please edit the coupon terms and conditions!")
+            return false
+        } else if (coupon_redeem_button_text.isEmpty()){
+            showAlert(context,"Please edit the redeem button text!")
+            return false
+        } else if (coupon_redeem_button_color.isEmpty()){
+            showAlert(context,"Please edit the redeem button color!")
+            return false
+        } else if (coupon_redeem_website_url.isEmpty()){
+            showAlert(context,"Please edit the redeem targer website url!")
+            return false
+        }
         return true
     }
 
