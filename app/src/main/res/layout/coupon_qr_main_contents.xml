@@ -53,19 +53,43 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="@dimen/eightDpMargin"
-            android:background="@color/teal_700"
+            android:background="@color/dark_gray"
             android:orientation="vertical"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/background_color_edit_btn"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/edit"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/background_color_layout"
+                android:gravity="center_vertical"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/background_color_edit_hint"
+                    android:text="*set background color"
+                    android:gravity="center_vertical"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/largeText"
+                    android:textStyle="bold" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/background_color_edit_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/edit"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </LinearLayout>
+
+
 
             <LinearLayout
                 android:id="@+id/zero_layout"
@@ -79,18 +103,18 @@
                 android:layout_marginRight="@dimen/eightDpMargin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/background_color_edit_btn">
+                app:layout_constraintTop_toBottomOf="@id/background_color_layout">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/coupon_company_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Elle Boutique"
+                    android:text="*set Title"
                     android:gravity="center_vertical"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/gray"
                     android:textSize="@dimen/largeText"
                     android:textStyle="bold" />
 
@@ -124,35 +148,70 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/header_image_edit_btn"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/defaultDpMargin"
-                        android:elevation="8dp"
-                        android:src="@drawable/edit"
+                        android:orientation="horizontal"
+                        app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:id="@+id/header_image_edit_layout"
+                        android:elevation="2dp"
+                        android:gravity="center_vertical"
+                        >
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:id="@+id/header_image_edit_hint"
+                            android:text="*set banner 640x360"
+                            android:gravity="center_vertical"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/largeText"
+                            android:textStyle="bold" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/header_image_edit_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/defaultDpMargin"
+                            android:src="@drawable/edit"
+                             />
+                    </LinearLayout>
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/defaultDpMargin"
-                        android:layout_marginLeft="@dimen/defaultDpMargin"
-                        android:layout_marginBottom="@dimen/sixtyDpMargin"
-                        android:text="Header Image size 640x360"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/coupon_sale_image" />
+
+
+<!--                    <com.google.android.material.textview.MaterialTextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="@dimen/defaultDpMargin"-->
+<!--                        android:layout_marginLeft="@dimen/defaultDpMargin"-->
+<!--                        android:layout_marginBottom="@dimen/sixtyDpMargin"-->
+<!--                        android:text="Header Image size 640x360"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toBottomOf="@id/coupon_sale_image" />-->
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/coupon_sale_image"
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:scaleType="fitXY"
-                        android:src="@drawable/header"
+                        android:src="@drawable/placeholder"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="*set tag"
+                        android:id="@+id/sale_badge_hint"
+                        android:textColor="@color/light_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/sale_badge_wrapper_layout"
+                        android:layout_marginEnd="@dimen/sixtyDpMargin"
+                        android:layout_marginRight="@dimen/sixtyDpMargin"
+                        />
 
                     <LinearLayout
                         android:id="@+id/sale_badge_wrapper_layout"
@@ -170,13 +229,11 @@
                             android:id="@+id/coupon_sale_badge"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@color/teal_700"
-                            android:elevation="8dp"
-                            android:text="10% OFF"
                             android:minHeight="0dp"
-                            android:minWidth="0dp"
-                            android:padding="5dp"
+                            android:layout_weight="1"
+                            android:background="@color/gray"
+                            android:elevation="8dp"
+                            android:text=""
                             android:textColor="@color/white"
                             android:textSize="@dimen/mediumText"
                             android:textStyle="bold"
@@ -207,7 +264,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/thirtyTwoDpMargin"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:layout_gravity="center_horizontal"
+                            >
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/coupon_content_headline"
@@ -215,8 +274,8 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:layout_weight="1"
-                                android:text="Storewide Holiday Sale"
-                                android:textColor="@color/black"
+                                android:text="*set offer title"
+                                android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/largeText" />
 
                             <androidx.appcompat.widget.AppCompatImageView
@@ -234,9 +293,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/eightDpMargin"
-                            android:text="Get all of your holiday shopping done early this year! Discounted items on all designer clothing, bags, and more.\nGet all of your holiday shopping done early this year! Discounted items on all designer clothing, bags, and more.\nGet all of your holiday shopping done early this year! Discounted items on all designer clothing, bags, and more."
+                            android:text="*set offer description"
+                            android:textColor="@color/dark_gray"
                             android:textSize="@dimen/mediumText"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_gravity="center_horizontal"
+                            />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/description_text_edit_btn"
@@ -250,20 +312,44 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/sixtyDpMargin"
-                            android:background="@color/teal_200"
-                            android:text="GET COUPON"
+                            android:background="@color/gray"
+                            android:text=""
                             android:textColor="@color/white"
+                            android:clickable="false"
                             android:textSize="@dimen/largeText" />
                     </LinearLayout>
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/get_coupon_edit_btn"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/sixtyDpMargin"
-                        android:src="@drawable/edit"
+                        android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_margin="@dimen/sixtyDpMargin"
+                        android:gravity="center_vertical"
+                        >
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="*set button text"
+                            android:gravity="center_vertical"
+                            android:id="@+id/get_coupon_edit_hint"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:textColor="@color/light_gray"
+                            android:layout_marginRight="@dimen/defaultDpMargin"
+                            android:layout_marginEnd="@dimen/defaultDpMargin"
+                            android:textSize="@dimen/largeText"
+                            android:textStyle="bold" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/get_coupon_edit_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/edit"
+                            />
+                    </LinearLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -315,8 +401,8 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:layout_weight="1"
-                            android:text="SALE25OFF"
-                            android:textColor="@color/black"
+                            android:text="*set coupon code"
+                            android:textColor="@color/dark_gray"
                             android:textSize="@dimen/xlargeText" />
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -359,8 +445,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/defaultDpMargin"
                             android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:text="10 May 2021"
-                            android:textColor="@color/black"
+                            android:text="*set valid date"
+                            android:textColor="@color/dark_gray"
                             android:textSize="@dimen/mediumText" />
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -389,7 +475,8 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:layout_weight="1"
-                            android:text="@string/terms_conditions" />
+                            android:textColor="@color/dark_gray"
+                            android:text="*set terms &amp; conditions" />
 
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -407,24 +494,46 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/thirtyTwoDpMargin"
-                        android:background="@color/teal_200"
-                        android:text="REDEEM NOW"
+                        android:background="@color/dark_gray"
+                        android:text=""
                         android:textColor="@color/white"
                         android:textSize="@dimen/largeText"
+                        android:clickable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/coupon_terms_conditions_layout_wrapper" />
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/redeem_now_edit_btn"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         android:layout_margin="@dimen/eightDpMargin"
                         android:elevation="2dp"
-                        android:src="@drawable/edit"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        >
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:id="@+id/redeem_now_edit_hint"
+                            android:text="*set button text"
+                            android:gravity="center_vertical"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/largeText"
+                            android:textStyle="bold" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/redeem_now_edit_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/edit"
+                            />
+                    </LinearLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
@@ -474,19 +583,37 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/parent_wrapper_layout" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/coupon_user_hint"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/defaultDpMargin"
-                android:text="This screen the user will see after scan qr code"
-                android:textColor="@color/white"
-                android:textSize="@dimen/smallText"
-                android:textStyle="bold"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/next_btn" />
+                app:layout_constraintTop_toBottomOf="@id/next_btn"
+                android:gravity="center_horizontal"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/coupon_user_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/defaultDpMargin"
+                    android:text="This screen the user will see after scan qr code"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/smallText"
+                    android:textStyle="bold"
+                    />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/defaultDpMargin"
+                    android:text="Please set all field that marked with * sign"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/smallText"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
