@@ -3,7 +3,6 @@ package com.expert.qrgenerator.view.activities
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -82,22 +81,25 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     private lateinit var getCouponButtonHint: MaterialTextView
     private lateinit var redeemButtonHint: MaterialTextView
     private lateinit var createCouponBtn: MaterialButton
-    private var coupon_company_name: String = ""
-    private var coupon_background_color: String = ""
-    private var coupon_header_image: String = ""
-    private var coupon_sale_badge_button_text: String = ""
-    private var coupon_sale_badge_button_color: String = ""
-    private var coupon_headline_text: String = ""
-    private var coupon_description_text: String = ""
-    private var coupon_get_button_text: String = ""
-    private var coupon_get_button_color: String = ""
-    private var coupon_code_text: String = ""
-    private var coupon_code_text_color: String = ""
-    private var coupon_valid_date: String = ""
-    private var coupon_terms_condition_text: String = ""
-    private var coupon_redeem_button_text: String = ""
-    private var coupon_redeem_button_color: String = ""
-    private var coupon_redeem_website_url: String = ""
+    private var couponCompanyNameText: String = ""
+    private var couponCompanyNameTextColor: String = ""
+    private var couponBackgroundColor: String = ""
+    private var couponHeaderImage: String = ""
+    private var couponSaleBadgeButtonText: String = ""
+    private var couponSaleBadgeButtonColor: String = ""
+    private var couponOfferTitleText: String = ""
+    private var couponOfferTitleTextColor: String = ""
+    private var couponOfferDescriptionText: String = ""
+    private var couponOfferDescriptionTextColor: String = ""
+    private var couponGetButtonText: String = ""
+    private var couponGetButtonColor: String = ""
+    private var couponCodeText: String = ""
+    private var couponCodeTextColor: String = ""
+    private var couponValidDate: String = ""
+    private var couponTermsConditionText: String = ""
+    private var couponRedeemButtonText: String = ""
+    private var couponRedeemButtonColor: String = ""
+    private var couponRedeemWebsiteUrl: String = ""
     private lateinit var viewModel: CouponQrViewModel
 
 
@@ -181,13 +183,13 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
-            if (coupon_background_color.isEmpty()
-                    && coupon_company_name.isEmpty()
-                    && coupon_header_image.isEmpty()
-                    && coupon_sale_badge_button_text.isEmpty()
-                    && coupon_headline_text.isEmpty()
-                    && coupon_description_text.isEmpty()
-                    && coupon_get_button_text.isEmpty()) {
+            if (couponBackgroundColor.isEmpty()
+                    && couponCompanyNameText.isEmpty()
+                    && couponHeaderImage.isEmpty()
+                    && couponSaleBadgeButtonText.isEmpty()
+                    && couponOfferTitleText.isEmpty()
+                    && couponOfferDescriptionText.isEmpty()
+                    && couponGetButtonText.isEmpty()) {
                 onBackPressed()
             } else {
                 if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "next") {
@@ -220,22 +222,25 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
                 if (validation()) {
                     val hashMap = hashMapOf<String, String>()
-                    hashMap["coupon_company_name"] = coupon_company_name
-                    hashMap["coupon_background_color"] = coupon_background_color
-                    hashMap["coupon_header_image"] = coupon_header_image
-                    hashMap["coupon_sale_badge_button_text"] = coupon_sale_badge_button_text
-                    hashMap["coupon_sale_badge_button_color"] = coupon_sale_badge_button_color
-                    hashMap["coupon_headline_text"] = coupon_headline_text
-                    hashMap["coupon_description_text"] = coupon_description_text
-                    hashMap["coupon_get_button_text"] = coupon_get_button_text
-                    hashMap["coupon_get_button_color"] = coupon_get_button_color
-                    hashMap["coupon_code_text"] = coupon_code_text
-                    hashMap["coupon_code_text_color"] = coupon_code_text_color
-                    hashMap["coupon_valid_date"] = coupon_valid_date
-                    hashMap["coupon_terms_condition_text"] = coupon_terms_condition_text
-                    hashMap["coupon_redeem_button_text"] = coupon_redeem_button_text
-                    hashMap["coupon_redeem_button_color"] = coupon_redeem_button_color
-                    hashMap["coupon_redeem_website_url"] = coupon_redeem_website_url
+                    hashMap["coupon_company_name"] = couponCompanyNameText
+                    hashMap["coupon_company_name_color"] = couponCompanyNameTextColor
+                    hashMap["coupon_background_color"] = couponBackgroundColor
+                    hashMap["coupon_header_image"] = couponHeaderImage
+                    hashMap["coupon_sale_badge_button_text"] = couponSaleBadgeButtonText
+                    hashMap["coupon_sale_badge_button_color"] = couponSaleBadgeButtonColor
+                    hashMap["coupon_headline_text"] = couponOfferTitleText
+                    hashMap["coupon_headline_text_color"] = couponOfferTitleTextColor
+                    hashMap["coupon_description_text"] = couponOfferDescriptionText
+                    hashMap["coupon_description_text_color"] = couponOfferDescriptionTextColor
+                    hashMap["coupon_get_button_text"] = couponGetButtonText
+                    hashMap["coupon_get_button_color"] = couponGetButtonColor
+                    hashMap["coupon_code_text"] = couponCodeText
+                    hashMap["coupon_code_text_color"] = couponCodeTextColor
+                    hashMap["coupon_valid_date"] = couponValidDate
+                    hashMap["coupon_terms_condition_text"] = couponTermsConditionText
+                    hashMap["coupon_redeem_button_text"] = couponRedeemButtonText
+                    hashMap["coupon_redeem_button_color"] = couponRedeemButtonColor
+                    hashMap["coupon_redeem_website_url"] = couponRedeemWebsiteUrl
 
                     startLoading(context)
                     viewModel.createCouponQrCode(context, hashMap)
@@ -256,13 +261,13 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 }
             }
             R.id.next_btn -> {
-                if (coupon_background_color.isNotEmpty()
-                        && coupon_company_name.isNotEmpty()
-                        && coupon_header_image.isNotEmpty()
-                        && coupon_sale_badge_button_text.isNotEmpty()
-                        && coupon_headline_text.isNotEmpty()
-                        && coupon_description_text.isNotEmpty()
-                        && coupon_get_button_text.isNotEmpty()) {
+                if (couponBackgroundColor.isNotEmpty()
+                        && couponCompanyNameText.isNotEmpty()
+                        && couponHeaderImage.isNotEmpty()
+                        && couponSaleBadgeButtonText.isNotEmpty()
+                        && couponOfferTitleText.isNotEmpty()
+                        && couponOfferDescriptionText.isNotEmpty()
+                        && couponGetButtonText.isNotEmpty()) {
                     if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "next") {
                         initialDesignLayout.visibility = View.GONE
                         nextDesignLayout.visibility = View.VISIBLE
@@ -284,7 +289,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             }
             R.id.company_name_edit_btn -> {
                 updateType = "company"
-                updateText(companyNameView, 0)
+                updateText(companyNameView, 1)
             }
             R.id.background_color_edit_btn -> {
                 updateType = "background_color"
@@ -305,11 +310,11 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             }
             R.id.headline_text_edit_btn -> {
                 updateType = "headline"
-                updateText(headlineView, 0)
+                updateText(headlineView, 1)
             }
             R.id.description_text_edit_btn -> {
                 updateType = "description"
-                updateText(descriptionView, 0)
+                updateText(descriptionView, 1)
             }
             R.id.get_coupon_edit_btn -> {
                 updateType = "get_coupon_btn"
@@ -349,52 +354,52 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
     // THIS FUNCTION WILL VALIDATE ALL THE COUPON INPUT DATA
     private fun validation(): Boolean {
-        if (coupon_company_name.isEmpty()) {
+        if (couponCompanyNameText.isEmpty()) {
             showAlert(context, "Please edit the company name!")
             return false
-        } else if (coupon_background_color.isEmpty()) {
+        } else if (couponBackgroundColor.isEmpty()) {
             showAlert(context, "Please edit the background color!")
             return false
-        } else if (coupon_header_image.isEmpty()) {
+        } else if (couponHeaderImage.isEmpty()) {
             showAlert(context, "Please edit the header image!")
             return false
-        } else if (coupon_sale_badge_button_text.isEmpty()) {
+        } else if (couponSaleBadgeButtonText.isEmpty()) {
             showAlert(context, "Please edit the sale badge text!")
             return false
-        } else if (coupon_sale_badge_button_color.isEmpty()) {
+        } else if (couponSaleBadgeButtonColor.isEmpty()) {
             showAlert(context, "Please edit the sale badge button color!")
             return false
-        } else if (coupon_headline_text.isEmpty()) {
+        } else if (couponOfferTitleText.isEmpty()) {
             showAlert(context, "Please edit the coupon headline!")
             return false
-        } else if (coupon_description_text.isEmpty()) {
+        } else if (couponOfferDescriptionText.isEmpty()) {
             showAlert(context, "Please edit the coupon description!")
             return false
-        } else if (coupon_get_button_text.isEmpty()) {
+        } else if (couponGetButtonText.isEmpty()) {
             showAlert(context, "Please edit the coupon get button text!")
             return false
-        } else if (coupon_get_button_color.isEmpty()) {
+        } else if (couponGetButtonColor.isEmpty()) {
             showAlert(context, "Please edit the coupon get button color!")
             return false
-        } else if (coupon_code_text.isEmpty()) {
+        } else if (couponCodeText.isEmpty()) {
             showAlert(context, "Please edit the coupon code text!")
             return false
-        } else if (coupon_code_text_color.isEmpty()) {
+        } else if (couponCodeTextColor.isEmpty()) {
             showAlert(context, "Please edit the coupon code text color!")
             return false
-        } else if (coupon_valid_date.isEmpty()) {
+        } else if (couponValidDate.isEmpty()) {
             showAlert(context, "Please edit the coupon valid date!")
             return false
-        } else if (coupon_terms_condition_text.isEmpty()) {
+        } else if (couponTermsConditionText.isEmpty()) {
             showAlert(context, "Please edit the coupon terms and conditions!")
             return false
-        } else if (coupon_redeem_button_text.isEmpty()) {
+        } else if (couponRedeemButtonText.isEmpty()) {
             showAlert(context, "Please edit the redeem button text!")
             return false
-        } else if (coupon_redeem_button_color.isEmpty()) {
+        } else if (couponRedeemButtonColor.isEmpty()) {
             showAlert(context, "Please edit the redeem button color!")
             return false
-        } else if (coupon_redeem_website_url.isEmpty()) {
+        } else if (couponRedeemWebsiteUrl.isEmpty()) {
             showAlert(context, "Please edit the redeem targer website url!")
             return false
         }
@@ -425,8 +430,8 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                                 "Please select the header image having size 640 x 360!"
                         )
                     } else {
-                        coupon_header_image = ImageManager.convertImageToBase64(context, data.data!!)
-                        Log.d("TEST199", coupon_header_image)
+                        couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
+                        Log.d("TEST199", couponHeaderImage)
                         couponSaleImageView.setImageURI(data.data)
                         headerImageHint.visibility = View.GONE
                     }
@@ -475,18 +480,18 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 redeemLayout.findViewById<TextInputEditText>(R.id.redeem_text_input_field)
         val redeemWebsiteUrl = redeemLayout.findViewById<TextInputEditText>(R.id.redeem_website_url)
         var selectedColor = ""
-        if (coupon_redeem_button_color.isEmpty()) {
+        if (couponRedeemButtonColor.isEmpty()) {
             selectedColor = colorTextField.text.toString()
         } else {
-            selectedColor = coupon_redeem_button_color
+            selectedColor = couponRedeemButtonColor
             colorTextField.setText(selectedColor)
             colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
         }
-        if (coupon_redeem_button_text.isNotEmpty()) {
-            redeemCustomInputBox.setText(coupon_redeem_button_text)
+        if (couponRedeemButtonText.isNotEmpty()) {
+            redeemCustomInputBox.setText(couponRedeemButtonText)
         }
-        if (coupon_redeem_website_url.isNotEmpty()){
-            redeemWebsiteUrl.setText(coupon_redeem_website_url)
+        if (couponRedeemWebsiteUrl.isNotEmpty()){
+            redeemWebsiteUrl.setText(couponRedeemWebsiteUrl)
         }
         selectedRedeemButtonText = redeemNowBtn.text.toString()
         val listOptions = resources.getStringArray(R.array.redeem_options)
@@ -509,9 +514,9 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             ) {
                 showAlert(context, "Please enter the website URL without https:// or http://")
             } else {
-                coupon_redeem_button_text = selectedRedeemButtonText
-                coupon_redeem_button_color = selectedColor
-                coupon_redeem_website_url = redeemWebsiteUrl.text.toString()
+                couponRedeemButtonText = selectedRedeemButtonText
+                couponRedeemButtonColor = selectedColor
+                couponRedeemWebsiteUrl = redeemWebsiteUrl.text.toString().trim()
                 view.setBackgroundColor(Color.parseColor(selectedColor))
                 view.text = selectedRedeemButtonText
                 redeemButtonHint.visibility = View.GONE
@@ -578,7 +583,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                                 before: Int,
                                 count: Int
                         ) {
-                            selectedRedeemButtonText = s.toString()
+                            selectedRedeemButtonText = s.toString().trim()
                         }
 
                         override fun afterTextChanged(s: Editable?) {
@@ -588,7 +593,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     })
                 } else {
                     redeemCustomInputBox.visibility = View.GONE
-                    selectedRedeemButtonText = selectedItemText
+                    selectedRedeemButtonText = selectedItemText.trim()
                 }
 
             }
@@ -609,35 +614,56 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         var selectedColor = ""
         when (updateType) {
             "company" -> {
-                if (coupon_company_name.isNotEmpty()){
-                    inputBox.setText(coupon_company_name)
+                if (couponCompanyNameText.isNotEmpty()){
+                    inputBox.setText(couponCompanyNameText)
+                }
+                if (couponCompanyNameTextColor.isEmpty()) {
+                    selectedColor = colorTextField.text.toString()
+                } else {
+                    selectedColor = couponCompanyNameTextColor
+                    colorTextField.setText(selectedColor)
+                    colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
                 }
             }
             "headline" -> {
-                if (coupon_headline_text.isNotEmpty()){
-                    inputBox.setText(coupon_headline_text)
+                if (couponOfferTitleText.isNotEmpty()){
+                    inputBox.setText(couponOfferTitleText)
+                }
+                if (couponOfferTitleTextColor.isEmpty()) {
+                    selectedColor = colorTextField.text.toString()
+                } else {
+                    selectedColor = couponOfferTitleTextColor
+                    colorTextField.setText(selectedColor)
+                    colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
                 }
             }
             "description" -> {
-                if (coupon_description_text.isNotEmpty()){
-                    inputBox.setText(coupon_description_text)
+                if (couponOfferDescriptionText.isNotEmpty()){
+                    inputBox.setText(couponOfferDescriptionText)
+                }
+                if (couponOfferDescriptionTextColor.isEmpty()) {
+                    selectedColor = colorTextField.text.toString()
+                } else {
+                    selectedColor = couponOfferDescriptionTextColor
+                    colorTextField.setText(selectedColor)
+                    colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
                 }
             }
             "coupon_code" -> {
-                if (coupon_code_text.isNotEmpty()){
-                    inputBox.setText(coupon_code_text)
+                if (couponCodeText.isNotEmpty()){
+                    inputBox.setText(couponCodeText)
                 }
-                if (coupon_code_text_color.isEmpty()) {
+                if (couponCodeTextColor.isEmpty()) {
                     selectedColor = colorTextField.text.toString()
                 } else {
-                    selectedColor = coupon_code_text_color
+                    selectedColor = couponCodeTextColor
                     colorTextField.setText(selectedColor)
                     colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
                 }
             }
             "terms_conditions" -> {
-                if (coupon_terms_condition_text.isNotEmpty()){
-                    inputBox.setText(coupon_terms_condition_text)
+                if (couponTermsConditionText.isNotEmpty()){
+                    inputBox.setText(couponTermsConditionText)
                     termsConditionsTextBtn.text = "Terms & Conditions"
                     termsConditionsTextBtn.paintFlags = termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                 }
@@ -662,7 +688,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             alert.dismiss()
         }
         updateBtn.setOnClickListener {
-            val value = inputBox.text.toString()
+            val value = inputBox.text.toString().trim()
             view.text = value
             if (type == 1) {
                 if (selectedColor.isNotEmpty()) {
@@ -672,20 +698,23 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             }
             when (updateType) {
                 "company" -> {
-                    coupon_company_name = value
+                    couponCompanyNameText = value
+                    couponCompanyNameTextColor = selectedColor
                 }
                 "headline" -> {
-                    coupon_headline_text = value
+                    couponOfferTitleText = value
+                    couponOfferTitleTextColor = selectedColor
                 }
                 "description" -> {
-                    coupon_description_text = value
+                    couponOfferDescriptionText = value
+                    couponOfferDescriptionTextColor = selectedColor
                 }
                 "coupon_code" -> {
-                    coupon_code_text = value
-                    coupon_code_text_color = selectedColor
+                    couponCodeText = value
+                    couponCodeTextColor = selectedColor
                 }
                 "terms_conditions" -> {
-                    coupon_terms_condition_text = value
+                    couponTermsConditionText = value
                     termsConditionsTextBtn.text = "Terms & Conditions"
                     termsConditionsTextBtn.paintFlags = termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                 }
@@ -747,25 +776,25 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         var selectedColor = ""
         when (updateType) {
             "sale_badge" -> {
-                if (coupon_sale_badge_button_text.isNotEmpty()){
-                    inputBox.setText(coupon_sale_badge_button_text)
+                if (couponSaleBadgeButtonText.isNotEmpty()){
+                    inputBox.setText(couponSaleBadgeButtonText)
                 }
-                if (coupon_sale_badge_button_color.isEmpty()) {
+                if (couponSaleBadgeButtonColor.isEmpty()) {
                     selectedColor = colorTextField.text.toString()
                 } else {
-                    selectedColor = coupon_sale_badge_button_color
+                    selectedColor = couponSaleBadgeButtonColor
                     colorTextField.setText(selectedColor)
                     colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
                 }
             }
             "get_coupon_btn" -> {
-                if (coupon_get_button_text.isNotEmpty()){
-                    inputBox.setText(coupon_get_button_text)
+                if (couponGetButtonText.isNotEmpty()){
+                    inputBox.setText(couponGetButtonText)
                 }
-                if (coupon_get_button_color.isEmpty()) {
+                if (couponGetButtonColor.isEmpty()) {
                     selectedColor = colorTextField.text.toString()
                 } else {
-                    selectedColor = coupon_get_button_color
+                    selectedColor = couponGetButtonColor
                     colorTextField.setText(selectedColor)
                     colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
                 }
@@ -853,7 +882,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                                 before: Int,
                                 count: Int
                         ) {
-                            selectedSaleBadgeText = s.toString()
+                            selectedSaleBadgeText = s.toString().trim()
                         }
 
                         override fun afterTextChanged(s: Editable?) {
@@ -863,7 +892,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     })
                 } else {
                     customSaleBadgeView.visibility = View.GONE
-                    selectedSaleBadgeText = selectedItemText
+                    selectedSaleBadgeText = selectedItemText.trim()
                 }
 
             }
@@ -882,16 +911,16 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     view.setBackgroundColor(Color.parseColor(selectedColor))
                 }
             }
-
+            val value = view.text.toString().trim()
             when (updateType) {
                 "sale_badge" -> {
-                    coupon_sale_badge_button_text = view.text.toString()
-                    coupon_sale_badge_button_color = selectedColor
+                    couponSaleBadgeButtonText = value
+                    couponSaleBadgeButtonColor = selectedColor
                     tagHint.visibility = View.GONE
                 }
                 "get_coupon_btn" -> {
-                    coupon_get_button_text = view.text.toString()
-                    coupon_get_button_color = selectedColor
+                    couponGetButtonText = value
+                    couponGetButtonColor = selectedColor
                     getCouponButtonHint.visibility = View.GONE
                 }
                 else -> {
@@ -935,7 +964,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     override fun onColorPicked(color: Int) {
                         val hexColor = "#" + Integer.toHexString(color).substring(2)
                         couponParentLayout.setBackgroundColor(Color.parseColor(hexColor))
-                        coupon_background_color = hexColor
+                        couponBackgroundColor = hexColor
                         backgroundColorHint.visibility = View.GONE
                     }
 
@@ -951,7 +980,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         c.set(Calendar.MONTH, month)
         c.set(Calendar.DAY_OF_MONTH, day)
         val selectedDate = getDateFromTimeStamp(c.timeInMillis)
-        coupon_valid_date = selectedDate
+        couponValidDate = selectedDate
         couponValidTillView.text = selectedDate
     }
 
