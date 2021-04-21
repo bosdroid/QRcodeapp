@@ -68,7 +68,7 @@ class ImageManager {
         }
 
         // THIS FUNCTION WILL RETURN THE IMAGE LOCAL URI
-        private fun getRealPathFromUri(context: Context, contentUri: Uri?): String? {
+        fun getRealPathFromUri(context: Context, contentUri: Uri?): String? {
             var cursor: Cursor? = null
             return try {
                 val proj = arrayOf(MediaStore.Images.Media.DATA)

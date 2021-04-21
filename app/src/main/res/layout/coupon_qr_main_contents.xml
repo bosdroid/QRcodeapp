@@ -195,7 +195,7 @@
                         android:id="@+id/coupon_sale_image"
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
-                        android:scaleType="centerCrop"
+                        android:scaleType="fitXY"
                         android:adjustViewBounds="true"
                         android:src="@drawable/placeholder"
                         app:layout_constraintEnd_toEndOf="parent"

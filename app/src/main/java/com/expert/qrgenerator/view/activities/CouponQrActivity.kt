@@ -5,17 +5,19 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.DatePicker
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
@@ -115,8 +117,8 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     private fun initViews() {
         context = this
         viewModel = ViewModelProviders.of(
-                this,
-                ViewModelFactory(CouponQrViewModel()).createFor()
+            this,
+            ViewModelFactory(CouponQrViewModel()).createFor()
         )[CouponQrViewModel::class.java]
         toolbar = findViewById(R.id.toolbar)
         couponParentLayout = findViewById(R.id.coupon_wrapper_layout)
@@ -262,12 +264,13 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             }
             R.id.next_btn -> {
                 if (couponBackgroundColor.isNotEmpty()
-                        && couponCompanyNameText.isNotEmpty()
-                        && couponHeaderImage.isNotEmpty()
-                        && couponSaleBadgeButtonText.isNotEmpty()
-                        && couponOfferTitleText.isNotEmpty()
-                        && couponOfferDescriptionText.isNotEmpty()
-                        && couponGetButtonText.isNotEmpty()) {
+                    && couponCompanyNameText.isNotEmpty()
+                    && couponHeaderImage.isNotEmpty()
+                    && couponSaleBadgeButtonText.isNotEmpty()
+                    && couponOfferTitleText.isNotEmpty()
+                    && couponOfferDescriptionText.isNotEmpty()
+                    && couponGetButtonText.isNotEmpty()
+                ) {
                     if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "next") {
                         initialDesignLayout.visibility = View.GONE
                         nextDesignLayout.visibility = View.VISIBLE
@@ -297,9 +300,9 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             }
             R.id.header_image_edit_btn -> {
                 if (RuntimePermissionHelper.checkPermission(
-                                context,
-                                Constants.READ_STORAGE_PERMISSION
-                        )
+                        context,
+                        Constants.READ_STORAGE_PERMISSION
+                    )
                 ) {
                     getImageFromLocalStorage()
                 }
@@ -426,13 +429,17 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     val imageHeight = size.split(",")[1].toInt()
                     if (imageWidth > 640 && imageHeight > 360) {
                         showAlert(
-                                context,
-                                "Please select the header image having size 640 x 360!"
+                            context,
+                            "Please select the header image having size 640 x 360!"
                         )
                     } else {
                         couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
-                        Log.d("TEST199", couponHeaderImage)
-                        couponSaleImageView.setImageURI(data.data)
+
+                        // THIS LINES OF CODE WILL RE SCALED THE IMAGE WITH ASPECT RATION AND SIZE 640 X 360
+                        val bitmapImage = BitmapFactory.decodeFile(ImageManager.getRealPathFromUri(context,data.data!!))
+                        val nh = (bitmapImage.height * (640.0 / bitmapImage.width)).toInt()
+                        val scaled = Bitmap.createScaledBitmap(bitmapImage, 640, nh, true)
+                        couponSaleImageView.setImageBitmap(scaled)
                         headerImageHint.visibility = View.GONE
                     }
 
@@ -441,9 +448,9 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
     // THIS FUNCTION WILL HANDLE THE RUNTIME PERMISSION RESULT
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
@@ -453,12 +460,12 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     getImageFromLocalStorage()
                 } else {
                     MaterialAlertDialogBuilder(context)
-                            .setMessage("Please allow the READ EXTERNAL STORAGE permission for use own Image in QR Image.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok") { dialog, which ->
-                                dialog.dismiss()
-                            }
-                            .create().show()
+                        .setMessage("Please allow the READ EXTERNAL STORAGE permission for use own Image in QR Image.")
+                        .setCancelable(false)
+                        .setPositiveButton("Ok") { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .create().show()
                 }
             }
             else -> {
@@ -558,10 +565,10 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             }
 
             override fun onItemSelected(
-                    adapterView: AdapterView<*>?,
-                    view: View?,
-                    i: Int,
-                    l: Long
+                adapterView: AdapterView<*>?,
+                view: View?,
+                i: Int,
+                l: Long
             ) {
                 val selectedItemText = adapterView!!.getItemAtPosition(i).toString()
                 if (selectedItemText.toLowerCase(Locale.ENGLISH) == "custom") {
@@ -569,19 +576,19 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
                     redeemCustomInputBox.addTextChangedListener(object : TextWatcher {
                         override fun beforeTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                count: Int,
-                                after: Int
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
                         ) {
 
                         }
 
                         override fun onTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                before: Int,
-                                count: Int
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
                         ) {
                             selectedRedeemButtonText = s.toString().trim()
                         }
@@ -614,7 +621,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         var selectedColor = ""
         when (updateType) {
             "company" -> {
-                if (couponCompanyNameText.isNotEmpty()){
+                if (couponCompanyNameText.isNotEmpty()) {
                     inputBox.setText(couponCompanyNameText)
                 }
                 if (couponCompanyNameTextColor.isEmpty()) {
@@ -626,7 +633,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 }
             }
             "headline" -> {
-                if (couponOfferTitleText.isNotEmpty()){
+                if (couponOfferTitleText.isNotEmpty()) {
                     inputBox.setText(couponOfferTitleText)
                 }
                 if (couponOfferTitleTextColor.isEmpty()) {
@@ -638,7 +645,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 }
             }
             "description" -> {
-                if (couponOfferDescriptionText.isNotEmpty()){
+                if (couponOfferDescriptionText.isNotEmpty()) {
                     inputBox.setText(couponOfferDescriptionText)
                 }
                 if (couponOfferDescriptionTextColor.isEmpty()) {
@@ -650,7 +657,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 }
             }
             "coupon_code" -> {
-                if (couponCodeText.isNotEmpty()){
+                if (couponCodeText.isNotEmpty()) {
                     inputBox.setText(couponCodeText)
                 }
                 if (couponCodeTextColor.isEmpty()) {
@@ -662,10 +669,11 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 }
             }
             "terms_conditions" -> {
-                if (couponTermsConditionText.isNotEmpty()){
+                if (couponTermsConditionText.isNotEmpty()) {
                     inputBox.setText(couponTermsConditionText)
                     termsConditionsTextBtn.text = "Terms & Conditions"
-                    termsConditionsTextBtn.paintFlags = termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                    termsConditionsTextBtn.paintFlags =
+                        termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                 }
             }
             else -> {
@@ -716,7 +724,8 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 "terms_conditions" -> {
                     couponTermsConditionText = value
                     termsConditionsTextBtn.text = "Terms & Conditions"
-                    termsConditionsTextBtn.paintFlags = termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                    termsConditionsTextBtn.paintFlags =
+                        termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                 }
                 else -> {
 
@@ -776,7 +785,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         var selectedColor = ""
         when (updateType) {
             "sale_badge" -> {
-                if (couponSaleBadgeButtonText.isNotEmpty()){
+                if (couponSaleBadgeButtonText.isNotEmpty()) {
                     inputBox.setText(couponSaleBadgeButtonText)
                 }
                 if (couponSaleBadgeButtonColor.isEmpty()) {
@@ -788,7 +797,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 }
             }
             "get_coupon_btn" -> {
-                if (couponGetButtonText.isNotEmpty()){
+                if (couponGetButtonText.isNotEmpty()) {
                     inputBox.setText(couponGetButtonText)
                 }
                 if (couponGetButtonColor.isEmpty()) {
@@ -857,10 +866,10 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             }
 
             override fun onItemSelected(
-                    adapterView: AdapterView<*>?,
-                    view: View?,
-                    i: Int,
-                    l: Long
+                adapterView: AdapterView<*>?,
+                view: View?,
+                i: Int,
+                l: Long
             ) {
                 val selectedItemText = adapterView!!.getItemAtPosition(i).toString()
                 if (selectedItemText.toLowerCase(Locale.ENGLISH) == "custom") {
@@ -868,19 +877,19 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
                     customSaleBadgeView.addTextChangedListener(object : TextWatcher {
                         override fun beforeTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                count: Int,
-                                after: Int
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
                         ) {
 
                         }
 
                         override fun onTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                before: Int,
-                                count: Int
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
                         ) {
                             selectedSaleBadgeText = s.toString().trim()
                         }
