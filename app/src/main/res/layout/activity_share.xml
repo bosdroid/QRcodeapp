@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.activities.ShareActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/app_bar_layout"
+        android:background="#fff"
+        android:elevation="4dp"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center_vertical"
+            >
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+        android:layout_marginTop="@dimen/sixtyDpMargin"
+        android:id="@+id/top_heading"
+        android:text="All QR  Codes saved locally on device.\nYou always can use them in history sections."
+        android:gravity="center"
+        android:textColor="@color/black"
+        />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/share_qr_generated_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_heading"
+        app:layout_constraintBottom_toTopOf="@id/share_wrapper_layout"
+        />
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:gravity="center_horizontal"
+          android:layout_marginBottom="@dimen/eightDpMargin"
+          android:id="@+id/share_wrapper_layout"
+          >
+         <com.google.android.material.textview.MaterialTextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Ready to share!"
+             android:layout_marginBottom="@dimen/eightDpMargin"
+             android:textColor="@color/black"
+             android:textSize="@dimen/xxlargeText"
+             />
+          <androidx.appcompat.widget.AppCompatButton
+              android:layout_width="match_parent"
+              android:layout_height="60dp"
+              android:text="Share"
+              android:textSize="@dimen/xlargeText"
+              android:background="@color/teal_700"
+              android:textColor="@color/white"
+              android:layout_marginLeft="@dimen/sixtyDpMargin"
+              android:layout_marginStart="@dimen/sixtyDpMargin"
+              android:layout_marginRight="@dimen/sixtyDpMargin"
+              android:layout_marginEnd="@dimen/sixtyDpMargin"
+              android:id="@+id/share_btn"
+              />
+      </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

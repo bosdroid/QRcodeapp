@@ -35,7 +35,8 @@ class ImageManager {
             val canvas = Canvas(bitmap)
             _view.draw(canvas)
 
-            val fileName = "final_qr_image_" + BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis()) + ".jpg"
+            val fileName =
+                "final_qr_image_" + BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis()) + ".jpg"
             val fileDir = File(context.externalCacheDir.toString(), fileName)
 
             try {
@@ -54,7 +55,7 @@ class ImageManager {
 
 
         // THIS FUNCTION WILL RETURN THE IMAGE WIDTH AND HEIGHT
-        fun getImageWidthHeight(context: Context, uri: Uri):String {
+        fun getImageWidthHeight(context: Context, uri: Uri): String {
             val options = BitmapFactory.Options()
             options.inJustDecodeBounds = true
             BitmapFactory.decodeStream(
@@ -82,7 +83,7 @@ class ImageManager {
         }
 
         // THIS FUNCTION WILL SAVE CUSTOM SELECTED IMAGE IN LOCAL APP DIRECTORY
-        fun saveImageInLocalStorage(context: Context, uri: Uri, type: String):String{
+        fun saveImageInLocalStorage(context: Context, uri: Uri, type: String): String {
             var filePath: String? = null
             var fileName: String? = null
 
@@ -105,12 +106,9 @@ class ImageManager {
             val selectImageBitmap = getBitmapFromURL(context, realPath)
             try {
                 val out = FileOutputStream(newFile)
-                if (type == "background")
-                {
+                if (type == "background") {
                     selectImageBitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                }
-                else
-                {
+                } else {
                     selectImageBitmap!!.compress(Bitmap.CompressFormat.PNG, 100, out)
                 }
                 out.flush()
@@ -243,14 +241,13 @@ class ImageManager {
         }
 
         // THIS FUNCTION WILL SAVE AND SHARE THE FINAL QR IMAGE GETTING FROM CACHE DIRECTORY
-         fun shareImage(context: Context, qrImageWrapperLayout: RelativeLayout) {
+        fun shareImage(context: Context, qrImageWrapperLayout: RelativeLayout): Uri {
 
             val finalQRImageFile = loadBitmapFromView(context, qrImageWrapperLayout)
 
             // HERE START THE SHARE INTENT
-            val waIntent = Intent(Intent.ACTION_SEND)
+//            val waIntent = Intent(Intent.ACTION_SEND)
             val imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                waIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
                 FileProvider.getUriForFile(
                     context,
                     context.applicationContext.packageName + ".fileprovider", finalQRImageFile
@@ -259,6 +256,20 @@ class ImageManager {
             } else {
                 Uri.fromFile(finalQRImageFile)
             }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                waIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+//            }
+//            if (imageUri != null) {
+//                waIntent.type = "image/*"
+//                waIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
+//                context.startActivity(Intent.createChooser(waIntent, "Share with"))
+//            }
+            return imageUri
+
+        }
+
+        fun shareImage(context: Context, imageUri: Uri?) {
+            val waIntent = Intent(Intent.ACTION_SEND)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 waIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             }
@@ -267,13 +278,12 @@ class ImageManager {
                 waIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
                 context.startActivity(Intent.createChooser(waIntent, "Share with"))
             }
-
         }
 
 
         // THIS FUNCTION WILL CONVERT THE IMAGE INTO BASE64 STRING
-        fun convertImageToBase64(context: Context, uri: Uri):String{
-            return FileInputStream(getRealPathFromUri(context,uri)).use { inputStream ->
+        fun convertImageToBase64(context: Context, uri: Uri): String {
+            return FileInputStream(getRealPathFromUri(context, uri)).use { inputStream ->
                 ByteArrayOutputStream().use { outputStream ->
                     Base64OutputStream(outputStream, Base64.NO_WRAP).use { base64FilterStream ->
                         inputStream.copyTo(base64FilterStream)

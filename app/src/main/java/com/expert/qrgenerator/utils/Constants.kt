@@ -1,9 +1,12 @@
 package com.expert.qrgenerator.utils
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.FrameLayout
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import com.expert.qrgenerator.R
@@ -13,6 +16,7 @@ import com.expert.qrgenerator.view.activities.BaseActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textview.MaterialTextView
 import java.io.File
 
 class Constants {
@@ -27,6 +31,8 @@ class Constants {
         private const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
         private const val LOGO_IMAGE_PATH = "LogoImages"
         const val BASE_URL = "http://pages.qrmagicapp.com/"
+        var generatedImage:Bitmap?=null
+        var finalQrImageUri:Uri?=null
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)
@@ -71,7 +77,7 @@ class Constants {
         private var encodedData: String = ""
         private var completeListener: OnCompleteAction? = null
         private var wifiSecurity = "WPA"
-        fun getLayout(context: Context, position: Int) {
+        fun getLayout(context: Context, position: Int,layoutContainer:FrameLayout,nextBtn:MaterialTextView) {
             completeListener = context as OnCompleteAction
             val builder = MaterialAlertDialogBuilder(context)
             builder.setCancelable(false)
@@ -81,51 +87,96 @@ class Constants {
                         LayoutInflater.from(context).inflate(R.layout.text_dialog_layout, null)
                     val textInputBox =
                         textView!!.findViewById<TextInputEditText>(R.id.text_input_field)
-
-                    builder.setView(textView)
-                    dialogAlert = builder.create()
-                    dialogAlert!!.show()
-                    textView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-                        .setOnClickListener { dialogAlert!!.dismiss() }
-                    textView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-                        .setOnClickListener {
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(textView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(textView)
+                    }
+//                    builder.setView(textView)
+//                    dialogAlert = builder.create()
+//                    dialogAlert!!.show()
+//                    textView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+//                        .setOnClickListener { dialogAlert!!.dismiss() }
+//                    textView.findViewById<MaterialButton>(R.id.dialog_add_btn)
+//                        .setOnClickListener {
+//                            encodedData = textInputBox.text.toString()
+//                            completeListener!!.onTypeSelected(encodedData, 0)
+//                            dialogAlert!!.dismiss()
+//                        }
+                    nextBtn.setOnClickListener {
+                        if (textInputBox.text.toString().isNotEmpty()){
                             encodedData = textInputBox.text.toString()
                             completeListener!!.onTypeSelected(encodedData, 0)
-                            dialogAlert!!.dismiss()
                         }
+                        else
+                        {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the required input data!"
+                            )
+                        }
+                    }
                 }
                 1 -> {
                     val websiteView =
                         LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
                     val websiteInputBox =
                         websiteView!!.findViewById<TextInputEditText>(R.id.website_input_field)
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(websiteView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(websiteView)
+                    }
+//                    builder.setView(websiteView)
+//                    dialogAlert = builder.create()
+//                    dialogAlert!!.show()
+//                    websiteView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+//                        .setOnClickListener { dialogAlert!!.dismiss() }
+//                    websiteView.findViewById<MaterialButton>(R.id.dialog_add_btn)
+//                        .setOnClickListener {
+//
+//                            if (websiteInputBox.text.toString()
+//                                    .contains("http") || websiteInputBox.text.toString().contains(
+//                                    "https"
+//                                )
+//                                || websiteInputBox.text.toString().contains("www")
+//                            ) {
+//
+//                                encodedData = websiteInputBox.text.toString()
+//                                completeListener!!.onTypeSelected(encodedData, 1)
+//                                dialogAlert!!.dismiss()
+//
+//                            } else {
+//                                BaseActivity.showAlert(
+//                                    context,
+//                                    "Please enter the correct format of url!"
+//                                )
+//                            }
+//                        }
+                    nextBtn.setOnClickListener {
+                        if (websiteInputBox.text.toString()
+                                .contains("http") || websiteInputBox.text.toString().contains(
+                                "https"
+                            )
+                            || websiteInputBox.text.toString().contains("www")
+                        ) {
 
-                    builder.setView(websiteView)
-                    dialogAlert = builder.create()
-                    dialogAlert!!.show()
-                    websiteView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-                        .setOnClickListener { dialogAlert!!.dismiss() }
-                    websiteView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-                        .setOnClickListener {
+                            encodedData = websiteInputBox.text.toString()
+                            completeListener!!.onTypeSelected(encodedData, 1)
 
-                            if (websiteInputBox.text.toString()
-                                    .contains("http") || websiteInputBox.text.toString().contains(
-                                    "https"
-                                )
-                                || websiteInputBox.text.toString().contains("www")
-                            ) {
-
-                                encodedData = websiteInputBox.text.toString()
-                                completeListener!!.onTypeSelected(encodedData, 1)
-                                dialogAlert!!.dismiss()
-
-                            } else {
-                                BaseActivity.showAlert(
-                                    context,
-                                    "Please enter the correct format of url!"
-                                )
-                            }
+                        } else {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the correct format of url!"
+                            )
                         }
+                    }
                 }
                 2 -> {
                     val contactView =
@@ -144,18 +195,31 @@ class Constants {
                         contactView.findViewById<TextInputEditText>(R.id.contact_address_input_field)
                     val contactDetailInputBox =
                         contactView.findViewById<TextInputEditText>(R.id.contact_detail_input_field)
-                    builder.setView(contactView)
-                    dialogAlert = builder.create()
-                    dialogAlert!!.show()
-                    contactView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-                        .setOnClickListener { dialogAlert!!.dismiss() }
-                    contactView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-                        .setOnClickListener {
-                            encodedData =
-                                "BEGIN:VCARD\nVERSION:4.0\nN:${contactNameInputBox.text.toString()}\nTEL:${contactPhoneNumberInputBox.text.toString()}\nTITLE:${contactJobTitleInputBox.text.toString()}\nEMAIL:${contactEmailInputBox.text.toString()}\nORG:${contactCompanyInputBox.text.toString()}\nADR;TYPE=HOME;PREF=1;LABEL:;;${contactAddressInputBox.text.toString()};;;;\nNOTE:${contactDetailInputBox.text.toString()}\nEND:VCARD"
-                            completeListener!!.onTypeSelected(encodedData, 2)
-                            dialogAlert!!.dismiss()
-                        }
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(contactView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(contactView)
+                    }
+//                    builder.setView(contactView)
+//                    dialogAlert = builder.create()
+//                    dialogAlert!!.show()
+//                    contactView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+//                        .setOnClickListener { dialogAlert!!.dismiss() }
+//                    contactView.findViewById<MaterialButton>(R.id.dialog_add_btn)
+//                        .setOnClickListener {
+//                            encodedData =
+//                                "BEGIN:VCARD\nVERSION:4.0\nN:${contactNameInputBox.text.toString()}\nTEL:${contactPhoneNumberInputBox.text.toString()}\nTITLE:${contactJobTitleInputBox.text.toString()}\nEMAIL:${contactEmailInputBox.text.toString()}\nORG:${contactCompanyInputBox.text.toString()}\nADR;TYPE=HOME;PREF=1;LABEL:;;${contactAddressInputBox.text.toString()};;;;\nNOTE:${contactDetailInputBox.text.toString()}\nEND:VCARD"
+//                            completeListener!!.onTypeSelected(encodedData, 2)
+//                            dialogAlert!!.dismiss()
+//                        }
+                    nextBtn.setOnClickListener {
+                        encodedData =
+                            "BEGIN:VCARD\nVERSION:4.0\nN:${contactNameInputBox.text.toString()}\nTEL:${contactPhoneNumberInputBox.text.toString()}\nTITLE:${contactJobTitleInputBox.text.toString()}\nEMAIL:${contactEmailInputBox.text.toString()}\nORG:${contactCompanyInputBox.text.toString()}\nADR;TYPE=HOME;PREF=1;LABEL:;;${contactAddressInputBox.text.toString()};;;;\nNOTE:${contactDetailInputBox.text.toString()}\nEND:VCARD"
+                        completeListener!!.onTypeSelected(encodedData, 2)
+                    }
                 }
                 3 -> {
                     val wifiView =
@@ -182,36 +246,60 @@ class Constants {
                             }
                         }
                     }
-                    builder.setView(wifiView)
-                    dialogAlert = builder.create()
-                    dialogAlert!!.show()
-                    wifiView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-                        .setOnClickListener { dialogAlert!!.dismiss() }
-                    wifiView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-                        .setOnClickListener {
-                            encodedData =
-                                "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString()};P:${wifiPassword.text.toString()};;"
-                            completeListener!!.onTypeSelected(encodedData, 3)
-                            dialogAlert!!.dismiss()
-                        }
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(wifiView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(wifiView)
+                    }
+//                    builder.setView(wifiView)
+//                    dialogAlert = builder.create()
+//                    dialogAlert!!.show()
+//                    wifiView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+//                        .setOnClickListener { dialogAlert!!.dismiss() }
+//                    wifiView.findViewById<MaterialButton>(R.id.dialog_add_btn)
+//                        .setOnClickListener {
+//                            encodedData =
+//                                "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString()};P:${wifiPassword.text.toString()};;"
+//                            completeListener!!.onTypeSelected(encodedData, 3)
+//                            dialogAlert!!.dismiss()
+//                        }
+                    nextBtn.setOnClickListener {
+                        encodedData =
+                            "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString()};P:${wifiPassword.text.toString()};;"
+                        completeListener!!.onTypeSelected(encodedData, 3)
+                    }
                 }
                 4 -> {
                     val phoneView =
                         LayoutInflater.from(context).inflate(R.layout.phone_dialog_layout, null)
                     val phoneInputBox =
                         phoneView!!.findViewById<TextInputEditText>(R.id.phone_input_field)
-
-                    builder.setView(phoneView)
-                    dialogAlert = builder.create()
-                    dialogAlert!!.show()
-                    phoneView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-                        .setOnClickListener { dialogAlert!!.dismiss() }
-                    phoneView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-                        .setOnClickListener {
-                            encodedData = "tel:${phoneInputBox.text.toString()}"
-                            completeListener!!.onTypeSelected(encodedData, 4)
-                            dialogAlert!!.dismiss()
-                        }
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(phoneView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(phoneView)
+                    }
+//                    builder.setView(phoneView)
+//                    dialogAlert = builder.create()
+//                    dialogAlert!!.show()
+//                    phoneView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+//                        .setOnClickListener { dialogAlert!!.dismiss() }
+//                    phoneView.findViewById<MaterialButton>(R.id.dialog_add_btn)
+//                        .setOnClickListener {
+//                            encodedData = "tel:${phoneInputBox.text.toString()}"
+//                            completeListener!!.onTypeSelected(encodedData, 4)
+//                            dialogAlert!!.dismiss()
+//                        }
+                    nextBtn.setOnClickListener {
+                        encodedData = "tel:${phoneInputBox.text.toString()}"
+                        completeListener!!.onTypeSelected(encodedData, 4)
+                    }
                 }
                 5 -> {
                     val smsView =
@@ -220,66 +308,113 @@ class Constants {
                         smsView!!.findViewById<TextInputEditText>(R.id.sms_recipient_input_field)
                     val smsMessageInputBox =
                         smsView.findViewById<TextInputEditText>(R.id.sms_message_input_field)
-                    builder.setView(smsView)
-                    dialogAlert = builder.create()
-                    dialogAlert!!.show()
-                    smsView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-                        .setOnClickListener { dialogAlert!!.dismiss() }
-                    smsView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-                        .setOnClickListener {
-                            encodedData =
-                                "smsto:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
-                            completeListener!!.onTypeSelected(encodedData, 5)
-                            dialogAlert!!.dismiss()
-                        }
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(smsView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(smsView)
+                    }
+//                    builder.setView(smsView)
+//                    dialogAlert = builder.create()
+//                    dialogAlert!!.show()
+//                    smsView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+//                        .setOnClickListener { dialogAlert!!.dismiss() }
+//                    smsView.findViewById<MaterialButton>(R.id.dialog_add_btn)
+//                        .setOnClickListener {
+//                            encodedData =
+//                                "smsto:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
+//                            completeListener!!.onTypeSelected(encodedData, 5)
+//                            dialogAlert!!.dismiss()
+//                        }
+                    nextBtn.setOnClickListener {
+                        encodedData =
+                            "smsto:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
+                        completeListener!!.onTypeSelected(encodedData, 5)
+                    }
                 }
                 6 -> {
                     val instagramView =
                         LayoutInflater.from(context).inflate(R.layout.instagram_dialog_layout, null)
                     val instagramInputBox =
                         instagramView!!.findViewById<TextInputEditText>(R.id.instagram_input_field)
-
-                    builder.setView(instagramView)
-                    dialogAlert = builder.create()
-                    dialogAlert!!.show()
-                    instagramView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-                        .setOnClickListener { dialogAlert!!.dismiss() }
-                    instagramView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-                        .setOnClickListener {
-                            encodedData =
-                                "instagram://user?username=${instagramInputBox.text.toString()}"
-                            completeListener!!.onTypeSelected(encodedData, 6)
-                            dialogAlert!!.dismiss()
-                        }
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(instagramView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(instagramView)
+                    }
+//                    builder.setView(instagramView)
+//                    dialogAlert = builder.create()
+//                    dialogAlert!!.show()
+//                    instagramView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+//                        .setOnClickListener { dialogAlert!!.dismiss() }
+//                    instagramView.findViewById<MaterialButton>(R.id.dialog_add_btn)
+//                        .setOnClickListener {
+//                            encodedData =
+//                                "instagram://user?username=${instagramInputBox.text.toString()}"
+//                            completeListener!!.onTypeSelected(encodedData, 6)
+//                            dialogAlert!!.dismiss()
+//                        }
+                    nextBtn.setOnClickListener {
+                        encodedData =
+                            "instagram://user?username=${instagramInputBox.text.toString()}"
+                        completeListener!!.onTypeSelected(encodedData, 6)
+                    }
                 }
                 7 -> {
                     val whatsappView =
                         LayoutInflater.from(context).inflate(R.layout.whatsapp_dialog_layout, null)
                     val whatsappInputBox =
                         whatsappView!!.findViewById<TextInputEditText>(R.id.whatsapp_input_field)
-
-                    builder.setView(whatsappView)
-                    dialogAlert = builder.create()
-                    dialogAlert!!.show()
-                    whatsappView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-                        .setOnClickListener { dialogAlert!!.dismiss() }
-                    whatsappView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-                        .setOnClickListener {
-                            if (!TextUtils.isEmpty(whatsappInputBox.text.toString())) {
-                                val phone = whatsappInputBox.text.toString()
-                                if (phone.substring(0, 1) == "+") {
-                                    encodedData =
-                                        "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
-                                    completeListener!!.onTypeSelected(encodedData, 7)
-                                    dialogAlert!!.dismiss()
-                                } else {
-                                    BaseActivity.showAlert(
-                                        context,
-                                        "Please enter the correct phone number with country code!"
-                                    )
-                                }
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(whatsappView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(whatsappView)
+                    }
+//                    builder.setView(whatsappView)
+//                    dialogAlert = builder.create()
+//                    dialogAlert!!.show()
+//                    whatsappView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+//                        .setOnClickListener { dialogAlert!!.dismiss() }
+//                    whatsappView.findViewById<MaterialButton>(R.id.dialog_add_btn)
+//                        .setOnClickListener {
+//                            if (!TextUtils.isEmpty(whatsappInputBox.text.toString())) {
+//                                val phone = whatsappInputBox.text.toString()
+//                                if (phone.substring(0, 1) == "+") {
+//                                    encodedData =
+//                                        "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
+//                                    completeListener!!.onTypeSelected(encodedData, 7)
+//                                    dialogAlert!!.dismiss()
+//                                } else {
+//                                    BaseActivity.showAlert(
+//                                        context,
+//                                        "Please enter the correct phone number with country code!"
+//                                    )
+//                                }
+//                            }
+//                        }
+                    nextBtn.setOnClickListener {
+                        if (!TextUtils.isEmpty(whatsappInputBox.text.toString())) {
+                            val phone = whatsappInputBox.text.toString()
+                            if (phone.substring(0, 1) == "+") {
+                                encodedData =
+                                    "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
+                                completeListener!!.onTypeSelected(encodedData, 7)
+                            } else {
+                                BaseActivity.showAlert(
+                                    context,
+                                    "Please enter the correct phone number with country code!"
+                                )
                             }
                         }
+                    }
                 }
                 else -> {
 

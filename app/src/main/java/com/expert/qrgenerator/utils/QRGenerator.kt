@@ -8,6 +8,7 @@ import com.github.sumimakito.awesomeqr.AwesomeQrRenderer
 import com.github.sumimakito.awesomeqr.option.RenderOption
 import com.github.sumimakito.awesomeqr.option.background.StillBackground
 import com.github.sumimakito.awesomeqr.option.logo.Logo
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 
 class QRGenerator {
 

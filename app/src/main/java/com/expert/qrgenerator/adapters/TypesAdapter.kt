@@ -25,7 +25,7 @@ class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>)
     private var isEnableDisable: Boolean = false
 
     companion object {
-        var selected_position = -1
+        var selected_position = 0
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {

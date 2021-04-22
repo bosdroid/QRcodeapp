@@ -5,15 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.StrictMode
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.Toast
@@ -23,100 +23,76 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.adapters.*
-import com.expert.qrgenerator.interfaces.OnCompleteAction
+import com.expert.qrgenerator.adapters.ColorAdapter
+import com.expert.qrgenerator.adapters.FontAdapter
+import com.expert.qrgenerator.adapters.ImageAdapter
+import com.expert.qrgenerator.adapters.LogoAdapter
 import com.expert.qrgenerator.model.Fonts
-import com.expert.qrgenerator.model.QREntity
-import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.QRGenerator
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
+import com.expert.qrgenerator.viewmodel.DesignActivityViewModel
 import com.expert.qrgenerator.viewmodel.MainActivityViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.navigation.NavigationView
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 
-
-class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
-    NavigationView.OnNavigationItemSelectedListener {
+class DesignActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
-    private lateinit var mDrawer: DrawerLayout
-    private lateinit var mNavigation: NavigationView
     private lateinit var nextStepTextView: MaterialTextView
     private lateinit var secondaryInputBoxView: TextInputEditText
-    private lateinit var typesBtn: LinearLayout
+    private lateinit var backgroundImageBtn: LinearLayout
     private lateinit var colorBtn: LinearLayout
     private lateinit var logoBtn: LinearLayout
     private lateinit var textBtn: LinearLayout
-    private lateinit var backgroundImageBtn: LinearLayout
-    private lateinit var colorsRecyclerView: RecyclerView
     private lateinit var backgroundImageRecyclerView: RecyclerView
-    private lateinit var qrTypesRecyclerView: RecyclerView
+    private lateinit var colorsRecyclerView: RecyclerView
+    private lateinit var logoImageRecyclerView: RecyclerView
+    private lateinit var fontRecyclerView: RecyclerView
     private lateinit var qrGeneratedImage: AppCompatImageView
-    private lateinit var shareBtn: FloatingActionButton
     private lateinit var qrTextView: MaterialTextView
     private lateinit var qrSignTextView: MaterialTextView
     private lateinit var qrImageWrapperLayout: RelativeLayout
     private lateinit var textLayoutWrapper: LinearLayout
-    private lateinit var logoImageRecyclerView: RecyclerView
-    private lateinit var fontRecyclerView: RecyclerView
-    private lateinit var dynamicModeSwitch: SwitchMaterial
     private var qrImage: Bitmap? = null
     private lateinit var colorAdapter: ColorAdapter
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var logoAdapter: LogoAdapter
     private lateinit var fontAdapter: FontAdapter
-    private lateinit var typesAdapter: TypesAdapter
     private var colorList = mutableListOf<String>()
     private var imageList = mutableListOf<String>()
     private var logoList = mutableListOf<String>()
     private var fontList = mutableListOf<Fonts>()
-    private var qrTypeList = mutableListOf<QRTypes>()
     private var imagePreviousPosition = -1
     private var logoPreviousPosition = -1
     private var encodedTextData: String = " "
     private var secondaryInputText: String? = null
-    private lateinit var viewModel: MainActivityViewModel
     private var intentType: String? = null
     private var bAlert: AlertDialog? = null
     private var lAlert: AlertDialog? = null
     private var isBackgroundSet: Boolean = false
     private lateinit var appViewModel: AppViewModel
-    private lateinit var layoutContainer: FrameLayout
-
-
-    companion object {
-        var isDynamicActive: Boolean = false
-    }
-
+    private lateinit var viewModel: DesignActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_design)
 
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
 
         initViews()
         setUpToolbar()
-        renderQRTypesRecyclerview()
         renderColorsRecyclerview()
         renderBackgroundImageRecyclerview()
         renderLogoImagesRecyclerview()
@@ -127,10 +103,11 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
         context = this
+
         viewModel = ViewModelProviders.of(
             this,
-            ViewModelFactory(MainActivityViewModel()).createFor()
-        )[MainActivityViewModel::class.java]
+            ViewModelFactory(DesignActivityViewModel()).createFor()
+        )[DesignActivityViewModel::class.java]
 
         appViewModel = ViewModelProvider(
             this,
@@ -138,36 +115,27 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
         ).get(AppViewModel::class.java)
 
         toolbar = findViewById(R.id.toolbar)
-        mDrawer = findViewById(R.id.drawer)
-        mNavigation = findViewById(R.id.navigation)
-        secondaryInputBoxView = findViewById(R.id.secondary_input_text_box)
-        layoutContainer = findViewById(R.id.layout_container)
         nextStepTextView = findViewById(R.id.next_step_btn)
         nextStepTextView.setOnClickListener(this)
+        secondaryInputBoxView = findViewById(R.id.secondary_input_text_box)
         backgroundImageBtn = findViewById(R.id.background_btn)
         backgroundImageBtn.setOnClickListener(this)
-        typesBtn = findViewById(R.id.types_btn)
-        typesBtn.setOnClickListener(this)
         colorBtn = findViewById(R.id.color_btn)
         colorBtn.setOnClickListener(this)
         logoBtn = findViewById(R.id.logo_btn)
         logoBtn.setOnClickListener(this)
         textBtn = findViewById(R.id.text_btn)
         textBtn.setOnClickListener(this)
-        qrTypesRecyclerView = findViewById(R.id.types_recycler_view)
         colorsRecyclerView = findViewById(R.id.colors_recycler_view)
         backgroundImageRecyclerView = findViewById(R.id.background_images_recycler_view)
         logoImageRecyclerView = findViewById(R.id.logo_images_recycler_view)
         fontRecyclerView = findViewById(R.id.fonts_recycler_view)
         qrGeneratedImage = findViewById(R.id.qr_generated_img)
-        dynamicModeSwitch = findViewById(R.id.dynamic_switch_button)
-        shareBtn = findViewById(R.id.share_btn)
-        shareBtn.setOnClickListener(this)
         qrTextView = findViewById(R.id.qr_text)
         qrSignTextView = findViewById(R.id.qr_sign_text)
         qrImageWrapperLayout = findViewById(R.id.qr_image_wrapper_layout)
         textLayoutWrapper = findViewById(R.id.text_font_layout_wrapper)
-        Constants.getLayout(context, 0, layoutContainer, nextStepTextView)
+
 
         // START THE TEXT BOX LISTENER FOR SAVING UPDATED TEXT IN secondaryInputText VARIABLE
         secondaryInputBoxView.addTextChangedListener(object : TextWatcher {
@@ -185,66 +153,37 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
             }
         })
 
-        // GENERATE DEFAULT QR IMAGE WHEN APP IS OPEN
-        qrImage = QRGenerator.generatorQRImage(context, encodedTextData, "000000", "", "")
-        qrGeneratedImage.setImageBitmap(qrImage)
+        if (intent != null && intent.hasExtra("ENCODED_TEXT")) {
+            encodedTextData = intent.getStringExtra("ENCODED_TEXT")!!
+            Log.d("TEST199",encodedTextData)
+            qrImage = QRGenerator.generatorQRImage(
+                context,
+                encodedTextData,
+                "",
+                "",
+                ""
+            )
+            qrGeneratedImage.setImageBitmap(qrImage)
+        }
         qrSignTextView.visibility = View.VISIBLE
-        if (shareBtn.visibility == View.INVISIBLE) {
-            shareBtn.visibility = View.VISIBLE
-        }
 
-        // START HERE TO DYNAMIC MODE SWITCH LISTENER
-        dynamicModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                isDynamicActive = true
-                typesAdapter.disableEnableViews(true)
-                Toast.makeText(
-                    context,
-                    "Dynamic Code may content Only Web Links for now",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                isDynamicActive = false
-                typesAdapter.disableEnableViews(false)
-            }
-        }
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
     private fun setUpToolbar() {
         setSupportActionBar(toolbar)
-        supportActionBar!!.title = getString(R.string.app_name)
+        supportActionBar!!.title = getString(R.string.design_customization)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
-
-        val toggle = ActionBarDrawerToggle(this, mDrawer, toolbar, 0, 0)
-        mDrawer.addDrawerListener(toggle)
-        toggle.syncState()
-        mNavigation.setNavigationItemSelectedListener(this)
     }
 
-    // THIS FUNCTION WILL HANDLE ALL THE VIEWS CLICK LISTENER
     override fun onClick(v: View?) {
         when (v!!.id) {
-            R.id.next_step_btn -> {
-                startActivity(Intent(context, DesignActivity::class.java))
-            }
-            // TYPES BTN WILL HANDLE THE QR CODE TYPE
-            R.id.types_btn -> {
-                viewVisibleInvisible(0)
-            }
-            // SHARE BTN WILL CALL THE SHARE IMAGE FUNCTION
-            R.id.share_btn -> {
-                MaterialAlertDialogBuilder(context)
-                    .setMessage("Are you sure you want to share this QR Image?")
-                    .setCancelable(false)
-                    .setNegativeButton("Cancel") { dialog, which ->
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton("Share") { dialog, which ->
-                        viewVisibleInvisible(5)
-                        ImageManager.shareImage(context, qrImageWrapperLayout)
-                    }
-                    .create().show()
+            R.id.next_step_btn->{
+               val uri = ImageManager.shareImage(context,qrImageWrapperLayout)
+               Constants.finalQrImageUri = uri
+               val intent = Intent(context,ShareActivity::class.java)
+               startActivity(intent)
             }
             // COLOR BTN WILL HANDLE THE COLOR LIST
             R.id.color_btn -> {
@@ -271,20 +210,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
     // THIS FUNCTION WILL USE THE VIEW VISIBLE AND INVISIBLE
     private fun viewVisibleInvisible(code: Int) {
         when (code) {
-            0 -> {
-                backgroundImageRecyclerView.visibility = View.GONE
-                logoImageRecyclerView.visibility = View.GONE
-                textLayoutWrapper.visibility = View.GONE
-                colorsRecyclerView.visibility = View.GONE
-
-                if (qrTypesRecyclerView.visibility == View.VISIBLE) {
-                    qrTypesRecyclerView.visibility = View.GONE
-                } else {
-                    qrTypesRecyclerView.visibility = View.VISIBLE
-                }
-            }
             1 -> {
-                qrTypesRecyclerView.visibility = View.GONE
                 backgroundImageRecyclerView.visibility = View.GONE
                 logoImageRecyclerView.visibility = View.GONE
                 textLayoutWrapper.visibility = View.GONE
@@ -296,7 +222,6 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
                 }
             }
             2 -> {
-                qrTypesRecyclerView.visibility = View.GONE
                 colorsRecyclerView.visibility = View.GONE
                 logoImageRecyclerView.visibility = View.GONE
                 textLayoutWrapper.visibility = View.GONE
@@ -308,7 +233,6 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
                 }
             }
             3 -> {
-                qrTypesRecyclerView.visibility = View.GONE
                 backgroundImageRecyclerView.visibility = View.GONE
                 colorsRecyclerView.visibility = View.GONE
                 textLayoutWrapper.visibility = View.GONE
@@ -320,7 +244,6 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
                 }
             }
             4 -> {
-                qrTypesRecyclerView.visibility = View.GONE
                 backgroundImageRecyclerView.visibility = View.GONE
                 colorsRecyclerView.visibility = View.GONE
                 logoImageRecyclerView.visibility = View.GONE
@@ -332,7 +255,6 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
                 }
             }
             else -> {
-                qrTypesRecyclerView.visibility = View.GONE
                 backgroundImageRecyclerView.visibility = View.GONE
                 colorsRecyclerView.visibility = View.GONE
                 logoImageRecyclerView.visibility = View.GONE
@@ -340,48 +262,6 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
             }
         }
     }
-
-    // THIS FUNCTION WILL DISPLAY THE HORIZONTAL QR TYPES LIST
-    private fun renderQRTypesRecyclerview() {
-        // THIS LINE OF CODE WILL SET THE RECYCLERVIEW ORIENTATION (HORIZONTAL OR VERTICAL)
-        qrTypesRecyclerView.layoutManager = LinearLayoutManager(
-            context,
-            RecyclerView.HORIZONTAL,
-            false
-        )
-        qrTypesRecyclerView.hasFixedSize()
-        qrTypeList.addAll(Constants.getQRTypes())
-        typesAdapter = TypesAdapter(context, qrTypeList)
-        qrTypesRecyclerView.adapter = typesAdapter
-        typesAdapter.setOnItemClickListener(object : TypesAdapter.OnItemClickListener {
-            override fun onItemClick(position: Int) {
-                val qrType = qrTypeList[position]
-                if (position == 8) {
-                    val intent = Intent(context, CouponQrActivity::class.java)
-                    couponResultLauncher.launch(intent)
-                } else {
-                    Constants.getLayout(context, position, layoutContainer, nextStepTextView)
-                }
-
-            }
-        })
-    }
-
-    // THIS COUPON RESULT LAUNCHER WILL HANDLE AFTER CREATING COUPON QR WITH API
-    private var couponResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // There are no request codes
-                val data: Intent? = result.data
-                if (data!!.hasExtra("COUPON_URL")) {
-                    onTypeSelected(data.getStringExtra("COUPON_URL")!!, 0)
-                    showAlert(
-                        context,
-                        "Coupon QR template generated successfully and encoded in QR Image!"
-                    )
-                }
-            }
-        }
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL BACKGROUND IMAGE LIST
     private fun renderBackgroundImageRecyclerview() {
@@ -765,112 +645,39 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
         }
     }
 
-    // THIS METHOD WILL CALL AFTER SELECT THE QR TYPE WITH INPUT DATA
-    override fun onTypeSelected(data: String, position: Int) {
-        var url = ""
-        if (isDynamicActive && position == 1) {
-
-            val hashMap = hashMapOf<String, String>()
-            hashMap["login"] = "sattar"
-            hashMap["qrId"] = System.currentTimeMillis().toString()
-            hashMap["userUrl"] = data
-            hashMap["userType"] = "free"
-
-            startLoading(context)
-            viewModel.createDynamicQrCode(context, hashMap)
-            viewModel.getDynamicQrCode().observe(this, Observer { response ->
-                dismiss()
-                if (response != null) {
-                    url = response.get("generatedUrl").asString
-                    url = if (url.contains(":8990")) {
-                        url.replace(":8990", "")
-                    } else {
-                        url
-                    }
-                    val qrEntity = QREntity(
-                        hashMap["login"]!!,
-                        hashMap["qrId"]!!,
-                        hashMap["userUrl"]!!,
-                        hashMap["userType"]!!,
-                        url
-                    )
-                    encodedTextData = url
-                    qrImage = QRGenerator.generatorQRImage(
-                        context,
-                        encodedTextData,
-                        "",
-                        "",
-                        ""
-                    )
-                    qrGeneratedImage.setImageBitmap(qrImage)
-
-                    appViewModel.insert(qrEntity)
-                } else {
-                    showAlert(context, "Something went wrong, please try again!")
+    private fun quitWithoutSaveChanges(){
+        if (isBackgroundSet){
+            MaterialAlertDialogBuilder(context)
+                .setMessage("You made some design changes, Are you sure you want to leave?")
+                .setCancelable(false)
+                .setNegativeButton("Cancel"){dialog, which ->
+                    dialog.dismiss()
                 }
-            })
-        } else {
-            encodedTextData = data
-//            qrImage = QRGenerator.generatorQRImage(
-//                context,
-//                encodedTextData,
-//                "",
-//                "",
-//                ""
-//            )
-            //Constants.qrGeneratedImage = qrImage
-            val intent = Intent(context, DesignActivity::class.java)
-            intent.putExtra("ENCODED_TEXT", encodedTextData)
-            startActivity(intent)
-//            qrGeneratedImage.setImageBitmap(qrImage)
+                .setPositiveButton("Leave"){dialog, which ->
+                    super.onBackPressed()
+                }
+                .create().show()
         }
-
-
-    }
-
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        menuInflater.inflate(R.menu.main_menu, menu)
-//        return true
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return when (item.itemId) {
-//            R.id.barcode_history -> {
-//                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
-//                true
-//            }
-//            R.id.dynamic_qr -> {
-//                startActivity(Intent(context, DynamicQrActivity::class.java))
-//                true
-//            }
-//            else -> {
-//                super.onOptionsItemSelected(item)
-//            }
-//        }
-//
-//    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.barcode_history -> {
-                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
-            }
-            R.id.dynamic_qr -> {
-                startActivity(Intent(context, DynamicQrActivity::class.java))
-            }
-            else -> {
-            }
-        }
-        mDrawer.closeDrawer(GravityCompat.START)
-        return true
-    }
-
-    override fun onBackPressed() {
-        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-            mDrawer.closeDrawer(GravityCompat.START)
-        } else {
+        else
+        {
             super.onBackPressed()
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                quitWithoutSaveChanges()
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+
+    }
+
+    override fun onBackPressed() {
+        quitWithoutSaveChanges()
+    }
 }

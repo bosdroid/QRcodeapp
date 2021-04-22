@@ -13,4 +13,6 @@
     <string name="information_text">Information</string>
     <string name="terms_conditions"><u>Terms and Conditions</u></string>
     <string name="next_text"><u>Next</u></string>
+    <string name="design_customization">Design Customization</string>
+    <string name="share_qr_image">Share QR Image</string>
 </resources>

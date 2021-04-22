@@ -12,12 +12,12 @@ import android.graphics.Paint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.DatePicker
-import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
@@ -82,7 +82,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     private lateinit var tagHint: MaterialTextView
     private lateinit var getCouponButtonHint: MaterialTextView
     private lateinit var redeemButtonHint: MaterialTextView
-    private lateinit var createCouponBtn: MaterialButton
+    private lateinit var nextStepBtn: MaterialTextView
     private var couponCompanyNameText: String = ""
     private var couponCompanyNameTextColor: String = ""
     private var couponBackgroundColor: String = ""
@@ -164,8 +164,8 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         termsConditionsTextBtn.setOnClickListener(this)
         termsConditionsDisplayLayout = findViewById(R.id.terms_condition_display_wrapper_layout)
         termsConditionsDisplayView = findViewById(R.id.coupon_terms_condition_display_text_view)
-        createCouponBtn = findViewById(R.id.create_coupon_btn)
-        createCouponBtn.setOnClickListener(this)
+        nextStepBtn = findViewById(R.id.next_step_btn)
+        nextStepBtn.setOnClickListener(this)
         backgroundColorHint = findViewById(R.id.background_color_edit_hint)
         headerImageHint = findViewById(R.id.header_image_edit_hint)
         tagHint = findViewById(R.id.sale_badge_hint)
@@ -220,7 +220,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     // THIS FUNCTION WILL HANDLE THE ALL BUTTONS CLICK EVENT
     override fun onClick(v: View?) {
         when (v!!.id) {
-            R.id.create_coupon_btn -> {
+            R.id.next_step_btn -> {
 
                 if (validation()) {
                     val hashMap = hashMapOf<String, String>()
@@ -250,11 +250,15 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                         var url = ""
                         dismiss()
                         if (response != null) {
+                            Log.d("TEST199", response.toString())
                             url = response.get("generatedUrl").asString
-                            val returnIntent = Intent()
-                            returnIntent.putExtra("COUPON_URL", url)
-                            setResult(RESULT_OK, returnIntent)
-                            finish()
+                            val intent = Intent(context,DesignActivity::class.java)
+                            intent.putExtra("ENCODED_TEXT",url)
+                            startActivity(intent)
+//                            val returnIntent = Intent()
+//                            returnIntent.putExtra("COUPON_URL", url)
+//                            setResult(RESULT_OK, returnIntent)
+//                            finish()
                         } else {
                             showAlert(context, "Something went wrong, please try again!")
                         }

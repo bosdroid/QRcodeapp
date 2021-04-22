@@ -23,17 +23,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/create_coupon_btn"
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/create_coupon_btn"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="end"-->
+<!--                android:layout_marginEnd="@dimen/sixtyDpMargin"-->
+<!--                android:layout_marginRight="@dimen/sixtyDpMargin"-->
+<!--                android:text="Create"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="@dimen/mediumText"-->
+<!--                app:backgroundTint="@color/teal_700" />-->
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/sixtyDpMargin"
                 android:layout_marginRight="@dimen/sixtyDpMargin"
-                android:text="Create"
-                android:textColor="@color/white"
-                android:textSize="@dimen/mediumText"
-                app:backgroundTint="@color/teal_700" />
+                android:text="Next"
+                android:textSize="@dimen/xlargeText"
+                android:textColor="@color/teal_700"
+                android:id="@+id/next_step_btn"
+                android:textAllCaps="true"
+                />
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
