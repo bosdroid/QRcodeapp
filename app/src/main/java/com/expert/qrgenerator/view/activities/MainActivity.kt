@@ -10,19 +10,20 @@ import android.os.StrictMode
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -44,15 +45,19 @@ import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 
 
-class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
+class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
+    NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
+    private lateinit var mDrawer: DrawerLayout
+    private lateinit var mNavigation: NavigationView
     private lateinit var secondaryInputBoxView: TextInputEditText
     private lateinit var typesBtn: LinearLayout
     private lateinit var colorBtn: LinearLayout
@@ -91,11 +96,11 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
     private var bAlert: AlertDialog? = null
     private var lAlert: AlertDialog? = null
     private var isBackgroundSet: Boolean = false
-    private lateinit var appViewModel:AppViewModel
+    private lateinit var appViewModel: AppViewModel
 
 
-    companion object{
-        var isDynamicActive:Boolean = false
+    companion object {
+        var isDynamicActive: Boolean = false
     }
 
 
@@ -131,6 +136,8 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         ).get(AppViewModel::class.java)
 
         toolbar = findViewById(R.id.toolbar)
+        mDrawer = findViewById(R.id.drawer)
+        mNavigation = findViewById(R.id.navigation)
         secondaryInputBoxView = findViewById(R.id.secondary_input_text_box)
         backgroundImageBtn = findViewById(R.id.background_btn)
         backgroundImageBtn.setOnClickListener(this)
@@ -203,6 +210,11 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         setSupportActionBar(toolbar)
         supportActionBar!!.title = getString(R.string.app_name)
         toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
+
+        val toggle = ActionBarDrawerToggle(this, mDrawer, toolbar, 0, 0)
+        mDrawer.addDrawerListener(toggle)
+        toggle.syncState()
+        mNavigation.setNavigationItemSelectedListener(this)
     }
 
     // THIS FUNCTION WILL HANDLE ALL THE VIEWS CLICK LISTENER
@@ -336,11 +348,10 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
         typesAdapter.setOnItemClickListener(object : TypesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val qrType = qrTypeList[position]
-                if (position == 8){
-                    val intent = Intent(context,CouponQrActivity::class.java)
+                if (position == 8) {
+                    val intent = Intent(context, CouponQrActivity::class.java)
                     couponResultLauncher.launch(intent)
-                }
-                else{
+                } else {
                     Constants.getLayout(context, position)
                 }
 
@@ -349,16 +360,20 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
     }
 
     // THIS COUPON RESULT LAUNCHER WILL HANDLE AFTER CREATING COUPON QR WITH API
-    private var couponResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            // There are no request codes
-            val data: Intent? = result.data
-            if (data!!.hasExtra("COUPON_URL")){
-                onTypeSelected(data.getStringExtra("COUPON_URL")!!,0)
-                showAlert(context,"Coupon QR template generated successfully and encoded in QR Image!")
+    private var couponResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // There are no request codes
+                val data: Intent? = result.data
+                if (data!!.hasExtra("COUPON_URL")) {
+                    onTypeSelected(data.getStringExtra("COUPON_URL")!!, 0)
+                    showAlert(
+                        context,
+                        "Coupon QR template generated successfully and encoded in QR Image!"
+                    )
+                }
             }
         }
-    }
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL BACKGROUND IMAGE LIST
     private fun renderBackgroundImageRecyclerview() {
@@ -743,10 +758,9 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
     }
 
     // THIS METHOD WILL CALL AFTER SELECT THE QR TYPE WITH INPUT DATA
-    override fun onTypeSelected(data: String,position:Int) {
+    override fun onTypeSelected(data: String, position: Int) {
         var url = ""
-        if (isDynamicActive && position == 1)
-        {
+        if (isDynamicActive && position == 1) {
 
             val hashMap = hashMapOf<String, String>()
             hashMap["login"] = "sattar"
@@ -755,13 +769,13 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
             hashMap["userType"] = "free"
 
             startLoading(context)
-            viewModel.createDynamicQrCode(context,hashMap)
+            viewModel.createDynamicQrCode(context, hashMap)
             viewModel.getDynamicQrCode().observe(this, Observer { response ->
                 dismiss()
-                if (response != null){
+                if (response != null) {
                     url = response.get("generatedUrl").asString
                     url = if (url.contains(":8990")) {
-                        url.replace(":8990","")
+                        url.replace(":8990", "")
                     } else {
                         url
                     }
@@ -772,25 +786,22 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
                         hashMap["userType"]!!,
                         url
                     )
-                        encodedTextData = url
-                        qrImage = QRGenerator.generatorQRImage(
-                            context,
-                            encodedTextData,
-                            "",
-                            "",
-                            ""
-                        )
-                        qrGeneratedImage.setImageBitmap(qrImage)
+                    encodedTextData = url
+                    qrImage = QRGenerator.generatorQRImage(
+                        context,
+                        encodedTextData,
+                        "",
+                        "",
+                        ""
+                    )
+                    qrGeneratedImage.setImageBitmap(qrImage)
 
                     appViewModel.insert(qrEntity)
-                }
-                else{
-                    showAlert(context,"Something went wrong, please try again!")
+                } else {
+                    showAlert(context, "Something went wrong, please try again!")
                 }
             })
-        }
-        else
-        {
+        } else {
             encodedTextData = data
             qrImage = QRGenerator.generatorQRImage(
                 context,
@@ -805,26 +816,46 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menuInflater.inflate(R.menu.main_menu, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId) {
+//            R.id.barcode_history -> {
+//                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+//                true
+//            }
+//            R.id.dynamic_qr -> {
+//                startActivity(Intent(context, DynamicQrActivity::class.java))
+//                true
+//            }
+//            else -> {
+//                super.onOptionsItemSelected(item)
+//            }
+//        }
+//
+//    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.barcode_history -> {
+                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+            }
+            else -> {
+            }
+        }
+        mDrawer.closeDrawer(GravityCompat.START)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.barcode_history -> {
-                startActivity(Intent(context,BarcodeHistoryActivity::class.java))
-                true
-            }
-            R.id.dynamic_qr -> {
-                startActivity(Intent(context,DynamicQrActivity::class.java))
-                true
-            }
-            else -> {
-                super.onOptionsItemSelected(item)
-            }
+    override fun onBackPressed() {
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
         }
-
     }
 
 }

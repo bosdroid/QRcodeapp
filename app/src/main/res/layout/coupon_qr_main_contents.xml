@@ -194,7 +194,7 @@
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/coupon_sale_image"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="wrap_content"
                         android:scaleType="fitXY"
                         android:adjustViewBounds="true"
                         android:src="@drawable/placeholder"
@@ -600,7 +600,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/defaultDpMargin"
                     android:text="This screen the user will see after scan qr code"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/smallText"
                     android:textStyle="bold"
                     />
