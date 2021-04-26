@@ -15,4 +15,5 @@
     <string name="next_text"><u>Next</u></string>
     <string name="design_customization">Design Customization</string>
     <string name="share_qr_image">Share QR Image</string>
+    <string name="qr_code_history">History</string>
 </resources>

@@ -179,6 +179,7 @@
                 android:layout_gravity="end"
                 android:text="Dynamic Mode  "
                 android:textSize="16sp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
                 />

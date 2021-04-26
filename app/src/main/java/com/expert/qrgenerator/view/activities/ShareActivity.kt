@@ -1,18 +1,20 @@
 package com.expert.qrgenerator.view.activities
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants
-import com.expert.qrgenerator.utils.ImageManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ShareActivity : BaseActivity(),View.OnClickListener {
@@ -62,7 +64,16 @@ class ShareActivity : BaseActivity(),View.OnClickListener {
                         dialog.dismiss()
                     }
                     .setPositiveButton("Share") { dialog, which ->
-                      ImageManager.shareImage(context,imageShareUri)
+//                      ImageManager.shareImage(context,imageShareUri)
+                        val shareIntent = Intent(Intent.ACTION_SEND)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        if (imageShareUri != null) {
+                            shareIntent.type = "image/*"
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, imageShareUri)
+                            shareResultLauncher.launch(Intent.createChooser(shareIntent, "Share with"))
+                        }
                     }
                     .create().show()
             }
@@ -71,6 +82,18 @@ class ShareActivity : BaseActivity(),View.OnClickListener {
             }
         }
     }
+
+    // THIS SHARE IMAGE LAUNCHER WILL HANDLE AFTER SHARING QR IMAGE
+    private var shareResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//            if (result.resultCode == Activity.RESULT_OK) {
+                // There are no request codes
+                val intent = Intent(context,MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                finish()
+//            }
+        }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

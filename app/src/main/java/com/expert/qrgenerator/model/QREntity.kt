@@ -18,9 +18,5 @@ data class QREntity (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int=0
-    override fun toString(): String {
-        return "QREntity(login='$login', qrId='$qrId', userUrl='$userUrl', userType='$userType', generatedUrl='$generatedUrl', id=$id)"
-    }
-
 
 }

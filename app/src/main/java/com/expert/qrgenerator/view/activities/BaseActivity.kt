@@ -1,11 +1,8 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.Typeface
-import android.net.Uri
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
@@ -15,17 +12,9 @@ import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.request.DownloadRequest
 import com.expert.qrgenerator.R
-import com.github.sumimakito.awesomeqr.AwesomeQrRenderer
-import com.github.sumimakito.awesomeqr.option.RenderOption
-import com.github.sumimakito.awesomeqr.option.background.StillBackground
-import com.github.sumimakito.awesomeqr.option.logo.Logo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -116,6 +105,24 @@ open class BaseActivity : AppCompatActivity() {
             val c: Date = Date(timeStamp)
             val df = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
             return df.format(c).toUpperCase(Locale.ENGLISH)
+        }
+
+        fun getFormattedDate(context: Context?, smsTimeInMilis: Long): String {
+            val smsTime = Calendar.getInstance()
+            smsTime.timeInMillis = smsTimeInMilis
+            val now = Calendar.getInstance()
+            val timeFormatString = "h:mm:ss"
+            val dateTimeFormatString = "EEEE, MMMM d, h:mm:ss"
+            val HOURS = (60 * 60 * 60).toLong()
+            return if (now[Calendar.DATE] == smsTime[Calendar.DATE]) {
+                "Today " + DateFormat.format(timeFormatString, smsTime)
+            } else if (now[Calendar.DATE] - smsTime[Calendar.DATE] == 1) {
+                "Yesterday " + DateFormat.format(timeFormatString, smsTime)
+            } else if (now[Calendar.YEAR] == smsTime[Calendar.YEAR]) {
+                DateFormat.format(dateTimeFormatString, smsTime).toString()
+            } else {
+                DateFormat.format("MMMM dd yyyy, h:mm:ss", smsTime).toString()
+            }
         }
 
     }

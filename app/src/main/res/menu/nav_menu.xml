@@ -7,9 +7,9 @@
         app:showAsAction="never"
         />
 
-    <item
-        android:title="Dynamic QR"
-        android:id="@+id/dynamic_qr"
-        app:showAsAction="never"
-        />
+<!--    <item-->
+<!--        android:title="Dynamic QR"-->
+<!--        android:id="@+id/dynamic_qr"-->
+<!--        app:showAsAction="never"-->
+<!--        />-->
 </menu>

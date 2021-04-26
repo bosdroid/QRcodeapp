@@ -35,6 +35,7 @@ import com.expert.qrgenerator.adapters.*
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.Fonts
 import com.expert.qrgenerator.model.QREntity
+import com.expert.qrgenerator.model.QRHistory
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
@@ -77,7 +78,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
     private lateinit var textLayoutWrapper: LinearLayout
     private lateinit var logoImageRecyclerView: RecyclerView
     private lateinit var fontRecyclerView: RecyclerView
-    private lateinit var dynamicModeSwitch: SwitchMaterial
+//    private lateinit var dynamicModeSwitch: SwitchMaterial
     private var qrImage: Bitmap? = null
     private lateinit var colorAdapter: ColorAdapter
     private lateinit var imageAdapter: ImageAdapter
@@ -160,7 +161,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
         logoImageRecyclerView = findViewById(R.id.logo_images_recycler_view)
         fontRecyclerView = findViewById(R.id.fonts_recycler_view)
         qrGeneratedImage = findViewById(R.id.qr_generated_img)
-        dynamicModeSwitch = findViewById(R.id.dynamic_switch_button)
+//        dynamicModeSwitch = findViewById(R.id.dynamic_switch_button)
         shareBtn = findViewById(R.id.share_btn)
         shareBtn.setOnClickListener(this)
         qrTextView = findViewById(R.id.qr_text)
@@ -194,20 +195,20 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
         }
 
         // START HERE TO DYNAMIC MODE SWITCH LISTENER
-        dynamicModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                isDynamicActive = true
-                typesAdapter.disableEnableViews(true)
-                Toast.makeText(
-                    context,
-                    "Dynamic Code may content Only Web Links for now",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                isDynamicActive = false
-                typesAdapter.disableEnableViews(false)
-            }
-        }
+//        dynamicModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+//            if (isChecked) {
+//                isDynamicActive = true
+//                typesAdapter.disableEnableViews(true)
+//                Toast.makeText(
+//                    context,
+//                    "Dynamic Code may content Only Web Links for now",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            } else {
+//                isDynamicActive = false
+//                typesAdapter.disableEnableViews(false)
+//            }
+//        }
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
@@ -356,7 +357,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
         typesAdapter.setOnItemClickListener(object : TypesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val qrType = qrTypeList[position]
-                if (position == 8) {
+                if (position == 9) {
                     val intent = Intent(context, CouponQrActivity::class.java)
                     couponResultLauncher.launch(intent)
                 } else {
@@ -374,7 +375,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
                 // There are no request codes
                 val data: Intent? = result.data
                 if (data!!.hasExtra("COUPON_URL")) {
-                    onTypeSelected(data.getStringExtra("COUPON_URL")!!, 0)
+                    onTypeSelected(data.getStringExtra("COUPON_URL")!!, 0,"coupon")
                     showAlert(
                         context,
                         "Coupon QR template generated successfully and encoded in QR Image!"
@@ -766,15 +767,16 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
     }
 
     // THIS METHOD WILL CALL AFTER SELECT THE QR TYPE WITH INPUT DATA
-    override fun onTypeSelected(data: String, position: Int) {
+    override fun onTypeSelected(data: String, position: Int,type:String) {
         var url = ""
-        if (isDynamicActive && position == 1) {
+        val hashMap = hashMapOf<String, String>()
+        hashMap["login"] = "sattar"
+        hashMap["qrId"] = System.currentTimeMillis().toString()
+        hashMap["userType"] = "free"
+        if (position == 2) {
 
-            val hashMap = hashMapOf<String, String>()
-            hashMap["login"] = "sattar"
-            hashMap["qrId"] = System.currentTimeMillis().toString()
-            hashMap["userUrl"] = data
-            hashMap["userType"] = "free"
+
+            hashMap["data"] = data
 
             startLoading(context)
             viewModel.createDynamicQrCode(context, hashMap)
@@ -787,24 +789,31 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
                     } else {
                         url
                     }
-                    val qrEntity = QREntity(
+                    val qrHistory = QRHistory(
                         hashMap["login"]!!,
                         hashMap["qrId"]!!,
-                        hashMap["userUrl"]!!,
+                        hashMap["data"]!!,
+                        type,
                         hashMap["userType"]!!,
-                        url
-                    )
-                    encodedTextData = url
-                    qrImage = QRGenerator.generatorQRImage(
-                        context,
-                        encodedTextData,
                         "",
-                        "",
-                        ""
+                        1,
+                        url,
+                        System.currentTimeMillis()
                     )
-                    qrGeneratedImage.setImageBitmap(qrImage)
-
-                    appViewModel.insert(qrEntity)
+//                    encodedTextData = url
+//                    qrImage = QRGenerator.generatorQRImage(
+//                        context,
+//                        encodedTextData,
+//                        "",
+//                        "",
+//                        ""
+//                    )
+//                    qrGeneratedImage.setImageBitmap(qrImage)
+//                    appViewModel.insert(qrEntity)
+                    val intent = Intent(context, DesignActivity::class.java)
+                    intent.putExtra("ENCODED_TEXT", url)
+                    intent.putExtra("QR_HISTORY",qrHistory)
+                    startActivity(intent)
                 } else {
                     showAlert(context, "Something went wrong, please try again!")
                 }
@@ -819,8 +828,20 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
 //                ""
 //            )
             //Constants.qrGeneratedImage = qrImage
+            val qrHistory = QRHistory(
+                hashMap["login"]!!,
+                hashMap["qrId"]!!,
+                encodedTextData,
+                type,
+                hashMap["userType"]!!,
+                "",
+                0,
+                "",
+                System.currentTimeMillis()
+            )
             val intent = Intent(context, DesignActivity::class.java)
             intent.putExtra("ENCODED_TEXT", encodedTextData)
+            intent.putExtra("QR_HISTORY",qrHistory)
             startActivity(intent)
 //            qrGeneratedImage.setImageBitmap(qrImage)
         }
@@ -854,9 +875,6 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
         when (item.itemId) {
             R.id.barcode_history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
-            }
-            R.id.dynamic_qr -> {
-                startActivity(Intent(context, DynamicQrActivity::class.java))
             }
             else -> {
             }

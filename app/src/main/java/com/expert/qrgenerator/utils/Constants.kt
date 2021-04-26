@@ -61,14 +61,15 @@ class Constants {
         fun getQRTypes(): List<QRTypes> {
             val list = mutableListOf<QRTypes>()
             list.add(QRTypes(R.drawable.ic_text, "Text", 0))
-            list.add(QRTypes(R.drawable.ic_link, "Website", 1))
-            list.add(QRTypes(R.drawable.ic_person, "Contact", 2))
-            list.add(QRTypes(R.drawable.ic_wifi, "WIFI", 3))
-            list.add(QRTypes(R.drawable.ic_phone, "Phone", 4))
-            list.add(QRTypes(R.drawable.ic_sms, "SMS", 5))
-            list.add(QRTypes(R.drawable.instagram, "Instagram", 6))
-            list.add(QRTypes(R.drawable.whatsapp, "Whatsapp", 7))
-            list.add(QRTypes(R.drawable.ic_coupon, "Coupon", 8))
+            list.add(QRTypes(R.drawable.ic_link, "Static Link", 1))
+            list.add(QRTypes(R.drawable.ic_link, "Dynamic Link", 2))
+            list.add(QRTypes(R.drawable.ic_person, "Contact", 3))
+            list.add(QRTypes(R.drawable.ic_wifi, "WIFI", 4))
+            list.add(QRTypes(R.drawable.ic_phone, "Phone", 5))
+            list.add(QRTypes(R.drawable.ic_sms, "SMS", 6))
+            list.add(QRTypes(R.drawable.instagram, "Instagram", 7))
+            list.add(QRTypes(R.drawable.whatsapp, "Whatsapp", 8))
+            list.add(QRTypes(R.drawable.ic_coupon, "Coupon", 9))
             return list
         }
 
@@ -109,7 +110,7 @@ class Constants {
                     nextBtn.setOnClickListener {
                         if (textInputBox.text.toString().isNotEmpty()){
                             encodedData = textInputBox.text.toString()
-                            completeListener!!.onTypeSelected(encodedData, 0)
+                            completeListener!!.onTypeSelected(encodedData, 0,"text")
                         }
                         else
                         {
@@ -123,8 +124,10 @@ class Constants {
                 1 -> {
                     val websiteView =
                         LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
+                    val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
+                    heading.text = "Static Link:"
                     val websiteInputBox =
-                        websiteView!!.findViewById<TextInputEditText>(R.id.website_input_field)
+                        websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
                     if (layoutContainer.childCount > 0){
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(websiteView)
@@ -133,32 +136,7 @@ class Constants {
                     {
                         layoutContainer.addView(websiteView)
                     }
-//                    builder.setView(websiteView)
-//                    dialogAlert = builder.create()
-//                    dialogAlert!!.show()
-//                    websiteView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-//                        .setOnClickListener { dialogAlert!!.dismiss() }
-//                    websiteView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-//                        .setOnClickListener {
-//
-//                            if (websiteInputBox.text.toString()
-//                                    .contains("http") || websiteInputBox.text.toString().contains(
-//                                    "https"
-//                                )
-//                                || websiteInputBox.text.toString().contains("www")
-//                            ) {
-//
-//                                encodedData = websiteInputBox.text.toString()
-//                                completeListener!!.onTypeSelected(encodedData, 1)
-//                                dialogAlert!!.dismiss()
-//
-//                            } else {
-//                                BaseActivity.showAlert(
-//                                    context,
-//                                    "Please enter the correct format of url!"
-//                                )
-//                            }
-//                        }
+
                     nextBtn.setOnClickListener {
                         if (websiteInputBox.text.toString()
                                 .contains("http") || websiteInputBox.text.toString().contains(
@@ -168,7 +146,7 @@ class Constants {
                         ) {
 
                             encodedData = websiteInputBox.text.toString()
-                            completeListener!!.onTypeSelected(encodedData, 1)
+                            completeListener!!.onTypeSelected(encodedData, 1,"link")
 
                         } else {
                             BaseActivity.showAlert(
@@ -179,6 +157,40 @@ class Constants {
                     }
                 }
                 2 -> {
+                    val websiteView =
+                        LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
+                    val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
+                    heading.text = "Dynamic Link:"
+                    val websiteInputBox =
+                        websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
+                    if (layoutContainer.childCount > 0){
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(websiteView)
+                    }
+                    else
+                    {
+                        layoutContainer.addView(websiteView)
+                    }
+                    nextBtn.setOnClickListener {
+                        if (websiteInputBox.text.toString()
+                                .contains("http") || websiteInputBox.text.toString().contains(
+                                "https"
+                            )
+                            || websiteInputBox.text.toString().contains("www")
+                        ) {
+
+                            encodedData = websiteInputBox.text.toString()
+                            completeListener!!.onTypeSelected(encodedData, 2,"link")
+
+                        } else {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the correct format of url!"
+                            )
+                        }
+                    }
+                }
+                3 -> {
                     val contactView =
                         LayoutInflater.from(context).inflate(R.layout.contact_dialog_layout, null)
                     val contactNameInputBox =
@@ -218,10 +230,10 @@ class Constants {
                     nextBtn.setOnClickListener {
                         encodedData =
                             "BEGIN:VCARD\nVERSION:4.0\nN:${contactNameInputBox.text.toString()}\nTEL:${contactPhoneNumberInputBox.text.toString()}\nTITLE:${contactJobTitleInputBox.text.toString()}\nEMAIL:${contactEmailInputBox.text.toString()}\nORG:${contactCompanyInputBox.text.toString()}\nADR;TYPE=HOME;PREF=1;LABEL:;;${contactAddressInputBox.text.toString()};;;;\nNOTE:${contactDetailInputBox.text.toString()}\nEND:VCARD"
-                        completeListener!!.onTypeSelected(encodedData, 2)
+                        completeListener!!.onTypeSelected(encodedData, 3,"contact")
                     }
                 }
-                3 -> {
+                4 -> {
                     val wifiView =
                         LayoutInflater.from(context).inflate(R.layout.wifi_dialog_layout, null)
                     val wifiNetWorkName =
@@ -269,10 +281,10 @@ class Constants {
                     nextBtn.setOnClickListener {
                         encodedData =
                             "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString()};P:${wifiPassword.text.toString()};;"
-                        completeListener!!.onTypeSelected(encodedData, 3)
+                        completeListener!!.onTypeSelected(encodedData, 4,"wifi")
                     }
                 }
-                4 -> {
+                5 -> {
                     val phoneView =
                         LayoutInflater.from(context).inflate(R.layout.phone_dialog_layout, null)
                     val phoneInputBox =
@@ -298,10 +310,10 @@ class Constants {
 //                        }
                     nextBtn.setOnClickListener {
                         encodedData = "tel:${phoneInputBox.text.toString()}"
-                        completeListener!!.onTypeSelected(encodedData, 4)
+                        completeListener!!.onTypeSelected(encodedData, 5,"phone")
                     }
                 }
-                5 -> {
+                6 -> {
                     val smsView =
                         LayoutInflater.from(context).inflate(R.layout.sms_dialog_layout, null)
                     val smsRecipientInputBox =
@@ -331,10 +343,10 @@ class Constants {
                     nextBtn.setOnClickListener {
                         encodedData =
                             "smsto:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
-                        completeListener!!.onTypeSelected(encodedData, 5)
+                        completeListener!!.onTypeSelected(encodedData, 6,"sms")
                     }
                 }
-                6 -> {
+                7 -> {
                     val instagramView =
                         LayoutInflater.from(context).inflate(R.layout.instagram_dialog_layout, null)
                     val instagramInputBox =
@@ -362,10 +374,10 @@ class Constants {
                     nextBtn.setOnClickListener {
                         encodedData =
                             "instagram://user?username=${instagramInputBox.text.toString()}"
-                        completeListener!!.onTypeSelected(encodedData, 6)
+                        completeListener!!.onTypeSelected(encodedData, 7,"instagram")
                     }
                 }
-                7 -> {
+                8 -> {
                     val whatsappView =
                         LayoutInflater.from(context).inflate(R.layout.whatsapp_dialog_layout, null)
                     val whatsappInputBox =
@@ -406,7 +418,7 @@ class Constants {
                             if (phone.substring(0, 1) == "+") {
                                 encodedData =
                                     "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
-                                completeListener!!.onTypeSelected(encodedData, 7)
+                                completeListener!!.onTypeSelected(encodedData, 8,"whatsapp")
                             } else {
                                 BaseActivity.showAlert(
                                     context,

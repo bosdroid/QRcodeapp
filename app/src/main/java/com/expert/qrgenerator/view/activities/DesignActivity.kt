@@ -33,6 +33,7 @@ import com.expert.qrgenerator.adapters.FontAdapter
 import com.expert.qrgenerator.adapters.ImageAdapter
 import com.expert.qrgenerator.adapters.LogoAdapter
 import com.expert.qrgenerator.model.Fonts
+import com.expert.qrgenerator.model.QRHistory
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
@@ -85,6 +86,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     private var isBackgroundSet: Boolean = false
     private lateinit var appViewModel: AppViewModel
     private lateinit var viewModel: DesignActivityViewModel
+    private var qrHistory: QRHistory? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,6 +138,10 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         qrImageWrapperLayout = findViewById(R.id.qr_image_wrapper_layout)
         textLayoutWrapper = findViewById(R.id.text_font_layout_wrapper)
 
+        if (intent != null && intent.hasExtra("QR_HISTORY")) {
+            qrHistory = intent.getSerializableExtra("QR_HISTORY") as QRHistory
+        }
+
 
         // START THE TEXT BOX LISTENER FOR SAVING UPDATED TEXT IN secondaryInputText VARIABLE
         secondaryInputBoxView.addTextChangedListener(object : TextWatcher {
@@ -155,7 +161,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
         if (intent != null && intent.hasExtra("ENCODED_TEXT")) {
             encodedTextData = intent.getStringExtra("ENCODED_TEXT")!!
-            Log.d("TEST199",encodedTextData)
+            Log.d("TEST199", encodedTextData)
             qrImage = QRGenerator.generatorQRImage(
                 context,
                 encodedTextData,
@@ -179,11 +185,13 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v!!.id) {
-            R.id.next_step_btn->{
-               val uri = ImageManager.shareImage(context,qrImageWrapperLayout)
-               Constants.finalQrImageUri = uri
-               val intent = Intent(context,ShareActivity::class.java)
-               startActivity(intent)
+            R.id.next_step_btn -> {
+                val uri = ImageManager.shareImage(context, qrImageWrapperLayout)
+                Constants.finalQrImageUri = uri
+                qrHistory!!.localImagePath = uri.toString()
+                appViewModel.insert(qrHistory!!)
+                val intent = Intent(context, ShareActivity::class.java)
+                startActivity(intent)
             }
             // COLOR BTN WILL HANDLE THE COLOR LIST
             R.id.color_btn -> {
@@ -645,21 +653,19 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun quitWithoutSaveChanges(){
-        if (isBackgroundSet){
+    private fun quitWithoutSaveChanges() {
+        if (isBackgroundSet) {
             MaterialAlertDialogBuilder(context)
                 .setMessage("You made some design changes, Are you sure you want to leave?")
                 .setCancelable(false)
-                .setNegativeButton("Cancel"){dialog, which ->
+                .setNegativeButton("Cancel") { dialog, which ->
                     dialog.dismiss()
                 }
-                .setPositiveButton("Leave"){dialog, which ->
+                .setPositiveButton("Leave") { dialog, which ->
                     super.onBackPressed()
                 }
                 .create().show()
-        }
-        else
-        {
+        } else {
             super.onBackPressed()
         }
     }
