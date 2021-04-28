@@ -16,6 +16,8 @@ import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.FileProvider
 import com.expert.qrgenerator.view.activities.BaseActivity
+import com.google.zxing.*
+import com.google.zxing.common.HybridBinarizer
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -291,6 +293,30 @@ class ImageManager {
                         outputStream.toString()
                     }
                 }
+            }
+        }
+
+        // THIS FUNCTION WILL EXTRACT THE DATA FROM QR CODE IMAGE WITHOUT CAMERA
+        fun getTextFromQRImage(context: Context, bMap: Bitmap):String{
+            val source = RGBLuminanceSource(bMap)
+            val bitmap = BinaryBitmap(HybridBinarizer(source))
+            val reader = MultiFormatReader()
+            try {
+                val result: Result = reader.decode(bitmap)
+                val contents: String = result.getText()
+//                val rawBytes: ByteArray = result.getRawBytes()
+//                val format: BarcodeFormat = result.getBarcodeFormat()
+//                val points: Array<ResultPoint> = result.getResultPoints()
+                return contents
+            } catch (e: NotFoundException) {
+                e.printStackTrace()
+                return ""
+            } catch (e: ChecksumException) {
+                e.printStackTrace()
+                return ""
+            } catch (e: FormatException) {
+                e.printStackTrace()
+                return ""
             }
         }
 

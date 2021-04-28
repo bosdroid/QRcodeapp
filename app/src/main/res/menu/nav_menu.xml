@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:title="Barcode History"
+        android:title="@string/barcode_history_text"
         android:id="@+id/barcode_history"
         app:showAsAction="never"
         />
 
-<!--    <item-->
-<!--        android:title="Dynamic QR"-->
-<!--        android:id="@+id/dynamic_qr"-->
-<!--        app:showAsAction="never"-->
-<!--        />-->
+    <item
+        android:title="@string/scanner"
+        android:id="@+id/scanner"
+        app:showAsAction="never"
+        />
 </menu>

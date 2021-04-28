@@ -27,7 +27,9 @@ class Constants {
         const val firebaseLogoImages = "logoImages"
         const val firebaseFonts = "fonts"
         const val READ_STORAGE_REQUEST_CODE = 100
+        const val CAMERA_REQUEST_CODE = 101
         const val READ_STORAGE_PERMISSION = "android.permission.READ_EXTERNAL_STORAGE"
+        const val CAMERA_PERMISSION = "android.permission.CAMERA"
         private const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
         private const val LOGO_IMAGE_PATH = "LogoImages"
         const val BASE_URL = "http://pages.qrmagicapp.com/"
@@ -138,12 +140,7 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
-                        if (websiteInputBox.text.toString()
-                                .contains("http") || websiteInputBox.text.toString().contains(
-                                "https"
-                            )
-                            || websiteInputBox.text.toString().contains("www")
-                        ) {
+                        if (websiteInputBox.text.toString().isNotEmpty()) {
 
                             encodedData = websiteInputBox.text.toString()
                             completeListener!!.onTypeSelected(encodedData, 1,"link")
@@ -151,7 +148,7 @@ class Constants {
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the correct format of url!"
+                                "Please enter the required input data!"
                             )
                         }
                     }
@@ -172,12 +169,7 @@ class Constants {
                         layoutContainer.addView(websiteView)
                     }
                     nextBtn.setOnClickListener {
-                        if (websiteInputBox.text.toString()
-                                .contains("http") || websiteInputBox.text.toString().contains(
-                                "https"
-                            )
-                            || websiteInputBox.text.toString().contains("www")
-                        ) {
+                        if (websiteInputBox.text.toString().isNotEmpty()) {
 
                             encodedData = websiteInputBox.text.toString()
                             completeListener!!.onTypeSelected(encodedData, 2,"link")
@@ -185,7 +177,7 @@ class Constants {
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the correct format of url!"
+                                "Please enter the required input data!"
                             )
                         }
                     }

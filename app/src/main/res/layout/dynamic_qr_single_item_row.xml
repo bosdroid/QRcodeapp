@@ -31,7 +31,7 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="QR ID: "
+                    android:text="@string/dynamic_qr_id_hint"
                     android:textSize="@dimen/largeText"
                     android:textColor="@color/black"
                     />
@@ -52,7 +52,7 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="URL: "
+                    android:text="@string/dynamic_qr_url_hint"
                     android:textSize="@dimen/largeText"
                     android:textColor="@color/black"
                     />

@@ -44,7 +44,6 @@
              <com.google.android.material.textview.MaterialTextView
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
-                 android:text="John Johnson"
                  android:textSize="@dimen/largeText"
                  android:textColor="@color/black"
                  android:textStyle="bold"
@@ -53,7 +52,6 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Today, 11:01:55"
                     android:textSize="@dimen/smallText"
                     android:layout_marginTop="@dimen/defaultDpMargin"
                     android:id="@+id/qr_code_history_item_created_date"

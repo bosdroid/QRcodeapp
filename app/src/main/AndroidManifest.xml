@@ -8,6 +8,7 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="false"
@@ -21,7 +22,8 @@
         android:theme="@style/Theme.QRGenerator"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
-        <activity android:name=".view.activities.ShareActivity"></activity>
+        <activity android:name=".view.activities.ScannerActivity"></activity>
+        <activity android:name=".view.activities.ShareActivity" />
         <activity android:name=".view.activities.DesignActivity" />
         <activity
             android:name=".view.activities.CouponQrActivity"

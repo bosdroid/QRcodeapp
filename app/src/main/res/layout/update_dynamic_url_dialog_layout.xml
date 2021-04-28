@@ -18,7 +18,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
-        android:text="Update Dynamic Url:"
+        android:text="@string/update_dynamic_url_heading"
         android:id="@+id/dialog_heading"
         />
 
@@ -36,14 +36,14 @@
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:hint="Please fill in the updated url"
+        android:hint="@string/update_dynamic_url_hint_text"
         android:gravity="start"
         />
 
     <com.google.android.material.button.MaterialButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel"
+        android:text="@string/cancel_text"
         android:id="@+id/dialog_cancel_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dynamic_url_update_input_field"
@@ -56,7 +56,7 @@
     <com.google.android.material.button.MaterialButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Update"
+        android:text="@string/update_text"
         android:id="@+id/dialog_update_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dynamic_url_update_input_field"

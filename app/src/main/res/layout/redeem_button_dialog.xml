@@ -64,7 +64,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.4"
-                android:text="Website:"
+                android:text="@string/website_text"
                 android:textSize="@dimen/mediumText"
                 android:textColor="@color/black"
                 android:gravity="center"
@@ -92,7 +92,7 @@
             android:background="@drawable/input_text_field_design"
             android:layout_marginTop="@dimen/eightDpMargin"
             android:padding="10dp"
-            android:hint="Enter the Website Url"
+            android:hint="@string/redeem_website_url_hint_text"
             android:id="@+id/redeem_website_url"
             android:textSize="@dimen/mediumText"
             />
@@ -107,7 +107,7 @@
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
             android:layout_marginTop="@dimen/eightDpMargin"
-            android:hint="Please fill in the text here"
+            android:hint="@string/redeem_text_input_hint_text"
             android:gravity="start"
             android:visibility="gone"
             />
@@ -132,7 +132,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cancel"
+            android:text="@string/cancel_text"
             android:id="@+id/redeem_dialog_cancel_btn"
             android:layout_margin="@dimen/eightDpMargin"
             />
@@ -141,7 +141,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Update"
+            android:text="@string/update_text"
             android:id="@+id/redeem_dialog_update_btn"
             android:layout_margin="@dimen/eightDpMargin"
             />

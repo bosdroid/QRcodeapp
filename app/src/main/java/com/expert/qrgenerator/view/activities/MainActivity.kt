@@ -876,6 +876,9 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnCompleteAction,
             R.id.barcode_history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
             }
+            R.id.scanner->{
+                startActivity(Intent(context, ScannerActivity::class.java))
+            }
             else -> {
             }
         }

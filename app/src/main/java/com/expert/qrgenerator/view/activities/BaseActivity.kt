@@ -113,7 +113,7 @@ open class BaseActivity : AppCompatActivity() {
             val now = Calendar.getInstance()
             val timeFormatString = "h:mm:ss"
             val dateTimeFormatString = "EEEE, MMMM d, h:mm:ss"
-            val HOURS = (60 * 60 * 60).toLong()
+
             return if (now[Calendar.DATE] == smsTime[Calendar.DATE]) {
                 "Today " + DateFormat.format(timeFormatString, smsTime)
             } else if (now[Calendar.DATE] - smsTime[Calendar.DATE] == 1) {

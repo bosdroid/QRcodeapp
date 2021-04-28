@@ -11,7 +11,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Note:  Here you can write the custom color Hex value without #"
+        android:text="@string/custom_color_heading_text"
         android:textColor="@color/red"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
@@ -37,13 +37,13 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:padding="10dp"
-        android:hint="Enter the color value (eeeeee)"
+        android:hint="@string/custom_color_input_hint"
         />
 
     <com.google.android.material.button.MaterialButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel"
+        android:text="@string/cancel_text"
         android:id="@+id/custom_color_cancel_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/custom_color_input_box"
@@ -56,7 +56,7 @@
     <com.google.android.material.button.MaterialButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ADD"
+        android:text="@string/add_text"
         android:id="@+id/custom_color_add_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/custom_color_input_box"

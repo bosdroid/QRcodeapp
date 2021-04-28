@@ -18,7 +18,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
-        android:text="Contact:"
+        android:text="@string/contact_text"
         android:id="@+id/dialog_heading"
         />
 
@@ -43,7 +43,7 @@
             android:id="@+id/contact_name_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Name"
+            android:hint="@string/name_text"
             android:gravity="start"
             />
         <com.google.android.material.textfield.TextInputEditText
@@ -52,7 +52,7 @@
             android:id="@+id/contact_phone_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Phone Number"
+            android:hint="@string/phone_number_text"
             android:inputType="phone"
             android:gravity="start"
             android:layout_marginTop="10dp"
@@ -64,7 +64,7 @@
             android:id="@+id/contact_email_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Email"
+            android:hint="@string/email_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
             />
@@ -75,7 +75,7 @@
             android:id="@+id/contact_company_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Company"
+            android:hint="@string/company_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
             />
@@ -86,7 +86,7 @@
             android:id="@+id/contact_job_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Job Title"
+            android:hint="@string/job_title_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
             />
@@ -96,7 +96,7 @@
             android:id="@+id/contact_address_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Address"
+            android:hint="@string/address_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
             />
@@ -107,37 +107,10 @@
             android:id="@+id/contact_detail_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Detail"
+            android:hint="@string/detail_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
             />
     </LinearLayout>
-
-
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Cancel"-->
-<!--        android:id="@+id/dialog_cancel_btn"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/contact_layout_wrapper"-->
-<!--        app:layout_constraintEnd_toStartOf="@id/dialog_add_btn"-->
-<!--        android:layout_marginLeft="16dp"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        />-->
-
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Add"-->
-<!--        android:id="@+id/dialog_add_btn"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/contact_layout_wrapper"-->
-<!--        app:layout_constraintStart_toEndOf="@id/dialog_cancel_btn"-->
-<!--        android:layout_marginRight="16dp"-->
-<!--        android:layout_marginEnd="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

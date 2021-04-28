@@ -18,7 +18,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
-        android:text="SMS:"
+        android:text="@string/sms_heading"
         android:id="@+id/dialog_heading"
         />
 
@@ -44,7 +44,7 @@
             android:id="@+id/sms_recipient_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Please fill in the recipient"
+            android:hint="@string/sms_recipient_hint_text"
             android:inputType="number"
             android:gravity="start"
             />
@@ -56,36 +56,10 @@
             android:background="@drawable/input_text_field_design"
             android:layout_marginTop="10dp"
             android:padding="5dp"
-            android:hint="Please fill in the message"
+            android:hint="@string/sms_message_hint_text"
             android:gravity="start"
             />
     </LinearLayout>
 
-
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Cancel"-->
-<!--        android:id="@+id/dialog_cancel_btn"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/sms_layout_wrapper"-->
-<!--        app:layout_constraintEnd_toStartOf="@id/dialog_add_btn"-->
-<!--        android:layout_marginLeft="16dp"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        />-->
-
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Add"-->
-<!--        android:id="@+id/dialog_add_btn"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/sms_layout_wrapper"-->
-<!--        app:layout_constraintStart_toEndOf="@id/dialog_cancel_btn"-->
-<!--        android:layout_marginRight="16dp"-->
-<!--        android:layout_marginEnd="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

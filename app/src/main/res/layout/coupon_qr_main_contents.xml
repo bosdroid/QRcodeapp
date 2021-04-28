@@ -23,24 +23,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-<!--            <com.google.android.material.button.MaterialButton-->
-<!--                android:id="@+id/create_coupon_btn"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="end"-->
-<!--                android:layout_marginEnd="@dimen/sixtyDpMargin"-->
-<!--                android:layout_marginRight="@dimen/sixtyDpMargin"-->
-<!--                android:text="Create"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:textSize="@dimen/mediumText"-->
-<!--                app:backgroundTint="@color/teal_700" />-->
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/sixtyDpMargin"
                 android:layout_marginRight="@dimen/sixtyDpMargin"
-                android:text="Next"
+                android:text="@string/next_text"
                 android:textSize="@dimen/xlargeText"
                 android:textColor="@color/teal_700"
                 android:id="@+id/next_step_btn"
@@ -85,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:id="@+id/background_color_edit_hint"
-                    android:text="*set background color"
+                    android:text="@string/coupon_set_background_color_hint"
                     android:gravity="center_vertical"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
@@ -122,7 +111,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="*set Title"
+                    android:text="@string/coupon_set_title_hint"
                     android:gravity="center_vertical"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
@@ -175,7 +164,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:id="@+id/header_image_edit_hint"
-                            android:text="*set banner 640x360"
+                            android:text="@string/coupon_banner_size_hint"
                             android:gravity="center_vertical"
                             android:minWidth="0dp"
                             android:minHeight="0dp"
@@ -217,7 +206,7 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="*set tag"
+                        android:text="@string/coupon_set_tag_hint"
                         android:id="@+id/sale_badge_hint"
                         android:textColor="@color/light_gray"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -287,7 +276,7 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:layout_weight="1"
-                                android:text="*set offer title"
+                                android:text="@string/coupon_set_offer_title_hint"
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/largeText" />
 
@@ -306,7 +295,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/eightDpMargin"
-                            android:text="*set offer description"
+                            android:text="@string/coupon_set_offer_description_hint"
                             android:textColor="@color/dark_gray"
                             android:textSize="@dimen/mediumText"
                             app:layout_constraintStart_toStartOf="parent"
@@ -345,7 +334,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="*set button text"
+                            android:text="@string/coupon_get_coupon_button_text_hint"
                             android:gravity="center_vertical"
                             android:id="@+id/get_coupon_edit_hint"
                             android:minWidth="0dp"
@@ -391,7 +380,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/sixtyDpMargin"
-                        android:text="Coupon Code"
+                        android:text="@string/coupon_code_heading_text"
                         android:textSize="@dimen/largeText"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -414,7 +403,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:layout_weight="1"
-                            android:text="*set coupon code"
+                            android:text="@string/coupon_set_coupon_code_hint"
                             android:textColor="@color/dark_gray"
                             android:textSize="@dimen/xlargeText" />
 
@@ -448,7 +437,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/defaultDpMargin"
                             android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:text="Valid until"
+                            android:text="@string/coupon_valid_till_text"
                             android:textColor="@color/gray"
                             android:textSize="@dimen/mediumText" />
 
@@ -458,7 +447,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/defaultDpMargin"
                             android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:text="*set valid date"
+                            android:text="@string/coupon_set_valid_date_hint"
                             android:textColor="@color/dark_gray"
                             android:textSize="@dimen/mediumText" />
 
@@ -489,7 +478,7 @@
                             android:gravity="center_vertical"
                             android:layout_weight="1"
                             android:textColor="@color/dark_gray"
-                            android:text="*set terms &amp; conditions" />
+                            android:text="@string/coupon_set_terms_condition_hint" />
 
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -532,7 +521,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:id="@+id/redeem_now_edit_hint"
-                            android:text="*set button text"
+                            android:text="@string/coupon_set_redeem_button_hint"
                             android:gravity="center_vertical"
                             android:minWidth="0dp"
                             android:minHeight="0dp"
@@ -568,7 +557,7 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Terms and Conditions"
+                        android:text="@string/terms_conditions"
                         android:textColor="@color/white"
                         android:textSize="@dimen/largeText"
                         android:textStyle="bold" />
@@ -577,7 +566,7 @@
                         android:id="@+id/coupon_terms_condition_display_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Write something about terms and conditions"
+                        android:text="@string/coupon_terms_condition_display_hint"
                         android:textColor="@color/white"
                         android:textSize="@dimen/smallText" />
                 </LinearLayout>
@@ -611,7 +600,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/defaultDpMargin"
-                    android:text="This screen the user will see after scan qr code"
+                    android:text="@string/coupon_user_hint_text"
                     android:textColor="@color/black"
                     android:textSize="@dimen/smallText"
                     android:textStyle="bold"
@@ -620,7 +609,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/defaultDpMargin"
-                    android:text="Please set all field that marked with * sign"
+                    android:text="@string/coupon_required_fields_hint_text"
                     android:textColor="@color/black"
                     android:textSize="@dimen/smallText"
                     android:textStyle="bold"

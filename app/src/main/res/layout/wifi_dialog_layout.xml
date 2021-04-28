@@ -18,7 +18,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
-        android:text="WI FI:"
+        android:text="@string/wifi_heading"
         android:id="@+id/dialog_heading"
         />
 
@@ -44,7 +44,7 @@
             android:id="@+id/wifi_name_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
-            android:hint="Network name (SSID)"
+            android:hint="@string/network_name_hint_text"
             android:gravity="start"
             />
         <com.google.android.material.textfield.TextInputEditText
@@ -54,49 +54,9 @@
             android:background="@drawable/input_text_field_design"
             android:layout_marginTop="10dp"
             android:padding="5dp"
-            android:hint="Password"
+            android:hint="@string/password"
             android:gravity="start"
             />
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:gravity="center_horizontal"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            >-->
-<!--          <androidx.appcompat.widget.AppCompatButton-->
-<!--              android:layout_width="wrap_content"-->
-<!--              android:layout_height="wrap_content"-->
-<!--              app:backgroundTint="@color/gray"-->
-<!--              android:text="WPA/WPA2"-->
-<!--              android:id="@+id/wpa_wpa2"-->
-<!--              android:textColor="@color/white"-->
-<!--              android:clickable="true"-->
-<!--              />-->
-<!--            <androidx.appcompat.widget.AppCompatButton-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:backgroundTint="@color/gray"-->
-<!--                android:text="WEP"-->
-<!--                android:layout_marginLeft="3dp"-->
-<!--                android:layout_marginStart="3dp"-->
-<!--                android:id="@+id/wep"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:clickable="true"-->
-<!--                />-->
-<!--            <androidx.appcompat.widget.AppCompatButton-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:backgroundTint="@color/gray"-->
-<!--                android:layout_marginLeft="3dp"-->
-<!--                android:layout_marginStart="3dp"-->
-<!--                android:text="None"-->
-<!--                android:id="@+id/none"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:clickable="true"-->
-<!--                />-->
-<!--        </LinearLayout>-->
 
         <RadioGroup
             android:layout_width="wrap_content"
@@ -111,7 +71,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="WPA/WPA2"
+                android:text="@string/wpa_security_heading"
                 android:id="@+id/wpa"
                 android:layout_gravity="center_horizontal"
                 android:padding="5dp"
@@ -121,7 +81,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="WEP"
+                android:text="@string/wep_security_heading"
                 android:id="@+id/wep"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
@@ -131,7 +91,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NONE"
+                android:text="@string/none_security_heading"
                 android:id="@+id/none"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
@@ -139,31 +99,5 @@
                 />
         </RadioGroup>
     </LinearLayout>
-
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Cancel"-->
-<!--        android:id="@+id/dialog_cancel_btn"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/wifi_layout_wrapper"-->
-<!--        app:layout_constraintEnd_toStartOf="@id/dialog_add_btn"-->
-<!--        android:layout_marginLeft="16dp"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        />-->
-
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Add"-->
-<!--        android:id="@+id/dialog_add_btn"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/wifi_layout_wrapper"-->
-<!--        app:layout_constraintStart_toEndOf="@id/dialog_cancel_btn"-->
-<!--        android:layout_marginRight="16dp"-->
-<!--        android:layout_marginEnd="16dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
