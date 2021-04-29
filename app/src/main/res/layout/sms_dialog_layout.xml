@@ -18,7 +18,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
-        android:text="@string/sms_heading"
+        android:text="@string/sms_text"
         android:id="@+id/dialog_heading"
         />
 

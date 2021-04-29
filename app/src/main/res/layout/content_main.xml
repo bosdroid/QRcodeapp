@@ -1,370 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
-    <ScrollView
+
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:fitsSystemWindows="true"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/app_bar_layout"
+        android:background="#fff"
+        android:elevation="4dp"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
-            <com.google.android.material.appbar.AppBarLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:id="@+id/app_bar_layout"
-                android:background="#fff"
-                android:elevation="4dp"
-                >
-
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:gravity="center_vertical"
-                    >
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginEnd="@dimen/sixtyDpMargin"
-                        android:layout_marginRight="@dimen/sixtyDpMargin"
-                        android:text="@string/next"
-                        android:textSize="@dimen/xlargeText"
-                        android:textColor="@color/teal_700"
-                        android:id="@+id/next_step_btn"
-                        android:textAllCaps="true"
-                        />
-                </androidx.appcompat.widget.Toolbar>
-
-            </com.google.android.material.appbar.AppBarLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                android:id="@+id/buttons_layout_wrapper"
-                android:padding="5dp"
-                android:visibility="gone"
-                android:background="#fff"
-                android:elevation="4dp"
-                android:baselineAligned="false">
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:id="@+id/types_btn"
-                    >
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/qr_types"
-                        android:scaleType="fitCenter"
-                        />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/types_text"
-                        />
-                </LinearLayout>
-              <LinearLayout
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="1.2"
-                  android:orientation="vertical"
-                  android:gravity="center"
-                  android:id="@+id/background_btn"
-                  >
-               <androidx.appcompat.widget.AppCompatImageView
-                   android:layout_width="36dp"
-                   android:layout_height="36dp"
-                   android:src="@drawable/background"
-                   android:scaleType="fitCenter"
-                   />
-                 <com.google.android.material.textview.MaterialTextView
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:text="@string/background_text"
-                     />
-              </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:id="@+id/color_btn"
-                    >
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/paint"
-                        android:scaleType="fitCenter"
-                        />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/color_text"
-                        />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:id="@+id/logo_btn"
-                    >
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/sign"
-                        android:scaleType="fitCenter"
-                        />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/logo_text"
-                        />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:id="@+id/text_btn"
-                    >
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:src="@drawable/text"
-                        android:scaleType="fitCenter"
-                        />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/text_text"
-                        />
-                </LinearLayout>
-            </LinearLayout>
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center_vertical"
+            >
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/dynamic_switch_button"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
                 android:layout_gravity="end"
-                android:text="@string/dynamic_mode_text"
-                android:textSize="16sp"
+                android:layout_marginEnd="@dimen/sixtyDpMargin"
+                android:layout_marginRight="@dimen/sixtyDpMargin"
+                android:text="@string/next"
+                android:textSize="@dimen/xlargeText"
+                android:textColor="@color/teal_700"
+                android:id="@+id/next_step_btn"
+                android:textAllCaps="true"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buttons_layout_wrapper"
                 />
+        </androidx.appcompat.widget.Toolbar>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/text_font_layout_wrapper"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
-                app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
-                android:visibility="gone"
-                >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/secondary_input_text_box"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:background="@drawable/input_text_field_design"
-                    android:hint="@string/input_hint_text"
-                    android:padding="5dp"
-                    />
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/fonts_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:orientation="horizontal"
-                    tools:listitem="@layout/font_family_item_row" />
-            </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/types_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
-                app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
-                tools:listitem="@layout/types_item_row" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/fragment_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        />
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/types_recycler_view"
-                android:id="@+id/layout_container"
-                />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/colors_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
-                app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
-                tools:listitem="@layout/color_item_row" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/background_images_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
-                app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
-                tools:listitem="@layout/image_item_row" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/logo_images_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dynamic_switch_button"
-                app:layout_constraintBottom_toTopOf="@id/qr_image_wrapper_layout"
-                tools:listitem="@layout/image_item_row" />
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/colors_recycler_view"
-                android:layout_marginTop="10dp"
-                android:background="@color/white"
-                android:id="@+id/qr_image_wrapper_layout"
-                android:visibility="gone"
-                >
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/qr_generated_img"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_centerHorizontal="true"
-                    />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
-                    android:gravity="center"
-                    android:text="@string/qr_sign"
-                    android:id="@+id/qr_sign_text"
-                    android:layout_below="@id/qr_generated_img"
-                    android:layout_alignEnd="@id/qr_generated_img"
-                    android:layout_alignRight="@id/qr_generated_img"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="-15dp"
-                    android:visibility="invisible"
-                    />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:id="@+id/qr_text"
-                    android:layout_below="@id/qr_sign_text"
-                    android:layout_centerHorizontal="true"
-                    />
-
-            </RelativeLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </ScrollView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/share_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:contentDescription="share_fab"
-        android:src="@drawable/ic_share"
-        android:visibility="gone"
-        app:fabSize="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fragment_container"
+            android:id="@+id/bottom_navigation"
+            app:menu="@menu/bottom_menu"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

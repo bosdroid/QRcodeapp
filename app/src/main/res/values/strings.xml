@@ -55,16 +55,16 @@
     <string name="coupon_required_fields_hint_text">Please set all field that marked with * sign</string>
     <string name="dynamic_qr_id_hint">"QR ID: "</string>
     <string name="dynamic_qr_url_hint">"URL: "</string>
-    <string name="instagram_heading_text">Instagram</string>
+    <string name="instagram_text">Instagram</string>
     <string name="instagram_hint_text">Please fill in the username</string>
     <string name="custom_logo_image_size_hint">Note: Logo Image size will be 500x500.</string>
-    <string name="phone_heading">Phone</string>
+    <string name="phone_text">Phone</string>
     <string name="phone_number_hint_text">Please fill in the phone number</string>
     <string name="website_text">Website</string>
     <string name="redeem_website_url_hint_text">Enter the Website Url</string>
     <string name="update_text">Update</string>
     <string name="redeem_text_input_hint_text">Please fill in the text here</string>
-    <string name="sms_heading">SMS</string>
+    <string name="sms_text">SMS</string>
     <string name="sms_recipient_hint_text">Please fill in the recipient</string>
     <string name="sms_message_hint_text">Please fill in the message</string>
     <string name="text_hint_text">Please fill in the text here</string>
@@ -73,8 +73,8 @@
     <string name="update_dynamic_url_heading">Update Dynamic Url</string>
     <string name="update_dynamic_url_hint_text">Please fill in the updated url</string>
     <string name="website_hint_text">Please fill in the website address</string>
-    <string name="whatsapp_heading">Whatsapp</string>
-    <string name="wifi_heading">WI FI</string>
+    <string name="whatsapp_text">Whatsapp</string>
+    <string name="wifi_text">WI FI</string>
     <string name="network_name_hint_text">Network name (SSID)</string>
     <string name="password">Password</string>
     <string name="wpa_security_heading">WPA/WPA2</string>
@@ -82,4 +82,12 @@
     <string name="none_security_heading">NONE</string>
     <string name="scanner">Scanner</string>
     <string name="barcode_history_text">Barcode History</string>
+    <string name="feedback_set_text_background_color_hint">*set text and background color</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="generator">Generator</string>
+    <string name="coupon_text">Coupon</string>
+    <string name="feedback_text">Feedback</string>
+    <string name="static_link_text">Static Link</string>
+    <string name="dynamic_link_text">Dynamic Link</string>
 </resources>

@@ -13,7 +13,6 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.view.activities.BaseActivity
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
@@ -60,18 +59,19 @@ class Constants {
         }
 
         // THIS FUNCTION WILL RETURN THE TYPES LIST
-        fun getQRTypes(): List<QRTypes> {
+        fun getQRTypes(context: Context): List<QRTypes> {
             val list = mutableListOf<QRTypes>()
-            list.add(QRTypes(R.drawable.ic_text, "Text", 0))
-            list.add(QRTypes(R.drawable.ic_link, "Static Link", 1))
-            list.add(QRTypes(R.drawable.ic_link, "Dynamic Link", 2))
-            list.add(QRTypes(R.drawable.ic_person, "Contact", 3))
-            list.add(QRTypes(R.drawable.ic_wifi, "WIFI", 4))
-            list.add(QRTypes(R.drawable.ic_phone, "Phone", 5))
-            list.add(QRTypes(R.drawable.ic_sms, "SMS", 6))
-            list.add(QRTypes(R.drawable.instagram, "Instagram", 7))
-            list.add(QRTypes(R.drawable.whatsapp, "Whatsapp", 8))
-            list.add(QRTypes(R.drawable.ic_coupon, "Coupon", 9))
+            list.add(QRTypes(R.drawable.ic_text, context.getString(R.string.text_text), 0))
+            list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.static_link_text), 1))
+            list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.dynamic_link_text), 2))
+            list.add(QRTypes(R.drawable.ic_person, context.getString(R.string.contact_text), 3))
+            list.add(QRTypes(R.drawable.ic_wifi, context.getString(R.string.wifi_text), 4))
+            list.add(QRTypes(R.drawable.ic_phone, context.getString(R.string.phone_text), 5))
+            list.add(QRTypes(R.drawable.ic_sms, context.getString(R.string.sms_text), 6))
+            list.add(QRTypes(R.drawable.instagram, context.getString(R.string.instagram_text), 7))
+            list.add(QRTypes(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 8))
+            list.add(QRTypes(R.drawable.ic_coupon, context.getString(R.string.coupon_text), 9))
+            list.add(QRTypes(R.drawable.ic_feedback, context.getString(R.string.feedback_text), 10))
             return list
         }
 
@@ -98,17 +98,7 @@ class Constants {
                     {
                         layoutContainer.addView(textView)
                     }
-//                    builder.setView(textView)
-//                    dialogAlert = builder.create()
-//                    dialogAlert!!.show()
-//                    textView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-//                        .setOnClickListener { dialogAlert!!.dismiss() }
-//                    textView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-//                        .setOnClickListener {
-//                            encodedData = textInputBox.text.toString()
-//                            completeListener!!.onTypeSelected(encodedData, 0)
-//                            dialogAlert!!.dismiss()
-//                        }
+
                     nextBtn.setOnClickListener {
                         if (textInputBox.text.toString().isNotEmpty()){
                             encodedData = textInputBox.text.toString()
@@ -127,7 +117,7 @@ class Constants {
                     val websiteView =
                         LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
                     val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
-                    heading.text = "Static Link:"
+                    heading.text = context.getString(R.string.static_link_text)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
                     if (layoutContainer.childCount > 0){
@@ -157,7 +147,7 @@ class Constants {
                     val websiteView =
                         LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
                     val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
-                    heading.text = "Dynamic Link:"
+                    heading.text = context.getString(R.string.dynamic_link_text)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
                     if (layoutContainer.childCount > 0){
@@ -207,22 +197,35 @@ class Constants {
                     {
                         layoutContainer.addView(contactView)
                     }
-//                    builder.setView(contactView)
-//                    dialogAlert = builder.create()
-//                    dialogAlert!!.show()
-//                    contactView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-//                        .setOnClickListener { dialogAlert!!.dismiss() }
-//                    contactView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-//                        .setOnClickListener {
-//                            encodedData =
-//                                "BEGIN:VCARD\nVERSION:4.0\nN:${contactNameInputBox.text.toString()}\nTEL:${contactPhoneNumberInputBox.text.toString()}\nTITLE:${contactJobTitleInputBox.text.toString()}\nEMAIL:${contactEmailInputBox.text.toString()}\nORG:${contactCompanyInputBox.text.toString()}\nADR;TYPE=HOME;PREF=1;LABEL:;;${contactAddressInputBox.text.toString()};;;;\nNOTE:${contactDetailInputBox.text.toString()}\nEND:VCARD"
-//                            completeListener!!.onTypeSelected(encodedData, 2)
-//                            dialogAlert!!.dismiss()
-//                        }
+
                     nextBtn.setOnClickListener {
-                        encodedData =
-                            "BEGIN:VCARD\nVERSION:4.0\nN:${contactNameInputBox.text.toString()}\nTEL:${contactPhoneNumberInputBox.text.toString()}\nTITLE:${contactJobTitleInputBox.text.toString()}\nEMAIL:${contactEmailInputBox.text.toString()}\nORG:${contactCompanyInputBox.text.toString()}\nADR;TYPE=HOME;PREF=1;LABEL:;;${contactAddressInputBox.text.toString()};;;;\nNOTE:${contactDetailInputBox.text.toString()}\nEND:VCARD"
-                        completeListener!!.onTypeSelected(encodedData, 3,"contact")
+                        if (!TextUtils.isEmpty(contactNameInputBox.text.toString())&&
+                                !TextUtils.isEmpty(contactPhoneNumberInputBox.text.toString())) {
+                            encodedData =
+                                "BEGIN:VCARD\nVERSION:4.0\nN:${
+                                    contactNameInputBox.text.toString().trim()
+                                }\nTEL:${
+                                    contactPhoneNumberInputBox.text.toString().trim()
+                                }\nTITLE:${
+                                    contactJobTitleInputBox.text.toString().trim()
+                                }\nEMAIL:${
+                                    contactEmailInputBox.text.toString().trim()
+                                }\nORG:${
+                                    contactCompanyInputBox.text.toString().trim()
+                                }\nADR;TYPE=HOME;PREF=1;LABEL:;;${
+                                    contactAddressInputBox.text.toString().trim()
+                                };;;;\nNOTE:${
+                                    contactDetailInputBox.text.toString().trim()
+                                }\nEND:VCARD"
+                            completeListener!!.onTypeSelected(encodedData, 3, "contact")
+                        }
+                        else
+                        {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the required contact name and phone input data!"
+                            )
+                        }
                     }
                 }
                 4 -> {
@@ -258,22 +261,20 @@ class Constants {
                     {
                         layoutContainer.addView(wifiView)
                     }
-//                    builder.setView(wifiView)
-//                    dialogAlert = builder.create()
-//                    dialogAlert!!.show()
-//                    wifiView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-//                        .setOnClickListener { dialogAlert!!.dismiss() }
-//                    wifiView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-//                        .setOnClickListener {
-//                            encodedData =
-//                                "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString()};P:${wifiPassword.text.toString()};;"
-//                            completeListener!!.onTypeSelected(encodedData, 3)
-//                            dialogAlert!!.dismiss()
-//                        }
+
                     nextBtn.setOnClickListener {
-                        encodedData =
-                            "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString()};P:${wifiPassword.text.toString()};;"
-                        completeListener!!.onTypeSelected(encodedData, 4,"wifi")
+                        if (!TextUtils.isEmpty(wifiNetWorkName.text.toString()) && !TextUtils.isEmpty(wifiPassword.text.toString())) {
+                            encodedData =
+                                "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString().trim()};P:${wifiPassword.text.toString().trim()};;"
+                            completeListener!!.onTypeSelected(encodedData, 4, "wifi")
+                        }
+                        else
+                        {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the required input data!"
+                            )
+                        }
                     }
                 }
                 5 -> {
@@ -289,20 +290,19 @@ class Constants {
                     {
                         layoutContainer.addView(phoneView)
                     }
-//                    builder.setView(phoneView)
-//                    dialogAlert = builder.create()
-//                    dialogAlert!!.show()
-//                    phoneView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-//                        .setOnClickListener { dialogAlert!!.dismiss() }
-//                    phoneView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-//                        .setOnClickListener {
-//                            encodedData = "tel:${phoneInputBox.text.toString()}"
-//                            completeListener!!.onTypeSelected(encodedData, 4)
-//                            dialogAlert!!.dismiss()
-//                        }
+
                     nextBtn.setOnClickListener {
-                        encodedData = "tel:${phoneInputBox.text.toString()}"
-                        completeListener!!.onTypeSelected(encodedData, 5,"phone")
+                        if (!TextUtils.isEmpty(phoneInputBox.text.toString())) {
+                            encodedData = "tel:${phoneInputBox.text.toString().trim()}"
+                            completeListener!!.onTypeSelected(encodedData, 5, "phone")
+                        }
+                        else
+                        {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the required input data!"
+                            )
+                        }
                     }
                 }
                 6 -> {
@@ -320,22 +320,22 @@ class Constants {
                     {
                         layoutContainer.addView(smsView)
                     }
-//                    builder.setView(smsView)
-//                    dialogAlert = builder.create()
-//                    dialogAlert!!.show()
-//                    smsView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-//                        .setOnClickListener { dialogAlert!!.dismiss() }
-//                    smsView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-//                        .setOnClickListener {
-//                            encodedData =
-//                                "smsto:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
-//                            completeListener!!.onTypeSelected(encodedData, 5)
-//                            dialogAlert!!.dismiss()
-//                        }
+
                     nextBtn.setOnClickListener {
-                        encodedData =
-                            "smsto:${smsRecipientInputBox.text.toString()}:${smsMessageInputBox.text.toString()}"
-                        completeListener!!.onTypeSelected(encodedData, 6,"sms")
+                        if (!TextUtils.isEmpty(smsRecipientInputBox.text.toString()) && !TextUtils.isEmpty(smsMessageInputBox.text.toString())) {
+
+                            encodedData = "smsto:${
+                                smsRecipientInputBox.text.toString().trim()
+                            }:${smsMessageInputBox.text.toString().trim()}"
+                            completeListener!!.onTypeSelected(encodedData, 6, "sms")
+                        }
+                        else
+                        {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the required input data!"
+                            )
+                        }
                     }
                 }
                 7 -> {
@@ -351,22 +351,20 @@ class Constants {
                     {
                         layoutContainer.addView(instagramView)
                     }
-//                    builder.setView(instagramView)
-//                    dialogAlert = builder.create()
-//                    dialogAlert!!.show()
-//                    instagramView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-//                        .setOnClickListener { dialogAlert!!.dismiss() }
-//                    instagramView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-//                        .setOnClickListener {
-//                            encodedData =
-//                                "instagram://user?username=${instagramInputBox.text.toString()}"
-//                            completeListener!!.onTypeSelected(encodedData, 6)
-//                            dialogAlert!!.dismiss()
-//                        }
+
                     nextBtn.setOnClickListener {
-                        encodedData =
-                            "instagram://user?username=${instagramInputBox.text.toString()}"
-                        completeListener!!.onTypeSelected(encodedData, 7,"instagram")
+                        if (!TextUtils.isEmpty(instagramInputBox.text.toString())) {
+                            encodedData =
+                                "instagram://user?username=${instagramInputBox.text.toString().trim()}"
+                            completeListener!!.onTypeSelected(encodedData, 7, "instagram")
+                        }
+                        else
+                        {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the required input data!"
+                            )
+                        }
                     }
                 }
                 8 -> {
@@ -382,34 +380,13 @@ class Constants {
                     {
                         layoutContainer.addView(whatsappView)
                     }
-//                    builder.setView(whatsappView)
-//                    dialogAlert = builder.create()
-//                    dialogAlert!!.show()
-//                    whatsappView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-//                        .setOnClickListener { dialogAlert!!.dismiss() }
-//                    whatsappView.findViewById<MaterialButton>(R.id.dialog_add_btn)
-//                        .setOnClickListener {
-//                            if (!TextUtils.isEmpty(whatsappInputBox.text.toString())) {
-//                                val phone = whatsappInputBox.text.toString()
-//                                if (phone.substring(0, 1) == "+") {
-//                                    encodedData =
-//                                        "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
-//                                    completeListener!!.onTypeSelected(encodedData, 7)
-//                                    dialogAlert!!.dismiss()
-//                                } else {
-//                                    BaseActivity.showAlert(
-//                                        context,
-//                                        "Please enter the correct phone number with country code!"
-//                                    )
-//                                }
-//                            }
-//                        }
+
                     nextBtn.setOnClickListener {
                         if (!TextUtils.isEmpty(whatsappInputBox.text.toString())) {
                             val phone = whatsappInputBox.text.toString()
                             if (phone.substring(0, 1) == "+") {
                                 encodedData =
-                                    "whatsapp://send?phone=${whatsappInputBox.text.toString()}"
+                                    "whatsapp://send?phone=${whatsappInputBox.text.toString().trim()}"
                                 completeListener!!.onTypeSelected(encodedData, 8,"whatsapp")
                             } else {
                                 BaseActivity.showAlert(
@@ -417,6 +394,13 @@ class Constants {
                                     "Please enter the correct phone number with country code!"
                                 )
                             }
+                        }
+                        else
+                        {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the required input data!"
+                            )
                         }
                     }
                 }

@@ -7,9 +7,4 @@
         app:showAsAction="never"
         />
 
-    <item
-        android:title="@string/scanner"
-        android:id="@+id/scanner"
-        app:showAsAction="never"
-        />
 </menu>
