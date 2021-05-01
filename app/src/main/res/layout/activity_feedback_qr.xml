@@ -174,6 +174,7 @@
                 app:layout_constraintTop_toBottomOf="@id/feedback_inner_description_text_layout"
                 android:numStars="5"
                 android:stepSize="1"
+                android:theme="@style/CustomRating"
                 android:layout_marginTop="@dimen/sixtyDpMargin"
                 />
 
