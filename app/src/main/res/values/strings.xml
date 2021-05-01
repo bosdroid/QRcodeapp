@@ -90,4 +90,12 @@
     <string name="feedback_text">Feedback</string>
     <string name="static_link_text">Static Link</string>
     <string name="dynamic_link_text">Dynamic Link</string>
+    <string name="feedback_inner_title_hint">*set the title</string>
+    <string name="feedback_inner_description_hint">*set the description</string>
+    <string name="feedback_comment_hint">Add a comment (optional)</string>
+    <string name="feedback_contact_information_text">Enter your contact information if you want us to get back to you</string>
+    <string name="feedback_email_hint">Email (optional)</string>
+    <string name="feedback_phone_number_hint">Phone number (optional)</string>
+    <string name="feedback_send_button_text_hint">*set button text and color</string>
+    <string name="feedback_qr">Feedback QR</string>
 </resources>

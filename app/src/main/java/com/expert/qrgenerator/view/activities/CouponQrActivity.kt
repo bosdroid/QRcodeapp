@@ -28,6 +28,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.model.QRHistory
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
@@ -252,13 +253,30 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                         if (response != null) {
                             Log.d("TEST199", response.toString())
                             url = response.get("generatedUrl").asString
+
+                            // SETUP QR DATA HASMAP FOR HISTORY
+                            val qrData = hashMapOf<String, String>()
+                            qrData["login"] = "sattar"
+                            qrData["qrId"] = "${System.currentTimeMillis()}"
+                            qrData["userType"] = "free"
+
+                            val qrHistory = QRHistory(
+                                qrData["login"]!!,
+                                qrData["qrId"]!!,
+                                url,
+                                "feedback",
+                                qrData["userType"]!!,
+                                "",
+                                0,
+                                "",
+                                System.currentTimeMillis()
+                            )
+
                             val intent = Intent(context,DesignActivity::class.java)
                             intent.putExtra("ENCODED_TEXT",url)
+                            intent.putExtra("QR_HISTORY",qrHistory)
                             startActivity(intent)
-//                            val returnIntent = Intent()
-//                            returnIntent.putExtra("COUPON_URL", url)
-//                            setResult(RESULT_OK, returnIntent)
-//                            finish()
+
                         } else {
                             showAlert(context, "Something went wrong, please try again!")
                         }

@@ -62,4 +62,22 @@ class ApiRepository {
 
         return res
     }
+
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING COUPON QR
+    fun createFeedbackQrCode(body: HashMap<String, String>): MutableLiveData<JsonObject> {
+        val res = MutableLiveData<JsonObject>()
+        val bodyJson = Gson().toJsonTree(body).asJsonObject
+        Log.d("TEST199", bodyJson.toString())
+        apiInterface.createFeedbackQrCode(bodyJson).enqueue(object:Callback<JsonObject>{
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                res.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                res.postValue(null)
+            }
+        })
+
+        return res
+    }
 }

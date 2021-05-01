@@ -16,5 +16,9 @@ interface ApiServices {
     @POST("service/webpage/create/template1")
     fun createCouponQrCode(@Body body: JsonObject):Call<JsonObject>
 
+    // THIS IS THE POST REQUEST SERVICE FOR CREATING FEEDBACK QR CODE
+    @POST("service/webpage/create/feedbacktemplate")
+    fun createFeedbackQrCode(@Body body: JsonObject):Call<JsonObject>
+
 
 }
