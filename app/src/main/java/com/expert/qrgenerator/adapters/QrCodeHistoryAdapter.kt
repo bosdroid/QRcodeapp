@@ -76,6 +76,9 @@ class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList
             "coupon"->{
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_coupon)
             }
+            "feedback"->{
+                holder.qrTypeIcon.setImageResource(R.drawable.ic_feedback)
+            }
             else->{
 
             }

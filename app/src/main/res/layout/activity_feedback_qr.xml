@@ -71,9 +71,10 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
+                android:minHeight="?attr/actionBarSize"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -86,6 +87,7 @@
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:id="@+id/feedback_top_bar_hint_layout"
+                    android:layout_margin="@dimen/defaultDpMargin"
                     >
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="0dp"
@@ -165,18 +167,59 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </LinearLayout>
 
-            <androidx.appcompat.widget.AppCompatRatingBar
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/feedback_rating_stars"
                 app:layout_constraintTop_toBottomOf="@id/feedback_inner_description_text_layout"
-                android:numStars="5"
-                android:stepSize="1"
-                android:theme="@style/CustomRating"
                 android:layout_marginTop="@dimen/sixtyDpMargin"
-                />
+                android:id="@+id/feedback_rating_stars"
+                >
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/yellow_star"
+                    />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/yellow_star"
+                    android:layout_marginStart="@dimen/sixtyDpMargin"
+                    />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/yellow_star"
+                    android:layout_marginStart="@dimen/sixtyDpMargin"
+                    />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/yellow_star"
+                    android:layout_marginStart="@dimen/sixtyDpMargin"
+                    />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/gray_star"
+                    android:layout_marginStart="@dimen/sixtyDpMargin"
+                    />
+            </LinearLayout>
+<!--            <androidx.appcompat.widget.AppCompatRatingBar-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                android:id="@+id/feedback_rating_stars"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/feedback_inner_description_text_layout"-->
+<!--                android:numStars="5"-->
+<!--                android:stepSize="1"-->
+<!--                android:theme="@style/CustomRating"-->
+<!--                android:layout_marginTop="@dimen/sixtyDpMargin"-->
+<!--                />-->
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"

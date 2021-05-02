@@ -68,9 +68,9 @@ class BarcodeHistoryActivity : BaseActivity() {
        appViewModel.getAllQRCodeHistory().observe(this, Observer { list ->
            dismiss()
            if (list.isNotEmpty()){
+               qrCodeHistoryList.clear()
                emptyView.visibility = View.GONE
                qrCodeHistoryRecyclerView.visibility = View.VISIBLE
-               qrCodeHistoryList.clear()
                qrCodeHistoryList.addAll(list)
                adapter.notifyDataSetChanged()
            }
