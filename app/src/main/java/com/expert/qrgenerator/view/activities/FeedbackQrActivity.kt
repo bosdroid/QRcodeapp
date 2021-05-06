@@ -3,15 +3,10 @@ package com.expert.qrgenerator.view.activities
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Paint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
@@ -20,8 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.model.QRHistory
-import com.expert.qrgenerator.viewmodel.CouponQrViewModel
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.viewmodel.FeedbackQrViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
@@ -29,7 +23,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import top.defaults.colorpicker.ColorPickerPopup
-import java.util.*
 
 class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
 
@@ -158,12 +151,14 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                             qrData["qrId"] = qrId
                             qrData["userType"] = "free"
 
-                            val qrHistory = QRHistory(
+                            val qrHistory = CodeHistory(
                                 qrData["login"]!!,
                                 qrData["qrId"]!!,
                                 url,
                                 "feedback",
                                 qrData["userType"]!!,
+                                "qr",
+                                "create",
                                 "",
                                 0,
                                 "",

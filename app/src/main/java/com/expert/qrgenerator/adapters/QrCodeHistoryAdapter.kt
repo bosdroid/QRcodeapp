@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.model.QREntity
-import com.expert.qrgenerator.model.QRHistory
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.google.android.material.textview.MaterialTextView
 
-class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList<QRHistory>): RecyclerView.Adapter<QrCodeHistoryAdapter.ItemViewHolder>() {
+class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList<CodeHistory>): RecyclerView.Adapter<QrCodeHistoryAdapter.ItemViewHolder>() {
 
     private var listener: OnItemClickListener? = null
 
@@ -63,6 +62,9 @@ class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList
             }
             "phone"->{
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_phone)
+            }
+            "code"->{
+                holder.qrTypeIcon.setImageResource(R.drawable.ic_code)
             }
             "sms"->{
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_sms)

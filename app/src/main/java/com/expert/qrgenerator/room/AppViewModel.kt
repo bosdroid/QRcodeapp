@@ -3,22 +3,21 @@ package com.expert.qrgenerator.room
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.expert.qrgenerator.model.QREntity
-import com.expert.qrgenerator.model.QRHistory
+import com.expert.qrgenerator.model.CodeHistory
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private var repository : DatabaseRepository = DatabaseRepository(application)
     private var dynamicQrCodes : LiveData<List<QREntity>>
-    private var allQRCodeHistory: LiveData<List<QRHistory>>
+    private var allQRCodeHistory: LiveData<List<CodeHistory>>
 
     init {
         dynamicQrCodes = repository.getAllDynamicQrCodes()
         allQRCodeHistory = repository.getAllQRCodeHistory()
     }
 
-    public fun insert(qrHistory: QRHistory){
+    public fun insert(qrHistory: CodeHistory){
         repository.insert(qrHistory)
     }
 
@@ -26,7 +25,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         repository.update(inputUrl,url,id)
     }
 
-    public fun delete(qrHistory: QRHistory){
+    public fun delete(qrHistory: CodeHistory){
         repository.delete(qrHistory)
     }
 
@@ -34,7 +33,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return dynamicQrCodes
     }
 
-    public fun getAllQRCodeHistory():LiveData<List<QRHistory>>{
+    public fun getAllQRCodeHistory():LiveData<List<CodeHistory>>{
         return allQRCodeHistory
     }
 }

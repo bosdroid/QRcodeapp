@@ -28,7 +28,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.model.QRHistory
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
@@ -260,12 +260,14 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                             qrData["qrId"] = "${System.currentTimeMillis()}"
                             qrData["userType"] = "free"
 
-                            val qrHistory = QRHistory(
+                            val qrHistory = CodeHistory(
                                 qrData["login"]!!,
                                 qrData["qrId"]!!,
                                 url,
                                 "feedback",
                                 qrData["userType"]!!,
+                                "qr",
+                                "create",
                                 "",
                                 0,
                                 "",
@@ -321,7 +323,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 openColorDialog(couponParentLayout)
             }
             R.id.header_image_edit_btn -> {
-                if (RuntimePermissionHelper.checkPermission(
+                if (RuntimePermissionHelper.checkStoragePermission(
                         context,
                         Constants.READ_STORAGE_PERMISSION
                     )

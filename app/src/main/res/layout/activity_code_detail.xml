@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.activities.CodeDetailActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/code_detail_wrapper_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:background="@color/light_gray"
+            android:padding="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/code_detail_top_framelayout"
+                >
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/barcode_text_detail_layout"
+                    android:padding="10dp"
+                    app:cardCornerRadius="10dp"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_margin="@dimen/defaultDpMargin"
+                        android:paddingTop="30dp"
+                        android:paddingBottom="30dp"
+                        android:gravity="center_horizontal"
+                        >
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/mediumText"
+                        android:id="@+id/code_detail_type_text_heading"
+                        />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/largeText"
+                            android:layout_marginTop="@dimen/sixtyDpMargin"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:id="@+id/code_detail_encode_data"
+                            />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="250dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/copy_text"
+                            android:textSize="@dimen/largeText"
+                            android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:textAllCaps="true"
+                            android:textColor="@color/teal_700"
+                            android:background="@drawable/text_view_background_design"
+                            android:id="@+id/code_detail_clipboard_copy_view"
+                            />
+
+
+                      <LinearLayout
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:orientation="horizontal"
+                          android:layout_marginTop="@dimen/sixtyDpMargin"
+                          android:baselineAligned="false">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            >
+                         <androidx.appcompat.widget.AppCompatImageButton
+                             android:layout_width="80dp"
+                             android:layout_height="wrap_content"
+                             android:src="@drawable/ic_search"
+                             android:background="@drawable/button_background_design"
+                             android:id="@+id/code_detail_text_search_button"
+                             />
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/search_web_text"
+                                android:textSize="@dimen/largeText"
+                                android:textColor="@color/black"
+                                />
+                        </LinearLayout>
+
+                          <LinearLayout
+                              android:layout_width="0dp"
+                              android:layout_height="wrap_content"
+                              android:orientation="vertical"
+                              android:layout_weight="1"
+                              android:gravity="center"
+                              >
+                              <androidx.appcompat.widget.AppCompatImageButton
+                                  android:layout_width="80dp"
+                                  android:layout_height="wrap_content"
+                                  android:src="@drawable/ic_share"
+                                  android:background="@drawable/button_background_design"
+                                  android:id="@+id/code_detail_text_share_button"
+                                  />
+                              <com.google.android.material.textview.MaterialTextView
+                                  android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:text="@string/share_button_text"
+                                  android:textSize="@dimen/largeText"
+                                  android:textColor="@color/black"
+                                  />
+                          </LinearLayout>
+                      </LinearLayout>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    app:cardCornerRadius="50dp"
+                    android:id="@+id/top_icon_cardview"
+                    android:layout_gravity="center_horizontal"
+                    app:cardElevation="10dp"
+                    android:elevation="10dp"
+                    >
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/barcode"
+                        app:tint="@color/teal_700"
+                        android:layout_margin="@dimen/defaultDpMargin"
+                        android:id="@+id/code_detail_top_image_type"
+                        />
+                </androidx.cardview.widget.CardView>
+
+            </FrameLayout>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/code_detail_ad_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/code_detail_top_framelayout"
+                app:layout_constraintBottom_toTopOf="@id/barcode_image_detail_layout"
+                >
+
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/barcode_image_detail_layout"
+                android:padding="10dp"
+                app:cardCornerRadius="10dp"
+                android:layout_marginTop="@dimen/sixtyDpMargin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/code_detail_ad_view"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_margin="@dimen/defaultDpMargin"
+                    android:gravity="center_horizontal"
+                    android:padding="10dp"
+                    >
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/mediumText"
+                        android:id="@+id/code_detail_type_image_heading"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/sixtyDpMargin"
+                        android:src="@drawable/barcode"
+                        android:scaleType="fitXY"
+                        android:id="@+id/code_detail_image_type"
+                        />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/sixtyDpMargin"
+                        android:baselineAligned="false">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            >
+                            <androidx.appcompat.widget.AppCompatImageButton
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_save"
+                                android:background="@drawable/button_background_design"
+                                android:id="@+id/code_detail_pdf_save_button"
+                                />
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/save_text"
+                                android:textSize="@dimen/largeText"
+                                android:textColor="@color/black"
+                                />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            >
+                            <androidx.appcompat.widget.AppCompatImageButton
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_share"
+                                android:background="@drawable/button_background_design"
+                                android:id="@+id/code_detail_pdf_share_button"
+                                />
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/share_button_text"
+                                android:textSize="@dimen/largeText"
+                                android:textColor="@color/black"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/mediumText"
+                        android:textColor="@color/black"
+                        android:layout_gravity="start"
+                        android:layout_marginTop="@dimen/sixtyDpMargin"
+                        android:layout_marginStart="@dimen/sixtyDpMargin"
+                        android:id="@+id/code_detail_code_sequence_view"
+                        />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/mediumText"
+                        android:layout_gravity="start"
+                        android:layout_marginTop="@dimen/eightDpMargin"
+                        android:layout_marginStart="@dimen/sixtyDpMargin"
+                        android:id="@+id/code_detail_date_time_view"
+                        />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

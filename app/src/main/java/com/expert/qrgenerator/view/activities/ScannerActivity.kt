@@ -1,11 +1,8 @@
 package com.expert.qrgenerator.view.activities
 
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.budiyev.android.codescanner.AutoFocusMode
 import com.budiyev.android.codescanner.CodeScanner
@@ -108,7 +105,7 @@ class ScannerActivity : BaseActivity() {
                     startScanner()
                 } else {
                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,Constants.CAMERA_PERMISSION)){
-                      RuntimePermissionHelper.checkPermission(context,Constants.CAMERA_PERMISSION)
+                      RuntimePermissionHelper.checkStoragePermission(context,Constants.CAMERA_PERMISSION)
                    }
                     else{
                        MaterialAlertDialogBuilder(context)

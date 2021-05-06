@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -317,6 +318,29 @@ class ImageManager {
             } catch (e: FormatException) {
                 e.printStackTrace()
                 return ""
+            }
+        }
+
+        // THIS FUNCTION WILL GENERATE THE BARCODE AND RETURN AS A BITMAP IMAGE
+        fun generateBarcode(encodedText: String):Bitmap?{
+            val multiFormatWriter = MultiFormatWriter()
+            try {
+                val bitMatrix = multiFormatWriter.encode(encodedText, BarcodeFormat.CODE_128, 400, 200)
+
+                val bitmap = Bitmap.createBitmap(
+                    400,
+                    200,
+                    Bitmap.Config.RGB_565
+                )
+                for (i in 0 until 400) {
+                    for (j in 0 until 200) {
+                        bitmap.setPixel(i, j, if (bitMatrix[i, j]) Color.BLACK else Color.WHITE)
+                    }
+                }
+                return bitmap
+            } catch (e: WriterException) {
+                e.printStackTrace()
+                return null
             }
         }
 

@@ -2,9 +2,8 @@ package com.expert.qrgenerator.room
 
 import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.expert.qrgenerator.model.QREntity
-import com.expert.qrgenerator.model.QRHistory
+import com.expert.qrgenerator.model.CodeHistory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,7 +13,7 @@ class DatabaseRepository(application: Application) {
     private var qrDao:QRDao
     private var scope = CoroutineScope(Dispatchers.IO)
     private var dynamicQrList: LiveData<List<QREntity>>
-    private var allQRCodeHistory: LiveData<List<QRHistory>>
+    private var allQRCodeHistory: LiveData<List<CodeHistory>>
 
     init {
         val appDatabase = AppDatabase.getInstance(application)
@@ -24,7 +23,7 @@ class DatabaseRepository(application: Application) {
     }
 
 
-    fun insert(qrHistory: QRHistory){
+    fun insert(qrHistory: CodeHistory){
         scope.launch {
            qrDao.insert(qrHistory)
         }
@@ -36,7 +35,7 @@ class DatabaseRepository(application: Application) {
         }
     }
 
-    fun delete(qrHistory: QRHistory){
+    fun delete(qrHistory: CodeHistory){
         scope.launch {
             qrDao.delete(qrHistory)
         }
@@ -45,7 +44,7 @@ class DatabaseRepository(application: Application) {
         return dynamicQrList
     }
 
-    fun getAllQRCodeHistory():LiveData<List<QRHistory>>{
+    fun getAllQRCodeHistory():LiveData<List<CodeHistory>>{
         return allQRCodeHistory
     }
 

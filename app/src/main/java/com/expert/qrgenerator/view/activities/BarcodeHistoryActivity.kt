@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.Toolbar
@@ -11,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.QrCodeHistoryAdapter
-import com.expert.qrgenerator.model.QRHistory
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
 import com.google.android.material.textview.MaterialTextView
 
@@ -21,7 +22,7 @@ class BarcodeHistoryActivity : BaseActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var qrCodeHistoryRecyclerView: RecyclerView
     private lateinit var emptyView:MaterialTextView
-    private var qrCodeHistoryList = mutableListOf<QRHistory>()
+    private var qrCodeHistoryList = mutableListOf<CodeHistory>()
     private lateinit var adapter:QrCodeHistoryAdapter
     private lateinit var appViewModel: AppViewModel
 
@@ -46,12 +47,15 @@ class BarcodeHistoryActivity : BaseActivity() {
         qrCodeHistoryRecyclerView = findViewById(R.id.qr_code_history_recyclerview)
         qrCodeHistoryRecyclerView.layoutManager = LinearLayoutManager(context)
         qrCodeHistoryRecyclerView.hasFixedSize()
-        adapter = QrCodeHistoryAdapter(context, qrCodeHistoryList as ArrayList<QRHistory>)
+        adapter = QrCodeHistoryAdapter(context, qrCodeHistoryList as ArrayList<CodeHistory>)
         qrCodeHistoryRecyclerView.adapter = adapter
         adapter.setOnClickListener(object : QrCodeHistoryAdapter.OnItemClickListener{
             override fun onItemClick(position: Int) {
               val historyItem = qrCodeHistoryList[position]
-                showAlert(context,historyItem.toString())
+//                showAlert(context,historyItem.toString())
+                val intent = Intent(context,CodeDetailActivity::class.java)
+                intent.putExtra("HISTORY_ITEM",historyItem)
+                startActivity(intent)
             }
         })
     }

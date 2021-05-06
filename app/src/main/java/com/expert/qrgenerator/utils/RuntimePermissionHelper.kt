@@ -11,7 +11,7 @@ class RuntimePermissionHelper {
 
     companion object{
 
-        fun checkPermission(context: Context,permission:String):Boolean{
+        fun checkStoragePermission(context: Context, permission:String):Boolean{
 
             return if (ContextCompat.checkSelfPermission(context,permission) == PackageManager.PERMISSION_GRANTED) {
                 true

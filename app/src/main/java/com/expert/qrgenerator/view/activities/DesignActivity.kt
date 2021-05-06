@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -18,7 +17,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
@@ -33,18 +31,16 @@ import com.expert.qrgenerator.adapters.FontAdapter
 import com.expert.qrgenerator.adapters.ImageAdapter
 import com.expert.qrgenerator.adapters.LogoAdapter
 import com.expert.qrgenerator.model.Fonts
-import com.expert.qrgenerator.model.QRHistory
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.QRGenerator
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.viewmodel.DesignActivityViewModel
-import com.expert.qrgenerator.viewmodel.MainActivityViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 
@@ -86,7 +82,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     private var isBackgroundSet: Boolean = false
     private lateinit var appViewModel: AppViewModel
     private lateinit var viewModel: DesignActivityViewModel
-    private var qrHistory: QRHistory? = null
+    private var qrHistory: CodeHistory? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,7 +135,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         textLayoutWrapper = findViewById(R.id.text_font_layout_wrapper)
 
         if (intent != null && intent.hasExtra("QR_HISTORY")) {
-            qrHistory = intent.getSerializableExtra("QR_HISTORY") as QRHistory
+            qrHistory = intent.getSerializableExtra("QR_HISTORY") as CodeHistory
         }
 
 
@@ -328,7 +324,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     backgroundImageDialogView.findViewById<MaterialButton>(R.id.custom_image_add_btn)
                 cancelBtn.setOnClickListener { bAlert!!.dismiss() }
                 choseBtn.setOnClickListener {
-                    if (RuntimePermissionHelper.checkPermission(
+                    if (RuntimePermissionHelper.checkStoragePermission(
                             context,
                             Constants.READ_STORAGE_PERMISSION
                         )
@@ -502,7 +498,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     logoImageDialogView.findViewById<MaterialButton>(R.id.custom_image_add_btn)
                 cancelBtn.setOnClickListener { lAlert!!.dismiss() }
                 choseBtn.setOnClickListener {
-                    if (RuntimePermissionHelper.checkPermission(
+                    if (RuntimePermissionHelper.checkStoragePermission(
                             context,
                             Constants.READ_STORAGE_PERMISSION
                         )

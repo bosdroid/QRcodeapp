@@ -15,7 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
-import com.expert.qrgenerator.model.QRHistory
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.view.fragments.GeneratorFragment
 import com.expert.qrgenerator.view.fragments.ScannerFragment
 import com.expert.qrgenerator.viewmodel.MainActivityViewModel
@@ -157,12 +157,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     } else {
                         url
                     }
-                    val qrHistory = QRHistory(
+                    val qrHistory = CodeHistory(
                         hashMap["login"]!!,
                         hashMap["qrId"]!!,
                         hashMap["data"]!!,
                         type,
                         hashMap["userType"]!!,
+                        "qr",
+                        "create",
                         "",
                         1,
                         url,
@@ -180,12 +182,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         } else {
             encodedTextData = data
 
-            val qrHistory = QRHistory(
+            val qrHistory = CodeHistory(
                 hashMap["login"]!!,
                 hashMap["qrId"]!!,
                 encodedTextData,
                 type,
                 hashMap["userType"]!!,
+                "qr",
+                "create",
                 "",
                 0,
                 "",
