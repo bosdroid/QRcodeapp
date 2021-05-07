@@ -14,12 +14,16 @@ class DatabaseRepository(application: Application) {
     private var scope = CoroutineScope(Dispatchers.IO)
     private var dynamicQrList: LiveData<List<QREntity>>
     private var allQRCodeHistory: LiveData<List<CodeHistory>>
+    private var allScanQRCodeHistory: LiveData<List<CodeHistory>>
+    private var allCreateQRCodeHistory: LiveData<List<CodeHistory>>
 
     init {
         val appDatabase = AppDatabase.getInstance(application)
         qrDao = appDatabase.qrDao()
         dynamicQrList = qrDao.getAllDynamicQrCodes()
         allQRCodeHistory = qrDao.getAllQRCodeHistory()
+        allScanQRCodeHistory = qrDao.getAllScanQRCodeHistory()
+        allCreateQRCodeHistory = qrDao.getAllCreateQRCodeHistory()
     }
 
 
@@ -46,6 +50,14 @@ class DatabaseRepository(application: Application) {
 
     fun getAllQRCodeHistory():LiveData<List<CodeHistory>>{
         return allQRCodeHistory
+    }
+
+    fun getAllScanQRCodeHistory():LiveData<List<CodeHistory>>{
+        return allScanQRCodeHistory
+    }
+
+    fun getAllCreateQRCodeHistory():LiveData<List<CodeHistory>>{
+        return allCreateQRCodeHistory
     }
 
 }

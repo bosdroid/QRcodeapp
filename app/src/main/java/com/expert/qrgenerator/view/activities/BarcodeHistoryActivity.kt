@@ -1,30 +1,24 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.FragmentManager
+import androidx.viewpager2.widget.ViewPager2
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.adapters.QrCodeHistoryAdapter
-import com.expert.qrgenerator.model.CodeHistory
-import com.expert.qrgenerator.room.AppViewModel
-import com.google.android.material.textview.MaterialTextView
+import com.expert.qrgenerator.adapters.ViewPagerAdapter
+import com.google.android.material.tabs.TabLayout
+
 
 class BarcodeHistoryActivity : BaseActivity() {
 
     private lateinit var context:Context
     private lateinit var toolbar: Toolbar
-    private lateinit var qrCodeHistoryRecyclerView: RecyclerView
-    private lateinit var emptyView:MaterialTextView
-    private var qrCodeHistoryList = mutableListOf<CodeHistory>()
-    private lateinit var adapter:QrCodeHistoryAdapter
-    private lateinit var appViewModel: AppViewModel
+    var tabLayout: TabLayout? = null
+    var pager2: ViewPager2? = null
+    var viewPagerAdapter: ViewPagerAdapter? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,32 +26,46 @@ class BarcodeHistoryActivity : BaseActivity() {
 
         initViews()
         setUpToolbar()
-        getDisplayHistory()
+        setUpViewPager()
     }
 
 
     private fun initViews(){
         context = this
-        appViewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(this.application)
-        ).get(AppViewModel::class.java)
         toolbar = findViewById(R.id.toolbar)
-        emptyView = findViewById(R.id.emptyView)
-        qrCodeHistoryRecyclerView = findViewById(R.id.qr_code_history_recyclerview)
-        qrCodeHistoryRecyclerView.layoutManager = LinearLayoutManager(context)
-        qrCodeHistoryRecyclerView.hasFixedSize()
-        adapter = QrCodeHistoryAdapter(context, qrCodeHistoryList as ArrayList<CodeHistory>)
-        qrCodeHistoryRecyclerView.adapter = adapter
-        adapter.setOnClickListener(object : QrCodeHistoryAdapter.OnItemClickListener{
-            override fun onItemClick(position: Int) {
-              val historyItem = qrCodeHistoryList[position]
-//                showAlert(context,historyItem.toString())
-                val intent = Intent(context,CodeDetailActivity::class.java)
-                intent.putExtra("HISTORY_ITEM",historyItem)
-                startActivity(intent)
+        tabLayout = findViewById(R.id.tab_layout)
+        pager2 = findViewById(R.id.viewpager)
+    }
+
+    private fun setUpViewPager(){
+        val fm: FragmentManager = supportFragmentManager
+        viewPagerAdapter = ViewPagerAdapter(fm, lifecycle)
+        pager2!!.adapter = viewPagerAdapter
+
+        tabLayout!!.addTab(tabLayout!!.newTab().setText(getString(R.string.scan)))
+        tabLayout!!.addTab(tabLayout!!.newTab().setText(getString(R.string.create)))
+
+        tabLayout!!.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                pager2!!.currentItem = tab!!.position
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+        })
+
+        pager2!!.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                tabLayout!!.selectTab(tabLayout!!.getTabAt(position))
             }
         })
+
     }
 
     private fun setUpToolbar(){
@@ -67,22 +75,4 @@ class BarcodeHistoryActivity : BaseActivity() {
         toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
     }
 
-    private fun getDisplayHistory(){
-        startLoading(context)
-       appViewModel.getAllQRCodeHistory().observe(this, Observer { list ->
-           dismiss()
-           if (list.isNotEmpty()){
-               qrCodeHistoryList.clear()
-               emptyView.visibility = View.GONE
-               qrCodeHistoryRecyclerView.visibility = View.VISIBLE
-               qrCodeHistoryList.addAll(list)
-               adapter.notifyDataSetChanged()
-           }
-           else
-           {
-               qrCodeHistoryRecyclerView.visibility = View.GONE
-               emptyView.visibility = View.VISIBLE
-           }
-       })
-    }
 }

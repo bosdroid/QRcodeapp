@@ -17,7 +17,7 @@
     <string name="design_customization">Design Customization</string>
     <string name="share_qr_image">Share QR Image</string>
     <string name="qr_code_history">History</string>
-    <string name="history_empty_list_text">History List is empty!</string>
+    <string name="history_empty_list_text">No history</string>
     <string name="dynamic_mode_text">"Dynamic Mode  "</string>
     <string name="dynamic_empty_list_text">Dynamic QR list is empty!</string>
     <string name="share_top_heading_text">All QR  Codes saved locally on device. You always can use them in history sections.</string>
@@ -98,7 +98,11 @@
     <string name="feedback_qr">Feedback QR</string>
     <string name="code_detail_text">Code Detail</string>
     <string name="copy_text">Copy</string>
-    <string name="search_web_text">search<br/>in web</string>
+    <string name="search_web_text">search<br />in web</string>
     <string name="save_text">Save</string>
     <string name="share_using">share with</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="scan">Scan</string>
+    <string name="create">Create</string>
 </resources>

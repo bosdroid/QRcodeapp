@@ -11,10 +11,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private var repository : DatabaseRepository = DatabaseRepository(application)
     private var dynamicQrCodes : LiveData<List<QREntity>>
     private var allQRCodeHistory: LiveData<List<CodeHistory>>
+    private var allScanQRCodeHistory: LiveData<List<CodeHistory>>
+    private var allCreateQRCodeHistory: LiveData<List<CodeHistory>>
 
     init {
         dynamicQrCodes = repository.getAllDynamicQrCodes()
         allQRCodeHistory = repository.getAllQRCodeHistory()
+        allScanQRCodeHistory = repository.getAllScanQRCodeHistory()
+        allCreateQRCodeHistory = repository.getAllCreateQRCodeHistory()
     }
 
     public fun insert(qrHistory: CodeHistory){
@@ -35,5 +39,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     public fun getAllQRCodeHistory():LiveData<List<CodeHistory>>{
         return allQRCodeHistory
+    }
+
+    public fun getAllScanQRCodeHistory():LiveData<List<CodeHistory>>{
+        return allScanQRCodeHistory
+    }
+
+    public fun getAllCreateQRCodeHistory():LiveData<List<CodeHistory>>{
+        return allCreateQRCodeHistory
     }
 }

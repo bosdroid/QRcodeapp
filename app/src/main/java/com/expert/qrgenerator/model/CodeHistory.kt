@@ -14,7 +14,7 @@ data class CodeHistory (
         @ColumnInfo(name = "type") var type:String, // QR CODE TYPE -> TEXT,LINK,CONTACT, ETC
         @ColumnInfo(name = "userType") var userType:String, // FREE,PREMIUM
         @ColumnInfo(name = "codeType") var codeType:String, // BARCODE OR QR
-        @ColumnInfo(name = "createdType") var createdType:String, // SCAN OR GENERATE
+        @ColumnInfo(name = "createdType") var createdType:String, // SCAN OR CREATE
         @ColumnInfo(name = "localImagePath") var localImagePath:String,
         @ColumnInfo(name = "isDynamic") var isDynamic:Int, // 0 OR 1
         @ColumnInfo(name = "generatedUrl") var generatedUrl:String = "",
