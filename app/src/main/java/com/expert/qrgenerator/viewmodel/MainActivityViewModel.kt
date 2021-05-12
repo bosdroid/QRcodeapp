@@ -18,6 +18,8 @@ class MainActivityViewModel : ViewModel() {
     private var logoImageList = MutableLiveData<List<String>>()
     private var fontList = MutableLiveData<List<Fonts>>()
     private var dynamicQrCodeResponse = MutableLiveData<JsonObject>()
+    private var signUpResponse = MutableLiveData<JsonObject>()
+    private var signInResponse = MutableLiveData<JsonObject>()
 
     // THIS FUNCTION WILL CREATE AND SAVE THE COLOR LIST
     fun callColorList(context: Context) {
@@ -70,6 +72,22 @@ class MainActivityViewModel : ViewModel() {
 
     fun getDynamicQrCode():MutableLiveData<JsonObject>{
         return dynamicQrCodeResponse
+    }
+
+    fun signUp(context:Context,body:HashMap<String,String>){
+        signUpResponse = ApiRepository.getInstance(context).signUp(body)
+    }
+
+    fun getSignUp():MutableLiveData<JsonObject>{
+        return signUpResponse
+    }
+
+    fun signIn(context:Context,email:String){
+        signInResponse = ApiRepository.getInstance(context).signIn(email)
+    }
+
+    fun getSignIn():MutableLiveData<JsonObject>{
+        return signInResponse
     }
 
 }

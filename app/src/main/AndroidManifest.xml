@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
+        android:name=".App"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,7 +23,8 @@
         android:theme="@style/Theme.QRGenerator"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
-        <activity android:name=".view.activities.CodeDetailActivity"/>
+        <activity android:name=".view.activities.ProfileActivity"></activity>
+        <activity android:name=".view.activities.CodeDetailActivity" />
         <activity android:name=".view.activities.FeedbackQrActivity" />
         <activity android:name=".view.activities.ScannerActivity" />
         <activity android:name=".view.activities.ShareActivity" />

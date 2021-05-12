@@ -117,4 +117,10 @@ dependencies {
 
     // COLOR PICKER LIBRARY
     implementation 'com.github.duanhong169:colorpicker:1.1.6'
+
+    // GOOGLE AUTHENTICATION LIBRARY
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+
+    // CIRCULAR IMAGE VIEW LIBRARY
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }

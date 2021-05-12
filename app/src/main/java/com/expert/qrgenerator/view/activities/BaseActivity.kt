@@ -21,6 +21,7 @@ import java.util.*
 
 open class BaseActivity : AppCompatActivity() {
 
+
     companion object {
         private var prDownloader: DownloadRequest? = null
         var alert: AlertDialog? = null

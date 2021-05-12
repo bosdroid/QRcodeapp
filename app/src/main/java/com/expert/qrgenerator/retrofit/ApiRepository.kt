@@ -80,4 +80,37 @@ class ApiRepository {
 
         return res
     }
+
+
+    fun signUp(body: HashMap<String, String>): MutableLiveData<JsonObject> {
+        val res = MutableLiveData<JsonObject>()
+        val bodyJson = Gson().toJsonTree(body).asJsonObject
+        Log.d("TEST199", bodyJson.toString())
+        apiInterface.signUp(bodyJson).enqueue(object:Callback<JsonObject>{
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                res.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                res.postValue(null)
+            }
+        })
+
+        return res
+    }
+
+    fun signIn(email:String): MutableLiveData<JsonObject> {
+        val res = MutableLiveData<JsonObject>()
+        apiInterface.signIn(email).enqueue(object:Callback<JsonObject>{
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                res.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                res.postValue(null)
+            }
+        })
+
+        return res
+    }
 }

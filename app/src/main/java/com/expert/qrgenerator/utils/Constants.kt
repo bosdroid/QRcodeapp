@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.QRTypes
+import com.expert.qrgenerator.model.User
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -34,6 +35,9 @@ class Constants {
         const val BASE_URL = "http://pages.qrmagicapp.com/"
         var generatedImage:Bitmap?=null
         var finalQrImageUri:Uri?=null
+        var isLogin:String = "is_login"
+        var user:String = "user"
+        var userData:User?=null
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)

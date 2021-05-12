@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="@string/login"
+        android:id="@+id/login"
+        android:visible="false"
+        />
+
+    <item
+        android:title="@string/profile"
+        android:id="@+id/profile"
+        android:visible="false"
+        />
+
     <item
         android:title="@string/barcode_history_text"
         android:id="@+id/barcode_history"
         app:showAsAction="never"
+        />
+
+    <item
+        android:title="@string/logout"
+        android:id="@+id/logout"
+        android:visible="false"
         />
 
 </menu>

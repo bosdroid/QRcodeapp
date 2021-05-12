@@ -4,7 +4,9 @@ import JSONResponse
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiServices {
 
@@ -20,5 +22,11 @@ interface ApiServices {
     @POST("service/webpage/create/feedbacktemplate")
     fun createFeedbackQrCode(@Body body: JsonObject):Call<JsonObject>
 
+
+    @POST("service/user/google/add")
+    fun signUp(@Body body: JsonObject):Call<JsonObject>
+
+    @GET("service/user/google/{email}")
+    fun signIn(@Path("email") email:String):Call<JsonObject>
 
 }

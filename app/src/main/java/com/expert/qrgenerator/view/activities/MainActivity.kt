@@ -1,11 +1,15 @@
 package com.expert.qrgenerator.view.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -16,11 +20,21 @@ import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.User
+import com.expert.qrgenerator.utils.AppSettings
+import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.view.fragments.GeneratorFragment
 import com.expert.qrgenerator.view.fragments.ScannerFragment
 import com.expert.qrgenerator.viewmodel.MainActivityViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
 
@@ -35,6 +49,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var bottomNavigation: BottomNavigationView
     private var encodedTextData: String = " "
     private lateinit var viewModel: MainActivityViewModel
+    private lateinit var appSettings: AppSettings
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
@@ -50,12 +66,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         initViews()
         setUpToolbar()
+        initializeGoogleLoginParameters()
 
     }
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
         context = this
+        appSettings = AppSettings(context)
         viewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(MainActivityViewModel()).createFor()
@@ -89,7 +107,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             true
         }
 
-        supportFragmentManager.beginTransaction().add(R.id.fragment_container,ScannerFragment(),"scanner")
+        supportFragmentManager.beginTransaction().add(
+            R.id.fragment_container,
+            ScannerFragment(),
+            "scanner"
+        )
             .addToBackStack("scanner")
             .commit()
     }
@@ -106,10 +128,74 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         mNavigation.setNavigationItemSelectedListener(this)
     }
 
+    // THIS FUNCTION WILL INITIALIZE THE GOOGLE LOGIN PARAMETERS
+    private fun initializeGoogleLoginParameters() {
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        val acct = GoogleSignIn.getLastSignedInAccount(context)
+        saveUserUpdatedDetail(acct, "last")
+
+    }
+
+    private fun saveUserUpdatedDetail(acct: GoogleSignInAccount?, isLastSignUser: String) {
+        if (acct != null) {
+            val personName = acct.displayName
+            val personGivenName = acct.givenName
+            val personFamilyName = acct.familyName
+            val personEmail = acct.email
+            val personId = acct.id
+            val personPhoto: Uri? = acct.photoUrl
+            val user = User(
+                personName!!,
+                personGivenName!!,
+                personFamilyName!!,
+                personEmail!!,
+                personId!!,
+                personPhoto!!.toString()
+            )
+            appSettings.putUser(Constants.user, user)
+            Constants.userData = user
+            if (isLastSignUser == "new") {
+                appSettings.putString(Constants.isLogin, "true")
+                showAlert(context, "User has been signIn successfully!")
+            }
+        }
+        checkUserLoginStatus()
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.barcode_history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+            }
+            R.id.login -> {
+                val signInIntent = mGoogleSignInClient.signInIntent
+                googleLauncher.launch(signInIntent)
+            }
+            R.id.profile -> {
+                startActivity(Intent(context, ProfileActivity::class.java))
+            }
+            R.id.logout -> {
+                MaterialAlertDialogBuilder(context)
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to logout?")
+                    .setNegativeButton("Cancel") { dialog, which -> dialog.dismiss() }
+                    .setPositiveButton("Logout") { dialog, which ->
+                        startLoading(context)
+                        mGoogleSignInClient.signOut()
+                            .addOnCompleteListener(this) {
+                                dismiss()
+                                appSettings.remove(Constants.isLogin)
+                                appSettings.remove(Constants.user)
+                                Toast.makeText(context,"User signout successfully!",Toast.LENGTH_SHORT).show()
+                                checkUserLoginStatus()
+                            }
+                    }
+                    .create().show()
             }
             else -> {
             }
@@ -118,24 +204,76 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
+    // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
+    private var googleLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+            if (result.resultCode == Activity.RESULT_OK) {
+
+                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(
+                    result.data
+                )
+                handleSignInResult(task)
+            }
+        }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val acct = completedTask.getResult(ApiException::class.java)
+            // Signed in successfully, show authenticated UI.
+            if (acct != null) {
+
+                startLoading(context)
+                val hashMap = hashMapOf<String, String>()
+                hashMap["personName"] = acct.givenName.toString()
+                hashMap["personGivenName"] = acct.givenName.toString()
+                hashMap["personFamilyName"] = acct.familyName.toString()
+                hashMap["personEmail"] = acct.email.toString()
+                hashMap["personId"] = acct.id.toString()
+                hashMap["personPhoto"] = acct.photoUrl.toString()
+
+                viewModel.signUp(context, hashMap)
+                viewModel.getSignUp().observe(this, { response ->
+                    dismiss()
+                    if (response != null) {
+                        if (response.has("errorMessage")) {
+
+                        } else {
+                            saveUserUpdatedDetail(acct, "new")
+                        }
+                    } else {
+                        showAlert(context, "Something went wrong, please try again!")
+                    }
+                })
+            }
+
+
+        } catch (e: ApiException) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+        }
+    }
+
 
     override fun onBackPressed() {
         val fragment = supportFragmentManager.findFragmentByTag("scanner")
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START)
-        }
-        else if(fragment!=null && fragment.isVisible){
-           finish()
-        }
-        else {
-            supportFragmentManager.beginTransaction().replace(R.id.fragment_container,ScannerFragment(),"scanner")
+        } else if (fragment != null && fragment.isVisible) {
+            finish()
+        } else {
+            supportFragmentManager.beginTransaction().replace(
+                R.id.fragment_container,
+                ScannerFragment(),
+                "scanner"
+            )
                 .addToBackStack("scanner")
                 .commit()
         }
     }
 
     // THIS METHOD WILL CALL AFTER SELECT THE QR TYPE WITH INPUT DATA
-    override fun onTypeSelected(data: String, position: Int,type:String) {
+    override fun onTypeSelected(data: String, position: Int, type: String) {
         var url = ""
         val hashMap = hashMapOf<String, String>()
         hashMap["login"] = "sattar"
@@ -173,7 +311,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
                     val intent = Intent(context, DesignActivity::class.java)
                     intent.putExtra("ENCODED_TEXT", url)
-                    intent.putExtra("QR_HISTORY",qrHistory)
+                    intent.putExtra("QR_HISTORY", qrHistory)
                     startActivity(intent)
                 } else {
                     showAlert(context, "Something went wrong, please try again!")
@@ -197,10 +335,27 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             )
             val intent = Intent(context, DesignActivity::class.java)
             intent.putExtra("ENCODED_TEXT", encodedTextData)
-            intent.putExtra("QR_HISTORY",qrHistory)
+            intent.putExtra("QR_HISTORY", qrHistory)
             startActivity(intent)
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkUserLoginStatus()
+    }
+
+    private fun checkUserLoginStatus() {
+        if (appSettings.getString(Constants.isLogin) == "true") {
+            mNavigation.menu.findItem(R.id.login).isVisible = false
+            mNavigation.menu.findItem(R.id.logout).isVisible = true
+            mNavigation.menu.findItem(R.id.profile).isVisible = true
+        } else {
+            mNavigation.menu.findItem(R.id.login).isVisible = true
+            mNavigation.menu.findItem(R.id.logout).isVisible = false
+            mNavigation.menu.findItem(R.id.profile).isVisible = false
+        }
     }
 
 }
