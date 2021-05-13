@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -37,6 +38,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -51,6 +56,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var appSettings: AppSettings
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private lateinit var auth: FirebaseAuth
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
@@ -74,6 +80,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun initViews() {
         context = this
         appSettings = AppSettings(context)
+        auth = Firebase.auth
         viewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(MainActivityViewModel()).createFor()
@@ -132,6 +139,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun initializeGoogleLoginParameters() {
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
@@ -160,7 +168,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             appSettings.putUser(Constants.user, user)
             Constants.userData = user
             if (isLastSignUser == "new") {
-                appSettings.putString(Constants.isLogin, "true")
+                appSettings.putBoolean(Constants.isLogin, true)
                 showAlert(context, "User has been signIn successfully!")
             }
         }
@@ -185,15 +193,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     .setMessage("Are you sure you want to logout?")
                     .setNegativeButton("Cancel") { dialog, which -> dialog.dismiss() }
                     .setPositiveButton("Logout") { dialog, which ->
-                        startLoading(context)
-                        mGoogleSignInClient.signOut()
-                            .addOnCompleteListener(this) {
-                                dismiss()
-                                appSettings.remove(Constants.isLogin)
-                                appSettings.remove(Constants.user)
-                                Toast.makeText(context,"User signout successfully!",Toast.LENGTH_SHORT).show()
-                                checkUserLoginStatus()
-                            }
+//                        startLoading(context)
+                        Firebase.auth.signOut()
+                        appSettings.remove(Constants.isLogin)
+                        appSettings.remove(Constants.user)
+                        Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
+                            .show()
+                        checkUserLoginStatus()
+
                     }
                     .create().show()
             }
@@ -210,48 +217,67 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             if (result.resultCode == Activity.RESULT_OK) {
 
-                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(
-                    result.data
-                )
-                handleSignInResult(task)
+//                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(
+//                    result.data
+//                )
+//                handleSignInResult(task)
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    // Google Sign In was successful, authenticate with Firebase
+                    val account = task.getResult(ApiException::class.java)!!
+                    firebaseAuthWithGoogle(account)
+                } catch (e: ApiException) {
+                    // Google Sign In failed, update UI appropriately
+                    Log.w("TAG", "Google sign in failed", e)
+                }
             }
         }
 
-    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+    private fun handleSignInResult(acct: GoogleSignInAccount) {
         try {
-            val acct = completedTask.getResult(ApiException::class.java)
-            // Signed in successfully, show authenticated UI.
-            if (acct != null) {
 
-                startLoading(context)
-                val hashMap = hashMapOf<String, String>()
-                hashMap["personName"] = acct.givenName.toString()
-                hashMap["personGivenName"] = acct.givenName.toString()
-                hashMap["personFamilyName"] = acct.familyName.toString()
-                hashMap["personEmail"] = acct.email.toString()
-                hashMap["personId"] = acct.id.toString()
-                hashMap["personPhoto"] = acct.photoUrl.toString()
+            startLoading(context)
+            val hashMap = hashMapOf<String, String>()
+            hashMap["personName"] = acct.displayName.toString()
+            hashMap["personGivenName"] = acct.givenName.toString()
+            hashMap["personFamilyName"] = acct.familyName.toString()
+            hashMap["personEmail"] = acct.email.toString()
+            hashMap["personId"] = acct.id.toString()
+            hashMap["personPhoto"] = acct.photoUrl.toString()
 
-                viewModel.signUp(context, hashMap)
-                viewModel.getSignUp().observe(this, { response ->
-                    dismiss()
-                    if (response != null) {
-                        if (response.has("errorMessage")) {
+            viewModel.signUp(context, hashMap)
+            viewModel.getSignUp().observe(this, { response ->
+                dismiss()
+                if (response != null) {
+                    if (response.has("errorMessage")) {
 
-                        } else {
-                            saveUserUpdatedDetail(acct, "new")
-                        }
                     } else {
-                        showAlert(context, "Something went wrong, please try again!")
+                        saveUserUpdatedDetail(acct, "new")
                     }
-                })
-            }
-
+                } else {
+                    showAlert(context, "Something went wrong, please try again!")
+                }
+            })
 
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
         }
+    }
+
+    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    val user = auth.currentUser
+                    handleSignInResult(account)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("TAG", "signInWithCredential:failure", task.exception)
+                }
+            }
     }
 
 
@@ -347,7 +373,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun checkUserLoginStatus() {
-        if (appSettings.getString(Constants.isLogin) == "true") {
+        if (appSettings.getBoolean(Constants.isLogin)) {
             mNavigation.menu.findItem(R.id.login).isVisible = false
             mNavigation.menu.findItem(R.id.logout).isVisible = true
             mNavigation.menu.findItem(R.id.profile).isVisible = true

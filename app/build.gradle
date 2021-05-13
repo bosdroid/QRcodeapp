@@ -98,6 +98,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-dynamic-links-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'
 
     // RETROFIT NETWORK LIBRARY
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
