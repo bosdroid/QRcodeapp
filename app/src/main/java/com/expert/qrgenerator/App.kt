@@ -15,7 +15,7 @@ class App : Application() {
 
 
     private fun getUserDetail(){
-        if (appSettings.getString(Constants.isLogin) == "true"){
+        if (appSettings.getBoolean(Constants.isLogin)){
             val user = appSettings.getUser(Constants.user)
             Constants.userData = user
         }

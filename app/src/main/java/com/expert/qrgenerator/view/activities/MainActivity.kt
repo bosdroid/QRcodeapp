@@ -33,7 +33,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -193,14 +192,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     .setMessage("Are you sure you want to logout?")
                     .setNegativeButton("Cancel") { dialog, which -> dialog.dismiss() }
                     .setPositiveButton("Logout") { dialog, which ->
-//                        startLoading(context)
-                        Firebase.auth.signOut()
-                        appSettings.remove(Constants.isLogin)
-                        appSettings.remove(Constants.user)
-                        Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
-                            .show()
-                        checkUserLoginStatus()
-
+                        startLoading(context)
+                        signOut()
                     }
                     .create().show()
             }
@@ -209,6 +202,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
         mDrawer.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun signOut() {
+        // Firebase sign out
+        auth.signOut()
+        // Google sign out
+        mGoogleSignInClient.signOut().addOnCompleteListener(this) {
+            dismiss()
+            appSettings.remove(Constants.isLogin)
+            appSettings.remove(Constants.user)
+            Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
+                .show()
+            checkUserLoginStatus()
+        }
     }
 
     // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
