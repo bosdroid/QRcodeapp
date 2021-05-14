@@ -11,6 +11,7 @@ class App : Application() {
         super.onCreate()
         appSettings = AppSettings(applicationContext)
         getUserDetail()
+
     }
 
 
