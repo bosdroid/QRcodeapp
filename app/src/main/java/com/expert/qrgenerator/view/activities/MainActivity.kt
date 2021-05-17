@@ -9,9 +9,13 @@ import android.os.StrictMode
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.RatingBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatRatingBar
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -179,6 +183,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.barcode_history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
             }
+            R.id.nav_rateUs -> {
+                rateUs(this)
+            }
+            R.id.nav_recommend -> {
+                shareApp()
+            }
+            R.id.nav_contact_support -> {
+                contactSupport(this)
+            }
             R.id.login -> {
                 val signInIntent = mGoogleSignInClient.signInIntent
                 googleLauncher.launch(signInIntent)
@@ -202,6 +215,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
         mDrawer.closeDrawer(GravityCompat.START)
         return true
+    }
+
+
+
+    private fun shareApp() {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(
+            Intent.EXTRA_TEXT,
+            getString(R.string.share_app_message) + "https://play.google.com/store/apps/details?id=" + packageName
+        )
+        startActivity(shareIntent)
+
     }
 
     private fun signOut() {
@@ -390,5 +416,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = false
         }
     }
+
 
 }
