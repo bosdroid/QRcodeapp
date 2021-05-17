@@ -2,58 +2,58 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <group android:checkableBehavior="single">
+        <item android:title="@string/menu">
+            <menu>
 
-    <item
-        android:id="@+id/login"
-        android:title="@string/login"
-        android:visible="false" />
+                <item
+                    android:icon="@drawable/ic_login"
+                    android:id="@+id/login"
+                    android:title="@string/login"
+                    android:visible="false" />
 
+                <item
+                    android:icon="@drawable/ic_profile_black"
+                    android:id="@+id/profile"
+                    android:title="@string/profile"
+                    android:visible="false" />
 
-    <item
-        android:id="@+id/profile"
-        android:title="@string/profile"
-        android:visible="false" />
+                <item
+                    android:icon="@drawable/ic_history"
+                    android:id="@+id/barcode_history"
+                    android:title="@string/barcode_history_text"
+                    app:showAsAction="never" />
 
-    <item
-        android:id="@+id/barcode_history"
-        android:title="@string/barcode_history_text"
-        app:showAsAction="never" />
+                <item
+                    android:icon="@drawable/ic_star"
+                    android:id="@+id/nav_rateUs"
+                    android:title="@string/rate_us"
+                    android:visible="true" />
+            </menu>
+        </item>
 
-    <item
-        android:id="@+id/nav_rateUs"
-        android:title="@string/rate_us"
-        android:visible="true" />
-    <item
+    </group>
 
-        android:title=""
-        android:visible="true" />
-    <item
-        android:title=""
-        android:visible="true" />
-    <item
-        android:title=""
-        android:visible="true" />
-
-
-    <item
-        android:title="">
+    <item android:title="@string/contacts">
         <menu>
 
             <item
+                android:icon="@drawable/ic_share"
                 android:id="@+id/nav_recommend"
                 android:title="@string/recommend_to_friends"
                 android:visible="true" />
             <item
+                android:icon="@drawable/ic_support"
                 android:id="@+id/nav_contact_support"
                 android:title="@string/contact_support"
                 android:visible="true" />
 
             <item
+                android:icon="@drawable/ic_logout"
                 android:id="@+id/logout"
                 android:title="@string/logout"
                 android:visible="false" />
         </menu>
-
     </item>
 
 

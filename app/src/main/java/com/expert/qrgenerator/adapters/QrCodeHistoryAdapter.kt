@@ -55,7 +55,7 @@ class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_link)
             }
             "contact"->{
-                holder.qrTypeIcon.setImageResource(R.drawable.ic_person)
+                holder.qrTypeIcon.setImageResource(R.drawable.ic_account)
             }
             "wifi"->{
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_wifi)

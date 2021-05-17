@@ -117,4 +117,6 @@
     <string name="later">Later</string>
     <string name="do_you_like_our_app">Do you like our app?</string>
     <string name="help_support"><![CDATA[Help & Support]]></string>
+    <string name="menu">Menu</string>
+    <string name="contacts">Contacts</string>
 </resources>

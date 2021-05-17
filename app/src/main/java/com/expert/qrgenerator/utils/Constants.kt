@@ -68,7 +68,7 @@ class Constants {
             list.add(QRTypes(R.drawable.ic_text, context.getString(R.string.text_text), 0))
             list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.static_link_text), 1))
             list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.dynamic_link_text), 2))
-            list.add(QRTypes(R.drawable.ic_person, context.getString(R.string.contact_text), 3))
+            list.add(QRTypes(R.drawable.ic_account, context.getString(R.string.contact_text), 3))
             list.add(QRTypes(R.drawable.ic_wifi, context.getString(R.string.wifi_text), 4))
             list.add(QRTypes(R.drawable.ic_phone, context.getString(R.string.phone_text), 5))
             list.add(QRTypes(R.drawable.ic_sms, context.getString(R.string.sms_text), 6))
