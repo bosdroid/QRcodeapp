@@ -179,6 +179,18 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.barcode_history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
             }
+            R.id.tables -> {
+                startActivity(Intent(context, TablesActivity::class.java))
+            }
+            R.id.nav_rateUs -> {
+                rateUs(this)
+            }
+            R.id.nav_recommend -> {
+                shareApp()
+            }
+            R.id.nav_contact_support -> {
+                contactSupport(this)
+            }
             R.id.login -> {
                 val signInIntent = mGoogleSignInClient.signInIntent
                 googleLauncher.launch(signInIntent)
@@ -202,6 +214,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
         mDrawer.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun shareApp() {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(
+            Intent.EXTRA_TEXT,
+            getString(R.string.share_app_message) + "https://play.google.com/store/apps/details?id=" + packageName
+        )
+        startActivity(shareIntent)
+
     }
 
     private fun signOut() {

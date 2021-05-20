@@ -21,9 +21,46 @@
         />
 
     <item
-        android:title="@string/logout"
-        android:id="@+id/logout"
-        android:visible="false"
+        android:title="@string/tables"
+        android:id="@+id/tables"
+        app:showAsAction="never"
         />
+
+    <item
+        android:id="@+id/nav_rateUs"
+        android:title="@string/rate_us"
+        android:visible="true" />
+    <item
+
+        android:title=""
+        android:visible="true" />
+    <item
+        android:title=""
+        android:visible="true" />
+    <item
+        android:title=""
+        android:visible="true" />
+
+
+    <item
+        android:title="">
+        <menu>
+
+            <item
+                android:id="@+id/nav_recommend"
+                android:title="@string/recommend_to_friends"
+                android:visible="true" />
+            <item
+                android:id="@+id/nav_contact_support"
+                android:title="@string/contact_support"
+                android:visible="true" />
+
+            <item
+                android:id="@+id/logout"
+                android:title="@string/logout"
+                android:visible="false" />
+        </menu>
+
+    </item>
 
 </menu>

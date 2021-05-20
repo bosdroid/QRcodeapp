@@ -108,4 +108,18 @@
     <string name="login">Login</string>
     <string name="profile">Profile</string>
     <string name="logout">Logout</string>
+    <string name="tables">Tables</string>
+    <string name="rate_us">Rate us</string>
+    <string name="support_email">qrmagicsup@gmail.com</string>
+    <string name="recommend_to_friends">Recommend to friends</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="share_app_message">I am using QRMagic for scanning and generating barcodes. You should try by uploading from here \n</string>
+    <string name="email_subject">Write your subject</string>
+    <string name="later">Later</string>
+    <string name="do_you_like_our_app">Do you like our app?</string>
+    <string name="help_support"><![CDATA[Help & Support]]></string>
+    <string name="new_table_text">NEW TABLE</string>
+    <string name="add_table_hin_text">Enter the table name</string>
+    <string name="create_table_hint_text">Create Table</string>
+    <string name="submit">Submit</string>
 </resources>

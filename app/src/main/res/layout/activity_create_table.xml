@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.activities.CreateTableActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+        android:layout_margin="@dimen/eightDpMargin"
+        android:padding="5dp"
+        >
+       <com.google.android.material.textview.MaterialTextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="center_horizontal"
+           android:id="@+id/table_columns_detail"
+           />
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="+ Add Field"
+            android:background="@color/teal_200"
+            android:textColor="@color/white"
+            android:textSize="@dimen/largeText"
+            android:id="@+id/add_new_field_btn"
+            android:layout_marginTop="@dimen/eightDpMargin"
+            />
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:orientation="vertical"
+             android:id="@+id/add_field_layout_wrapper"
+             android:layout_marginTop="@dimen/eightDpMargin"
+             android:padding="5dp"
+             android:visibility="gone"
+             >
+           <com.google.android.material.textfield.TextInputEditText
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:background="@drawable/input_text_field_design"
+               android:padding="10dp"
+               android:hint="Please enter the field name"
+               android:id="@+id/table_new_field_text_input"
+               />
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Non Changeable Field"
+                android:id="@+id/non_changeable_check_box"
+                />
+             <com.google.android.material.textfield.TextInputEditText
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/input_text_field_design"
+                 android:padding="10dp"
+                 android:hint="Set the default value"
+                 android:id="@+id/table_non_changeable_default_text_input"
+                 android:visibility="gone"
+                 />
+
+             <androidx.appcompat.widget.AppCompatButton
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:text="@string/submit"
+                 android:background="@color/teal_200"
+                 android:textColor="@color/white"
+                 android:textSize="@dimen/largeText"
+                 android:id="@+id/field_submit_btn"
+                 android:layout_marginTop="@dimen/eightDpMargin"
+                 />
+         </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

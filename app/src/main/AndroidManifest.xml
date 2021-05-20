@@ -23,7 +23,9 @@
         android:theme="@style/Theme.QRGenerator"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
-        <activity android:name=".view.activities.ProfileActivity"></activity>
+        <activity android:name=".view.activities.CreateTableActivity"></activity>
+        <activity android:name=".view.activities.TablesActivity" />
+        <activity android:name=".view.activities.ProfileActivity" />
         <activity android:name=".view.activities.CodeDetailActivity" />
         <activity android:name=".view.activities.FeedbackQrActivity" />
         <activity android:name=".view.activities.ScannerActivity" />

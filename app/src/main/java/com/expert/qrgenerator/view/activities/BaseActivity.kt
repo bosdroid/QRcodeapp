@@ -1,12 +1,17 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Typeface
+import android.net.Uri
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatRatingBar
+import androidx.appcompat.widget.AppCompatTextView
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
@@ -27,8 +32,7 @@ open class BaseActivity : AppCompatActivity() {
         var alert: AlertDialog? = null
 
         // THIS FUNCTION WILL RETURN THE DATE TIME STRING FROM TIMESTAMP
-        fun getDateTimeFromTimeStamp(timeStamp: Long):String
-        {
+        fun getDateTimeFromTimeStamp(timeStamp: Long): String {
             val c = Date(timeStamp)
             val df = SimpleDateFormat("yyyy-MM-dd-k:mm", Locale.getDefault())
             return df.format(c).toUpperCase(Locale.ENGLISH)
@@ -83,8 +87,7 @@ open class BaseActivity : AppCompatActivity() {
                 .create().show()
         }
 
-        fun startLoading(context: Context)
-        {
+        fun startLoading(context: Context) {
             val builder = MaterialAlertDialogBuilder(context)
             val layout = LayoutInflater.from(context).inflate(R.layout.custom_loading, null)
             builder.setView(layout)
@@ -93,16 +96,13 @@ open class BaseActivity : AppCompatActivity() {
             alert!!.show()
         }
 
-        fun dismiss()
-        {
-            if (alert != null)
-            {
+        fun dismiss() {
+            if (alert != null) {
                 alert!!.dismiss()
             }
         }
 
-        fun getDateFromTimeStamp(timeStamp: Long):String
-        {
+        fun getDateFromTimeStamp(timeStamp: Long): String {
             val c: Date = Date(timeStamp)
             val df = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
             return df.format(c).toUpperCase(Locale.ENGLISH)
@@ -124,6 +124,57 @@ open class BaseActivity : AppCompatActivity() {
             } else {
                 DateFormat.format("MMMM dd yyyy, h:mm:ss", smsTime).toString()
             }
+        }
+
+        fun rateUs(context: AppCompatActivity) {
+            val inflater = context.layoutInflater
+            val view = inflater.inflate(R.layout.layout_dialog_rate_us, null)
+            val builder = AlertDialog.Builder(context)
+                .setCancelable(false)
+                .setView(view)
+
+            val later = view.findViewById<AppCompatTextView>(R.id.laterTv)
+            val ratingBar = view.findViewById<AppCompatRatingBar>(R.id.ratingBar)
+
+            val alertDialog = builder.show()
+            ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                if (rating <= 4.0) {
+                    contactSupport(context)
+                    alertDialog.dismiss()
+                } else {
+                    rateAppOnPlay(context)
+                    alertDialog.dismiss()
+                }
+            }
+            later.setOnClickListener {
+                alertDialog.dismiss()
+            }
+        }
+
+        private fun rateAppOnPlay(context: AppCompatActivity) {
+            val rateIntent =
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=" + context.packageName)
+                )
+            context.startActivity(rateIntent)
+        }
+
+        fun contactSupport(context: AppCompatActivity) {
+            val intent = Intent(Intent.ACTION_SENDTO)
+            // only email apps should handle this
+            intent.type = "message/rfc822"
+            intent.data = Uri.parse("mailto:")
+            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
+            intent.putExtra(Intent.EXTRA_SUBJECT, "")
+            try {
+                context.startActivity(Intent.createChooser(intent, "Send Mail..."))
+            } catch (e: Exception) {
+                Toast.makeText(context, "No app found to handle this intent", Toast.LENGTH_LONG)
+                    .show()
+            }
+
+
         }
 
     }
