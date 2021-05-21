@@ -9,13 +9,9 @@ import android.os.StrictMode
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.RatingBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatRatingBar
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -60,7 +56,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var appSettings: AppSettings
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
-
     companion object {
         lateinit var nextStepTextView: MaterialTextView
     }
@@ -182,6 +177,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         when (item.itemId) {
             R.id.barcode_history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+            }
+            R.id.nav_setting -> {
+                startActivity(Intent(context, SettingsActivity::class.java))
             }
             R.id.nav_rateUs -> {
                 rateUs(this)

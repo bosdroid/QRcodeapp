@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
-import android.os.Build
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatRatingBar
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
@@ -166,15 +167,23 @@ open class BaseActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_SENDTO)
             // only email apps should handle this
             intent.data = Uri.parse("mailto:")
-            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
-            intent.putExtra(Intent.EXTRA_SUBJECT, "")
-            if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            }else{
-                Toast.makeText(context,"No app found to handle this intent",Toast.LENGTH_LONG).show()
-            }
+             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
+             intent.putExtra(Intent.EXTRA_SUBJECT, "")
+             if (intent.resolveActivity(context.packageManager) != null) {
+                 context.startActivity(intent)
+             } else {
+                 Toast.makeText(context, "No app found to handle this intent", Toast.LENGTH_LONG)
+                     .show()
+             }
 
 
+         }
+
+        fun setUpToolbar(context: AppCompatActivity, toolbar: Toolbar, title: String) {
+            context.setSupportActionBar(toolbar)
+            context.supportActionBar!!.title = title
+            context.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
         }
 
 

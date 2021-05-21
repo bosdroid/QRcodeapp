@@ -1,25 +1,20 @@
 package com.expert.qrgenerator.view.fragments
 
-import android.content.Context
-import android.content.Intent
+import android.content.*
+import android.content.Context.VIBRATOR_SERVICE
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import androidx.fragment.app.Fragment
+import android.media.MediaPlayer
+import android.os.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.text.isDigitsOnly
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.budiyev.android.codescanner.AutoFocusMode
-import com.budiyev.android.codescanner.CodeScanner
-import com.budiyev.android.codescanner.CodeScannerView
-import com.budiyev.android.codescanner.DecodeCallback
-import com.budiyev.android.codescanner.ErrorCallback
-import com.budiyev.android.codescanner.ScanMode
+import androidx.preference.PreferenceManager
+import com.budiyev.android.codescanner.*
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
@@ -34,7 +29,7 @@ class ScannerFragment : Fragment() {
     private var codeScanner: CodeScanner? = null
     private lateinit var scannerView: CodeScannerView
     private lateinit var appViewModel: AppViewModel
-
+    private lateinit var prefs: SharedPreferences
     override fun onAttach(context: Context) {
         super.onAttach(context)
         appViewModel = ViewModelProvider(
@@ -50,7 +45,7 @@ class ScannerFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_scanner, container, false)
-
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
         initViews(v)
 
         return v
@@ -86,34 +81,27 @@ class ScannerFragment : Fragment() {
                 decodeCallback = DecodeCallback {
                     requireActivity().runOnUiThread {
                         val text = it.text
-                        var qrHistory:CodeHistory?=null
-                        val type = if (text.contains("http") || text.contains("https") || text.contains("www")){
-                            "link"
-                        }
-                        else if(text.isDigitsOnly()){
-                            "number"
-                        }
-                        else if(text.contains("VCARD") || text.contains("vcard")){
-                            "contact"
-                        }
-                        else if(text.contains("WIFI:") || text.contains("wifi:")){
-                            "wifi"
-                        }
-                        else if(text.contains("tel:")){
-                            "phone"
-                        }
-                        else if(text.contains("smsto:") || text.contains("sms:")){
-                            "sms"
-                        }
-                        else if(text.contains("instagram")){
-                            "instagram"
-                        }
-                        else if(text.contains("whatsapp")){
-                            "whatsapp"
-                        }
-                        else{
-                            "text"
-                        }
+                        var qrHistory: CodeHistory? = null
+                        val type =
+                            if (text.contains("http") || text.contains("https") || text.contains("www")) {
+                                "link"
+                            } else if (text.isDigitsOnly()) {
+                                "number"
+                            } else if (text.contains("VCARD") || text.contains("vcard")) {
+                                "contact"
+                            } else if (text.contains("WIFI:") || text.contains("wifi:")) {
+                                "wifi"
+                            } else if (text.contains("tel:")) {
+                                "phone"
+                            } else if (text.contains("smsto:") || text.contains("sms:")) {
+                                "sms"
+                            } else if (text.contains("instagram")) {
+                                "instagram"
+                            } else if (text.contains("whatsapp")) {
+                                "whatsapp"
+                            } else {
+                                "text"
+                            }
                         if (text.isNotEmpty()) {
 
                             if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
@@ -149,6 +137,9 @@ class ScannerFragment : Fragment() {
                                 )
                                 appViewModel.insert(qrHistory)
                             }
+                            playSound(true)
+                            generateVibrate()
+                            copyToClipBoard(text)
                             Toast.makeText(
                                 requireActivity(),
                                 "Scan data saved successfully!",
@@ -156,16 +147,24 @@ class ScannerFragment : Fragment() {
                             ).show()
                             Handler(Looper.myLooper()!!).postDelayed({
                                 val intent = Intent(context, CodeDetailActivity::class.java)
-                                intent.putExtra("HISTORY_ITEM",qrHistory)
+                                intent.putExtra("HISTORY_ITEM", qrHistory)
                                 requireActivity().startActivity(intent)
-                            },2000)
+                            }, 2000)
                         }
+
+                        if (it.text == null) {
+
+                            playSound(false)
+                        }
+
                     }
                 }
                 errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
                     requireActivity().runOnUiThread {
-//                Toast.makeText(this, "Camera initialization error: ${it.message}",
-//                    Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            requireContext(), "Camera initialization error: ${it.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
 
@@ -226,6 +225,45 @@ class ScannerFragment : Fragment() {
             else -> {
 
             }
+        }
+    }
+
+    private fun playSound(isSuccess: Boolean) {
+        val isSounding = prefs.getBoolean(requireContext().getString(R.string.key_sound), false)
+        if (isSounding) {
+            var player: MediaPlayer? = null
+            if (isSuccess) {
+                player = MediaPlayer.create(requireContext(), R.raw.succes_beep)
+            } else {
+                player = MediaPlayer.create(requireContext(), R.raw.error_beep)
+
+            }
+            player.start()
+        }
+    }
+
+    private fun generateVibrate() {
+        val isVibrate = prefs.getBoolean(requireContext().getString(R.string.key_vibration), false)
+        if (isVibrate) {
+            if (Build.VERSION.SDK_INT >= 26) {
+                (requireContext().getSystemService(VIBRATOR_SERVICE) as Vibrator).vibrate(
+                    VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE)
+                )
+            } else {
+                (requireContext().getSystemService(VIBRATOR_SERVICE) as Vibrator).vibrate(150)
+            }
+        }
+    }
+
+    private fun copyToClipBoard(content: String) {
+        val isAllowCopy =
+            prefs.getBoolean(requireContext().getString(R.string.key_clipboard), false)
+        if (isAllowCopy) {
+            val clipboard = requireContext()
+                .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Scan code", content)
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(requireContext(), "copied", Toast.LENGTH_LONG).show()
         }
     }
 }
