@@ -122,4 +122,33 @@
     <string name="add_table_hin_text">Enter the table name</string>
     <string name="create_table_hint_text">Create Table</string>
     <string name="submit">Submit</string>
+    <string name="tables_data">Tables Data</string>
+    <string name="menu">Menu</string>
+    <string name="contacts">Contacts</string>
+    <string name="settings">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="vibration_summary">Turn on/off mobile vibration</string>
+    <string name="summary_sound">Turn on/off mobile sound</string>
+    <string name="summary_clipboard">Turn on/off auto copy to clipboard</string>
+    <string name="title_vibration">Vibration</string>
+    <string name="title_sound">Sound</string>
+    <string name="title_clipboard">Auto copy to clipboard</string>
+    <string name="key_sound">key_sound</string>
+    <string name="key_vibration">key_vibration</string>
+    <string name="key_clipboard">key_clipboard</string>
 </resources>

@@ -1,8 +1,10 @@
 package com.expert.qrgenerator.utils
 
 import android.content.Context
+import android.database.Cursor
 import android.util.Log
 import com.expert.qrgenerator.model.Table
+import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.sqlite.Database
 
 class TableGenerator(context: Context) {
@@ -31,5 +33,9 @@ class TableGenerator(context: Context) {
 
     fun tableExists(tableName: String):Boolean{
         return database.tableExists(tableName)
+    }
+
+    fun getTableDate(tableName: String):List<TableObject>{
+        return database.getTableDate(tableName)
     }
 }

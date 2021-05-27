@@ -5,6 +5,9 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import com.expert.qrgenerator.model.TableObject
+import com.google.gson.Gson
 import java.util.*
 
 
@@ -13,46 +16,65 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
     companion object {
         private const val databaseVersion = 1
         private const val databaseName = "magic_qr_generator_database"
-        private const val KEY_ID = "id"
-        private const val KEY_TABLE_NAME = "table_name"
-        private const val TABLE = "tables"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-//        val createTable = ("CREATE TABLE " + TABLE + "("
-//                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-//                + KEY_TABLE_NAME + " TEXT )")
-//        db!!.execSQL(createTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        // Drop older table if existed
-//        db!!.execSQL("DROP TABLE IF EXISTS $TABLE")
         onCreate(db)
     }
 
 
-//    fun getAllTables(): List<Table> {
-//        val db = this.readableDatabase
-//        val selectQuery = "SELECT  * FROM $TABLE"
-//        val tableList = mutableListOf<Table>()
-//        val cursor: Cursor = db.rawQuery(selectQuery, null)
-//        if (cursor.moveToFirst()) {
-//            do {
-//                val table = Table(cursor.getString(0).toInt(), cursor.getString(1))
-//                tableList.add(table)
-//            } while (cursor.moveToNext())
-//        }
-//        db.close()
-//        return tableList
-//
-//    }
+    fun getTableDate(tableName: String): List<TableObject> {
+        val db = this.readableDatabase
+        val columns = getTableColumns(tableName)
+        val selectQuery = "SELECT  * FROM $tableName"
+        val tableObjectList = mutableListOf<TableObject>()
+        val list = mutableListOf<Pair<String, String>>()
+        var tableObject:TableObject?=null
+        val cursor: Cursor = db.rawQuery(selectQuery, null)
+        if (cursor.moveToFirst()) {
+            do {
+                tableObject = TableObject(
+                    cursor.getString(0).toInt(),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(4),
+                    cursor.getString(5)
+                )
+
+                if (columns!!.size >=7){
+                    for (i in 7 until columns.size) {
+                        val col = columns[i]
+                        var pair: Pair<String, String>? = null
+                        pair = if (i == 0) {
+                            Pair(col, cursor.getString(i))
+                        } else {
+                            Pair(col, cursor.getString(i))
+                        }
+                        list.add(pair)
+                    }
+                    tableObject.dynamicColumns.addAll(list)
+                }
+                tableObjectList.add(tableObject)
+            } while (cursor.moveToNext())
+        }
+        db.close()
+        return tableObjectList
+
+    }
 
     fun insertData(tableName: String, data: List<Pair<String, String>>) {
         val db = this.writableDatabase
         val values = ContentValues()
         for (i in data.indices) {
-            values.put(data[i].first, data[i].second)
+            if (data[i].second.isEmpty()) {
+                continue
+            } else {
+                values.put(data[i].first, data[i].second)
+            }
         }
         db.insert(tableName, null, values)
         db.close()
@@ -67,11 +89,11 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             tableName
         }
         val createTable =
-            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT)")
+            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,title TEXT,description TEXT,brand TEXT,country TEXT)")
         db.execSQL(createTable)
     }
 
-    fun addNewColumn(tableName: String, column: Pair<String, String>,defaultValue:String) {
+    fun addNewColumn(tableName: String, column: Pair<String, String>, defaultValue: String) {
         val db = this.writableDatabase
         var cName = ""
         cName = if (column.first.contains(" ")) {
@@ -80,13 +102,13 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             column.first
         }
         if (tableExists(tableName)) {
-            if (defaultValue.isNotEmpty()){
-                val query = "ALTER TABLE ${tableName.toLowerCase(Locale.ENGLISH)} ADD COLUMN $cName ${column.second} DEFAULT $defaultValue"
+            if (defaultValue.isNotEmpty()) {
+                val query =
+                    "ALTER TABLE ${tableName.toLowerCase(Locale.ENGLISH)} ADD COLUMN $cName ${column.second} DEFAULT $defaultValue"
                 db.execSQL(query)
-            }
-            else
-            {
-                val query = "ALTER TABLE ${tableName.toLowerCase(Locale.ENGLISH)} ADD COLUMN $cName ${column.second}"
+            } else {
+                val query =
+                    "ALTER TABLE ${tableName.toLowerCase(Locale.ENGLISH)} ADD COLUMN $cName ${column.second}"
                 db.execSQL(query)
             }
         }

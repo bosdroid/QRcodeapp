@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatRatingBar
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
@@ -174,7 +176,13 @@ open class BaseActivity : AppCompatActivity() {
                     .show()
             }
 
+        }
 
+        fun setUpToolbar(context: AppCompatActivity, toolbar: Toolbar, title: String) {
+            context.setSupportActionBar(toolbar)
+            context.supportActionBar!!.title = title
+            context.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
         }
 
     }

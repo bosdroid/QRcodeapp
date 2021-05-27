@@ -9,6 +9,7 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".App"
@@ -23,7 +24,12 @@
         android:theme="@style/Theme.QRGenerator"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
-        <activity android:name=".view.activities.CreateTableActivity"></activity>
+        <activity android:name=".view.activities.TableViewActivity"></activity>
+        <activity
+            android:name=".view.activities.SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity android:name=".view.activities.TablesDataActivity" />
+        <activity android:name=".view.activities.CreateTableActivity" />
         <activity android:name=".view.activities.TablesActivity" />
         <activity android:name=".view.activities.ProfileActivity" />
         <activity android:name=".view.activities.CodeDetailActivity" />

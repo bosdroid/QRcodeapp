@@ -182,6 +182,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.tables -> {
                 startActivity(Intent(context, TablesActivity::class.java))
             }
+            R.id.tables_data -> {
+                startActivity(Intent(context, TablesDataActivity::class.java))
+            }
             R.id.nav_rateUs -> {
                 rateUs(this)
             }
@@ -407,10 +410,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.login).isVisible = false
             mNavigation.menu.findItem(R.id.logout).isVisible = true
             mNavigation.menu.findItem(R.id.profile).isVisible = true
+            mNavigation.menu.findItem(R.id.tables).isVisible = true
+            mNavigation.menu.findItem(R.id.barcode_history).isVisible = true
+            mNavigation.menu.findItem(R.id.tables_data).isVisible = true
+
         } else {
             mNavigation.menu.findItem(R.id.login).isVisible = true
             mNavigation.menu.findItem(R.id.logout).isVisible = false
             mNavigation.menu.findItem(R.id.profile).isVisible = false
+            mNavigation.menu.findItem(R.id.tables).isVisible = true
+            mNavigation.menu.findItem(R.id.barcode_history).isVisible = false
+            mNavigation.menu.findItem(R.id.tables_data).isVisible = true
         }
     }
 

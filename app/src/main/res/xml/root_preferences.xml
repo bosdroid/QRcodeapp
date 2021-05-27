@@ -1,0 +1,28 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <PreferenceCategory>
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:icon="@drawable/ic_vibration"
+            android:summary="@string/vibration_summary"
+            app:key="@string/key_vibration"
+            app:title="@string/title_vibration" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:icon="@drawable/ic_sound"
+            android:summary="@string/summary_sound"
+            app:key="@string/key_sound"
+            app:title="@string/title_sound" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:icon="@drawable/ic_clipboard"
+            android:summary="@string/summary_clipboard"
+            app:key="@string/key_clipboard"
+            app:title="@string/title_clipboard" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
