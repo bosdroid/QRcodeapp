@@ -12,7 +12,7 @@ class DatabaseRepository(application: Application) {
 
     private var qrDao:QRDao
     private var scope = CoroutineScope(Dispatchers.IO)
-    private var dynamicQrList: LiveData<List<QREntity>>
+//    private var dynamicQrList: LiveData<List<QREntity>>
     private var allQRCodeHistory: LiveData<List<CodeHistory>>
     private var allScanQRCodeHistory: LiveData<List<CodeHistory>>
     private var allCreateQRCodeHistory: LiveData<List<CodeHistory>>
@@ -20,7 +20,7 @@ class DatabaseRepository(application: Application) {
     init {
         val appDatabase = AppDatabase.getInstance(application)
         qrDao = appDatabase.qrDao()
-        dynamicQrList = qrDao.getAllDynamicQrCodes()
+//        dynamicQrList = qrDao.getAllDynamicQrCodes()
         allQRCodeHistory = qrDao.getAllQRCodeHistory()
         allScanQRCodeHistory = qrDao.getAllScanQRCodeHistory()
         allCreateQRCodeHistory = qrDao.getAllCreateQRCodeHistory()
@@ -33,20 +33,20 @@ class DatabaseRepository(application: Application) {
         }
     }
 
-    fun update(inputUrl:String,url:String,id:Int){
-        scope.launch {
-            qrDao.update(inputUrl,url,id)
-        }
-    }
+//    fun update(inputUrl:String,url:String,id:Int){
+//        scope.launch {
+//            qrDao.update(inputUrl,url,id)
+//        }
+//    }
 
     fun delete(qrHistory: CodeHistory){
         scope.launch {
             qrDao.delete(qrHistory)
         }
     }
-    fun getAllDynamicQrCodes():LiveData<List<QREntity>>{
-        return dynamicQrList
-    }
+//    fun getAllDynamicQrCodes():LiveData<List<QREntity>>{
+//        return dynamicQrList
+//    }
 
     fun getAllQRCodeHistory():LiveData<List<CodeHistory>>{
         return allQRCodeHistory

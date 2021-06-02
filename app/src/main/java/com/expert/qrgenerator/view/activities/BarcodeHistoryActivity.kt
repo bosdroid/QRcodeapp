@@ -42,7 +42,7 @@ class BarcodeHistoryActivity : BaseActivity() {
         viewPagerAdapter = ViewPagerAdapter(fm, lifecycle)
         pager2!!.adapter = viewPagerAdapter
 
-        tabLayout!!.addTab(tabLayout!!.newTab().setText(getString(R.string.scan)))
+        tabLayout!!.addTab(tabLayout!!.newTab().setText(getString(R.string.tables)))
         tabLayout!!.addTab(tabLayout!!.newTab().setText(getString(R.string.create)))
 
         tabLayout!!.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{

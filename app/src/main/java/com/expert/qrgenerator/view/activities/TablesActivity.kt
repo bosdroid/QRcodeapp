@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TablesAdapter
 import com.expert.qrgenerator.model.Table
+import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -86,8 +87,13 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
     }
 
     override fun onAddItemClick(position: Int) {
-        //startActivity(Intent(context, CreateTableActivity::class.java))
-        addTableDialog()
+        if (Constants.userData != null){
+            addTableDialog()
+        }
+        else{
+            showAlert(context,"You can not create dynamic table without account login!")
+        }
+
     }
 
 

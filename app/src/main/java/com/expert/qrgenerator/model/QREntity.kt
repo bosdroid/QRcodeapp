@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
-@Entity(tableName = "dynamic_qr_codes")
+//@Entity(tableName = "dynamic_qr_codes")
 data class QREntity (
     @ColumnInfo(name = "login") val login:String,
     @ColumnInfo(name = "qrId") val qrId:String,

@@ -27,11 +27,13 @@ import com.budiyev.android.codescanner.ScanMode
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
+import com.expert.qrgenerator.view.activities.TablesActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -46,7 +48,8 @@ class ScannerFragment : Fragment() {
     private lateinit var tableGenerator: TableGenerator
     private var tableName: String = ""
     private lateinit var tablesSpinner: AppCompatSpinner
-    private var idsList = mutableListOf<Pair<String,TextInputEditText>>()
+    private var idsList = mutableListOf<Pair<String, TextInputEditText>>()
+    private lateinit var addNewTableBtn: MaterialButton
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -74,9 +77,13 @@ class ScannerFragment : Fragment() {
     private fun initViews(view: View) {
         scannerView = view.findViewById(R.id.scanner_view)
         tablesSpinner = view.findViewById(R.id.tables_spinner)
+        addNewTableBtn = view.findViewById(R.id.add_new_table_btn)
+        addNewTableBtn.setOnClickListener {
+            startActivity(Intent(requireActivity(), TablesActivity::class.java))
+        }
     }
 
-    private fun getTableList(){
+    private fun getTableList() {
         val tablesList = mutableListOf<String>()
         tablesList.addAll(tableGenerator.getAllDatabaseTables())
         if (tablesList.isNotEmpty()) {
@@ -128,141 +135,156 @@ class ScannerFragment : Fragment() {
                 decodeCallback = DecodeCallback {
                     requireActivity().runOnUiThread {
                         val text = it.text
-                        if (tableName.isEmpty()){
-                            BaseActivity.showAlert(requireActivity(),text)
-                        }
-                        else {
-                            val columns = tableGenerator.getTableColumns(tableName)
-                            val scanResultLayout = LayoutInflater.from(requireActivity())
-                                .inflate(R.layout.scan_result_dialog, null)
-                            val codeDataTInputView =
-                                scanResultLayout.findViewById<TextInputEditText>(R.id.scan_result_dialog_code_data)
-                            val tableDetailLayoutWrapper =
-                                scanResultLayout.findViewById<LinearLayout>(R.id.table_detail_layout_wrapper)
-                            val submitBtn =
-                                scanResultLayout.findViewById<MaterialButton>(R.id.scan_result_dialog_submit_btn)
-
-                            for (i in columns!!.indices) {
-                                val value = columns[i]
-                                if (value == "id") {
-                                    continue
-                                } else if (value == "code_data") {
-                                    idsList.add(Pair(value, codeDataTInputView))
-                                    codeDataTInputView.setText(text)
+                        if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
+                            if (Constants.userData != null) {
+                                tableGenerator.insertDefaultTable(
+                                    text,
+                                    BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
+                                )
+                            } else {
+                                if (tableName.isEmpty()) {
+                                    BaseActivity.showAlert(requireActivity(), text)
                                 } else {
-                                    val tableRowLayout = LayoutInflater.from(requireContext())
-                                        .inflate(R.layout.scan_result_table_row_layout, null)
-                                    val columnName =
-                                        tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
-                                    val columnValue =
-                                        tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
-                                    columnName.text = value
-                                    columnValue.setText("")
-                                    idsList.add(Pair(value, columnValue))
-                                    tableDetailLayoutWrapper.addView(tableRowLayout)
+                                    val columns = tableGenerator.getTableColumns(tableName)
+                                    val scanResultLayout = LayoutInflater.from(requireActivity())
+                                        .inflate(R.layout.scan_result_dialog, null)
+                                    val codeDataTInputView =
+                                        scanResultLayout.findViewById<TextInputEditText>(R.id.scan_result_dialog_code_data)
+                                    val tableDetailLayoutWrapper =
+                                        scanResultLayout.findViewById<LinearLayout>(R.id.table_detail_layout_wrapper)
+                                    val submitBtn =
+                                        scanResultLayout.findViewById<MaterialButton>(R.id.scan_result_dialog_submit_btn)
+
+                                    for (i in columns!!.indices) {
+                                        val value = columns[i]
+                                        if (value == "id") {
+                                            continue
+                                        } else if (value == "code_data") {
+                                            idsList.add(Pair(value, codeDataTInputView))
+                                            codeDataTInputView.setText(text)
+                                        } else {
+                                            val tableRowLayout =
+                                                LayoutInflater.from(requireContext())
+                                                    .inflate(
+                                                        R.layout.scan_result_table_row_layout,
+                                                        null
+                                                    )
+                                            val columnName =
+                                                tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
+                                            val columnValue =
+                                                tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
+                                            columnName.text = value
+                                            columnValue.setText("")
+                                            idsList.add(Pair(value, columnValue))
+                                            tableDetailLayoutWrapper.addView(tableRowLayout)
+                                        }
+                                    }
+
+                                    val builder = MaterialAlertDialogBuilder(requireActivity())
+                                    builder.setView(scanResultLayout)
+                                    builder.setCancelable(false)
+                                    val alert = builder.create()
+                                    alert.show()
+
+                                    submitBtn.setOnClickListener {
+                                        alert.dismiss()
+                                        BaseActivity.startLoading(requireActivity())
+                                        val params = mutableListOf<Pair<String, String>>()
+                                        for (i in 0 until idsList.size) {
+                                            val pair = idsList[i]
+                                            params.add(
+                                                Pair(
+                                                    pair.first,
+                                                    pair.second.text.toString().trim()
+                                                )
+                                            )
+                                        }
+                                        tableGenerator.insertData(tableName, params)
+                                        Handler(Looper.myLooper()!!).postDelayed({
+                                            BaseActivity.dismiss()
+                                            Toast.makeText(
+                                                requireActivity(),
+                                                "Scan data saved successfully!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+
+                                        }, 1000)
+                                    }
                                 }
                             }
+                        } else {
 
-                            val builder = MaterialAlertDialogBuilder(requireActivity())
-                            builder.setView(scanResultLayout)
-                            builder.setCancelable(false)
-                            val alert = builder.create()
-                            alert.show()
-
-                            submitBtn.setOnClickListener {
-                                alert.dismiss()
-                                BaseActivity.startLoading(requireActivity())
-                                val params = mutableListOf<Pair<String, String>>()
-                                for (i in 0 until idsList.size) {
-                                    val pair = idsList[i]
-                                    params.add(Pair(pair.first, pair.second.text.toString().trim()))
+                            var qrHistory: CodeHistory? = null
+                            val type =
+                                if (text.contains("http") || text.contains("https") || text.contains(
+                                        "www"
+                                    )
+                                ) {
+                                    "link"
+                                } else if (text.isDigitsOnly()) {
+                                    "number"
+                                } else if (text.contains("VCARD") || text.contains("vcard")) {
+                                    "contact"
+                                } else if (text.contains("WIFI:") || text.contains("wifi:")) {
+                                    "wifi"
+                                } else if (text.contains("tel:")) {
+                                    "phone"
+                                } else if (text.contains("smsto:") || text.contains("sms:")) {
+                                    "sms"
+                                } else if (text.contains("instagram")) {
+                                    "instagram"
+                                } else if (text.contains("whatsapp")) {
+                                    "whatsapp"
+                                } else {
+                                    "text"
                                 }
-                                tableGenerator.insertData(tableName, params)
-                                Handler(Looper.myLooper()!!).postDelayed({
-                                    BaseActivity.dismiss()
-                                    Toast.makeText(
-                                        requireActivity(),
-                                        "Scan data saved successfully!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                            if (text.isNotEmpty()) {
 
-                                }, 1000)
+                                if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
+                                    qrHistory = CodeHistory(
+                                        "sattar",
+                                        "${System.currentTimeMillis()}",
+                                        text,
+                                        "code",
+                                        "free",
+                                        "barcode",
+                                        "scan",
+                                        "",
+                                        0,
+                                        "",
+                                        System.currentTimeMillis()
+                                    )
+
+                                    appViewModel.insert(qrHistory)
+
+                                } else {
+                                    qrHistory = CodeHistory(
+                                        "sattar",
+                                        "${System.currentTimeMillis()}",
+                                        text,
+                                        type,
+                                        "free",
+                                        "qr",
+                                        "scan",
+                                        "",
+                                        0,
+                                        "",
+                                        System.currentTimeMillis()
+                                    )
+                                    appViewModel.insert(qrHistory)
+                                }
+                                Toast.makeText(
+                                    requireActivity(),
+                                    "Scan data saved successfully!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                Handler(Looper.myLooper()!!).postDelayed({
+                                    val intent = Intent(context, CodeDetailActivity::class.java)
+                                    intent.putExtra("HISTORY_ITEM", qrHistory)
+                                    requireActivity().startActivity(intent)
+                                }, 2000)
                             }
                         }
-//                        var qrHistory:CodeHistory?=null
-//                        val type = if (text.contains("http") || text.contains("https") || text.contains("www")){
-//                            "link"
-//                        }
-//                        else if(text.isDigitsOnly()){
-//                            "number"
-//                        }
-//                        else if(text.contains("VCARD") || text.contains("vcard")){
-//                            "contact"
-//                        }
-//                        else if(text.contains("WIFI:") || text.contains("wifi:")){
-//                            "wifi"
-//                        }
-//                        else if(text.contains("tel:")){
-//                            "phone"
-//                        }
-//                        else if(text.contains("smsto:") || text.contains("sms:")){
-//                            "sms"
-//                        }
-//                        else if(text.contains("instagram")){
-//                            "instagram"
-//                        }
-//                        else if(text.contains("whatsapp")){
-//                            "whatsapp"
-//                        }
-//                        else{
-//                            "text"
-//                        }
-//                        if (text.isNotEmpty()) {
-//
-//                            if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
-//                                qrHistory = CodeHistory(
-//                                    "sattar",
-//                                    "${System.currentTimeMillis()}",
-//                                    text,
-//                                    "code",
-//                                    "free",
-//                                    "barcode",
-//                                    "scan",
-//                                    "",
-//                                    0,
-//                                    "",
-//                                    System.currentTimeMillis()
-//                                )
-//
-//                                appViewModel.insert(qrHistory)
-//
-//                            } else {
-//                                qrHistory = CodeHistory(
-//                                    "sattar",
-//                                    "${System.currentTimeMillis()}",
-//                                    text,
-//                                    type,
-//                                    "free",
-//                                    "qr",
-//                                    "scan",
-//                                    "",
-//                                    0,
-//                                    "",
-//                                    System.currentTimeMillis()
-//                                )
-//                                appViewModel.insert(qrHistory)
-//                            }
-//                            Toast.makeText(
-//                                requireActivity(),
-//                                "Scan data saved successfully!",
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                            Handler(Looper.myLooper()!!).postDelayed({
-//                                val intent = Intent(context, CodeDetailActivity::class.java)
-//                                intent.putExtra("HISTORY_ITEM",qrHistory)
-//                                requireActivity().startActivity(intent)
-//                            },2000)
-//                        }
                     }
                 }
                 errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS

@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
@@ -90,18 +91,22 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        displayColumnDetails()
+        displayColumnDetails("")
     }
 
-    private fun displayColumnDetails() {
+    private fun displayColumnDetails(newColumn:String) {
+        var details = ""
         if (tableName.isNotEmpty()) {
             if (tableGenerator.tableExists(tableName)) {
                 val columns = tableGenerator.getTableColumns(tableName)
                 if (columns != null && columns.isNotEmpty()) {
-                    var details = ""
                     for (i in columns.indices) {
                         details += "Column: ${columns[i]}\n"
                     }
+                    tableColumnsView.text = details
+                }
+                if (newColumn.isNotEmpty()){
+                    details += "Column: $newColumn\n"
                     tableColumnsView.text = details
                 }
             }
@@ -109,17 +114,22 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun resetViews() {
+        displayColumnDetails(tableNewFieldNameTInput.text.toString().trim())
         tableNewFieldNameTInput.setText("")
         nonChangeableCheckBox.isChecked = false
         defaultValueFieldTInput.setText("")
-        displayColumnDetails()
     }
 
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.add_new_field_btn -> {
-                addNewFieldBtn.visibility = View.GONE
-                addNewFieldLayoutWrapper.visibility = View.VISIBLE
+                if (Constants.userData != null){
+                    addNewFieldBtn.visibility = View.GONE
+                    addNewFieldLayoutWrapper.visibility = View.VISIBLE
+                }
+                else{
+                    showAlert(context,"You can not create dynamic table without account login!")
+                }
             }
             R.id.field_submit_btn -> {
                 if (validation()) {

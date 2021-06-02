@@ -56,7 +56,7 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
 
     override fun getItemViewType(position: Int): Int {
         var viewType = 1 //Default Layout is 1
-        if (position == 0) viewType = 0 //if zero, it will be a header view
+        if (position == tableList.size) viewType = 0 //if zero, it will be a header view
         return viewType
     }
 
@@ -69,11 +69,11 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
                 }
             }
             else -> {
-                val table = tableList[position-1]
+                val table = tableList[position]
                 val viewHolder = holder as ItemViewHolder
                 viewHolder.tableNameView.text = table
                 viewHolder.itemView.setOnClickListener {
-                    mListener!!.onItemClick(position-1)
+                    mListener!!.onItemClick(position)
                 }
             }
         }

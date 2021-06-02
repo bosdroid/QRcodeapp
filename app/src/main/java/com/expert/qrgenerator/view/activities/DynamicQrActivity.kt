@@ -80,20 +80,20 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
 
     // THIS FUNCTION WILL DISPLAY THE LIST OF CREATED DYNAMIC QR CODE
     private fun displayDynamicQrCodes() {
-        appViewModel.getAllDynamicQrCodes().observe(this, Observer { list ->
-
-            if (list != null && list.isEmpty()) {
-                dynamicQrRecyclerView.visibility = View.GONE
-                emptyView.visibility = View.VISIBLE
-            } else {
-                dynamicQrList.clear()
-                emptyView.visibility = View.GONE
-                dynamicQrRecyclerView.visibility = View.VISIBLE
-
-                dynamicQrList.addAll(list)
-                adapter.notifyDataSetChanged()
-            }
-        })
+//        appViewModel.getAllDynamicQrCodes().observe(this, Observer { list ->
+//
+//            if (list != null && list.isEmpty()) {
+//                dynamicQrRecyclerView.visibility = View.GONE
+//                emptyView.visibility = View.VISIBLE
+//            } else {
+//                dynamicQrList.clear()
+//                emptyView.visibility = View.GONE
+//                dynamicQrRecyclerView.visibility = View.VISIBLE
+//
+//                dynamicQrList.addAll(list)
+//                adapter.notifyDataSetChanged()
+//            }
+//        })
 
     }
 
@@ -162,7 +162,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
                             url
                         }
 
-                        appViewModel.update(inputValue,url,selectedDynamicUrl.id)
+//                        appViewModel.update(inputValue,url,selectedDynamicUrl.id)
                         showAlert(context,"Dynamic Url update Successfully!")
                     }
                     else{

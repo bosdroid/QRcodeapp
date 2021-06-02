@@ -68,7 +68,7 @@ class CreateFragment : Fragment() {
 
     private fun getDisplayCreateHistory(){
         BaseActivity.startLoading(requireActivity())
-        appViewModel.getAllCreateQRCodeHistory().observe(this, Observer { list ->
+        appViewModel.getAllCreateQRCodeHistory().observe(requireActivity(), Observer { list ->
             BaseActivity.dismiss()
             if (list.isNotEmpty()){
                 qrCodeHistoryList.clear()

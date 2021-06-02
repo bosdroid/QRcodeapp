@@ -5,9 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import com.expert.qrgenerator.model.TableObject
-import com.google.gson.Gson
 import java.util.*
 
 
@@ -16,12 +14,20 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
     companion object {
         private const val databaseVersion = 1
         private const val databaseName = "magic_qr_generator_database"
+        private const val COLUMN_ID = "id"
+        private const val COLUMN_CODE_DATA = "code_data"
+        private const val COLUMN_DATE = "date"
+        private const val DEFAULT_TABLE_NAME = "default_table"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
+     val defaultTable = ("CREATE TABLE IF NOT EXISTS " + DEFAULT_TABLE_NAME + "("
+             + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CODE_DATA + " TEXT," + COLUMN_DATE + " TEXT)")
+        db!!.execSQL(defaultTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        db!!.execSQL("DROP TABLE IF EXISTS $DEFAULT_TABLE_NAME")
         onCreate(db)
     }
 
@@ -64,6 +70,15 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         db.close()
         return tableObjectList
 
+    }
+
+    fun insertDefaultTable(code_data:String,date:String){
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put("code_data",code_data)
+        values.put("date",date)
+        db.insert(DEFAULT_TABLE_NAME, null, values)
+        db.close()
     }
 
     fun insertData(tableName: String, data: List<Pair<String, String>>) {

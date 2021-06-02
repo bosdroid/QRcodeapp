@@ -38,4 +38,8 @@ class TableGenerator(context: Context) {
     fun getTableDate(tableName: String):List<TableObject>{
         return database.getTableDate(tableName)
     }
+
+    fun insertDefaultTable(code_data:String,date:String){
+        database.insertDefaultTable(code_data,date)
+    }
 }
