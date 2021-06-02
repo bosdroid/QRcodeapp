@@ -120,7 +120,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
             encodeDataTextView.text = codeHistory!!.data
             codeSequenceView.text = "Code ${codeHistory!!.id}"
-            dateTimeView.text = getFormattedDate(context, codeHistory!!.createdAt)
+            dateTimeView.text = getFormattedDate(context, codeHistory!!.createdAt.toLong())
         }
     }
 
@@ -258,7 +258,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             val datePaint = Paint()
             datePaint.textSize = 16.toFloat()
             canvas.drawText(
-                getFormattedDate(context, codeHistory!!.createdAt),
+                getFormattedDate(context, codeHistory!!.createdAt.toLong()),
                 30.toFloat(),
                 300.toFloat(),
                 datePaint

@@ -13,16 +13,6 @@
                     android:visible="false" />
 
                 <item
-                    android:icon="@drawable/ic_profile_black"
-                    android:id="@+id/profile"
-                    android:title="@string/profile"
-                    android:visible="false" />
-
-                <item
-                    android:id="@+id/nav_setting"
-                    android:icon="@drawable/ic_settings"
-                    android:title="@string/settings" />
-                <item
                     android:icon="@drawable/ic_history"
                     android:id="@+id/barcode_history"
                     android:title="@string/barcode_history_text"
@@ -37,17 +27,23 @@
                     />
 
                 <item
+                    android:icon="@drawable/ic_profile_black"
+                    android:id="@+id/profile"
+                    android:title="@string/profile"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/nav_setting"
+                    android:icon="@drawable/ic_settings"
+                    android:title="@string/settings" />
+
+                <item
                     android:title="@string/tables_data"
                     android:id="@+id/tables_data"
                     android:icon="@drawable/ic_table_view"
                     android:visible="false"
                     />
 
-                <item
-                    android:icon="@drawable/ic_star"
-                    android:id="@+id/nav_rateUs"
-                    android:title="@string/rate_us"
-                    android:visible="true" />
             </menu>
         </item>
 
@@ -55,6 +51,12 @@
 
     <item android:title="@string/contacts">
         <menu>
+
+            <item
+                android:icon="@drawable/ic_star"
+                android:id="@+id/nav_rateUs"
+                android:title="@string/rate_us"
+                android:visible="true" />
 
             <item
                 android:icon="@drawable/ic_share"

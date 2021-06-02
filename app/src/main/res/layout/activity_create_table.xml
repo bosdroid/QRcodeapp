@@ -37,12 +37,38 @@
         android:layout_margin="@dimen/eightDpMargin"
         android:padding="5dp"
         >
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="After scan you will fill following data"
+            android:textStyle="bold"
+            android:textSize="@dimen/largeText"
+            />
        <com.google.android.material.textview.MaterialTextView
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:layout_gravity="center_horizontal"
            android:id="@+id/table_columns_detail"
            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/table_columns_detail_layout"
+            android:padding="5dp"
+            >
+
+        </LinearLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="(You can add custom fields like brand / price / description)"
+            android:textSize="@dimen/smallText"
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/defaultDpMargin"
+            />
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,12 +96,27 @@
                android:hint="Please enter the field name"
                android:id="@+id/table_new_field_text_input"
                />
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Non Changeable Field"
-                android:id="@+id/non_changeable_check_box"
-                />
+
+             <RadioGroup
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:orientation="vertical"
+                 android:id="@+id/value_types_radio_group"
+                 >
+                 <com.google.android.material.radiobutton.MaterialRadioButton
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Non Changeable Field"
+                     android:id="@+id/non_changeable_radio_btn"
+                     />
+                 <com.google.android.material.radiobutton.MaterialRadioButton
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="List with Values Field"
+                     android:id="@+id/list_with_values_radio_btn"
+                     />
+             </RadioGroup>
+
              <com.google.android.material.textfield.TextInputEditText
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"

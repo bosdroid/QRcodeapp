@@ -87,7 +87,7 @@ class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList
         }
 
         holder.qrCodeDataView.text = qrHistory.data
-        holder.qrCodeCreatedAtView.text = BaseActivity.getFormattedDate(context,qrHistory.createdAt)
+        holder.qrCodeCreatedAtView.text = BaseActivity.getFormattedDate(context,qrHistory.createdAt.toLong())
     }
 
     override fun getItemCount(): Int {

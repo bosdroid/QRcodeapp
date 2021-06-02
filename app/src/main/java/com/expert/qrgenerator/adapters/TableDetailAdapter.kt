@@ -26,14 +26,12 @@ class TableDetailAdapter(val context: Context, var tableDetailList: ArrayList<Ta
         RecyclerView.ViewHolder(itemView) {
         val idTextView: MaterialTextView
         val codeDataTextView: MaterialTextView
-        val titleTextView: MaterialTextView
-        val descriptionTextView: MaterialTextView
+        val dateTextView: MaterialTextView
 
         init {
             idTextView = itemView.findViewById(R.id.table_id_view)
             codeDataTextView = itemView.findViewById(R.id.table_code_data_view)
-            titleTextView = itemView.findViewById(R.id.table_title_view)
-            descriptionTextView = itemView.findViewById(R.id.table_description_view)
+            dateTextView = itemView.findViewById(R.id.table_date_view)
 
             itemView.setOnClickListener {
                 mListener.onItemClick(layoutPosition)
@@ -55,8 +53,7 @@ class TableDetailAdapter(val context: Context, var tableDetailList: ArrayList<Ta
         val tableObject = tableDetailList[position]
         holder.idTextView.text = "${tableObject.id}"
         holder.codeDataTextView.text = tableObject.code_data
-        holder.titleTextView.text = tableObject.title
-        holder.descriptionTextView.text = tableObject.description
+        holder.dateTextView.text = tableObject.date
     }
 
     override fun getItemCount(): Int {

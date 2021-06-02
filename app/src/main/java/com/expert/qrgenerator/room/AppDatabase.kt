@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.expert.qrgenerator.model.QREntity
 import com.expert.qrgenerator.model.CodeHistory
 
-@Database(entities = [CodeHistory::class], version = 1,exportSchema = false)
+@Database(entities = [CodeHistory::class], version = 2,exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun qrDao() : QRDao

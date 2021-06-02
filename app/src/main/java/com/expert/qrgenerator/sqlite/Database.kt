@@ -13,7 +13,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
     companion object {
         private const val databaseVersion = 1
-        private const val databaseName = "magic_qr_generator_database"
+        private const val databaseName = "magic_qr_database"
         private const val COLUMN_ID = "id"
         private const val COLUMN_CODE_DATA = "code_data"
         private const val COLUMN_DATE = "date"
@@ -45,10 +45,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                 tableObject = TableObject(
                     cursor.getString(0).toInt(),
                     cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3),
-                    cursor.getString(4),
-                    cursor.getString(5)
+                    cursor.getString(2)
                 )
 
                 if (columns!!.size >=7){
@@ -104,7 +101,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             tableName
         }
         val createTable =
-            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,title TEXT,description TEXT,brand TEXT,country TEXT)")
+            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,date TEXT)")
         db.execSQL(createTable)
     }
 

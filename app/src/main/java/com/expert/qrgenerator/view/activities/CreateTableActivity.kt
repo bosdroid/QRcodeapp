@@ -4,10 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.LinearLayout
+import android.widget.RadioGroup
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.Toolbar
@@ -15,6 +17,7 @@ import androidx.core.content.ContextCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TableGenerator
+import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 
@@ -28,11 +31,14 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private lateinit var addNewFieldBtn: AppCompatButton
     private lateinit var addNewFieldLayoutWrapper: LinearLayout
     private lateinit var tableNewFieldNameTInput: TextInputEditText
-    private lateinit var nonChangeableCheckBox: AppCompatCheckBox
+    private lateinit var nonChangeableCheckBoxRadioButton: MaterialRadioButton
+    private lateinit var listWithValuesFieldRadioButton: MaterialRadioButton
+    private lateinit var fieldValueTypesRadioGroup:RadioGroup
     private lateinit var defaultValueFieldTInput: TextInputEditText
     private var isNonChangeableCheckBox = false
     private lateinit var submitBtnView: AppCompatButton
     private var defaultColumnValue: String = ""
+    private lateinit var tableColumnsDetailLayout:LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,18 +61,28 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         addNewFieldBtn.setOnClickListener(this)
         addNewFieldLayoutWrapper = findViewById(R.id.add_field_layout_wrapper)
         tableNewFieldNameTInput = findViewById(R.id.table_new_field_text_input)
-        nonChangeableCheckBox = findViewById(R.id.non_changeable_check_box)
+        nonChangeableCheckBoxRadioButton = findViewById(R.id.non_changeable_radio_btn)
+        listWithValuesFieldRadioButton = findViewById(R.id.list_with_values_radio_btn)
+        fieldValueTypesRadioGroup = findViewById(R.id.value_types_radio_group)
         defaultValueFieldTInput = findViewById(R.id.table_non_changeable_default_text_input)
         submitBtnView = findViewById(R.id.field_submit_btn)
         submitBtnView.setOnClickListener(this)
+        tableColumnsDetailLayout = findViewById(R.id.table_columns_detail_layout)
 
-        nonChangeableCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                isNonChangeableCheckBox = true
-                defaultValueFieldTInput.visibility = View.VISIBLE
-            } else {
-                isNonChangeableCheckBox = false
-                defaultValueFieldTInput.visibility = View.GONE
+        // fieldValueTypesRadioGroup RADIO GROUP LISTENER
+        fieldValueTypesRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.non_changeable_radio_btn -> {
+                    isNonChangeableCheckBox = true
+                    defaultValueFieldTInput.visibility = View.VISIBLE
+                }
+                R.id.list_with_values_radio_btn -> {
+                    isNonChangeableCheckBox = false
+                    defaultValueFieldTInput.visibility = View.GONE
+                }
+                else -> {
+
+                }
             }
         }
 
@@ -101,13 +117,31 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 val columns = tableGenerator.getTableColumns(tableName)
                 if (columns != null && columns.isNotEmpty()) {
                     for (i in columns.indices) {
-                        details += "Column: ${columns[i]}\n"
+                        //details += "Column: ${columns[i]}\n"
+                        val layout = LayoutInflater.from(context).inflate(R.layout.table_column_item_row,null)
+                        val columnNameView = layout.findViewById<MaterialTextView>(R.id.table_column_name)
+                        when (columns[i]) {
+                            "id" -> {
+                                columnNameView.text = "# of the barcode"
+                            }
+                            "code_data" -> {
+                                columnNameView.text = "Barcode data"
+                            }
+                            "date" -> {
+                                columnNameView.text  = "Date of scanning"
+                            }
+                        }
+                        tableColumnsDetailLayout.addView(layout)
                     }
-                    tableColumnsView.text = details
+//                    tableColumnsView.text = details
                 }
                 if (newColumn.isNotEmpty()){
-                    details += "Column: $newColumn\n"
-                    tableColumnsView.text = details
+                    val layout = LayoutInflater.from(context).inflate(R.layout.table_column_item_row,null)
+                    val columnNameView = layout.findViewById<MaterialTextView>(R.id.table_column_name)
+                    columnNameView.text  = newColumn
+                    tableColumnsDetailLayout.addView(layout)
+//                    details += "Column: $newColumn\n"
+//                    tableColumnsView.text = details
                 }
             }
         }
@@ -116,7 +150,6 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun resetViews() {
         displayColumnDetails(tableNewFieldNameTInput.text.toString().trim())
         tableNewFieldNameTInput.setText("")
-        nonChangeableCheckBox.isChecked = false
         defaultValueFieldTInput.setText("")
     }
 

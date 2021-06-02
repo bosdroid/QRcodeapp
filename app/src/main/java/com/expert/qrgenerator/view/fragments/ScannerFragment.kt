@@ -136,7 +136,7 @@ class ScannerFragment : Fragment() {
                     requireActivity().runOnUiThread {
                         val text = it.text
                         if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
-                            if (Constants.userData != null) {
+                            if (Constants.userData == null) {
                                 tableGenerator.insertDefaultTable(
                                     text,
                                     BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
@@ -162,7 +162,8 @@ class ScannerFragment : Fragment() {
                                         } else if (value == "code_data") {
                                             idsList.add(Pair(value, codeDataTInputView))
                                             codeDataTInputView.setText(text)
-                                        } else {
+                                        }
+                                        else {
                                             val tableRowLayout =
                                                 LayoutInflater.from(requireContext())
                                                     .inflate(
@@ -174,7 +175,12 @@ class ScannerFragment : Fragment() {
                                             val columnValue =
                                                 tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
                                             columnName.text = value
-                                            columnValue.setText("")
+                                            if (value == "date"){
+                                                columnValue.setText(BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis()))
+                                            }
+                                            else{
+                                                columnValue.setText("")
+                                            }
                                             idsList.add(Pair(value, columnValue))
                                             tableDetailLayoutWrapper.addView(tableRowLayout)
                                         }
@@ -250,9 +256,9 @@ class ScannerFragment : Fragment() {
                                         "barcode",
                                         "scan",
                                         "",
-                                        0,
+                                        "0",
                                         "",
-                                        System.currentTimeMillis()
+                                        System.currentTimeMillis().toString()
                                     )
 
                                     appViewModel.insert(qrHistory)
@@ -267,9 +273,9 @@ class ScannerFragment : Fragment() {
                                         "qr",
                                         "scan",
                                         "",
-                                        0,
+                                        "0",
                                         "",
-                                        System.currentTimeMillis()
+                                        System.currentTimeMillis().toString()
                                     )
                                     appViewModel.insert(qrHistory)
                                 }

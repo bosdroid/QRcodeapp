@@ -27,15 +27,15 @@ interface QRDao {
 //    fun getAllDynamicQrCodes():LiveData<List<QREntity>>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
-    @Query("SELECT * FROM codes_history ORDER BY qrId")
+    @Query("SELECT * FROM barcode_history ORDER BY qrId")
     fun getAllQRCodeHistory():LiveData<List<CodeHistory>>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
-    @Query("SELECT * FROM codes_history WHERE createdType='scan' ORDER BY qrId")
+    @Query("SELECT * FROM barcode_history ORDER BY qrId")
     fun getAllScanQRCodeHistory():LiveData<List<CodeHistory>>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
-    @Query("SELECT * FROM codes_history WHERE createdType='create' ORDER BY qrId")
+    @Query("SELECT * FROM barcode_history ORDER BY qrId")
     fun getAllCreateQRCodeHistory():LiveData<List<CodeHistory>>
 
 }

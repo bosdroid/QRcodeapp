@@ -72,17 +72,7 @@
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                android:layout_weight="1"
-               android:text="Title"
-               android:gravity="center"
-               android:textSize="@dimen/largeText"
-               android:layout_margin="@dimen/defaultDpMargin"
-               android:textColor="@color/black"
-               />
-           <com.google.android.material.textview.MaterialTextView
-               android:layout_width="0dp"
-               android:layout_height="wrap_content"
-               android:layout_weight="1"
-               android:text="Description"
+               android:text="Date"
                android:gravity="center"
                android:textSize="@dimen/largeText"
                android:layout_margin="@dimen/defaultDpMargin"

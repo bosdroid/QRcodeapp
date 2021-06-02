@@ -363,9 +363,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         "qr",
                         "create",
                         "",
-                        1,
+                        "1",
                         url,
-                        System.currentTimeMillis()
+                        System.currentTimeMillis().toString()
                     )
 
                     val intent = Intent(context, DesignActivity::class.java)
@@ -388,9 +388,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 "qr",
                 "create",
                 "",
-                0,
+                "0",
                 "",
-                System.currentTimeMillis()
+                System.currentTimeMillis().toString()
             )
             val intent = Intent(context, DesignActivity::class.java)
             intent.putExtra("ENCODED_TEXT", encodedTextData)
@@ -412,7 +412,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = true
             mNavigation.menu.findItem(R.id.tables).isVisible = true
             mNavigation.menu.findItem(R.id.barcode_history).isVisible = true
-            mNavigation.menu.findItem(R.id.tables_data).isVisible = true
+//            mNavigation.menu.findItem(R.id.tables_data).isVisible = true
 
         } else {
             mNavigation.menu.findItem(R.id.login).isVisible = true
@@ -420,7 +420,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = false
             mNavigation.menu.findItem(R.id.tables).isVisible = false
             mNavigation.menu.findItem(R.id.barcode_history).isVisible = false
-            mNavigation.menu.findItem(R.id.tables_data).isVisible = false
+//            mNavigation.menu.findItem(R.id.tables_data).isVisible = false
         }
     }
 

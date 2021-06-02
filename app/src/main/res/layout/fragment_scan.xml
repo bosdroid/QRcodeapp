@@ -37,8 +37,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:id="@+id/tables_recycler_view"
         tools:listitem="@layout/table_item_row"
+        android:id="@+id/tables_data_recyclerview"
         />
 
 

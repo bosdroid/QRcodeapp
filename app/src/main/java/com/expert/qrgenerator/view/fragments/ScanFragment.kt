@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.QrCodeHistoryAdapter
 import com.expert.qrgenerator.adapters.TablesAdapter
+import com.expert.qrgenerator.adapters.TablesDataAdapter
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
@@ -22,23 +23,24 @@ import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
 import com.expert.qrgenerator.view.activities.CreateTableActivity
+import com.expert.qrgenerator.view.activities.TableViewActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 
 
-class ScanFragment : Fragment(),TablesAdapter.OnItemClickListener {
+class ScanFragment : Fragment(),TablesDataAdapter.OnItemClickListener {
 
 //    private lateinit var qrCodeHistoryRecyclerView: RecyclerView
 //    private lateinit var emptyView: MaterialTextView
 //    private var qrCodeHistoryList = mutableListOf<CodeHistory>()
 //    private lateinit var adapter: QrCodeHistoryAdapter
 //    private lateinit var appViewModel: AppViewModel
-    private lateinit var tableRecyclerView: RecyclerView
+private lateinit var tableDataRecyclerView: RecyclerView
     private lateinit var tableGenerator: TableGenerator
     private var tableList = mutableListOf<String>()
-    private lateinit var adapter: TablesAdapter
+    private lateinit var adapter: TablesDataAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -63,11 +65,11 @@ class ScanFragment : Fragment(),TablesAdapter.OnItemClickListener {
 
     private fun initViews(view:View){
         tableGenerator = TableGenerator(requireActivity())
-        tableRecyclerView = view.findViewById(R.id.tables_recycler_view)
-        tableRecyclerView.layoutManager = LinearLayoutManager(context)
-        tableRecyclerView.hasFixedSize()
-        adapter = TablesAdapter(requireActivity(), tableList as ArrayList<String>)
-        tableRecyclerView.adapter = adapter
+        tableDataRecyclerView = view.findViewById(R.id.tables_data_recyclerview)
+        tableDataRecyclerView.layoutManager = LinearLayoutManager(context)
+        tableDataRecyclerView.hasFixedSize()
+        adapter = TablesDataAdapter(requireActivity(), tableList as ArrayList<String>)
+        tableDataRecyclerView.adapter = adapter
 //        emptyView = view.findViewById(R.id.emptyView)
 //        qrCodeHistoryRecyclerView = view.findViewById(R.id.qr_code_history_recyclerview)
 //        qrCodeHistoryRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -116,40 +118,9 @@ class ScanFragment : Fragment(),TablesAdapter.OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         val table = tableList[position]
-        val intent = Intent(requireActivity(), CreateTableActivity::class.java)
+        val intent = Intent(requireActivity(), TableViewActivity::class.java)
         intent.putExtra("TABLE_NAME",table)
         requireActivity().startActivity(intent)
     }
 
-    override fun onAddItemClick(position: Int) {
-        if (Constants.userData != null){
-            addTableDialog()
-        }
-        else{
-            BaseActivity.showAlert(requireActivity(),"You can not create dynamic table without account login!")
-        }
-
-    }
-
-
-    private fun addTableDialog(){
-        val tableCreateLayout = LayoutInflater.from(context).inflate(R.layout.add_table_layout,null)
-        val textInputBox = tableCreateLayout.findViewById<TextInputEditText>(R.id.add_table_text_input_field)
-        val tableCreateBtn = tableCreateLayout.findViewById<MaterialButton>(R.id.add_table_btn)
-        val builder = MaterialAlertDialogBuilder(requireActivity())
-        builder.setView(tableCreateLayout)
-        val alert = builder.create()
-        alert.show()
-        tableCreateBtn.setOnClickListener {
-            if(textInputBox.text.toString().isNotEmpty()){
-                tableGenerator.generateTable(textInputBox.text.toString().trim())
-                Toast.makeText(requireActivity(),"Table has been created successfully!", Toast.LENGTH_SHORT).show()
-                alert.dismiss()
-                displayTableList()
-            }
-            else{
-                BaseActivity.showAlert(requireActivity(), "Please enter the table name!")
-            }
-        }
-    }
 }

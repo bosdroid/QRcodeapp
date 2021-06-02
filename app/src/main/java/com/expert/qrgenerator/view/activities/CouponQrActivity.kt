@@ -269,9 +269,9 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                                 "qr",
                                 "create",
                                 "",
-                                0,
+                                "0",
                                 "",
-                                System.currentTimeMillis()
+                                System.currentTimeMillis().toString()
                             )
 
                             val intent = Intent(context,DesignActivity::class.java)

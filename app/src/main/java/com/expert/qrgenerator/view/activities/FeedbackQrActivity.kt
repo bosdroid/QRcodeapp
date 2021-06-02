@@ -160,9 +160,9 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                                 "qr",
                                 "create",
                                 "",
-                                0,
+                                "0",
                                 "",
-                                System.currentTimeMillis()
+                                System.currentTimeMillis().toString()
                             )
 
                             val intent = Intent(context, DesignActivity::class.java)

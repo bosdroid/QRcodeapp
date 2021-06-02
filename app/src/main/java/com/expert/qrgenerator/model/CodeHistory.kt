@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
-@Entity(tableName = "codes_history")
+@Entity(tableName = "barcode_history")
 data class CodeHistory (
         @ColumnInfo(name = "login") val login:String,
         @ColumnInfo(name = "qrId") val qrId:String,
@@ -16,9 +16,9 @@ data class CodeHistory (
         @ColumnInfo(name = "codeType") var codeType:String, // BARCODE OR QR
         @ColumnInfo(name = "createdType") var createdType:String, // SCAN OR CREATE
         @ColumnInfo(name = "localImagePath") var localImagePath:String,
-        @ColumnInfo(name = "isDynamic") var isDynamic:Int, // 0 OR 1
+        @ColumnInfo(name = "isDynamic") var isDynamic:String, // 0 OR 1
         @ColumnInfo(name = "generatedUrl") var generatedUrl:String = "",
-        @ColumnInfo(name = "createdAt") var createdAt:Long,
+        @ColumnInfo(name = "createdAt") var createdAt:String,
         ): Serializable {
     @NonNull
     @PrimaryKey(autoGenerate = true)
