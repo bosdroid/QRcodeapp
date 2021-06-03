@@ -136,6 +136,9 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
             if (tableGenerator.tableExists(tableName)) {
                 val columns = tableGenerator.getTableColumns(tableName)
                 if (columns != null && columns.isNotEmpty()) {
+                    if (tableColumnsDetailLayout.childCount > 0){
+                        tableColumnsDetailLayout.removeAllViews()
+                    }
                     for (i in columns.indices) {
                         //details += "Column: ${columns[i]}\n"
                         val layout = LayoutInflater.from(context)
