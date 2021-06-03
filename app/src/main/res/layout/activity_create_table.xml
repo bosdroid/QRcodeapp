@@ -117,6 +117,15 @@
                      />
              </RadioGroup>
 
+             <com.google.android.material.button.MaterialButton
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:text="Tap Here for list"
+                 android:id="@+id/list_with_fields_btn"
+                 app:backgroundTint="@color/teal_200"
+                 android:visibility="gone"
+                 />
+
              <com.google.android.material.textfield.TextInputEditText
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"

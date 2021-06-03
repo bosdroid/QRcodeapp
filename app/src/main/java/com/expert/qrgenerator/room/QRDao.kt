@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.ListValue
 
 @Dao
 interface QRDao {
@@ -37,5 +38,11 @@ interface QRDao {
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
     @Query("SELECT * FROM barcode_history ORDER BY qrId")
     fun getAllCreateQRCodeHistory():LiveData<List<CodeHistory>>
+
+    @Insert
+    fun insertListValue(listValue: ListValue)
+
+    @Query("SELECT * FROM list_values ORDER BY id DESC")
+    fun getAllListValues():LiveData<List<ListValue>>
 
 }

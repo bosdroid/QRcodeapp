@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import com.expert.qrgenerator.model.QREntity
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.ListValue
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -13,16 +14,22 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private var allQRCodeHistory: LiveData<List<CodeHistory>>
     private var allScanQRCodeHistory: LiveData<List<CodeHistory>>
     private var allCreateQRCodeHistory: LiveData<List<CodeHistory>>
+    private var allListValues:LiveData<List<ListValue>>
 
     init {
 //        dynamicQrCodes = repository.getAllDynamicQrCodes()
         allQRCodeHistory = repository.getAllQRCodeHistory()
         allScanQRCodeHistory = repository.getAllScanQRCodeHistory()
         allCreateQRCodeHistory = repository.getAllCreateQRCodeHistory()
+        allListValues = repository.getAllListValues()
     }
 
     public fun insert(qrHistory: CodeHistory){
         repository.insert(qrHistory)
+    }
+
+    public fun insertListValue(listValue: ListValue){
+        repository.insertListValue(listValue)
     }
 
 //    public fun update(inputUrl:String,url:String,id:Int){
@@ -47,5 +54,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     public fun getAllCreateQRCodeHistory():LiveData<List<CodeHistory>>{
         return allCreateQRCodeHistory
+    }
+    public fun getAllListValues():LiveData<List<ListValue>>{
+        return allListValues
     }
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import com.expert.qrgenerator.model.QREntity
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.ListValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ class DatabaseRepository(application: Application) {
     private var allQRCodeHistory: LiveData<List<CodeHistory>>
     private var allScanQRCodeHistory: LiveData<List<CodeHistory>>
     private var allCreateQRCodeHistory: LiveData<List<CodeHistory>>
+    private var allListValues:LiveData<List<ListValue>>
 
     init {
         val appDatabase = AppDatabase.getInstance(application)
@@ -24,12 +26,19 @@ class DatabaseRepository(application: Application) {
         allQRCodeHistory = qrDao.getAllQRCodeHistory()
         allScanQRCodeHistory = qrDao.getAllScanQRCodeHistory()
         allCreateQRCodeHistory = qrDao.getAllCreateQRCodeHistory()
+        allListValues = qrDao.getAllListValues()
     }
 
 
     fun insert(qrHistory: CodeHistory){
         scope.launch {
            qrDao.insert(qrHistory)
+        }
+    }
+
+    fun insertListValue(listValue: ListValue){
+        scope.launch {
+            qrDao.insertListValue(listValue)
         }
     }
 
@@ -60,4 +69,7 @@ class DatabaseRepository(application: Application) {
         return allCreateQRCodeHistory
     }
 
+    fun getAllListValues():LiveData<List<ListValue>>{
+        return allListValues
+    }
 }

@@ -50,9 +50,11 @@ class ScannerFragment : Fragment() {
     private lateinit var tablesSpinner: AppCompatSpinner
     private var idsList = mutableListOf<Pair<String, TextInputEditText>>()
     private lateinit var addNewTableBtn: MaterialButton
+    private lateinit var appSettings: AppSettings
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        appSettings = AppSettings(requireActivity())
         appViewModel = ViewModelProvider(
             this,
             ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
@@ -92,6 +94,17 @@ class ScannerFragment : Fragment() {
                 ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, tablesList)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             tablesSpinner.adapter = adapter
+
+            if (appSettings.getString("SCAN_SELECTED_TABLE")!!.isNotEmpty()){
+                for (i in 0 until tablesList.size){
+                    val value = tablesList[i]
+                    if (value == appSettings.getString("SCAN_SELECTED_TABLE")){
+                        tablesSpinner.setSelection(i)
+                        tableName = value
+                        break
+                    }
+                }
+            }
         }
 
         tablesSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -106,6 +119,7 @@ class ScannerFragment : Fragment() {
                 l: Long
             ) {
                 tableName = adapterView!!.getItemAtPosition(i).toString()
+                appSettings.putString("SCAN_SELECTED_TABLE",tableName)
             }
         }
     }
