@@ -1,12 +1,14 @@
 package com.expert.qrgenerator.view.fragments
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,23 +16,17 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.app.ActivityCompat
 import androidx.core.text.isDigitsOnly
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.budiyev.android.codescanner.AutoFocusMode
-import com.budiyev.android.codescanner.CodeScanner
-import com.budiyev.android.codescanner.CodeScannerView
-import com.budiyev.android.codescanner.DecodeCallback
-import com.budiyev.android.codescanner.ErrorCallback
-import com.budiyev.android.codescanner.ScanMode
+import com.budiyev.android.codescanner.*
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
-import com.expert.qrgenerator.utils.AppSettings
-import com.expert.qrgenerator.utils.Constants
-import com.expert.qrgenerator.utils.RuntimePermissionHelper
-import com.expert.qrgenerator.utils.TableGenerator
+import com.expert.qrgenerator.utils.*
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
 import com.expert.qrgenerator.view.activities.TablesActivity
@@ -38,6 +34,12 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.google.api.client.http.FileContent
+import com.google.api.services.drive.Drive
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
 
 
 class ScannerFragment : Fragment() {
@@ -48,9 +50,11 @@ class ScannerFragment : Fragment() {
     private lateinit var tableGenerator: TableGenerator
     private var tableName: String = ""
     private lateinit var tablesSpinner: AppCompatSpinner
-    private var idsList = mutableListOf<Pair<String, TextInputEditText>>()
+    private var textInputIdsList = mutableListOf<Pair<String, TextInputEditText>>()
+    private var spinnerIdsList = mutableListOf<Pair<String, AppCompatSpinner>>()
     private lateinit var addNewTableBtn: MaterialButton
     private lateinit var appSettings: AppSettings
+    private var mService:Drive?=null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -82,6 +86,7 @@ class ScannerFragment : Fragment() {
         addNewTableBtn = view.findViewById(R.id.add_new_table_btn)
         addNewTableBtn.setOnClickListener {
             startActivity(Intent(requireActivity(), TablesActivity::class.java))
+//            filePicker()
         }
     }
 
@@ -119,7 +124,7 @@ class ScannerFragment : Fragment() {
                 l: Long
             ) {
                 tableName = adapterView!!.getItemAtPosition(i).toString()
-                appSettings.putString("SCAN_SELECTED_TABLE",tableName)
+                appSettings.putString("SCAN_SELECTED_TABLE", tableName)
             }
         }
     }
@@ -174,7 +179,7 @@ class ScannerFragment : Fragment() {
                                         if (value == "id") {
                                             continue
                                         } else if (value == "code_data") {
-                                            idsList.add(Pair(value, codeDataTInputView))
+                                            textInputIdsList.add(Pair(value, codeDataTInputView))
                                             codeDataTInputView.setText(text)
                                         }
                                         else {
@@ -188,14 +193,37 @@ class ScannerFragment : Fragment() {
                                                 tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
                                             val columnValue =
                                                 tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
+                                            val columnDropdown = tableRowLayout.findViewById<AppCompatSpinner>(R.id.table_column_dropdown)
+                                            val columnDropDwonLayout = tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
                                             columnName.text = value
-                                            if (value == "date"){
-                                                columnValue.setText(BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis()))
+                                            val fieldList = tableGenerator.getFieldList(value,tableName)
+
+                                            if (fieldList.isNotEmpty()){
+                                                val arrayList = fieldList.split(",")
+                                                columnValue.visibility = View.GONE
+                                                columnDropDwonLayout.visibility = View.VISIBLE
+                                                val adapter = ArrayAdapter(requireContext(),android.R.layout.simple_spinner_item,arrayList)
+                                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                                columnDropdown.adapter = adapter
+                                                spinnerIdsList.add(Pair(value,columnDropdown))
                                             }
                                             else{
-                                                columnValue.setText("")
+                                                columnDropDwonLayout.visibility = View.GONE
+                                                columnValue.visibility = View.VISIBLE
+
+                                                if (value == "date"){
+                                                    columnValue.setText(
+                                                        BaseActivity.getDateTimeFromTimeStamp(
+                                                            System.currentTimeMillis()
+                                                        )
+                                                    )
+                                                }
+                                                else{
+                                                    columnValue.setText("")
+                                                }
                                             }
-                                            idsList.add(Pair(value, columnValue))
+
+                                            textInputIdsList.add(Pair(value, columnValue))
                                             tableDetailLayoutWrapper.addView(tableRowLayout)
                                         }
                                     }
@@ -210,8 +238,8 @@ class ScannerFragment : Fragment() {
                                         alert.dismiss()
                                         BaseActivity.startLoading(requireActivity())
                                         val params = mutableListOf<Pair<String, String>>()
-                                        for (i in 0 until idsList.size) {
-                                            val pair = idsList[i]
+                                        for (i in 0 until textInputIdsList.size) {
+                                            val pair = textInputIdsList[i]
                                             params.add(
                                                 Pair(
                                                     pair.first,
@@ -373,4 +401,45 @@ class ScannerFragment : Fragment() {
             }
         }
     }
+
+    fun filePicker() {
+        val intent: Intent
+        val chooseFile = Intent(Intent.ACTION_PICK)
+        chooseFile.type = "image/*"
+        intent = Intent.createChooser(chooseFile, "Choose a file")
+        resultLauncher.launch(intent)
+    }
+
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+
+            val data: Intent? = result.data
+            val fileUri: Uri = data!!.data!!
+            val filePath = ImageManager.getRealPathFromUri(requireActivity(),fileUri)
+
+            uploadOnDrive(filePath!!)
+        }
+    }
+
+    private fun uploadOnDrive(path: String){
+        if (Constants.mService != null){
+            mService = Constants.mService
+        }
+         CoroutineScope(Dispatchers.IO).launch {
+             if (mService != null){
+                 val fileMetadata = com.google.api.services.drive.model.File()
+                 fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
+                 val filePath: File = File(path)
+                 val mediaContent = FileContent("image/jpeg", filePath)
+                 val file: com.google.api.services.drive.model.File =
+                     mService!!.files().create(fileMetadata, mediaContent)
+                         .setFields("id")
+                         .execute()
+                 Log.e("File ID: ", file.id)
+                 Log.d("TEST199", "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing")
+             }
+         }
+
+    }
+
 }

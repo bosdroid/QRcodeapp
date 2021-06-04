@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.ListValueAdapter
+import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.model.ListValue
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
@@ -30,6 +31,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
@@ -51,6 +54,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private lateinit var tableColumnsDetailLayout: LinearLayout
     private lateinit var listWithFieldsBtn: MaterialButton
     private lateinit var appViewModel: AppViewModel
+    private var fieldType:String = "nonChangeable"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,11 +98,13 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     isNonChangeableCheckBox = true
                     defaultValueFieldTInput.visibility = View.VISIBLE
                     listWithFieldsBtn.visibility = View.GONE
+                    fieldType = "nonChangeable"
                 }
                 R.id.list_with_values_radio_btn -> {
                     isNonChangeableCheckBox = false
                     defaultValueFieldTInput.visibility = View.GONE
                     listWithFieldsBtn.visibility = View.VISIBLE
+                    fieldType = "listWithValues"
                 }
                 else -> {
 
@@ -127,11 +133,10 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        displayColumnDetails("")
+        displayColumnDetails()
     }
 
-    private fun displayColumnDetails(newColumn: String) {
-        var details = ""
+    private fun displayColumnDetails() {
         if (tableName.isNotEmpty()) {
             if (tableGenerator.tableExists(tableName)) {
                 val columns = tableGenerator.getTableColumns(tableName)
@@ -140,7 +145,6 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                         tableColumnsDetailLayout.removeAllViews()
                     }
                     for (i in columns.indices) {
-                        //details += "Column: ${columns[i]}\n"
                         val layout = LayoutInflater.from(context)
                             .inflate(R.layout.table_column_item_row, null)
                         val columnNameView =
@@ -155,27 +159,19 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                             "date" -> {
                                 columnNameView.text = "Date of scanning"
                             }
+                            else ->{
+                                    columnNameView.text = columns[i]
+                            }
                         }
                         tableColumnsDetailLayout.addView(layout)
                     }
-//                    tableColumnsView.text = details
-                }
-                if (newColumn.isNotEmpty()) {
-                    val layout =
-                        LayoutInflater.from(context).inflate(R.layout.table_column_item_row, null)
-                    val columnNameView =
-                        layout.findViewById<MaterialTextView>(R.id.table_column_name)
-                    columnNameView.text = newColumn
-                    tableColumnsDetailLayout.addView(layout)
-//                    details += "Column: $newColumn\n"
-//                    tableColumnsView.text = details
                 }
             }
+
         }
     }
 
     private fun resetViews() {
-        displayColumnDetails(tableNewFieldNameTInput.text.toString().trim())
         tableNewFieldNameTInput.setText("")
         defaultValueFieldTInput.setText("")
     }
@@ -195,19 +191,35 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
             }
             R.id.field_submit_btn -> {
                 if (validation()) {
-                    defaultColumnValue = if (isNonChangeableCheckBox) {
-                        defaultValueFieldTInput.text.toString().trim()
-                    } else {
-                        ""
+                    val fieldName = tableNewFieldNameTInput.text.toString().trim().toLowerCase(
+                        Locale.ENGLISH
+                    ).replace(" ","_")
+                    if (fieldType == "nonChangeable"){
+                        tableGenerator.addNewColumn(
+                            tableName,
+                            Pair(fieldName, "TEXT"),
+                            defaultColumnValue
+                        )
                     }
-                    tableGenerator.addNewColumn(
-                        tableName,
-                        Pair(tableNewFieldNameTInput.text.toString().trim(), "TEXT"),
-                        defaultColumnValue
-                    )
+                    else if(fieldType == "listWithValues"){
+                        tableGenerator.addNewColumn(
+                            tableName,
+                            Pair(fieldName, "TEXT"),
+                            ""
+                        )
+                        val listOptions:String = tableGenerator.getListValues(listId!!)
+                        tableGenerator.insertFieldList(fieldName,tableName,listOptions)
+                    }
                     addNewFieldLayoutWrapper.visibility = View.GONE
                     addNewFieldBtn.visibility = View.VISIBLE
+
                     Handler(Looper.myLooper()!!).postDelayed({
+                        val layout =
+                            LayoutInflater.from(context).inflate(R.layout.table_column_item_row, null)
+                        val columnNameView =
+                            layout.findViewById<MaterialTextView>(R.id.table_column_name)
+                        columnNameView.text = tableNewFieldNameTInput.text.toString().trim()
+                        tableColumnsDetailLayout.addView(layout)
                         resetViews()
                     }, 2000)
                 }
@@ -220,15 +232,16 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     }
 
     private lateinit var adapter: ListValueAdapter
+    private var listId:Int?=null
     private fun openListWithFieldsDialog() {
-        val listValues = mutableListOf<ListValue>()
+        val listItems = mutableListOf<ListItem>()
         val layout =
             LayoutInflater.from(context).inflate(R.layout.list_with_fields_value_layout, null)
         val listWithFieldsValueRecyclerView =
             layout.findViewById<RecyclerView>(R.id.list_with_fields_recycler_view)
         listWithFieldsValueRecyclerView.layoutManager = LinearLayoutManager(context)
         listWithFieldsValueRecyclerView.hasFixedSize()
-        adapter = ListValueAdapter(context, listValues as ArrayList<ListValue>)
+        adapter = ListValueAdapter(context, listItems as ArrayList<ListItem>)
         listWithFieldsValueRecyclerView.adapter = adapter
 
 
@@ -237,28 +250,36 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         builder.setCancelable(true)
         val alert = builder.create()
         alert.show()
-
-        appViewModel.getAllListValues().observe(this, Observer { list->
-            if (list.isNotEmpty()){
-                listValues.clear()
-                listValues.addAll(list)
-                adapter.notifyDataSetChanged()
-            }
-            else{
-                adapter.notifyDataSetChanged()
-            }
-        })
+        val tempList = tableGenerator.getList()
+        if (tempList.isNotEmpty()){
+            listItems.clear()
+            listItems.addAll(tempList)
+            adapter.notifyDataSetChanged()
+        }
+        else{
+            adapter.notifyDataSetChanged()
+        }
+//        appViewModel.getAllListValues().observe(this, Observer { list->
+//            if (list.isNotEmpty()){
+//                listItems.clear()
+//                listItems.addAll(list)
+//                adapter.notifyDataSetChanged()
+//            }
+//            else{
+//                adapter.notifyDataSetChanged()
+//            }
+//        })
 
         adapter.setOnItemClickListener(object : ListValueAdapter.OnItemClickListener{
             override fun onItemClick(position: Int) {
-                val listValue = listValues[position]
-                defaultColumnValue = listValue.value
+                val listValue = listItems[position]
+                listId = listValue.id
                 alert.dismiss()
             }
 
-            override fun onAddItemClick(position: Int) {
-                addTableDialog()
-            }
+//            override fun onAddItemClick(position: Int) {
+//                addTableDialog()
+//            }
         })
     }
 

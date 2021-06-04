@@ -1,8 +1,11 @@
 package com.expert.qrgenerator.view.activities
 
+import android.Manifest
+import android.accounts.Account
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
@@ -13,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -33,14 +37,23 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.json.JsonFactory
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.client.util.ExponentialBackOff
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -55,7 +68,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var appSettings: AppSettings
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    var signInOptions: GoogleSignInOptions? = null
+    var account: GoogleSignInAccount? = null
+    var mService: Drive? = null
+    var credential: GoogleAccountCredential? = null
     private lateinit var auth: FirebaseAuth
+    private val SCOPES = mutableListOf<String>()
+    val transport = AndroidHttp.newCompatibleTransport()
+    val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
@@ -71,6 +91,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         initViews()
         setUpToolbar()
+        getAccountsPermission()
         initializeGoogleLoginParameters()
 
     }
@@ -122,6 +143,32 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .commit()
     }
 
+    fun getAccountsPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.GET_ACCOUNTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this@MainActivity,
+                    Manifest.permission.GET_ACCOUNTS
+                )
+            ) {
+                Log.e("Accounts", "Permission Granted")
+                initializeGoogleLoginParameters()
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(
+                    this@MainActivity,
+                    arrayOf(Manifest.permission.GET_ACCOUNTS),
+                    0
+                )
+            }
+        }
+    }
+
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
     private fun setUpToolbar() {
         setSupportActionBar(toolbar)
@@ -136,15 +183,31 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     // THIS FUNCTION WILL INITIALIZE THE GOOGLE LOGIN PARAMETERS
     private fun initializeGoogleLoginParameters() {
-
+         SCOPES.add(DriveScopes.DRIVE_METADATA_READONLY)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
+            .requestScopes(Scope(DriveScopes.DRIVE_FILE))
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
         val acct = GoogleSignIn.getLastSignedInAccount(context)
-        saveUserUpdatedDetail(acct, "last")
+       if (acct != null){
+           credential = GoogleAccountCredential.usingOAuth2(
+               applicationContext, SCOPES
+           )
+               .setBackOff(ExponentialBackOff())
+               .setSelectedAccount(Account(acct.email, context.packageName))
+
+           mService = Drive.Builder(
+               transport, jsonFactory, credential
+           )
+               .setApplicationName(getString(R.string.app_name))
+               .build()
+           Constants.mService = mService
+           saveUserUpdatedDetail(acct, "last")
+       }
+
 
     }
 
@@ -197,6 +260,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.login -> {
                 val signInIntent = mGoogleSignInClient.signInIntent
                 googleLauncher.launch(signInIntent)
+            }
+            R.id.field_list->{
+                startActivity(Intent(context, FieldListValuesActivity::class.java))
             }
             R.id.profile -> {
                 startActivity(Intent(context, ProfileActivity::class.java))
@@ -412,7 +478,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = true
             mNavigation.menu.findItem(R.id.tables).isVisible = true
             mNavigation.menu.findItem(R.id.barcode_history).isVisible = true
-//            mNavigation.menu.findItem(R.id.tables_data).isVisible = true
+            mNavigation.menu.findItem(R.id.field_list).isVisible = true
 
         } else {
             mNavigation.menu.findItem(R.id.login).isVisible = true
@@ -420,7 +486,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = false
             mNavigation.menu.findItem(R.id.tables).isVisible = false
             mNavigation.menu.findItem(R.id.barcode_history).isVisible = false
-//            mNavigation.menu.findItem(R.id.tables_data).isVisible = false
+            mNavigation.menu.findItem(R.id.field_list).isVisible = false
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 0){
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                initializeGoogleLoginParameters()
+            }
         }
     }
 

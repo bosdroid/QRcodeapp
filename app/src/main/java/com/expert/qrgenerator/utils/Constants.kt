@@ -17,6 +17,7 @@ import com.expert.qrgenerator.view.activities.BaseActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.google.api.services.drive.Drive
 import java.io.File
 
 class Constants {
@@ -38,6 +39,7 @@ class Constants {
         var isLogin:String = "is_login"
         var user:String = "user"
         var userData:User?=null
+        var mService:Drive?=null
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)

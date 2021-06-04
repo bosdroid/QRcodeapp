@@ -3,6 +3,7 @@ package com.expert.qrgenerator.utils
 import android.content.Context
 import android.database.Cursor
 import android.util.Log
+import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.model.Table
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.sqlite.Database
@@ -41,5 +42,29 @@ class TableGenerator(context: Context) {
 
     fun insertDefaultTable(code_data:String,date:String){
         database.insertDefaultTable(code_data,date)
+    }
+
+    fun insertFieldList(fieldName:String,tableName: String,options:String){
+        database.insertFieldList(fieldName,tableName,options)
+    }
+
+    fun getFieldList(fieldName: String,tableName: String):String{
+        return database.getFieldList(fieldName,tableName)
+    }
+
+    fun insertList(listName:String){
+        database.insertList(listName)
+    }
+
+    fun insertListValue(listId:Int,value:String){
+        database.insertListValue(listId,value)
+    }
+
+    fun getList():List<ListItem>{
+        return database.getList()
+    }
+
+    fun getListValues(listId:Int):String{
+        return database.getListValues(listId)
     }
 }

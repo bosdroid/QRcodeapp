@@ -154,4 +154,6 @@
     <string name="plus_table_text">+ add table</string>
     <string name="add_list_value_hint_text">Enter the List value</string>
     <string name="new_list_value_text">+ add one more</string>
+    <string name="field_type_list">Field Type List</string>
+    <string name="field_list">Table Field List</string>
 </resources>
