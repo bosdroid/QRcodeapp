@@ -221,9 +221,8 @@ class ScannerFragment : Fragment() {
                                                 else{
                                                     columnValue.setText("")
                                                 }
+                                                textInputIdsList.add(Pair(value, columnValue))
                                             }
-
-                                            textInputIdsList.add(Pair(value, columnValue))
                                             tableDetailLayoutWrapper.addView(tableRowLayout)
                                         }
                                     }
@@ -247,6 +246,15 @@ class ScannerFragment : Fragment() {
                                                 )
                                             )
                                         }
+                                        for (j in 0 until spinnerIdsList.size){
+                                            val pair = spinnerIdsList[j]
+                                            params.add(
+                                                Pair(
+                                                    pair.first,
+                                                    pair.second.selectedItem.toString()
+                                                )
+                                            )
+                                        }
                                         tableGenerator.insertData(tableName, params)
                                         Handler(Looper.myLooper()!!).postDelayed({
                                             BaseActivity.dismiss()
@@ -255,6 +263,10 @@ class ScannerFragment : Fragment() {
                                                 "Scan data saved successfully!",
                                                 Toast.LENGTH_SHORT
                                             ).show()
+                                            textInputIdsList.clear()
+                                            spinnerIdsList.clear()
+                                            params.clear()
+                                            tableDetailLayoutWrapper.removeAllViews()
 
                                         }, 1000)
                                     }

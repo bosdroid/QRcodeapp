@@ -6,4 +6,9 @@ data class TableObject(
     var date: String,
 ) {
     var dynamicColumns = mutableListOf<Pair<String, String>>()
+
+
+    override fun toString(): String {
+        return "$id:$code_data:$date:$dynamicColumns"
+    }
 }

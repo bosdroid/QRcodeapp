@@ -78,18 +78,19 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                     cursor.getString(2)
                 )
 
-                if (columns!!.size >= 7) {
-                    for (i in 7 until columns.size) {
+                if (columns!!.size >= 4) {
+                    for (i in 3 until columns.size) {
                         val col = columns[i]
                         var pair: Pair<String, String>? = null
-                        pair = if (i == 0) {
-                            Pair(col, cursor.getString(i))
-                        } else {
-                            Pair(col, cursor.getString(i))
-                        }
+//                        pair = if (i == 0) {
+                        pair = Pair(col, cursor.getString(i))
+//                        } else {
+//                            Pair(col, cursor.getString(i))
+//                        }
                         list.add(pair)
                     }
                     tableObject.dynamicColumns.addAll(list)
+                    list.clear()
                 }
                 tableObjectList.add(tableObject)
             } while (cursor.moveToNext())
@@ -274,16 +275,19 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
     fun getListValues(listId: Int): String {
         val db = this.readableDatabase
+        val list = mutableListOf<String>()
         var listOptions = ""
         val selectQuery =
             "SELECT  * FROM $LIST_META_DATA_TABLE_NAME WHERE $LIST_META_DATA_COLUMN_LIST_ID=$listId"
         val cursor: Cursor = db.rawQuery(selectQuery, null)
         if (cursor.moveToFirst()) {
             do {
-                listOptions += cursor.getString(2) + ","
+                list.add(cursor.getString(2))
+//                listOptions += cursor.getString(2) + ","
             } while (cursor.moveToNext())
         }
         db.close()
+        listOptions = list.joinToString()
         Log.d("TEST199", listOptions)
         return listOptions
     }
