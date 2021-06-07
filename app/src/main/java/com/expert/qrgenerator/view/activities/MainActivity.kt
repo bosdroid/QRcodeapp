@@ -477,7 +477,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.logout).isVisible = true
             mNavigation.menu.findItem(R.id.profile).isVisible = true
             mNavigation.menu.findItem(R.id.tables).isVisible = true
-            mNavigation.menu.findItem(R.id.barcode_history).isVisible = true
             mNavigation.menu.findItem(R.id.field_list).isVisible = true
 
         } else {
@@ -485,7 +484,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.logout).isVisible = false
             mNavigation.menu.findItem(R.id.profile).isVisible = false
             mNavigation.menu.findItem(R.id.tables).isVisible = false
-            mNavigation.menu.findItem(R.id.barcode_history).isVisible = false
             mNavigation.menu.findItem(R.id.field_list).isVisible = false
         }
     }
