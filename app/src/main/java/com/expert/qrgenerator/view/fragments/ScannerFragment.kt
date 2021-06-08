@@ -167,12 +167,12 @@ class ScannerFragment : Fragment() {
                     requireActivity().runOnUiThread {
                         val text = it.text
                         if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
-                            if (Constants.userData == null) {
-                                tableGenerator.insertDefaultTable(
-                                    text,
-                                    BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
-                                )
-                            } else {
+//                            if (Constants.userData == null) {
+//                                tableGenerator.insertDefaultTable(
+//                                    text,
+//                                    BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
+//                                )
+//                            } else {
                                 if (tableName.isEmpty()) {
                                     BaseActivity.showAlert(requireActivity(), text)
                                 } else {
@@ -283,7 +283,7 @@ class ScannerFragment : Fragment() {
                                         }, 1000)
                                     }
                                 }
-                            }
+//                            }
                         } else {
 
                             var qrHistory: CodeHistory? = null

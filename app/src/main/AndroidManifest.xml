@@ -28,8 +28,9 @@
         android:theme="@style/Theme.QRGenerator"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
-        <activity android:name=".view.activities.SheetsActivity"></activity>
-        <activity android:name=".view.activities.FieldListValuesActivity" />
+        <activity android:name=".view.activities.FieldListValuesActivity"></activity>
+        <activity android:name=".view.activities.SheetsActivity" />
+        <activity android:name=".view.activities.FieldListsActivity" />
         <activity android:name=".view.activities.TableViewActivity" />
         <activity
             android:name=".view.activities.SettingsActivity"

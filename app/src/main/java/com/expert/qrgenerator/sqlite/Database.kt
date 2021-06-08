@@ -291,4 +291,20 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         Log.d("TEST199", listOptions)
         return listOptions
     }
+
+    fun getFieldListValues(listId: Int): List<String> {
+        val db = this.readableDatabase
+        val list = mutableListOf<String>()
+        val selectQuery =
+            "SELECT  * FROM $LIST_META_DATA_TABLE_NAME WHERE $LIST_META_DATA_COLUMN_LIST_ID=$listId"
+        val cursor: Cursor = db.rawQuery(selectQuery, null)
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(cursor.getString(2))
+            } while (cursor.moveToNext())
+        }
+        db.close()
+
+        return list
+    }
 }

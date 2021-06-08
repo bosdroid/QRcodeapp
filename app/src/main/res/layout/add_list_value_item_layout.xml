@@ -24,6 +24,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/xlargeText"
             android:padding="5dp"
+            android:id="@+id/card_text_view"
             />
 
     </androidx.cardview.widget.CardView>

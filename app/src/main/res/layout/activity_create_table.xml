@@ -106,7 +106,7 @@
                  <com.google.android.material.radiobutton.MaterialRadioButton
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
-                     android:text="None"
+                     android:text="Input data field"
                      android:id="@+id/none_radio_btn"
                      android:checked="true"
                      />

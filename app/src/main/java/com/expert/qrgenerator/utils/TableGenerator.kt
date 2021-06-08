@@ -67,4 +67,8 @@ class TableGenerator(context: Context) {
     fun getListValues(listId:Int):String{
         return database.getListValues(listId)
     }
+
+    fun getFieldListValues(listId:Int):List<String>{
+        return database.getFieldListValues(listId)
+    }
 }

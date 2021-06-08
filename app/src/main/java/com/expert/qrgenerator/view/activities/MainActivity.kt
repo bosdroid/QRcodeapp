@@ -292,7 +292,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 startLogin()
             }
             R.id.field_list -> {
-                startActivity(Intent(context, FieldListValuesActivity::class.java))
+                startActivity(Intent(context, FieldListsActivity::class.java))
             }
             R.id.profile -> {
                 startActivity(Intent(context, ProfileActivity::class.java))

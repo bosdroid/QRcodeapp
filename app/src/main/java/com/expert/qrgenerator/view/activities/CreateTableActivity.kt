@@ -1,30 +1,26 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.RadioGroup
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.adapters.ListValueAdapter
+import com.expert.qrgenerator.adapters.FieldListsAdapter
 import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.model.ListValue
 import com.expert.qrgenerator.room.AppViewModel
-import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -199,7 +195,14 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     val fieldName = tableNewFieldNameTInput.text.toString().trim().toLowerCase(
                         Locale.ENGLISH
                     ).replace(" ","_")
-                    if (fieldType == "nonChangeable"){
+                    if (fieldType == "none"){
+                        tableGenerator.addNewColumn(
+                            tableName,
+                            Pair(fieldName, "TEXT"),
+                            ""
+                        )
+                    }
+                    else if (fieldType == "nonChangeable"){
                         tableGenerator.addNewColumn(
                             tableName,
                             Pair(fieldName, "TEXT"),
@@ -236,7 +239,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private lateinit var adapter: ListValueAdapter
+    private lateinit var adapter: FieldListsAdapter
     private var listId:Int?=null
     private fun openListWithFieldsDialog() {
         val listItems = mutableListOf<ListItem>()
@@ -246,7 +249,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
             layout.findViewById<RecyclerView>(R.id.list_with_fields_recycler_view)
         listWithFieldsValueRecyclerView.layoutManager = LinearLayoutManager(context)
         listWithFieldsValueRecyclerView.hasFixedSize()
-        adapter = ListValueAdapter(context, listItems as ArrayList<ListItem>)
+        adapter = FieldListsAdapter(context, listItems as ArrayList<ListItem>)
         listWithFieldsValueRecyclerView.adapter = adapter
 
 
@@ -275,16 +278,17 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 //            }
 //        })
 
-        adapter.setOnItemClickListener(object : ListValueAdapter.OnItemClickListener{
+        adapter.setOnItemClickListener(object : FieldListsAdapter.OnItemClickListener{
             override fun onItemClick(position: Int) {
                 val listValue = listItems[position]
                 listId = listValue.id
                 alert.dismiss()
             }
 
-//            override fun onAddItemClick(position: Int) {
-//                addTableDialog()
-//            }
+            override fun onAddItemClick(position: Int) {
+                alert.dismiss()
+                startActivity(Intent(context,FieldListsActivity::class.java))
+            }
         })
     }
 
