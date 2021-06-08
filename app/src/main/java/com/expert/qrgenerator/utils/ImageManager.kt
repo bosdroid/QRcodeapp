@@ -9,6 +9,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Base64OutputStream
@@ -17,8 +19,14 @@ import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.FileProvider
 import com.expert.qrgenerator.view.activities.BaseActivity
+import com.google.api.client.http.FileContent
+import com.google.api.services.drive.Drive
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -343,7 +351,6 @@ class ImageManager {
                 return null
             }
         }
-
     }
 
 

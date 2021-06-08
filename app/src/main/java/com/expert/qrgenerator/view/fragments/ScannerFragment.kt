@@ -1,5 +1,7 @@
 package com.expert.qrgenerator.view.fragments
 
+import android.accounts.Account
+import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -17,6 +19,7 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.app.ActivityCompat
 import androidx.core.text.isDigitsOnly
@@ -30,12 +33,23 @@ import com.expert.qrgenerator.utils.*
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
 import com.expert.qrgenerator.view.activities.TablesActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.http.FileContent
+import com.google.api.client.json.JsonFactory
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,7 +68,6 @@ class ScannerFragment : Fragment() {
     private var spinnerIdsList = mutableListOf<Pair<String, AppCompatSpinner>>()
     private lateinit var addNewTableBtn: MaterialButton
     private lateinit var appSettings: AppSettings
-    private var mService:Drive?=null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -86,7 +99,6 @@ class ScannerFragment : Fragment() {
         addNewTableBtn = view.findViewById(R.id.add_new_table_btn)
         addNewTableBtn.setOnClickListener {
             startActivity(Intent(requireActivity(), TablesActivity::class.java))
-//            filePicker()
         }
     }
 
@@ -412,46 +424,6 @@ class ScannerFragment : Fragment() {
 
             }
         }
-    }
-
-    fun filePicker() {
-        val intent: Intent
-        val chooseFile = Intent(Intent.ACTION_PICK)
-        chooseFile.type = "image/*"
-        intent = Intent.createChooser(chooseFile, "Choose a file")
-        resultLauncher.launch(intent)
-    }
-
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-
-            val data: Intent? = result.data
-            val fileUri: Uri = data!!.data!!
-            val filePath = ImageManager.getRealPathFromUri(requireActivity(),fileUri)
-
-            uploadOnDrive(filePath!!)
-        }
-    }
-
-    private fun uploadOnDrive(path: String){
-        if (Constants.mService != null){
-            mService = Constants.mService
-        }
-         CoroutineScope(Dispatchers.IO).launch {
-             if (mService != null){
-                 val fileMetadata = com.google.api.services.drive.model.File()
-                 fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
-                 val filePath: File = File(path)
-                 val mediaContent = FileContent("image/jpeg", filePath)
-                 val file: com.google.api.services.drive.model.File =
-                     mService!!.files().create(fileMetadata, mediaContent)
-                         .setFields("id")
-                         .execute()
-                 Log.e("File ID: ", file.id)
-                 Log.d("TEST199", "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing")
-             }
-         }
-
     }
 
 }

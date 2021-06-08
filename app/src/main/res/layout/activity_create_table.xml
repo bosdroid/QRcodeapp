@@ -106,6 +106,13 @@
                  <com.google.android.material.radiobutton.MaterialRadioButton
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
+                     android:text="None"
+                     android:id="@+id/none_radio_btn"
+                     android:checked="true"
+                     />
+                 <com.google.android.material.radiobutton.MaterialRadioButton
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
                      android:text="Non Changeable Field"
                      android:id="@+id/non_changeable_radio_btn"
                      />

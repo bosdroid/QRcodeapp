@@ -54,7 +54,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private lateinit var tableColumnsDetailLayout: LinearLayout
     private lateinit var listWithFieldsBtn: MaterialButton
     private lateinit var appViewModel: AppViewModel
-    private var fieldType:String = "nonChangeable"
+    private var fieldType:String = "none"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +94,11 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         // fieldValueTypesRadioGroup RADIO GROUP LISTENER
         fieldValueTypesRadioGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
+                R.id.none_radio_btn ->{
+                    fieldType = "none"
+                    defaultValueFieldTInput.visibility = View.GONE
+                    listWithFieldsBtn.visibility = View.GONE
+                }
                 R.id.non_changeable_radio_btn -> {
                     isNonChangeableCheckBox = true
                     defaultValueFieldTInput.visibility = View.VISIBLE
@@ -179,12 +184,12 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.add_new_field_btn -> {
-                if (Constants.userData != null) {
+//                if (Constants.userData != null) {
                     addNewFieldBtn.visibility = View.GONE
                     addNewFieldLayoutWrapper.visibility = View.VISIBLE
-                } else {
-                    showAlert(context, "You can not create dynamic table without account login!")
-                }
+//                } else {
+//                    showAlert(context, "You can not create dynamic table without account login!")
+//                }
             }
             R.id.list_with_fields_btn -> {
                 openListWithFieldsDialog()
@@ -304,11 +309,16 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun validation(): Boolean {
-        if (tableNewFieldNameTInput.text.toString().isEmpty()) {
+        if(tableNewFieldNameTInput.text.toString().isEmpty()){
             showAlert(context, "Please enter the field/column name!")
             return false
-        } else if (isNonChangeableCheckBox && defaultValueFieldTInput.text.toString().isEmpty()) {
+        }
+        else if (isNonChangeableCheckBox && defaultValueFieldTInput.text.toString().isEmpty()) {
             showAlert(context, "Please set the default value of field/column!")
+            return false
+        }
+        else if (fieldType == "listWithValues" && listId == null){
+            showAlert(context, "You can't use this type because field list is empty!")
             return false
         }
         return true

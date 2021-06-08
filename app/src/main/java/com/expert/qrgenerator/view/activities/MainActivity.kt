@@ -37,18 +37,22 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.Scope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
+import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import com.google.api.services.sheets.v4.Sheets
+import com.google.api.services.sheets.v4.SheetsScopes
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -68,14 +72,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var appSettings: AppSettings
     private lateinit var mGoogleSignInClient: GoogleSignInClient
-    var signInOptions: GoogleSignInOptions? = null
-    var account: GoogleSignInAccount? = null
     var mService: Drive? = null
+    var sheetService: Sheets? = null
     var credential: GoogleAccountCredential? = null
     private lateinit var auth: FirebaseAuth
-    private val SCOPES = mutableListOf<String>()
-    val transport = AndroidHttp.newCompatibleTransport()
-    val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
+    private val scopes = mutableListOf<String>()
+    private val transport: HttpTransport? = AndroidHttp.newCompatibleTransport()
+    private val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
+    private val httpTransport = NetHttpTransport()
+    private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
@@ -183,30 +188,47 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     // THIS FUNCTION WILL INITIALIZE THE GOOGLE LOGIN PARAMETERS
     private fun initializeGoogleLoginParameters() {
-         SCOPES.add(DriveScopes.DRIVE_METADATA_READONLY)
+        scopes.add(DriveScopes.DRIVE_METADATA_READONLY)
+        scopes.add(SheetsScopes.SPREADSHEETS_READONLY)
+        scopes.add(SheetsScopes.DRIVE)
+        scopes.add(SheetsScopes.SPREADSHEETS)
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
-            .requestScopes(Scope(DriveScopes.DRIVE_FILE))
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
         val acct = GoogleSignIn.getLastSignedInAccount(context)
-       if (acct != null){
-           credential = GoogleAccountCredential.usingOAuth2(
-               applicationContext, SCOPES
-           )
-               .setBackOff(ExponentialBackOff())
-               .setSelectedAccount(Account(acct.email, context.packageName))
+        if (acct != null) {
+            credential = GoogleAccountCredential.usingOAuth2(
+                applicationContext, scopes
+            )
+                .setBackOff(ExponentialBackOff())
+                .setSelectedAccount(Account(acct.email, context.packageName))
 
-           mService = Drive.Builder(
-               transport, jsonFactory, credential
-           )
-               .setApplicationName(getString(R.string.app_name))
-               .build()
-           Constants.mService = mService
-           saveUserUpdatedDetail(acct, "last")
-       }
+            mService = Drive.Builder(
+                transport, jsonFactory, credential
+            )
+                .setApplicationName(getString(R.string.app_name))
+                .build()
+
+            try {
+                sheetService = Sheets.Builder(
+                    httpTransport,
+                    jacksonFactory,
+                    credential
+                )
+                    .setApplicationName(getString(R.string.app_name))
+                    .build()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            Constants.mService = mService
+            Constants.sheetService = sheetService
+            saveUserUpdatedDetail(acct, "last")
+        }
 
 
     }
@@ -242,6 +264,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.barcode_history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
             }
+            R.id.sheets -> {
+                if (appSettings.getBoolean(Constants.isLogin)){
+                    startActivity(Intent(context, SheetsActivity::class.java))
+                }
+                else{
+                    startLogin()
+                }
+
+            }
             R.id.tables -> {
                 startActivity(Intent(context, TablesActivity::class.java))
             }
@@ -258,10 +289,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 contactSupport(this)
             }
             R.id.login -> {
-                val signInIntent = mGoogleSignInClient.signInIntent
-                googleLauncher.launch(signInIntent)
+                startLogin()
             }
-            R.id.field_list->{
+            R.id.field_list -> {
                 startActivity(Intent(context, FieldListValuesActivity::class.java))
             }
             R.id.profile -> {
@@ -283,6 +313,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
         mDrawer.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun startLogin(){
+        val signInIntent = mGoogleSignInClient.signInIntent
+        googleLauncher.launch(signInIntent)
     }
 
     private fun shareApp() {
@@ -308,6 +343,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 .show()
             checkUserLoginStatus()
         }
+
+
     }
 
     // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
@@ -480,11 +517,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.field_list).isVisible = true
 
         } else {
-            mNavigation.menu.findItem(R.id.login).isVisible = true
+            mNavigation.menu.findItem(R.id.login).isVisible = false
             mNavigation.menu.findItem(R.id.logout).isVisible = false
             mNavigation.menu.findItem(R.id.profile).isVisible = false
-            mNavigation.menu.findItem(R.id.tables).isVisible = false
-            mNavigation.menu.findItem(R.id.field_list).isVisible = false
+            mNavigation.menu.findItem(R.id.tables).isVisible = true
+            mNavigation.menu.findItem(R.id.field_list).isVisible = true
         }
     }
 
@@ -494,8 +531,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 0){
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == 0) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initializeGoogleLoginParameters()
             }
         }

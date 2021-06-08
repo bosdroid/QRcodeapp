@@ -19,6 +19,13 @@
                     />
 
                 <item
+                    android:icon="@drawable/ic_sheets"
+                    android:id="@+id/sheets"
+                    android:title="@string/sheets"
+                    android:visible="false"
+                    />
+
+                <item
                     android:title="@string/tables"
                     android:id="@+id/tables"
                     android:icon="@drawable/ic_table_row"

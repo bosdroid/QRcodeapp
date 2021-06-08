@@ -156,4 +156,5 @@
     <string name="new_list_value_text">+ add one more</string>
     <string name="field_type_list">Field Type List</string>
     <string name="field_list">Table Field List</string>
+    <string name="sheets">Sheets</string>
 </resources>

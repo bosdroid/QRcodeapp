@@ -18,6 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.api.services.drive.Drive
+import com.google.api.services.sheets.v4.Sheets
 import java.io.File
 
 class Constants {
@@ -40,6 +41,7 @@ class Constants {
         var user:String = "user"
         var userData:User?=null
         var mService:Drive?=null
+        var sheetService: Sheets?=null
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)
