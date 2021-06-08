@@ -6,9 +6,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -67,6 +69,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var toolbar: Toolbar
     private lateinit var mDrawer: DrawerLayout
     private lateinit var mNavigation: NavigationView
+    private lateinit var privacyPolicy:MaterialTextView
     private lateinit var bottomNavigation: BottomNavigationView
     private var encodedTextData: String = " "
     private lateinit var viewModel: MainActivityViewModel
@@ -112,6 +115,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         )[MainActivityViewModel::class.java]
         toolbar = findViewById(R.id.toolbar)
         mDrawer = findViewById(R.id.drawer)
+        privacyPolicy = findViewById(R.id.privacy_policy_view)
+        privacyPolicy.movementMethod = LinkMovementMethod.getInstance()
+        privacyPolicy.setPaintFlags(privacyPolicy.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+        privacyPolicy.setOnClickListener {
+            mDrawer.closeDrawer(GravityCompat.START)
+            val browserIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("http://qrmagicapp.com/privacy-policy-2/")
+            )
+            startActivity(browserIntent)
+        }
         mNavigation = findViewById(R.id.navigation)
         nextStepTextView = findViewById(R.id.next_step_btn)
         bottomNavigation = findViewById(R.id.bottom_navigation)
@@ -265,10 +279,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
             }
             R.id.sheets -> {
-                if (appSettings.getBoolean(Constants.isLogin)){
+                if (appSettings.getBoolean(Constants.isLogin)) {
                     startActivity(Intent(context, SheetsActivity::class.java))
-                }
-                else{
+                } else {
                     startLogin()
                 }
 

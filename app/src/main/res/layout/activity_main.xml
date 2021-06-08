@@ -18,6 +18,21 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu"/>
+        app:menu="@menu/nav_menu">
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/privacy_policy_view"
+            android:layout_gravity="bottom|end"
+            android:text="@string/privacy_policy"
+            android:layout_margin="@dimen/sixtyDpMargin"
+            android:textSize="@dimen/smallText"
+            android:textColor="@color/dark_gray"
+            android:textStyle="bold"
+            />
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
