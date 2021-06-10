@@ -38,8 +38,8 @@ class PostSheetDataActivity : BaseActivity() {
     var values_String = arrayOfNulls<String>(1000)
     var allEds = mutableListOf<EditText>()
     var id: String? = null
-    private lateinit var service:Drive
-    private lateinit var mSheetService: Sheets
+    private var service:Drive?=null
+    private var mSheetService:Sheets?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,29 +61,29 @@ class PostSheetDataActivity : BaseActivity() {
         }
 
         id = intent.getStringExtra("id")
-        if (Constants.mService != null){
+        if (Constants.mService != null) {
             service = Constants.mService!!
         }
 
-        if (Constants.sheetService != null){
+        if (Constants.sheetService != null) {
             mSheetService = Constants.sheetService!!
         }
 
         fetchSheetColumns()
     }
 
-    private fun sendRequest(){
+    private fun sendRequest() {
         for (j in values!!.indices) {
             values_String[j] = allEds[j].text.toString()
         }
-         startLoading(context)
+        startLoading(context)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val fileMetadata = File()
                 fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
                 val filePath = File(path.text.toString())
                 val mediaContent = FileContent("image/jpeg", filePath)
-                val file: File = service.files().create(fileMetadata, mediaContent)
+                val file: File = service!!.files().create(fileMetadata, mediaContent)
                     .setFields("id")
                     .execute()
                 Log.e("File ID: ", file.id)
@@ -179,35 +179,38 @@ class PostSheetDataActivity : BaseActivity() {
 
                 val data: Intent? = result.data
 
-                    //couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
-                    val paths = ImageManager.getRealPathFromUri(this, data!!.data!!)
-                path.setText(paths)
+                //couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
+                val paths = ImageManager.getRealPathFromUri(this, data!!.data!!)
+                path.text = paths
             }
         }
 
-    private fun fetchSheetColumns(){
+    private fun fetchSheetColumns() {
         CoroutineScope(Dispatchers.IO).launch {
             val range = "A:Z"
             var response: ValueRange? = null
             try {
-                val request: Sheets.Spreadsheets.Values.Get =
-                    mSheetService.spreadsheets().values().get(id, range)
+                val request = mSheetService!!.spreadsheets().values().get(id, range)
                 response = request.execute()
             } catch (e: UserRecoverableAuthIOException) {
+                Log.d("TEST199",e.localizedMessage!!)
                 //Toast.makeText(getApplicationContext(), "Can't Fetch columns of your sheet", Toast.LENGTH_LONG).show();
             } catch (e: IOException) {
                 e.printStackTrace()
             }
 
-            values = response!!.getValues()[0]
-            CoroutineScope(Dispatchers.Main).launch {
-                DynamicallyGenerateEditext()
+            if (response != null) {
+                values = response.getValues()[0]
+                CoroutineScope(Dispatchers.Main).launch {
+                    dynamicallyGenerateEditext()
+                }
             }
         }
     }
 
 
-    private fun DynamicallyGenerateEditext(){
+
+    private fun dynamicallyGenerateEditext() {
         try {
             val parentLinear = findViewById<View>(R.id.parentLinear) as LinearLayout
             val l = LinearLayout(this)

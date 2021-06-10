@@ -19,6 +19,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         private const val COLUMN_ID = "id"
         private const val COLUMN_CODE_DATA = "code_data"
         private const val COLUMN_DATE = "date"
+        private const val COLUMN_IMAGE = "image"
         private const val DEFAULT_TABLE_NAME = "default_table"
 
         private const val LIST_FIELDS_TABLE_NAME = "list_fields"
@@ -39,7 +40,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
     override fun onCreate(db: SQLiteDatabase?) {
         val defaultTable = ("CREATE TABLE IF NOT EXISTS " + DEFAULT_TABLE_NAME + "("
-                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CODE_DATA + " TEXT," + COLUMN_DATE + " TEXT)")
+                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CODE_DATA + " TEXT," + COLUMN_DATE + " TEXT,"+COLUMN_IMAGE+" TEXT)")
 
         val listFieldTable =
             ("CREATE TABLE IF NOT EXISTS $LIST_FIELDS_TABLE_NAME($LIST_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$LIST_COLUMN_FIELD_NAME TEXT,$LIST_COLUMN_TABLE_NAME TEXT,$LIST_COLUMN_OPTIONS TEXT)")
@@ -132,7 +133,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             tableName
         }
         val createTable =
-            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,date TEXT)")
+            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,date TEXT,image TEXT)")
         db.execSQL(createTable)
     }
 

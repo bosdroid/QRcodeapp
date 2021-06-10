@@ -205,11 +205,13 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                         )
                     }
                     else if (fieldType == "nonChangeable"){
+                        defaultColumnValue = defaultValueFieldTInput.text.toString().trim()
                         tableGenerator.addNewColumn(
                             tableName,
                             Pair(fieldName, "TEXT"),
                             defaultColumnValue
                         )
+                        tableGenerator.insertFieldList(fieldName,tableName,defaultColumnValue)
                     }
                     else if(fieldType == "listWithValues"){
                         tableGenerator.addNewColumn(

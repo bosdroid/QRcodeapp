@@ -42,6 +42,7 @@ class Constants {
         var userData:User?=null
         var mService:Drive?=null
         var sheetService: Sheets?=null
+        var captureImagePath:String?=null
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)

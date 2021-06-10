@@ -69,6 +69,77 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/image_layout_wrapper"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                >
+             <com.google.android.material.checkbox.MaterialCheckBox
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="add product image"
+                 android:layout_gravity="center_horizontal"
+                 android:id="@+id/add_image_checkbox"
+                 />
+                <LinearLayout
+                    android:id="@+id/image_sources_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false"
+                    android:visibility="gone"
+                    >
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        >
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/camera_image_view"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/border"
+                            android:src="@drawable/ic_photo_camera" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        >
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/images_image_view"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:padding="5dp"
+                            android:background="@drawable/border"
+                            android:src="@drawable/ic_images" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/filePath"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/largeText"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/defaultDpMargin"
+                    android:visibility="gone"
+                    android:text=""/>
+            </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:layout_width="match_parent"

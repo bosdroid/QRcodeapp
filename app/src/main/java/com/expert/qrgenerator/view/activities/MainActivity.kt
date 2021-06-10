@@ -39,6 +39,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -349,12 +351,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         auth.signOut()
         // Google sign out
         mGoogleSignInClient.signOut().addOnCompleteListener(this) {
-            dismiss()
-            appSettings.remove(Constants.isLogin)
-            appSettings.remove(Constants.user)
-            Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
-                .show()
-            checkUserLoginStatus()
+
+            mGoogleSignInClient.revokeAccess().addOnCompleteListener {
+                dismiss()
+                appSettings.remove(Constants.isLogin)
+                appSettings.remove(Constants.user)
+                Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
+                    .show()
+                checkUserLoginStatus()
+            }
         }
 
 
@@ -374,7 +379,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 try {
                     // Google Sign In was successful, authenticate with Firebase
                     val account = task.getResult(ApiException::class.java)!!
-                    firebaseAuthWithGoogle(account)
+                    handleSignInResult(account)
+                    //firebaseAuthWithGoogle(account)
                 } catch (e: ApiException) {
                     // Google Sign In failed, update UI appropriately
                     Log.w("TAG", "Google sign in failed", e)
