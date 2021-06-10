@@ -3,6 +3,7 @@ package com.expert.qrgenerator.view.activities
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -192,6 +193,9 @@ class SheetsActivity : BaseActivity(), SheetAdapter.OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         val sheet = sheetsList[position]
-        showAlert(context, "${sheet.name}:${sheet.id}")
+        //showAlert(context, "${sheet.name}:${sheet.id}")
+        val intent = Intent(context,PostSheetDataActivity::class.java)
+        intent.putExtra("id",sheet.id)
+        startActivity(intent)
     }
 }

@@ -16,6 +16,7 @@ import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.view.activities.CouponQrActivity
 import com.expert.qrgenerator.view.activities.FeedbackQrActivity
 import com.expert.qrgenerator.view.activities.MainActivity
+import com.expert.qrgenerator.view.activities.SocialNetworksQrActivity
 
 
 class GeneratorFragment : Fragment() {
@@ -62,6 +63,9 @@ class GeneratorFragment : Fragment() {
                 }
                 else if (position == 10){
                     requireActivity().startActivity(Intent(requireActivity(), FeedbackQrActivity::class.java))
+                }
+                else if (position == 11){
+                    requireActivity().startActivity(Intent(requireActivity(), SocialNetworksQrActivity::class.java))
                 }
                 else {
                     Constants.getLayout(requireActivity(), position, layoutContainer, MainActivity.nextStepTextView)

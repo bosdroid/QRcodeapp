@@ -21,6 +21,7 @@ import com.expert.qrgenerator.adapters.FieldListsAdapter
 import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.model.ListValue
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -180,18 +181,19 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.add_new_field_btn -> {
-//                if (Constants.userData != null) {
+                if (Constants.userData != null) {
                     addNewFieldBtn.visibility = View.GONE
                     addNewFieldLayoutWrapper.visibility = View.VISIBLE
-//                } else {
-//                    showAlert(context, "You can not create dynamic table without account login!")
-//                }
+                } else {
+                    showAlert(context, "You can not create dynamic table without account login!")
+                }
             }
             R.id.list_with_fields_btn -> {
                 openListWithFieldsDialog()
             }
             R.id.field_submit_btn -> {
                 if (validation()) {
+                    startLoading(context)
                     val fieldName = tableNewFieldNameTInput.text.toString().trim().toLowerCase(
                         Locale.ENGLISH
                     ).replace(" ","_")
@@ -218,8 +220,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                         val listOptions:String = tableGenerator.getListValues(listId!!)
                         tableGenerator.insertFieldList(fieldName,tableName,listOptions)
                     }
-                    addNewFieldLayoutWrapper.visibility = View.GONE
-                    addNewFieldBtn.visibility = View.VISIBLE
+
 
                     Handler(Looper.myLooper()!!).postDelayed({
                         val layout =
@@ -228,6 +229,9 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                             layout.findViewById<MaterialTextView>(R.id.table_column_name)
                         columnNameView.text = tableNewFieldNameTInput.text.toString().trim()
                         tableColumnsDetailLayout.addView(layout)
+                        dismiss()
+                        addNewFieldLayoutWrapper.visibility = View.GONE
+                        addNewFieldBtn.visibility = View.VISIBLE
                         resetViews()
                     }, 2000)
                 }
@@ -267,16 +271,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         else{
             adapter.notifyDataSetChanged()
         }
-//        appViewModel.getAllListValues().observe(this, Observer { list->
-//            if (list.isNotEmpty()){
-//                listItems.clear()
-//                listItems.addAll(list)
-//                adapter.notifyDataSetChanged()
-//            }
-//            else{
-//                adapter.notifyDataSetChanged()
-//            }
-//        })
+
 
         adapter.setOnItemClickListener(object : FieldListsAdapter.OnItemClickListener{
             override fun onItemClick(position: Int) {

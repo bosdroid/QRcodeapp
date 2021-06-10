@@ -87,12 +87,12 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
     }
 
     override fun onAddItemClick(position: Int) {
-//        if (Constants.userData != null){
+        if (Constants.userData != null){
             addTableDialog()
-//        }
-//        else{
-//            showAlert(context,"You can not create dynamic table without account login!")
-//        }
+        }
+        else{
+            showAlert(context,"You can not create dynamic table without account login!")
+        }
 
     }
 

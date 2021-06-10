@@ -158,4 +158,6 @@
     <string name="field_list">Table Field List</string>
     <string name="sheets">Sheets</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="social_networks_text">Social Networks</string>
+    <string name="social_networks_qr">Social Netwroks QR</string>
 </resources>

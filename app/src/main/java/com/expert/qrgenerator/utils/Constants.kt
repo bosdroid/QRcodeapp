@@ -80,6 +80,7 @@ class Constants {
             list.add(QRTypes(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 8))
             list.add(QRTypes(R.drawable.ic_coupon, context.getString(R.string.coupon_text), 9))
             list.add(QRTypes(R.drawable.ic_feedback, context.getString(R.string.feedback_text), 10))
+            list.add(QRTypes(R.drawable.ic_social_networks, context.getString(R.string.social_networks_text), 11))
             return list
         }
 

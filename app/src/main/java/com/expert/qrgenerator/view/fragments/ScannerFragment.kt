@@ -229,8 +229,14 @@ class ScannerFragment : Fragment() {
                                                             System.currentTimeMillis()
                                                         )
                                                     )
+                                                    columnValue.isEnabled = false
+                                                    columnValue.isFocusable = false
+                                                    columnValue.isFocusableInTouchMode = false
                                                 }
                                                 else{
+                                                    columnValue.isEnabled = true
+                                                    columnValue.isFocusable = true
+                                                    columnValue.isFocusableInTouchMode = true
                                                     columnValue.setText("")
                                                 }
                                                 textInputIdsList.add(Pair(value, columnValue))

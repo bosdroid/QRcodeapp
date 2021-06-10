@@ -38,8 +38,14 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.google.api.client.http.FileContent
+import com.google.api.services.drive.Drive
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import top.defaults.colorpicker.ColorPickerPopup
 import top.defaults.colorpicker.ColorPickerPopup.ColorPickerObserver
+import java.io.File
 import java.util.*
 
 
@@ -457,8 +463,9 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                             "Please select the header image having size 640 x 360!"
                         )
                     } else {
-                        couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
-
+                        //couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
+                         val path = ImageManager.getRealPathFromUri(context,data.data!!)
+                        uploadOnDrive(path!!)
                         // THIS LINES OF CODE WILL RE SCALED THE IMAGE WITH ASPECT RATION AND SIZE 640 X 360
                         val bitmapImage = BitmapFactory.decodeFile(ImageManager.getRealPathFromUri(context,data.data!!))
                         val nh = (bitmapImage.height * (640.0 / bitmapImage.width)).toInt()
@@ -469,6 +476,28 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
                 }
             }
+    var mService:Drive?=null
+    private fun uploadOnDrive(path: String){
+        if (Constants.mService != null){
+            mService = Constants.mService
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+
+                if (mService != null){
+                    val fileMetadata = com.google.api.services.drive.model.File()
+                    fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
+                    val filePath: File = File(path)
+                    val mediaContent = FileContent("image/jpeg", filePath)
+                    val file: com.google.api.services.drive.model.File =
+                        mService!!.files().create(fileMetadata, mediaContent)
+                            .setFields("id")
+                            .execute()
+                    Log.e("File ID: ", file.id)
+                    Log.d("TEST199", "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing")
+                }
+        }
+
+    }
 
     // THIS FUNCTION WILL HANDLE THE RUNTIME PERMISSION RESULT
     override fun onRequestPermissionsResult(
