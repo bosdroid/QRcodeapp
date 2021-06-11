@@ -124,6 +124,7 @@ dependencies {
     // RETROFIT NETWORK LIBRARY
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.android.volley:volley:1.1.1"
 
     // ROOM LOCAL DATABASE
     implementation "androidx.room:room-runtime:$room_version"

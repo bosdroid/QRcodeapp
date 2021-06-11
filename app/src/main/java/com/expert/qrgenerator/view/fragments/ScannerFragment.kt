@@ -323,7 +323,6 @@ class ScannerFragment : Fragment() {
 
                                 submitBtn.setOnClickListener {
                                     alert.dismiss()
-//
                                     BaseActivity.startLoading(requireActivity())
 
                                     CoroutineScope(Dispatchers.IO).launch {
@@ -336,6 +335,7 @@ class ScannerFragment : Fragment() {
                                                     mService = Constants.mService
                                                 }
                                                 if (mService != null) {
+
                                                     val fileMetadata =
                                                         com.google.api.services.drive.model.File()
                                                     fileMetadata.name =
@@ -349,9 +349,9 @@ class ScannerFragment : Fragment() {
                                                             .create(fileMetadata, mediaContent)
                                                             .setFields("id")
                                                             .execute()
+
                                                     val url =
                                                         "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
-//                                                    imageDrivePath = url
 
                                                     for (i in 0 until textInputIdsList.size) {
                                                         val pair = textInputIdsList[i]
@@ -381,8 +381,6 @@ class ScannerFragment : Fragment() {
                                                             )
                                                         )
                                                     }
-//                                                    Log.e("File ID: ", file.id)
-//                                                    Log.d("TEST199", "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing")
                                                 }
 
                                             } else {

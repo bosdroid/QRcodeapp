@@ -351,15 +351,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         auth.signOut()
         // Google sign out
         mGoogleSignInClient.signOut().addOnCompleteListener(this) {
-
-            mGoogleSignInClient.revokeAccess().addOnCompleteListener {
-                dismiss()
-                appSettings.remove(Constants.isLogin)
-                appSettings.remove(Constants.user)
-                Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
-                    .show()
-                checkUserLoginStatus()
-            }
+            dismiss()
+            appSettings.remove(Constants.isLogin)
+            appSettings.remove(Constants.user)
+            Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
+                .show()
+            checkUserLoginStatus()
         }
 
 

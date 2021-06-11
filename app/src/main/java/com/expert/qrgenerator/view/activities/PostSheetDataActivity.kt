@@ -5,17 +5,26 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import com.android.volley.Response
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
+import com.expert.qrgenerator.utils.VolleySingleton
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.File
 import com.google.api.services.sheets.v4.Sheets
+import com.google.api.services.sheets.v4.model.Spreadsheet
 import com.google.api.services.sheets.v4.model.ValueRange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,10 +32,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
 import java.net.URLEncoder
-import javax.net.ssl.HttpsURLConnection
+import java.util.*
+
 
 class PostSheetDataActivity : BaseActivity() {
 
@@ -38,8 +46,9 @@ class PostSheetDataActivity : BaseActivity() {
     var values_String = arrayOfNulls<String>(1000)
     var allEds = mutableListOf<EditText>()
     var id: String? = null
-    private var service:Drive?=null
-    private var mSheetService:Sheets?=null
+    private var service: Drive? = null
+    private var mSheetService: Sheets? = null
+    var sheetName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +77,7 @@ class PostSheetDataActivity : BaseActivity() {
         if (Constants.sheetService != null) {
             mSheetService = Constants.sheetService!!
         }
-
+        getSheetName(id!!)
         fetchSheetColumns()
     }
 
@@ -87,81 +96,90 @@ class PostSheetDataActivity : BaseActivity() {
                     .setFields("id")
                     .execute()
                 Log.e("File ID: ", file.id)
-                val url =
-                    URL("https://script.google.com/macros/s/AKfycbw6_wNMBRdgxbfc49OcoF_t-ZwKjL5Idi9-xlD1tUXB1joobMLz7CmXDe3fL3lyKFd79g/exec")
-
-                val postDataParams = JSONObject()
+                val url = "https://script.google.com/macros/s/AKfycbw8aAiqlJbquiRYbiYyZOh36IC_0DEtp18qNkowZvltCJ-BEdbRYola2Dv1wLxAFF9X/exec"//URL("https://script.google.com/macros/s/AKfycbzTa84_2VmwTN2usH6MqzfiD7b4aNSYHAKy6k_vniR-uy5a_W9N/exec")
                 val values_JSON = JSONArray()
                 for (j in values!!.indices) values_JSON.put(values_String[j])
-                postDataParams.put("number", values!!.size)
-                postDataParams.put("id", id)
-                postDataParams.put("value", values_JSON)
-                postDataParams.put(
-                    "drive",
-                    "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
-                )
 
-                val conn = url.openConnection() as HttpURLConnection
-                conn.readTimeout = 15000
-                conn.connectTimeout = 15000
-                conn.requestMethod = "POST"
-                conn.doInput = true
-                conn.doOutput = true
-                val os = conn.outputStream
-                val writer = BufferedWriter(
-                    OutputStreamWriter(os, "UTF-8")
-                )
-                writer.write(getPostDataString(postDataParams))
-                writer.flush()
-                writer.close()
-                os.close()
-                val responseCode = conn.responseCode
-                if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    val input = BufferedReader(InputStreamReader(conn.inputStream))
-                    val sb = StringBuffer("")
-                    var line: String? = ""
-                    while (input.readLine().also { line = it } != null) {
-                        sb.append(line)
-                        break
-                    }
-                    input.close()
-                    sb.toString()
+                val sr: StringRequest = object : StringRequest(
+                    Method.POST,
+                    url,
+                    object : Response.Listener<String?> {
+                        override fun onResponse(response: String?) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                dismiss()
+                                if (response!!.toLowerCase(Locale.ENGLISH).contains("success")) {
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Data has been inserted successfully",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    val permissionDeniedLayout = LayoutInflater.from(context)
+                                        .inflate(R.layout.spreadsheet_permission_failed_dialog, null)
+                                    val builder = MaterialAlertDialogBuilder(context)
+                                    builder.setCancelable(false)
+                                    builder.setView(permissionDeniedLayout)
+                                    builder.setPositiveButton("Ok") { dialog, which ->
+                                        dialog.dismiss()
+                                    }
+                                    val alert = builder.create()
+                                    alert.show()
+                                }
 
-                    CoroutineScope(Dispatchers.Main).launch {
-                        dismiss()
-                        Toast.makeText(
-                            applicationContext,
-                            "Data has been inserted successfully",
-                            Toast.LENGTH_LONG
-                        ).show()
+                            }
+                        }
+                    },
+                    object : Response.ErrorListener {
+                        override fun onErrorResponse(error: VolleyError?) {
+                            Toast.makeText(context,error!!.toString(),Toast.LENGTH_SHORT).show()
+                            dismiss()
+                        }
+                    }) {
+                    override fun getParams(): Map<String, String> {
+                        val params: MutableMap<String, String> = HashMap()
+                        params["sheetName"] = sheetName
+                        params["number"] = "${values!!.size}"
+                        params["id"] = "$id"
+                        params["value"] = "${values_JSON}"
+                        params["drive"] = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+                        return params
                     }
-                } else {
-                    //String("false : $responseCode")
+
                 }
+                VolleySingleton(context).addToRequestQueue(sr)
+
             } catch (e: UserRecoverableAuthIOException) {
                 e.printStackTrace()
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
-                //String("Exception: " + e.message)
             }
         }
     }
 
-    @Throws(java.lang.Exception::class)
-    fun getPostDataString(params: JSONObject): String {
-        val result = StringBuilder()
-        var first = true
-        val itr = params.keys()
-        while (itr.hasNext()) {
-            val key = itr.next()
-            val value = params[key]
-            if (first) first = false else result.append("&")
-            result.append(URLEncoder.encode(key, "UTF-8"))
-            result.append("=")
-            result.append(URLEncoder.encode(value.toString(), "UTF-8"))
+    private fun getSheetName(id: String){
+        CoroutineScope(Dispatchers.IO).launch {
+            val response1: Spreadsheet =
+                mSheetService!!.spreadsheets().get(id).setIncludeGridData(false)
+                    .execute()
+            sheetName = response1.sheets[0].properties.title
         }
-        return result.toString()
     }
+
+//    @Throws(java.lang.Exception::class)
+//    fun getPostDataString(params: JSONObject): String {
+//        val result = StringBuilder()
+//        var first = true
+//        val itr = params.keys()
+//        while (itr.hasNext()) {
+//            val key = itr.next()
+//            val value = params[key]
+//            if (first) first = false else result.append("&")
+//            result.append(URLEncoder.encode(key, "UTF-8"))
+//            result.append("=")
+//            result.append(URLEncoder.encode(value.toString(), "UTF-8"))
+//        }
+//        return result.toString()
+//    }
 
     // THIS FUNCTION WILL CALL THE IMAGE INTENT
     private fun getImageFromLocalStorage() {
@@ -193,7 +211,7 @@ class PostSheetDataActivity : BaseActivity() {
                 val request = mSheetService!!.spreadsheets().values().get(id, range)
                 response = request.execute()
             } catch (e: UserRecoverableAuthIOException) {
-                Log.d("TEST199",e.localizedMessage!!)
+                googleLauncher.launch(e.intent)
                 //Toast.makeText(getApplicationContext(), "Can't Fetch columns of your sheet", Toast.LENGTH_LONG).show();
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -208,6 +226,27 @@ class PostSheetDataActivity : BaseActivity() {
         }
     }
 
+    // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
+    private var googleLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+            if (result.resultCode == Activity.RESULT_OK) {
+                    fetchSheetColumns()
+//                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(
+//                    result.data
+//                )
+//                handleSignInResult(task)
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    // Google Sign In was successful, authenticate with Firebase
+                    val account = task.getResult(ApiException::class.java)!!
+                    //firebaseAuthWithGoogle(account)
+                } catch (e: ApiException) {
+                    // Google Sign In failed, update UI appropriately
+                    Log.w("TAG", "Google sign in failed", e)
+                }
+            }
+        }
 
 
     private fun dynamicallyGenerateEditext() {
