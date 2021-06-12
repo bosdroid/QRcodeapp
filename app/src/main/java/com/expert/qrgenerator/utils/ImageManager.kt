@@ -9,6 +9,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -350,6 +351,26 @@ class ImageManager {
                 e.printStackTrace()
                 return null
             }
+        }
+
+        fun readWriteImage(context: Context,bitmap: Bitmap): File {
+            // store in DCIM/Camera directory
+            val dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)//Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+            val cameraDir = File(dir, "Camera/")
+
+            val file = if (cameraDir.exists()) {
+                File(cameraDir, "JPEG_${System.currentTimeMillis()}.jpg")
+            } else {
+                cameraDir.mkdir()
+                File(cameraDir, "JPEG_${System.currentTimeMillis()}.jpg")
+            }
+
+            val fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            fos.flush()
+            fos.close()
+
+            return file
         }
 
     }
