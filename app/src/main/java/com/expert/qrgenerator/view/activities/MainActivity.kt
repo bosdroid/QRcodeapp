@@ -47,6 +47,8 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.HttpRequest
+import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
@@ -225,7 +227,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             mService = Drive.Builder(
                 transport, jsonFactory, credential
-            )
+            ).setHttpRequestInitializer { request ->
+                credential!!.initialize(request)
+                request!!.connectTimeout = 300 * 60000  // 300 minutes connect timeout
+                request.readTimeout = 300 * 60000  // 300 minutes read timeout
+            }
                 .setApplicationName(getString(R.string.app_name))
                 .build()
 
@@ -531,7 +537,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = true
             mNavigation.menu.findItem(R.id.tables).isVisible = true
             mNavigation.menu.findItem(R.id.field_list).isVisible = true
-            mNavigation.menu.findItem(R.id.sheets).isVisible = true
+//            mNavigation.menu.findItem(R.id.sheets).isVisible = true
 
         } else {
             mNavigation.menu.findItem(R.id.login).isVisible = true
@@ -539,7 +545,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = false
             mNavigation.menu.findItem(R.id.tables).isVisible = false
             mNavigation.menu.findItem(R.id.field_list).isVisible = false
-            mNavigation.menu.findItem(R.id.sheets).isVisible = false
+//            mNavigation.menu.findItem(R.id.sheets).isVisible = false
         }
     }
 

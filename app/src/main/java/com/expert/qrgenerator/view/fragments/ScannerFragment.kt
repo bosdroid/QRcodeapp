@@ -46,7 +46,9 @@ import com.google.android.material.textview.MaterialTextView
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
+import com.google.api.client.http.HttpContent
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.ExponentialBackOff
@@ -324,7 +326,7 @@ class ScannerFragment : Fragment() {
                                 submitBtn.setOnClickListener {
                                     alert.dismiss()
                                     BaseActivity.startLoading(requireActivity())
-
+                                    var url = ""
                                     CoroutineScope(Dispatchers.IO).launch {
                                         try {
                                             val params = mutableListOf<Pair<String, String>>()
@@ -335,23 +337,31 @@ class ScannerFragment : Fragment() {
                                                     mService = Constants.mService
                                                 }
                                                 if (mService != null) {
+                                                    try {
+                                                        val fileMetadata =
+                                                            com.google.api.services.drive.model.File()
+                                                        fileMetadata.name =
+                                                            "Image_${System.currentTimeMillis()}.jpg"
+                                                        val filePath: File =
+                                                            File(filePathView!!.text.toString())
+                                                        val mediaContent =
+                                                            FileContent("image/jpeg", filePath)
+                                                        val file: com.google.api.services.drive.model.File =
+                                                            mService!!.files()
+                                                                .create(fileMetadata, mediaContent)
+                                                                .setFields("id")
+                                                                .execute()
 
-                                                    val fileMetadata =
-                                                        com.google.api.services.drive.model.File()
-                                                    fileMetadata.name =
-                                                        "Image_${System.currentTimeMillis()}.jpg"
-                                                    val filePath: File =
-                                                        File(filePathView!!.text.toString())
-                                                    val mediaContent =
-                                                        FileContent("image/jpeg", filePath)
-                                                    val file: com.google.api.services.drive.model.File =
-                                                        mService!!.files()
-                                                            .create(fileMetadata, mediaContent)
-                                                            .setFields("id")
-                                                            .execute()
+                                                        url =
+                                                            "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+                                                    } catch (e: GoogleJsonResponseException) {
+                                                        Log.d("TEST199", e.details.message)
+                                                        BaseActivity.showAlert(
+                                                            requireActivity(),
+                                                            e.details.message
+                                                        )
+                                                    }
 
-                                                    val url =
-                                                        "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
 
                                                     for (i in 0 until textInputIdsList.size) {
                                                         val pair = textInputIdsList[i]
