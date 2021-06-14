@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
@@ -476,20 +477,18 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
                 }
             }
-    var mService:Drive?=null
+
     private fun uploadOnDrive(path: String){
-        if (Constants.mService != null){
-            mService = Constants.mService
-        }
+
         CoroutineScope(Dispatchers.IO).launch {
 
-                if (mService != null){
+                if (DriveService.instance != null){
                     val fileMetadata = com.google.api.services.drive.model.File()
                     fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
                     val filePath: File = File(path)
                     val mediaContent = FileContent("image/jpeg", filePath)
                     val file: com.google.api.services.drive.model.File =
-                        mService!!.files().create(fileMetadata, mediaContent)
+                        DriveService.instance!!.files().create(fileMetadata, mediaContent)
                             .setFields("id")
                             .execute()
                     Log.e("File ID: ", file.id)

@@ -27,6 +27,7 @@ import com.budiyev.android.codescanner.*
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.utils.*
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
@@ -59,7 +60,6 @@ class ScannerFragment : Fragment() {
     private var spinnerIdsList = mutableListOf<Pair<String, AppCompatSpinner>>()
     private lateinit var addNewTableBtn: MaterialButton
     private lateinit var appSettings: AppSettings
-    private var mService: com.google.api.services.drive.Drive? = null
     private var imageDrivePath = ""
 
     override fun onAttach(context: Context) {
@@ -532,9 +532,6 @@ class ScannerFragment : Fragment() {
 
 
     private fun uploadImageOnDrive(): Boolean {
-        if (Constants.mService != null) {
-            mService = Constants.mService
-        }
 
         try {
             val fileMetadata =
@@ -546,7 +543,7 @@ class ScannerFragment : Fragment() {
             val mediaContent = FileContent("image/jpeg", filePath)
 
             val file: com.google.api.services.drive.model.File =
-                mService!!.files()
+                DriveService.instance!!.files()
                     .create(fileMetadata, mediaContent)
                     .setFields("id")
                     .execute()

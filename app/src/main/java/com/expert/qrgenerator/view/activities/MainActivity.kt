@@ -28,6 +28,8 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.User
+import com.expert.qrgenerator.singleton.DriveService
+import com.expert.qrgenerator.singleton.SheetService
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.view.fragments.GeneratorFragment
@@ -69,7 +71,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var toolbar: Toolbar
     private lateinit var mDrawer: DrawerLayout
     private lateinit var mNavigation: NavigationView
-    private lateinit var privacyPolicy:MaterialTextView
+    private lateinit var privacyPolicy: MaterialTextView
     private lateinit var bottomNavigation: BottomNavigationView
     private var encodedTextData: String = " "
     private lateinit var viewModel: MainActivityViewModel
@@ -242,9 +244,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
-            Constants.mService = mService
-            Constants.sheetService = sheetService
+            DriveService.saveDriveInstance(mService!!)
+            SheetService.saveGoogleSheetInstance(sheetService!!)
             saveUserUpdatedDetail(acct, "last")
         }
 
@@ -332,7 +333,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
-    private fun startLogin(){
+    private fun startLogin() {
         val signInIntent = mGoogleSignInClient.signInIntent
         googleLauncher.launch(signInIntent)
     }

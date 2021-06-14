@@ -13,6 +13,8 @@ import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.singleton.DriveService
+import com.expert.qrgenerator.singleton.SheetService
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.VolleySingleton
@@ -46,8 +48,8 @@ class PostSheetDataActivity : BaseActivity() {
     var values_String = arrayOfNulls<String>(1000)
     var allEds = mutableListOf<EditText>()
     var id: String? = null
-    private var service: Drive? = null
-    private var mSheetService: Sheets? = null
+//    private var service: Drive? = null
+//    private var mSheetService: Sheets? = null
     var sheetName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,13 +72,13 @@ class PostSheetDataActivity : BaseActivity() {
         }
 
         id = intent.getStringExtra("id")
-        if (Constants.mService != null) {
-            service = Constants.mService!!
-        }
-
-        if (Constants.sheetService != null) {
-            mSheetService = Constants.sheetService!!
-        }
+//        if (Constants.mService != null) {
+//            service = Constants.mService!!
+//        }
+//
+//        if (Constants.sheetService != null) {
+//            mSheetService = Constants.sheetService!!
+//        }
         getSheetName(id!!)
         fetchSheetColumns()
     }
@@ -92,7 +94,7 @@ class PostSheetDataActivity : BaseActivity() {
                 fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
                 val filePath = File(path.text.toString())
                 val mediaContent = FileContent("image/jpeg", filePath)
-                val file: File = service!!.files().create(fileMetadata, mediaContent)
+                val file: File = DriveService.instance!!.files().create(fileMetadata, mediaContent)
                     .setFields("id")
                     .execute()
                 Log.e("File ID: ", file.id)
@@ -159,7 +161,7 @@ class PostSheetDataActivity : BaseActivity() {
     private fun getSheetName(id: String){
         CoroutineScope(Dispatchers.IO).launch {
             val response1: Spreadsheet =
-                mSheetService!!.spreadsheets().get(id).setIncludeGridData(false)
+                SheetService.instance!!.spreadsheets().get(id).setIncludeGridData(false)
                     .execute()
             sheetName = response1.sheets[0].properties.title
         }
@@ -208,7 +210,7 @@ class PostSheetDataActivity : BaseActivity() {
             val range = "A:Z"
             var response: ValueRange? = null
             try {
-                val request = mSheetService!!.spreadsheets().values().get(id, range)
+                val request = SheetService.instance!!.spreadsheets().values().get(id, range)
                 response = request.execute()
             } catch (e: UserRecoverableAuthIOException) {
                 googleLauncher.launch(e.intent)
