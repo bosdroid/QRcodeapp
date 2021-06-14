@@ -138,6 +138,8 @@ class ScannerFragment : Fragment() {
         }
     }
 
+    private var url = ""
+    private var isUploaded = false
     private fun startScanner() {
         if (RuntimePermissionHelper.checkCameraPermission(
                 requireActivity(),
@@ -314,34 +316,21 @@ class ScannerFragment : Fragment() {
                                 submitBtn.setOnClickListener {
                                     alert.dismiss()
                                     BaseActivity.startLoading(requireActivity())
-                                    var url = ""
+
                                     CoroutineScope(Dispatchers.IO).launch {
                                         try {
                                             val params = mutableListOf<Pair<String, String>>()
-                                            if (addImageCheckBox.isChecked && filePathView!!.text.toString()
+                                            if (addImageCheckBox.isChecked && filePathView!!.text.toString() //TODO We cant use !!
                                                     .isNotEmpty()
                                             ) {
+                                                //TODO put in separate method so we know what happens here
                                                 if (Constants.mService != null) {
                                                     mService = Constants.mService
                                                 }
                                                 if (mService != null) {
                                                     try {
-                                                        val fileMetadata =
-                                                            com.google.api.services.drive.model.File()
-                                                        fileMetadata.name =
-                                                            "Image_${System.currentTimeMillis()}.jpg"
-                                                        val filePath: File =
-                                                            File(filePathView!!.text.toString())
-                                                        val mediaContent =
-                                                            FileContent("image/jpeg", filePath)
-                                                        val file: com.google.api.services.drive.model.File =
-                                                            mService!!.files()
-                                                                .create(fileMetadata, mediaContent)
-                                                                .setFields("id")
-                                                                .execute()
-
-                                                        url =
-                                                            "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+                                                        isUploaded =
+                                                            uploadImageOnDrive() //TODO and then based on this result you need to build the next steps
                                                     } catch (e: GoogleJsonResponseException) {
                                                         Log.d("TEST199", e.details.message)
                                                         BaseActivity.showAlert(
@@ -350,38 +339,49 @@ class ScannerFragment : Fragment() {
                                                         )
                                                     }
 
-
-                                                    for (i in 0 until textInputIdsList.size) {
-                                                        val pair = textInputIdsList[i]
-                                                        if (pair.first == "image") {
-                                                            params.add(
-                                                                Pair(
-                                                                    pair.first,
-                                                                    url
+                                                    //TODO Here we need to wait for a google drive callback and check if isUploaded is true / if false handle error
+                                                    if (isUploaded) {
+                                                        //TODO Here you start looping without handling execution of the file on line 342
+                                                        //TODO this looping must be processed ONLY after SUCCESS of google drive logic above
+                                                        for (i in 0 until textInputIdsList.size) {
+                                                            val pair =
+                                                                textInputIdsList[i] //TODO Need comments and explanation what happens here
+                                                            if (pair.first == "image") {
+                                                                params.add(
+                                                                    Pair(
+                                                                        pair.first,
+                                                                        url //TODO Here we start looping with url but we cant be sure that it is not empty
+                                                                        //TODO because the code above is not synched with this piece so it might be empty
+                                                                        //TODO we need to check the url result before setting it here
+                                                                    )
                                                                 )
-                                                            )
-                                                        } else {
+                                                            } else {
+                                                                params.add( //TODO I dont understand what this does
+                                                                    Pair(//TODO Need comments and explanation what happens here
+                                                                        pair.first,
+                                                                        pair.second.text.toString()
+                                                                            .trim()
+                                                                    )
+                                                                )
+                                                            }
+                                                        }
+                                                        for (j in 0 until spinnerIdsList.size) {//TODO I dont understand what this does
+                                                            val pair = spinnerIdsList[j]
                                                             params.add(
                                                                 Pair(
                                                                     pair.first,
-                                                                    pair.second.text.toString()
-                                                                        .trim()
+                                                                    pair.second.selectedItem.toString()
                                                                 )
                                                             )
                                                         }
+                                                    } else {
+                                                        //TODO we need to handle the situation when something wrong with service
                                                     }
-                                                    for (j in 0 until spinnerIdsList.size) {
-                                                        val pair = spinnerIdsList[j]
-                                                        params.add(
-                                                            Pair(
-                                                                pair.first,
-                                                                pair.second.selectedItem.toString()
-                                                            )
-                                                        )
-                                                    }
+                                                } else {
+                                                    //TODO Handle bad path / retry + show message
                                                 }
-
                                             } else {
+                                                //TODO put in separate method so we know what happens here
                                                 for (i in 0 until textInputIdsList.size) {
                                                     val pair = textInputIdsList[i]
                                                     if (pair.first == "image") {
@@ -392,7 +392,7 @@ class ScannerFragment : Fragment() {
                                                             )
                                                         )
                                                     } else {
-                                                        params.add(
+                                                        params.add(//TODO I dont understand what this does
                                                             Pair(
                                                                 pair.first,
                                                                 pair.second.text.toString().trim()
@@ -400,7 +400,7 @@ class ScannerFragment : Fragment() {
                                                         )
                                                     }
                                                 }
-                                                for (j in 0 until spinnerIdsList.size) {
+                                                for (j in 0 until spinnerIdsList.size) {//TODO I dont understand what this does
                                                     val pair = spinnerIdsList[j]
                                                     params.add(
                                                         Pair(
@@ -428,6 +428,7 @@ class ScannerFragment : Fragment() {
                                             }
 
                                         } catch (e: Exception) {
+                                            //TODO WE need to handle exception visually
                                             e.printStackTrace()
                                         }
                                     }
@@ -522,6 +523,28 @@ class ScannerFragment : Fragment() {
                 startPreview()
             }
         }
+    }
+
+    private fun uploadImageOnDrive(): Boolean {
+        var isUploaded = false
+        val fileMetadata =
+            com.google.api.services.drive.model.File()
+        fileMetadata.name =
+            "Image_${System.currentTimeMillis()}.jpg"
+        val filePath: File =
+            File(filePathView!!.text.toString()) //TODO we cant use !!
+        val mediaContent =
+            FileContent("image/jpeg", filePath)
+        val file: com.google.api.services.drive.model.File =
+            mService!!.files() //TODO we cant use !!
+                .create(fileMetadata, mediaContent)
+                .setFields("id")
+                .execute()
+        url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+        if (!url.isNullOrEmpty()) {
+            isUploaded = true
+        }
+        return isUploaded
     }
 
     private fun createImageFile(bitmap: Bitmap) {
