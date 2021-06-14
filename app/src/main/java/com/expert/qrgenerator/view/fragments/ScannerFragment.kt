@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,10 +42,7 @@ import com.google.api.services.drive.Drive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class ScannerFragment : Fragment() {
@@ -63,7 +59,7 @@ class ScannerFragment : Fragment() {
     private var spinnerIdsList = mutableListOf<Pair<String, AppCompatSpinner>>()
     private lateinit var addNewTableBtn: MaterialButton
     private lateinit var appSettings: AppSettings
-    private var mService: Drive? = null
+    private var mService: com.google.api.services.drive.Drive? = null
     private var imageDrivePath = ""
 
     override fun onAttach(context: Context) {
@@ -138,6 +134,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
+    var url = ""
     private fun startScanner() {
         if (RuntimePermissionHelper.checkCameraPermission(
                 requireActivity(),
@@ -164,200 +161,238 @@ class ScannerFragment : Fragment() {
                     requireActivity().runOnUiThread {
                         val text = it.text
                         if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
-//                            if (Constants.userData == null) {
-//                                tableGenerator.insertDefaultTable(
-//                                    text,
-//                                    BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
-//                                )
-//                            } else {
-                            if (tableName.isEmpty()) {
-                                BaseActivity.showAlert(requireActivity(), text)
+                            if (Constants.userData == null) {
+                                tableGenerator.insertDefaultTable(
+                                    text,
+                                    BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
+                                )
                             } else {
-                                val columns = tableGenerator.getTableColumns(tableName)
-                                val scanResultLayout = LayoutInflater.from(requireActivity())
-                                    .inflate(R.layout.scan_result_dialog, null)
-                                val codeDataTInputView =
-                                    scanResultLayout.findViewById<TextInputEditText>(R.id.scan_result_dialog_code_data)
-                                val tableDetailLayoutWrapper =
-                                    scanResultLayout.findViewById<LinearLayout>(R.id.table_detail_layout_wrapper)
-                                val submitBtn =
-                                    scanResultLayout.findViewById<MaterialButton>(R.id.scan_result_dialog_submit_btn)
-                                val addImageCheckBox =
-                                    scanResultLayout.findViewById<MaterialCheckBox>(R.id.add_image_checkbox)
-                                val imageSourcesWrapperLayout =
-                                    scanResultLayout.findViewById<LinearLayout>(R.id.image_sources_layout)
-                                filePathView =
-                                    scanResultLayout.findViewById<MaterialTextView>(R.id.filePath)
+                                if (tableName.isEmpty()) {
+                                    BaseActivity.showAlert(requireActivity(), text)
+                                } else {
+                                    val columns = tableGenerator.getTableColumns(tableName)
+                                    val scanResultLayout = LayoutInflater.from(requireActivity())
+                                        .inflate(R.layout.scan_result_dialog, null)
+                                    val codeDataTInputView =
+                                        scanResultLayout.findViewById<TextInputEditText>(R.id.scan_result_dialog_code_data)
+                                    val tableDetailLayoutWrapper =
+                                        scanResultLayout.findViewById<LinearLayout>(R.id.table_detail_layout_wrapper)
+                                    val submitBtn =
+                                        scanResultLayout.findViewById<MaterialButton>(R.id.scan_result_dialog_submit_btn)
+                                    val addImageCheckBox =
+                                        scanResultLayout.findViewById<MaterialCheckBox>(R.id.add_image_checkbox)
+                                    val imageSourcesWrapperLayout =
+                                        scanResultLayout.findViewById<LinearLayout>(R.id.image_sources_layout)
+                                    filePathView =
+                                        scanResultLayout.findViewById<MaterialTextView>(R.id.filePath)
 
-                                addImageCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                                    if (isChecked) {
-                                        imageSourcesWrapperLayout.visibility = View.VISIBLE
-                                        filePathView!!.visibility = View.VISIBLE
-                                    } else {
-                                        imageSourcesWrapperLayout.visibility = View.GONE
-                                        filePathView!!.visibility = View.GONE
+                                    addImageCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+                                        if (isChecked) {
+                                            imageSourcesWrapperLayout.visibility = View.VISIBLE
+                                            filePathView!!.visibility = View.VISIBLE
+                                        } else {
+                                            imageSourcesWrapperLayout.visibility = View.GONE
+                                            filePathView!!.visibility = View.GONE
+                                        }
                                     }
-                                }
 
-                                val cameraImageView =
-                                    scanResultLayout.findViewById<AppCompatImageView>(R.id.camera_image_view)
-                                val imagesImageView =
-                                    scanResultLayout.findViewById<AppCompatImageView>(R.id.images_image_view)
+                                    val cameraImageView =
+                                        scanResultLayout.findViewById<AppCompatImageView>(R.id.camera_image_view)
+                                    val imagesImageView =
+                                        scanResultLayout.findViewById<AppCompatImageView>(R.id.images_image_view)
 
-                                cameraImageView.setOnClickListener {
-                                    if (RuntimePermissionHelper.checkCameraPermission(
-                                            requireActivity(),
-                                            Constants.CAMERA_PERMISSION
-                                        )
-                                    ) {
-                                        //dispatchTakePictureIntent()
-                                        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                        cameraResultLauncher.launch(cameraIntent)
+                                    cameraImageView.setOnClickListener {
+                                        if (RuntimePermissionHelper.checkCameraPermission(
+                                                requireActivity(),
+                                                Constants.CAMERA_PERMISSION
+                                            )
+                                        ) {
+                                            //dispatchTakePictureIntent()
+                                            val cameraIntent =
+                                                Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                            cameraResultLauncher.launch(cameraIntent)
+                                        }
                                     }
-                                }
 
-                                imagesImageView.setOnClickListener {
-                                    if (RuntimePermissionHelper.checkStoragePermission(
-                                            requireActivity(),
-                                            Constants.READ_STORAGE_PERMISSION
-                                        )
-                                    ) {
-                                        getImageFromGallery()
+                                    imagesImageView.setOnClickListener {
+                                        if (RuntimePermissionHelper.checkStoragePermission(
+                                                requireActivity(),
+                                                Constants.READ_STORAGE_PERMISSION
+                                            )
+                                        ) {
+                                            getImageFromGallery()
+                                        }
                                     }
-                                }
 
-                                for (i in columns!!.indices) {
-                                    val value = columns[i]
-                                    if (value == "id") {
-                                        continue
-                                    } else if (value == "code_data") {
-                                        textInputIdsList.add(Pair(value, codeDataTInputView))
-                                        codeDataTInputView.setText(text)
-                                    } else {
-                                        val tableRowLayout =
-                                            LayoutInflater.from(requireContext())
-                                                .inflate(
-                                                    R.layout.scan_result_table_row_layout,
-                                                    null
-                                                )
-                                        val columnName =
-                                            tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
-                                        val columnValue =
-                                            tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
-                                        val columnDropdown =
-                                            tableRowLayout.findViewById<AppCompatSpinner>(R.id.table_column_dropdown)
-                                        val columnDropDwonLayout =
-                                            tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
-                                        columnName.text = value
-                                        val fieldList =
-                                            tableGenerator.getFieldList(value, tableName)
+                                    for (i in columns!!.indices) {
+                                        val value = columns[i]
+                                        if (value == "id") {
+                                            continue
+                                        } else if (value == "code_data") {
+                                            textInputIdsList.add(Pair(value, codeDataTInputView))
+                                            codeDataTInputView.setText(text)
+                                        } else {
+                                            val tableRowLayout =
+                                                LayoutInflater.from(requireContext())
+                                                    .inflate(
+                                                        R.layout.scan_result_table_row_layout,
+                                                        null
+                                                    )
+                                            val columnName =
+                                                tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
+                                            val columnValue =
+                                                tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
+                                            val columnDropdown =
+                                                tableRowLayout.findViewById<AppCompatSpinner>(R.id.table_column_dropdown)
+                                            val columnDropDwonLayout =
+                                                tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
+                                            columnName.text = value
+                                            val fieldList =
+                                                tableGenerator.getFieldList(value, tableName)
 
-                                        if (fieldList.isNotEmpty()) {
-                                            if (fieldList.contains(",")) {
-                                                val arrayList = fieldList.split(",")
-                                                columnValue.visibility = View.GONE
-                                                columnDropDwonLayout.visibility = View.VISIBLE
-                                                val adapter = ArrayAdapter(
-                                                    requireContext(),
-                                                    android.R.layout.simple_spinner_item,
-                                                    arrayList
-                                                )
-                                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                                                columnDropdown.adapter = adapter
-                                                spinnerIdsList.add(Pair(value, columnDropdown))
+                                            if (fieldList.isNotEmpty()) {
+                                                if (fieldList.contains(",")) {
+                                                    val arrayList = fieldList.split(",")
+                                                    columnValue.visibility = View.GONE
+                                                    columnDropDwonLayout.visibility = View.VISIBLE
+                                                    val adapter = ArrayAdapter(
+                                                        requireContext(),
+                                                        android.R.layout.simple_spinner_item,
+                                                        arrayList
+                                                    )
+                                                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                                    columnDropdown.adapter = adapter
+                                                    spinnerIdsList.add(Pair(value, columnDropdown))
+                                                } else {
+                                                    columnDropDwonLayout.visibility = View.GONE
+                                                    columnValue.visibility = View.VISIBLE
+                                                    columnValue.setText(
+                                                        fieldList
+                                                    )
+                                                    columnValue.isEnabled = false
+                                                    columnValue.isFocusable = false
+                                                    columnValue.isFocusableInTouchMode = false
+                                                }
+
                                             } else {
+                                                if (value == "image") {
+                                                    textInputIdsList.add(Pair(value, columnValue))
+                                                    continue
+                                                }
                                                 columnDropDwonLayout.visibility = View.GONE
                                                 columnValue.visibility = View.VISIBLE
-                                                columnValue.setText(
-                                                    fieldList
-                                                )
-                                                columnValue.isEnabled = false
-                                                columnValue.isFocusable = false
-                                                columnValue.isFocusableInTouchMode = false
-                                            }
 
-                                        } else {
-                                            if (value == "image") {
-                                                textInputIdsList.add(Pair(value, columnValue))
-                                                continue
-                                            }
-                                            columnDropDwonLayout.visibility = View.GONE
-                                            columnValue.visibility = View.VISIBLE
-
-                                            if (value == "date") {
-                                                columnValue.setText(
-                                                    BaseActivity.getDateTimeFromTimeStamp(
-                                                        System.currentTimeMillis()
-                                                    )
-                                                )
-                                                columnValue.isEnabled = false
-                                                columnValue.isFocusable = false
-                                                columnValue.isFocusableInTouchMode = false
-                                            } else {
-                                                columnValue.isEnabled = true
-                                                columnValue.isFocusable = true
-                                                columnValue.isFocusableInTouchMode = true
-                                                columnValue.setText("")
-                                            }
-                                            textInputIdsList.add(Pair(value, columnValue))
-                                        }
-                                        tableDetailLayoutWrapper.addView(tableRowLayout)
-                                    }
-                                }
-
-                                val builder = MaterialAlertDialogBuilder(requireActivity())
-                                builder.setView(scanResultLayout)
-                                builder.setCancelable(false)
-                                val alert = builder.create()
-                                alert.show()
-
-                                submitBtn.setOnClickListener {
-                                    alert.dismiss()
-                                    BaseActivity.startLoading(requireActivity())
-                                    var url = ""
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        try {
-                                            val params = mutableListOf<Pair<String, String>>()
-                                            if (addImageCheckBox.isChecked && filePathView!!.text.toString()
-                                                    .isNotEmpty()
-                                            ) {
-                                                if (Constants.mService != null) {
-                                                    mService = Constants.mService
-                                                }
-                                                if (mService != null) {
-                                                    try {
-                                                        val fileMetadata =
-                                                            com.google.api.services.drive.model.File()
-                                                        fileMetadata.name =
-                                                            "Image_${System.currentTimeMillis()}.jpg"
-                                                        val filePath: File =
-                                                            File(filePathView!!.text.toString())
-                                                        val mediaContent =
-                                                            FileContent("image/jpeg", filePath)
-                                                        val file: com.google.api.services.drive.model.File =
-                                                            mService!!.files()
-                                                                .create(fileMetadata, mediaContent)
-                                                                .setFields("id")
-                                                                .execute()
-
-                                                        url =
-                                                            "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
-                                                    } catch (e: GoogleJsonResponseException) {
-                                                        Log.d("TEST199", e.details.message)
-                                                        BaseActivity.showAlert(
-                                                            requireActivity(),
-                                                            e.details.message
+                                                if (value == "date") {
+                                                    columnValue.setText(
+                                                        BaseActivity.getDateTimeFromTimeStamp(
+                                                            System.currentTimeMillis()
                                                         )
+                                                    )
+                                                    columnValue.isEnabled = false
+                                                    columnValue.isFocusable = false
+                                                    columnValue.isFocusableInTouchMode = false
+                                                } else {
+                                                    columnValue.isEnabled = true
+                                                    columnValue.isFocusable = true
+                                                    columnValue.isFocusableInTouchMode = true
+                                                    columnValue.setText("")
+                                                }
+                                                textInputIdsList.add(Pair(value, columnValue))
+                                            }
+                                            tableDetailLayoutWrapper.addView(tableRowLayout)
+                                        }
+                                    }
+
+                                    val builder = MaterialAlertDialogBuilder(requireActivity())
+                                    builder.setView(scanResultLayout)
+                                    builder.setCancelable(false)
+                                    val alert = builder.create()
+                                    alert.show()
+
+                                    submitBtn.setOnClickListener {
+                                        alert.dismiss()
+                                        BaseActivity.startLoading(requireActivity())
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            try {
+                                                val params = mutableListOf<Pair<String, String>>()
+
+                                                // THIS IF PART WILL RUN WHEN ADD IMAGE CHECK BOX IS CHECKED
+                                                if (addImageCheckBox.isChecked && filePathView!!.text.toString()
+                                                        .isNotEmpty()
+                                                ) {
+                                                    val isUpload = uploadImageOnDrive()
+                                                    // IF isUpload IS TRUE THEN DATA SAVE WITH IMAGE URL
+                                                    // ELSE DISPLAY THE EXCEPTION MESSAGE WITHOUT DATA SAVING
+                                                    if (isUpload && url.isNotEmpty()) {
+
+                                                        // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED EDIT TEXT
+                                                        for (i in 0 until textInputIdsList.size) {
+                                                            val pair = textInputIdsList[i]
+                                                            // THIS WILL CHECK IF TEXTINPUTIDSLIST HAVE IMAGE PARAMETER THEN SET THE URL
+                                                            // WITH COLUMN IMAGE ELSE MAP THE OTHER TEXTINPUTIDS LIST OBJECTS
+                                                            if (pair.first == "image") {
+                                                                params.add(
+                                                                    Pair(
+                                                                        pair.first,
+                                                                        url
+                                                                    )
+                                                                )
+                                                            } else {
+                                                                params.add(
+                                                                    Pair(
+                                                                        pair.first,
+                                                                        pair.second.text.toString()
+                                                                            .trim()
+                                                                    )
+                                                                )
+                                                            }
+                                                        }
+
+                                                        // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED DROPDOWNS
+                                                        for (j in 0 until spinnerIdsList.size) {
+                                                            val pair = spinnerIdsList[j]
+                                                            params.add(
+                                                                Pair(
+                                                                    pair.first,
+                                                                    pair.second.selectedItem.toString()
+                                                                )
+                                                            )
+                                                        }
+                                                        tableGenerator.insertData(tableName, params)
+                                                        CoroutineScope(Dispatchers.Main).launch {
+                                                            Handler(Looper.myLooper()!!).postDelayed(
+                                                                {
+                                                                    BaseActivity.dismiss()
+                                                                    Toast.makeText(
+                                                                        requireActivity(),
+                                                                        "Scan data saved successfully!",
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
+                                                                    textInputIdsList.clear()
+                                                                    spinnerIdsList.clear()
+                                                                    params.clear()
+                                                                    tableDetailLayoutWrapper.removeAllViews()
+
+                                                                },
+                                                                1000
+                                                            )
+                                                        }
                                                     }
 
-
+                                                }
+                                                // THIS ELSE PART WILL RUN WHEN ADD IMAGE CHECK BOX IS UN-CHECKED
+                                                else {
+                                                    // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED EDIT TEXT
                                                     for (i in 0 until textInputIdsList.size) {
                                                         val pair = textInputIdsList[i]
+                                                        // THIS WILL CHECK IF TEXTINPUTIDSLIST HAVE IMAGE PARAMETER THEN SET THE URL
+                                                        // WITH COLUMN IMAGE ELSE MAP THE OTHER TEXTINPUTIDS LIST OBJECTS
                                                         if (pair.first == "image") {
                                                             params.add(
                                                                 Pair(
                                                                     pair.first,
-                                                                    url
+                                                                    pair.second.text.toString()
+                                                                        .trim()
                                                                 )
                                                             )
                                                         } else {
@@ -370,6 +405,7 @@ class ScannerFragment : Fragment() {
                                                             )
                                                         }
                                                     }
+                                                    // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED DROPDOWNS
                                                     for (j in 0 until spinnerIdsList.size) {
                                                         val pair = spinnerIdsList[j]
                                                         params.add(
@@ -379,61 +415,31 @@ class ScannerFragment : Fragment() {
                                                             )
                                                         )
                                                     }
-                                                }
+                                                    tableGenerator.insertData(tableName, params)
+                                                    CoroutineScope(Dispatchers.Main).launch {
+                                                        Handler(Looper.myLooper()!!).postDelayed({
+                                                            BaseActivity.dismiss()
+                                                            Toast.makeText(
+                                                                requireActivity(),
+                                                                "Scan data saved successfully!",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                            textInputIdsList.clear()
+                                                            spinnerIdsList.clear()
+                                                            params.clear()
+                                                            tableDetailLayoutWrapper.removeAllViews()
 
-                                            } else {
-                                                for (i in 0 until textInputIdsList.size) {
-                                                    val pair = textInputIdsList[i]
-                                                    if (pair.first == "image") {
-                                                        params.add(
-                                                            Pair(
-                                                                pair.first,
-                                                                pair.second.text.toString().trim()
-                                                            )
-                                                        )
-                                                    } else {
-                                                        params.add(
-                                                            Pair(
-                                                                pair.first,
-                                                                pair.second.text.toString().trim()
-                                                            )
-                                                        )
+                                                        }, 1000)
                                                     }
                                                 }
-                                                for (j in 0 until spinnerIdsList.size) {
-                                                    val pair = spinnerIdsList[j]
-                                                    params.add(
-                                                        Pair(
-                                                            pair.first,
-                                                            pair.second.selectedItem.toString()
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                            tableGenerator.insertData(tableName, params)
-                                            CoroutineScope(Dispatchers.Main).launch {
-                                                Handler(Looper.myLooper()!!).postDelayed({
-                                                    BaseActivity.dismiss()
-                                                    Toast.makeText(
-                                                        requireActivity(),
-                                                        "Scan data saved successfully!",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                    textInputIdsList.clear()
-                                                    spinnerIdsList.clear()
-                                                    params.clear()
-                                                    tableDetailLayoutWrapper.removeAllViews()
 
-                                                }, 1000)
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
                                             }
-
-                                        } catch (e: Exception) {
-                                            e.printStackTrace()
                                         }
                                     }
                                 }
                             }
-//                            }
                         } else {
 
                             var qrHistory: CodeHistory? = null
@@ -521,6 +527,38 @@ class ScannerFragment : Fragment() {
                 }
                 startPreview()
             }
+        }
+    }
+
+
+    private fun uploadImageOnDrive(): Boolean {
+        if (Constants.mService != null) {
+            mService = Constants.mService
+        }
+
+        try {
+            val fileMetadata =
+                com.google.api.services.drive.model.File()
+            fileMetadata.name =
+                "Image_${System.currentTimeMillis()}.jpg"
+            val filePath: File =
+                File(filePathView!!.text.toString())
+            val mediaContent = FileContent("image/jpeg", filePath)
+
+            val file: com.google.api.services.drive.model.File =
+                mService!!.files()
+                    .create(fileMetadata, mediaContent)
+                    .setFields("id")
+                    .execute()
+
+            url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+            return true
+        } catch (e: GoogleJsonResponseException) {
+            BaseActivity.showAlert(
+                requireActivity(),
+                e.details.message
+            )
+            return false
         }
     }
 

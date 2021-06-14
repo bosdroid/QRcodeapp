@@ -38,6 +38,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QRGenerator"
         android:usesCleartextTraffic="true"
+
         tools:replace="android:allowBackup">
         <activity android:name=".view.activities.PostSheetDataActivity"/>
         <activity android:name=".view.activities.SocialNetworksQrActivity" />
@@ -81,7 +82,9 @@
         <activity
             android:name=".view.activities.MainActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:configChanges="orientation|screenSize|screenLayout"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
