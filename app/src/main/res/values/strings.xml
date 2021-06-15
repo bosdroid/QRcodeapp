@@ -160,4 +160,6 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="social_networks_text">Social Networks</string>
     <string name="social_networks_qr">Social Netwroks QR</string>
+    <string name="sn_title_hint_text">Please enter the title</string>
+    <string name="sn_description_hint_text">Please enter the description</string>
 </resources>

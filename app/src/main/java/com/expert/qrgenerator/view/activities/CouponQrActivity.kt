@@ -466,7 +466,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     } else {
                         //couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
                          val path = ImageManager.getRealPathFromUri(context,data.data!!)
-                        uploadOnDrive(path!!)
+                         uploadOnDrive(path!!)
                         // THIS LINES OF CODE WILL RE SCALED THE IMAGE WITH ASPECT RATION AND SIZE 640 X 360
                         val bitmapImage = BitmapFactory.decodeFile(ImageManager.getRealPathFromUri(context,data.data!!))
                         val nh = (bitmapImage.height * (640.0 / bitmapImage.width)).toInt()

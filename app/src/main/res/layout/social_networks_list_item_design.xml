@@ -26,8 +26,9 @@
             />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:layout_marginLeft="@dimen/eightDpMargin"
             android:layout_marginStart="@dimen/eightDpMargin"
@@ -35,7 +36,7 @@
            <com.google.android.material.textview.MaterialTextView
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="www.your-website.com"
+               android:text="Visit us online"
                android:textSize="@dimen/largeText"
                android:textColor="@color/black"
                android:textStyle="bold"
@@ -45,12 +46,18 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Visit us online"
+                android:text="www.your-url.com"
                 android:textSize="@dimen/mediumText"
                 android:layout_marginTop="@dimen/defaultDpMargin"
                 android:id="@+id/sn_item_tagline"
                 />
         </LinearLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:id="@+id/sn_item_checkbox"
+            />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

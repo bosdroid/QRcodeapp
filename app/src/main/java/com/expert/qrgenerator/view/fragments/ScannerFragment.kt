@@ -547,7 +547,8 @@ class ScannerFragment : Fragment() {
                     .create(fileMetadata, mediaContent)
                     .setFields("id")
                     .execute()
-
+            // WHEN EXECUTE FUNCTION RUN SUCCESSFULLY THEN IT RETURN FILE OBJECT HAVING ID
+            // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
             url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
             return true
         } catch (e: GoogleJsonResponseException) {

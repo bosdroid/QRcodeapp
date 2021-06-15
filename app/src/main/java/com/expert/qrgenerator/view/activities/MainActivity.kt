@@ -2,6 +2,7 @@ package com.expert.qrgenerator.view.activities
 
 import android.Manifest
 import android.accounts.Account
+import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -41,6 +42,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
+import com.google.android.gms.drive.Drive.SCOPE_APPFOLDER
+import com.google.android.gms.drive.Drive.SCOPE_FILE
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -86,6 +90,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
     private val httpTransport = NetHttpTransport()
     private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
+    private var user:User?=null
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
@@ -164,7 +169,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .commit()
     }
 
-    fun getAccountsPermission() {
+    private fun getAccountsPermission() {
         if (ContextCompat.checkSelfPermission(
                 this@MainActivity,
                 Manifest.permission.GET_ACCOUNTS
@@ -208,6 +213,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         scopes.add(SheetsScopes.SPREADSHEETS_READONLY)
         scopes.add(SheetsScopes.DRIVE)
         scopes.add(SheetsScopes.SPREADSHEETS)
+        scopes.add(DriveScopes.DRIVE)
+        scopes.add(DriveScopes.DRIVE_APPDATA)
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -217,11 +224,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         val acct = GoogleSignIn.getLastSignedInAccount(context)
         if (acct != null) {
+
             credential = GoogleAccountCredential.usingOAuth2(
                 applicationContext, scopes
             )
                 .setBackOff(ExponentialBackOff())
-                .setSelectedAccount(Account(acct.email, context.packageName))
+                .setSelectedAccount(Account(acct.email!!, AccountManager.KEY_ACCOUNT_TYPE))
 
             mService = Drive.Builder(
                 transport, jsonFactory, credential
@@ -274,8 +282,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 appSettings.putBoolean(Constants.isLogin, true)
                 showAlert(context, "User has been signIn successfully!")
             }
+
+            if(!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), Scope(DriveScopes.DRIVE_APPDATA))) {
+                GoogleSignIn.requestPermissions(
+                    this,
+                    100,
+                    GoogleSignIn.getLastSignedInAccount(context),
+                    Scope(DriveScopes.DRIVE_APPDATA))
+            }
         }
         checkUserLoginStatus()
+
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -380,7 +397,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     // Google Sign In was successful, authenticate with Firebase
                     val account = task.getResult(ApiException::class.java)!!
                     handleSignInResult(account)
-                    //firebaseAuthWithGoogle(account)
+//                    firebaseAuthWithGoogle(account)
                 } catch (e: ApiException) {
                     // Google Sign In failed, update UI appropriately
                     Log.w("TAG", "Google sign in failed", e)
@@ -443,6 +460,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         } else if (fragment != null && fragment.isVisible) {
             finish()
         } else {
+            bottomNavigation.selectedItemId = R.id.bottom_scanner
             supportFragmentManager.beginTransaction().replace(
                 R.id.fragment_container,
                 ScannerFragment(),
@@ -556,6 +574,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initializeGoogleLoginParameters()
             }
+        }
+        else if (requestCode == 100){
+
+//                saveToDriveAppFolder();
+
         }
     }
 
