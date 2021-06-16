@@ -461,20 +461,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         }
 
                     })
-////                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(
-////                    result.data
-////                )
-////                handleSignInResult(task)
-//                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-//                try {
-//                    // Google Sign In was successful, authenticate with Firebase
-//                    val account = task.getResult(ApiException::class.java)!!
-//                    handleSignInResult(account)
-////                    firebaseAuthWithGoogle(account)
-//                } catch (e: ApiException) {
-//                    // Google Sign In failed, update UI appropriately
-//                    Log.w("TAG", "Google sign in failed", e)
-//                }
             }
         }
 
