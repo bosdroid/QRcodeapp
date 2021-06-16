@@ -272,12 +272,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             // IF PART WILL RUN IF USER LOGGED AND ACCOUNT DETAIL NOT EMPTY
             if (acct != null && acct.displayName.isNullOrEmpty()) {
                 startLogin()
-            } else if (acct != null && acct.displayName!!.isNotEmpty()
-                && acct.givenName!!.isNotEmpty()
-                && acct.familyName!!.isNotEmpty()
-                && acct.email!!.isNotEmpty()
-                && acct.photoUrl!!.toString().isNotEmpty()
-            ) {
+            }
+            else if (acct != null){
                 val personName = acct.displayName
                 val personGivenName = acct.givenName
                 val personFamilyName = acct.familyName
@@ -301,21 +297,21 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             // ELSE PART WILL WORK WHEN USER LOGGED BUT ACCOUNT DETAIL EMPTY
             // AND IN CASE ACCOUNT DETAIL IS EMPTY THEN APP FETCH THE ACCOUNT DETAIL FROM PREFERENCE FOR AVOID NULL ANC CRASH THE APP
-            else {
-                val userDetail = appSettings.getUser(Constants.user)
-                val user = User(
-                    userDetail.personName,
-                    userDetail.personGivenName,
-                    userDetail.personFamilyName,
-                    userDetail.personEmail,
-                    userDetail.personId,
-                    userDetail.personPhoto
-                )
-                appSettings.putUser(Constants.user, user)
-                Constants.userData = user
-            }
+//            else {
+//                val userDetail = appSettings.getUser(Constants.user)
+//                val user = User(
+//                    userDetail.personName,
+//                    userDetail.personGivenName,
+//                    userDetail.personFamilyName,
+//                    userDetail.personEmail,
+//                    userDetail.personId,
+//                    userDetail.personPhoto
+//                )
+//                appSettings.putUser(Constants.user, user)
+//                Constants.userData = user
+//            }
         } catch (e: Exception) {
-            Log.d("TEST199", e.localizedMessage!!)
+
         }
         checkUserLoginStatus()
 
