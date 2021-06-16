@@ -45,6 +45,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.google.android.gms.drive.Drive.SCOPE_APPFOLDER
 import com.google.android.gms.drive.Drive.SCOPE_FILE
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -90,7 +92,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
     private val httpTransport = NetHttpTransport()
     private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
-    private var user:User?=null
+    private var user: User? = null
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
@@ -216,29 +218,21 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         scopes.add(DriveScopes.DRIVE)
         scopes.add(DriveScopes.DRIVE_APPDATA)
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
+            .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+            .requestScopes(Scope(SheetsScopes.SPREADSHEETS))
             .build()
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-        var email = ""
+        mGoogleSignInClient = GoogleSignIn.getClient(this, signInOptions)
 
-        val acct:GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(context)
+        val acct: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(context)
         if (acct != null) {
-            user = appSettings.getUser(Constants.user)
-        email = if (acct.email.isNullOrEmpty()){
-            user!!.personEmail
-        }
-        else{
-            acct.email!!
-        }
-
 
             credential = GoogleAccountCredential.usingOAuth2(
                 applicationContext, scopes
             )
-                .setBackOff(ExponentialBackOff())
-                .setSelectedAccount(Account(email, AccountManager.KEY_ACCOUNT_TYPE))
+                .setSelectedAccount(acct.account)
 
             mService = Drive.Builder(
                 transport, jsonFactory, credential
@@ -269,48 +263,59 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     }
 
+
     private fun saveUserUpdatedDetail(acct: GoogleSignInAccount?, isLastSignUser: String) {
-        // IF PART WILL RUN IF USER LOGGED AND ACCOUNT DETAIL NOT EMPTY
-        if (acct != null && acct.displayName!!.isNotEmpty()
-            && acct.givenName!!.isNotEmpty()
-            && acct.familyName!!.isNotEmpty()
-            && acct.email!!.isNotEmpty()
-            && acct.photoUrl!!.toString().isNotEmpty()) {
-            val personName = acct.displayName
-            val personGivenName = acct.givenName
-            val personFamilyName = acct.familyName
-            val personEmail = acct.email
-            val personId = acct.id
-            val personPhoto: Uri? = acct.photoUrl
-            val user = User(
-                personName!!,
-                personGivenName!!,
-                personFamilyName!!,
-                personEmail!!,
-                personId!!,
-                personPhoto!!.toString()
-            )
-            appSettings.putUser(Constants.user, user)
-            Constants.userData = user
-            if (isLastSignUser == "new") {
-                appSettings.putBoolean(Constants.isLogin, true)
-                showAlert(context, "User has been signIn successfully!")
+        try {
+
+
+            Log.d("TEST199", acct.toString())
+            // IF PART WILL RUN IF USER LOGGED AND ACCOUNT DETAIL NOT EMPTY
+            if (acct != null && acct.displayName.isNullOrEmpty()) {
+                startLogin()
+            } else if (acct != null && acct.displayName!!.isNotEmpty()
+                && acct.givenName!!.isNotEmpty()
+                && acct.familyName!!.isNotEmpty()
+                && acct.email!!.isNotEmpty()
+                && acct.photoUrl!!.toString().isNotEmpty()
+            ) {
+                val personName = acct.displayName
+                val personGivenName = acct.givenName
+                val personFamilyName = acct.familyName
+                val personEmail = acct.email
+                val personId = acct.id
+                val personPhoto: Uri? = acct.photoUrl
+                val user = User(
+                    personName!!,
+                    personGivenName!!,
+                    personFamilyName!!,
+                    personEmail!!,
+                    personId!!,
+                    personPhoto!!.toString()
+                )
+                appSettings.putUser(Constants.user, user)
+                Constants.userData = user
+                if (isLastSignUser == "new") {
+                    appSettings.putBoolean(Constants.isLogin, true)
+                    Toast.makeText(context,"User has been signIn successfully!",Toast.LENGTH_SHORT).show()
+                }
             }
-        }
-        // ELSE PART WILL WORK WHEN USER LOGGED BUT ACCOUNT DETAIL EMPTY
-        // AND IN CASE ACCOUNT DETAIL IS EMPTY THEN APP FETCH THE ACCOUNT DETAIL FROM PREFERENCE FOR AVOID NULL ANC CRASH THE APP
-        else{
-            val userDetail = appSettings.getUser(Constants.user)
-            val user = User(
-                userDetail.personName,
-                userDetail.personGivenName,
-                userDetail.personFamilyName,
-                userDetail.personEmail,
-                userDetail.personId,
-                userDetail.personPhoto
-            )
-            appSettings.putUser(Constants.user, user)
-            Constants.userData = user
+            // ELSE PART WILL WORK WHEN USER LOGGED BUT ACCOUNT DETAIL EMPTY
+            // AND IN CASE ACCOUNT DETAIL IS EMPTY THEN APP FETCH THE ACCOUNT DETAIL FROM PREFERENCE FOR AVOID NULL ANC CRASH THE APP
+            else {
+                val userDetail = appSettings.getUser(Constants.user)
+                val user = User(
+                    userDetail.personName,
+                    userDetail.personGivenName,
+                    userDetail.personFamilyName,
+                    userDetail.personEmail,
+                    userDetail.personId,
+                    userDetail.personPhoto
+                )
+                appSettings.putUser(Constants.user, user)
+                Constants.userData = user
+            }
+        } catch (e: Exception) {
+            Log.d("TEST199", e.localizedMessage!!)
         }
         checkUserLoginStatus()
 
@@ -388,18 +393,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun signOut() {
-        // Firebase sign out
-        auth.signOut()
-        // Google sign out
-        mGoogleSignInClient.signOut().addOnCompleteListener(this) {
-            dismiss()
-            appSettings.remove(Constants.isLogin)
-            appSettings.remove(Constants.user)
-            Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
-                .show()
-            checkUserLoginStatus()
-        }
 
+        // Google sign out
+        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this) {
+
+            mGoogleSignInClient.signOut().addOnCompleteListener(this) {
+                dismiss()
+                appSettings.remove(Constants.isLogin)
+                appSettings.remove(Constants.user)
+                Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
+                    .show()
+                checkUserLoginStatus()
+            }
+
+        }
 
     }
 
@@ -409,20 +416,65 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             if (result.resultCode == Activity.RESULT_OK) {
 
-//                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(
-//                    result.data
-//                )
-//                handleSignInResult(task)
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                try {
-                    // Google Sign In was successful, authenticate with Firebase
-                    val account = task.getResult(ApiException::class.java)!!
-                    handleSignInResult(account)
-//                    firebaseAuthWithGoogle(account)
-                } catch (e: ApiException) {
-                    // Google Sign In failed, update UI appropriately
-                    Log.w("TAG", "Google sign in failed", e)
-                }
+                GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    .addOnSuccessListener(object : OnSuccessListener<GoogleSignInAccount> {
+                        override fun onSuccess(googleSignInAccount: GoogleSignInAccount?) {
+                            val credential = GoogleAccountCredential.usingOAuth2(
+                                context,
+                                Collections.singleton(DriveScopes.DRIVE_FILE)
+                            )
+                            if (googleSignInAccount != null) {
+                                credential.selectedAccount = googleSignInAccount.account
+                            }
+
+                            mService = Drive.Builder(
+                                transport, jsonFactory, credential
+                            ).setHttpRequestInitializer { request ->
+                                credential!!.initialize(request)
+                                request!!.connectTimeout =
+                                    300 * 60000  // 300 minutes connect timeout
+                                request.readTimeout = 300 * 60000  // 300 minutes read timeout
+                            }
+                                .setApplicationName(getString(R.string.app_name))
+                                .build()
+
+                            try {
+                                sheetService = Sheets.Builder(
+                                    httpTransport,
+                                    jacksonFactory,
+                                    credential
+                                )
+                                    .setApplicationName(getString(R.string.app_name))
+                                    .build()
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                            DriveService.saveDriveInstance(mService!!)
+                            SheetService.saveGoogleSheetInstance(sheetService!!)
+                            if (googleSignInAccount != null) {
+                                handleSignInResult(googleSignInAccount)
+                            }
+                        }
+                    }).addOnFailureListener(object : OnFailureListener {
+                        override fun onFailure(p0: java.lang.Exception) {
+                            showAlert(context, p0.localizedMessage!!)
+                        }
+
+                    })
+////                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(
+////                    result.data
+////                )
+////                handleSignInResult(task)
+//                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+//                try {
+//                    // Google Sign In was successful, authenticate with Firebase
+//                    val account = task.getResult(ApiException::class.java)!!
+//                    handleSignInResult(account)
+////                    firebaseAuthWithGoogle(account)
+//                } catch (e: ApiException) {
+//                    // Google Sign In failed, update UI appropriately
+//                    Log.w("TAG", "Google sign in failed", e)
+//                }
             }
         }
 
@@ -456,21 +508,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
         }
-    }
-
-    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    val user = auth.currentUser
-                    handleSignInResult(account)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("TAG", "signInWithCredential:failure", task.exception)
-                }
-            }
     }
 
 
@@ -574,12 +611,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.tables).isVisible = true
             mNavigation.menu.findItem(R.id.field_list).isVisible = true
 //            mNavigation.menu.findItem(R.id.sheets).isVisible = true
-            if(!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), Scope(DriveScopes.DRIVE_APPDATA))) {
+            if (!GoogleSignIn.hasPermissions(
+                    GoogleSignIn.getLastSignedInAccount(this),
+                    Scope(DriveScopes.DRIVE_APPDATA)
+                )
+            ) {
                 GoogleSignIn.requestPermissions(
                     this,
                     100,
                     GoogleSignIn.getLastSignedInAccount(context),
-                    Scope(DriveScopes.DRIVE_APPDATA))
+                    Scope(DriveScopes.DRIVE_APPDATA)
+                )
             }
 
         } else {
@@ -602,8 +644,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initializeGoogleLoginParameters()
             }
-        }
-        else if (requestCode == 100){
+        } else if (requestCode == 100) {
 
 //                saveToDriveAppFolder();
 
