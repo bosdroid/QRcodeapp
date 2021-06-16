@@ -221,15 +221,24 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .requestEmail()
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        val acct = GoogleSignIn.getLastSignedInAccount(context)
+        var email = ""
+        user = appSettings.getUser(Constants.user)
+        val acct:GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(context)
         if (acct != null) {
+
+        email = if (acct.email.isNullOrEmpty()){
+            user!!.personEmail
+        }
+        else{
+            acct.email!!
+        }
+
 
             credential = GoogleAccountCredential.usingOAuth2(
                 applicationContext, scopes
             )
                 .setBackOff(ExponentialBackOff())
-                .setSelectedAccount(Account(acct.email!!, AccountManager.KEY_ACCOUNT_TYPE))
+                .setSelectedAccount(Account(email, AccountManager.KEY_ACCOUNT_TYPE))
 
             mService = Drive.Builder(
                 transport, jsonFactory, credential
@@ -261,7 +270,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun saveUserUpdatedDetail(acct: GoogleSignInAccount?, isLastSignUser: String) {
-        if (acct != null) {
+        // IF PART WILL RUN IF USER LOGGED AND ACCOUNT DETAIL NOT EMPTY
+        if (acct != null && acct.displayName!!.isNotEmpty()
+            && acct.givenName!!.isNotEmpty()
+            && acct.familyName!!.isNotEmpty()
+            && acct.email!!.isNotEmpty()
+            && acct.photoUrl!!.toString().isNotEmpty()) {
             val personName = acct.displayName
             val personGivenName = acct.givenName
             val personFamilyName = acct.familyName
@@ -282,14 +296,21 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 appSettings.putBoolean(Constants.isLogin, true)
                 showAlert(context, "User has been signIn successfully!")
             }
-
-            if(!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), Scope(DriveScopes.DRIVE_APPDATA))) {
-                GoogleSignIn.requestPermissions(
-                    this,
-                    100,
-                    GoogleSignIn.getLastSignedInAccount(context),
-                    Scope(DriveScopes.DRIVE_APPDATA))
-            }
+        }
+        // ELSE PART WILL WORK WHEN USER LOGGED BUT ACCOUNT DETAIL EMPTY
+        // AND IN CASE ACCOUNT DETAIL IS EMPTY THEN APP FETCH THE ACCOUNT DETAIL FROM PREFERENCE FOR AVOID NULL ANC CRASH THE APP
+        else{
+            val userDetail = appSettings.getUser(Constants.user)
+            val user = User(
+                userDetail.personName,
+                userDetail.personGivenName,
+                userDetail.personFamilyName,
+                userDetail.personEmail,
+                userDetail.personId,
+                userDetail.personPhoto
+            )
+            appSettings.putUser(Constants.user, user)
+            Constants.userData = user
         }
         checkUserLoginStatus()
 
@@ -553,6 +574,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.tables).isVisible = true
             mNavigation.menu.findItem(R.id.field_list).isVisible = true
 //            mNavigation.menu.findItem(R.id.sheets).isVisible = true
+            if(!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), Scope(DriveScopes.DRIVE_APPDATA))) {
+                GoogleSignIn.requestPermissions(
+                    this,
+                    100,
+                    GoogleSignIn.getLastSignedInAccount(context),
+                    Scope(DriveScopes.DRIVE_APPDATA))
+            }
 
         } else {
             mNavigation.menu.findItem(R.id.login).isVisible = true
