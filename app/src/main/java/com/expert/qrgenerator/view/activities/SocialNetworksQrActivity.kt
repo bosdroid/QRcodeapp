@@ -34,8 +34,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.gson.Gson
-import org.w3c.dom.Text
+import org.json.JSONArray
 import top.defaults.colorpicker.ColorPickerPopup
+
 
 class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     SocialNetworkAdapter.OnItemClickListener {
@@ -53,7 +54,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private lateinit var snDescriptionEditBtn: AppCompatImageView
     private lateinit var snRecyclerView: RecyclerView
     private lateinit var adapeter: SocialNetworkAdapter
-    private lateinit var shareFabBtn:FloatingActionButton
+    private lateinit var shareFabBtn: FloatingActionButton
     private var socialNetworkList = mutableListOf<SocialNetwork>()
     private var updateType = ""
     private var snBannerImage: String = ""
@@ -113,6 +114,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private fun generateSocialNetworkList() {
         socialNetworkList.add(
             SocialNetwork(
+                "facebook",
                 R.drawable.facebook,
                 "Facebook",
                 "www.your-url.com",
@@ -121,6 +123,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         )
         socialNetworkList.add(
             SocialNetwork(
+                "www",
                 R.drawable.www,
                 "Visit us online",
                 "www.your-website.com",
@@ -129,6 +132,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         )
         socialNetworkList.add(
             SocialNetwork(
+                "youtube",
                 R.drawable.youtube,
                 "Youtube",
                 "www.your-url.com",
@@ -137,6 +141,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         )
         socialNetworkList.add(
             SocialNetwork(
+                "instagram",
                 R.drawable.instagram_sn,
                 "Instagram",
                 "www.your-url.com",
@@ -145,6 +150,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         )
         socialNetworkList.add(
             SocialNetwork(
+                "twitter",
                 R.drawable.twitter,
                 "Twitter",
                 "www.your-url.com",
@@ -153,6 +159,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         )
         socialNetworkList.add(
             SocialNetwork(
+                "vk",
                 R.drawable.vk,
                 "VK",
                 "www.your-url.com",
@@ -161,6 +168,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         )
         socialNetworkList.add(
             SocialNetwork(
+                "telegram",
                 R.drawable.telegram,
                 "Telegram",
                 "www.your-url.com",
@@ -172,6 +180,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
             adapeter.notifyDataSetChanged()
         }
     }
+
 
     // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -205,27 +214,26 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 updateType = "sn_description"
                 updateTextAndColor(snDescriptionTextView)
             }
-            R.id.sn_share_fab->{
+            R.id.sn_share_fab -> {
                 val selectedList = mutableListOf<SocialNetwork>()
-
-                for (i in 0 until socialNetworkList.size){
+                for (i in 0 until socialNetworkList.size) {
                     val item = socialNetworkList[i]
-                    if (item.isActive == 1){
-                        selectedList.add(item)
+                    if (item.isActive == 1) {
+                        selectedList.add(SocialNetwork(item.iconName, item.title, item.url))
                     }
                 }
                 snSelectedSocialNetwork = Gson().toJson(selectedList)
 
                 val hashMap = hashMapOf<String, String>()
-                hashMap["sn_banner_image"] = ""
+                hashMap["sn_banner_image"] = snBannerImage
                 hashMap["sn_content_detail_background_color"] = snContentDetailBackgroundColor
                 hashMap["sn_title_text"] = snTitleText
                 hashMap["sn_title_text_color"] = snTitleTextColor
                 hashMap["sn_description_text"] = snDescriptionText
                 hashMap["sn_description_text_color"] = snDescriptionTextColor
                 hashMap["sn_selected_social_network"] = snSelectedSocialNetwork
-                Log.d("TEST199",Gson().toJson(hashMap))
-                showAlert(context,Gson().toJson(hashMap))
+                Log.d("TEST199", Gson().toJson(hashMap))
+                showAlert(context, Gson().toJson(hashMap))
             }
             else -> {
 
@@ -439,49 +447,48 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     override fun onItemClick(position: Int) {
         val item = socialNetworkList[position]
 
-            val snLayout =
-                LayoutInflater.from(context).inflate(R.layout.sn_update_dialog_layout, null)
-            val snTitleEditText =
-                snLayout.findViewById<TextInputEditText>(R.id.sn_title_input_field)
-            snTitleEditText.setText(item.title)
-            val snDescriptionEditText =
-                snLayout.findViewById<TextInputEditText>(R.id.sn_description_input_field)
-            snDescriptionEditText.setText(item.url)
-            val cancelBtn = snLayout.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-            val updateBtn = snLayout.findViewById<MaterialButton>(R.id.dialog_update_btn)
+        val snLayout =
+            LayoutInflater.from(context).inflate(R.layout.sn_update_dialog_layout, null)
+        val snTitleEditText =
+            snLayout.findViewById<TextInputEditText>(R.id.sn_title_input_field)
+        snTitleEditText.setText(item.title)
+        val snDescriptionEditText =
+            snLayout.findViewById<TextInputEditText>(R.id.sn_description_input_field)
+        snDescriptionEditText.setText(item.url)
+        val cancelBtn = snLayout.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
+        val updateBtn = snLayout.findViewById<MaterialButton>(R.id.dialog_update_btn)
 
-            val builder = MaterialAlertDialogBuilder(context)
-            builder.setView(snLayout)
-            builder.setCancelable(false)
-            val alert = builder.create()
-            alert.show()
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setView(snLayout)
+        builder.setCancelable(false)
+        val alert = builder.create()
+        alert.show()
 
-            cancelBtn.setOnClickListener { alert.dismiss() }
-            updateBtn.setOnClickListener {
-                if (snTitleEditText.text.toString().trim().isNotEmpty()
-                    && snDescriptionEditText.text.toString().trim().isNotEmpty()
+        cancelBtn.setOnClickListener { alert.dismiss() }
+        updateBtn.setOnClickListener {
+            if (snTitleEditText.text.toString().trim().isNotEmpty()
+                && snDescriptionEditText.text.toString().trim().isNotEmpty()
+            ) {
+                if (snDescriptionEditText.text.toString().trim().contains("http")
+                    || snDescriptionEditText.text.toString().trim().contains("https")
+                    || snDescriptionEditText.text.toString().trim().contains("www")
                 ) {
-                    if (snDescriptionEditText.text.toString().trim().contains("http")
-                        || snDescriptionEditText.text.toString().trim().contains("https")
-                        ||snDescriptionEditText.text.toString().trim().contains("www"))
-                    {
-                        item.title = snTitleEditText.text.toString().trim()
-                        item.url = snDescriptionEditText.text.toString().trim()
-                        socialNetworkList.removeAt(position)
-                        socialNetworkList.add(position, item)
-                        adapeter.notifyItemChanged(position)
-                        alert.dismiss()
-                        Toast.makeText(context, "List Item updated successfully!", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    else{
-                        showAlert(context, "Please enter the URL in second input box.")
-                    }
-
+                    item.title = snTitleEditText.text.toString().trim()
+                    item.url = snDescriptionEditText.text.toString().trim()
+                    socialNetworkList.removeAt(position)
+                    socialNetworkList.add(position, item)
+                    adapeter.notifyItemChanged(position)
+                    alert.dismiss()
+                    Toast.makeText(context, "List Item updated successfully!", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
-                    showAlert(context, "Please enter the social network title and description.")
+                    showAlert(context, "Please enter the URL in second input box.")
                 }
+
+            } else {
+                showAlert(context, "Please enter the social network title and description.")
             }
+        }
 
     }
 
@@ -492,7 +499,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
             socialNetworkList.removeAt(position)
             socialNetworkList.add(position, item)
             adapeter.notifyDataSetChanged()
-        } else if (item.isActive == 1 && !isChecked){
+        } else if (item.isActive == 1 && !isChecked) {
             item.isActive = 0
             socialNetworkList.removeAt(position)
             socialNetworkList.add(position, item)

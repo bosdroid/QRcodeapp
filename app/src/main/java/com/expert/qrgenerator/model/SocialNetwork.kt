@@ -2,11 +2,18 @@ package com.expert.qrgenerator.model
 
 import java.io.Serializable
 
-data class SocialNetwork (
-        var icon:Int,
-        var title:String,
-        var url:String,
-        var isActive:Int
-        ):Serializable{
+data class SocialNetwork(
+        var iconName: String,
+        var icon: Int,
+        var title: String,
+        var url: String,
+        var isActive: Int
+) : Serializable {
+
+    constructor(iconName: String, title: String, url: String) : this("", 0, "", "", 0) {
+        this.iconName = iconName
+        this.title = title
+        this.url = url
+    }
 
 }

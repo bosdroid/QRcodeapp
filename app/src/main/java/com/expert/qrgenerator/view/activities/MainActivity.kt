@@ -222,10 +222,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
         var email = ""
-        user = appSettings.getUser(Constants.user)
+
         val acct:GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(context)
         if (acct != null) {
-
+            user = appSettings.getUser(Constants.user)
         email = if (acct.email.isNullOrEmpty()){
             user!!.personEmail
         }
