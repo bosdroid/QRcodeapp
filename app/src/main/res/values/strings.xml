@@ -151,7 +151,7 @@
     <string name="key_sound">key_sound</string>
     <string name="key_vibration">key_vibration</string>
     <string name="key_clipboard">key_clipboard</string>
-    <string name="plus_table_text">+ add table</string>
+    <string name="plus_table_text">+ add new table</string>
     <string name="add_list_value_hint_text">Enter the List Name</string>
     <string name="new_list_value_text">+ add one more</string>
     <string name="field_type_list">Field Type List</string>
@@ -162,4 +162,5 @@
     <string name="social_networks_qr">Social Netwroks QR</string>
     <string name="sn_title_hint_text">Please enter the title</string>
     <string name="sn_description_hint_text">Please enter the description</string>
+    <string name="table_saving_data_hint">List of the tables for saving data <br/>Click on table to edit fields of the table</string>
 </resources>

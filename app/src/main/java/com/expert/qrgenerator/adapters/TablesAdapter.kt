@@ -8,6 +8,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.Table
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 
 class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
@@ -31,8 +32,7 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
 
     class AddItemViewHolder(itemView: View, mListener: OnItemClickListener) :
         RecyclerView.ViewHolder(itemView) {
-        val addCardViewBtn: CardView = itemView.findViewById(R.id.add_card_view)
-
+        val addNewTableButton = itemView.findViewById<MaterialButton>(R.id.add_new_table_btn)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -64,7 +64,7 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
         when (holder.itemViewType) {
             0 -> {
                 val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.addCardViewBtn.setOnClickListener {
+                addViewHolder.addNewTableButton.setOnClickListener {
                     mListener!!.onAddItemClick(position)
                 }
             }
