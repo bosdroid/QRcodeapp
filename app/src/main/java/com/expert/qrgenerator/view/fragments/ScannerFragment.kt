@@ -61,6 +61,7 @@ class ScannerFragment : Fragment() {
     private lateinit var addNewTableBtn: MaterialButton
     private lateinit var appSettings: AppSettings
     private var imageDrivePath = ""
+    private var isFileSelected = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -145,7 +146,9 @@ class ScannerFragment : Fragment() {
             if (codeScanner == null) {
                 codeScanner = CodeScanner(requireActivity(), scannerView)
             }
-
+            if (!isFileSelected){
+                codeScanner!!.startPreview()
+            }
             // Parameters (default values)
             codeScanner!!.apply {
                 camera = CodeScanner.CAMERA_BACK // or CAMERA_FRONT or specific camera id
@@ -161,12 +164,12 @@ class ScannerFragment : Fragment() {
                     requireActivity().runOnUiThread {
                         val text = it.text
                         if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
-                            if (Constants.userData == null) {
-                                tableGenerator.insertDefaultTable(
-                                    text,
-                                    BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
-                                )
-                            } else {
+//                            if (Constants.userData == null) {
+//                                tableGenerator.insertDefaultTable(
+//                                    text,
+//                                    BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
+//                                )
+//                            } else {
                                 if (tableName.isEmpty()) {
                                     BaseActivity.showAlert(requireActivity(), text)
                                 } else {
@@ -188,8 +191,15 @@ class ScannerFragment : Fragment() {
 
                                     addImageCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
                                         if (isChecked) {
-                                            imageSourcesWrapperLayout.visibility = View.VISIBLE
-                                            filePathView!!.visibility = View.VISIBLE
+                                            if (Constants.userData == null){
+                                                addImageCheckBox.isChecked = false
+                                                BaseActivity.showAlert(requireActivity(),"You can't use this feature without login!")
+                                            }
+                                            else{
+                                                imageSourcesWrapperLayout.visibility = View.VISIBLE
+                                                filePathView!!.visibility = View.VISIBLE
+                                            }
+
                                         } else {
                                             imageSourcesWrapperLayout.visibility = View.GONE
                                             filePathView!!.visibility = View.GONE
@@ -362,6 +372,7 @@ class ScannerFragment : Fragment() {
                                                         CoroutineScope(Dispatchers.Main).launch {
                                                             Handler(Looper.myLooper()!!).postDelayed(
                                                                 {
+                                                                    isFileSelected = false
                                                                     BaseActivity.dismiss()
                                                                     Toast.makeText(
                                                                         requireActivity(),
@@ -418,6 +429,7 @@ class ScannerFragment : Fragment() {
                                                     tableGenerator.insertData(tableName, params)
                                                     CoroutineScope(Dispatchers.Main).launch {
                                                         Handler(Looper.myLooper()!!).postDelayed({
+                                                            isFileSelected = false
                                                             BaseActivity.dismiss()
                                                             Toast.makeText(
                                                                 requireActivity(),
@@ -439,7 +451,7 @@ class ScannerFragment : Fragment() {
                                         }
                                     }
                                 }
-                            }
+//                            }
                         } else {
 
                             var qrHistory: CodeHistory? = null
@@ -525,7 +537,7 @@ class ScannerFragment : Fragment() {
                 scannerView.setOnClickListener {
                     startPreview()
                 }
-                startPreview()
+
             }
         }
     }
@@ -564,6 +576,7 @@ class ScannerFragment : Fragment() {
         currentPhotoPath = ImageManager.readWriteImage(requireActivity(), bitmap).absolutePath
         Constants.captureImagePath = currentPhotoPath
         filePathView!!.text = currentPhotoPath
+        isFileSelected = true
     }
 
     private fun getImageFromGallery() {
@@ -581,8 +594,8 @@ class ScannerFragment : Fragment() {
                 val data: Intent? = result.data
                 if (data!!.data != null) {
                     val imageUri = data.data!!
-                    filePathView!!.text =
-                        ImageManager.getRealPathFromUri(requireActivity(), imageUri)
+                    filePathView!!.text = ImageManager.getRealPathFromUri(requireActivity(), imageUri)
+                    isFileSelected = true
                 }
             }
         }

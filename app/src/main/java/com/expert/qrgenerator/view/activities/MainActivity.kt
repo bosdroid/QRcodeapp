@@ -593,18 +593,18 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.tables).isVisible = true
             mNavigation.menu.findItem(R.id.field_list).isVisible = true
 //            mNavigation.menu.findItem(R.id.sheets).isVisible = true
-            if (!GoogleSignIn.hasPermissions(
-                    GoogleSignIn.getLastSignedInAccount(this),
-                    Scope(DriveScopes.DRIVE_APPDATA)
-                )
-            ) {
-                GoogleSignIn.requestPermissions(
-                    this,
-                    100,
-                    GoogleSignIn.getLastSignedInAccount(context),
-                    Scope(DriveScopes.DRIVE_APPDATA)
-                )
-            }
+//            if (!GoogleSignIn.hasPermissions(
+//                    GoogleSignIn.getLastSignedInAccount(this),
+//                    Scope(DriveScopes.DRIVE_APPDATA)
+//                )
+//            ) {
+//                GoogleSignIn.requestPermissions(
+//                    this,
+//                    100,
+//                    GoogleSignIn.getLastSignedInAccount(context),
+//                    Scope(DriveScopes.DRIVE_APPDATA)
+//                )
+//            }
 
         } else {
             mNavigation.menu.findItem(R.id.login).isVisible = true

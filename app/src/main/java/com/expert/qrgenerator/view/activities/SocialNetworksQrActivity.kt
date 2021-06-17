@@ -35,6 +35,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.gson.Gson
 import org.json.JSONArray
+import org.json.JSONObject
 import top.defaults.colorpicker.ColorPickerPopup
 
 
@@ -215,25 +216,31 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 updateTextAndColor(snDescriptionTextView)
             }
             R.id.sn_share_fab -> {
-                val selectedList = mutableListOf<SocialNetwork>()
+                val selectedList = JSONArray()
                 for (i in 0 until socialNetworkList.size) {
                     val item = socialNetworkList[i]
                     if (item.isActive == 1) {
-                        selectedList.add(SocialNetwork(item.iconName, item.title, item.url))
+                        val jsonObject = JSONObject()
+                        jsonObject.put("icon",item.icon)
+                        jsonObject.put("iconName",item.iconName)
+                        jsonObject.put("isActive",item.isActive)
+                        jsonObject.put("title",item.title)
+                        jsonObject.put("description",item.iconName)
+                        jsonObject.put("url",item.url)
+                        selectedList.put(jsonObject)
                     }
                 }
-                snSelectedSocialNetwork = Gson().toJson(selectedList)
+                snSelectedSocialNetwork = selectedList.toString()
 
-                val hashMap = hashMapOf<String, String>()
-                hashMap["sn_banner_image"] = snBannerImage
-                hashMap["sn_content_detail_background_color"] = snContentDetailBackgroundColor
-                hashMap["sn_title_text"] = snTitleText
-                hashMap["sn_title_text_color"] = snTitleTextColor
-                hashMap["sn_description_text"] = snDescriptionText
-                hashMap["sn_description_text_color"] = snDescriptionTextColor
-                hashMap["sn_selected_social_network"] = snSelectedSocialNetwork
-                Log.d("TEST199", Gson().toJson(hashMap))
-                showAlert(context, Gson().toJson(hashMap))
+                val hashMap = JSONObject()//hashMapOf<String, String>()
+                hashMap.put("sn_banner_image","")//["sn_banner_image"] = ""//snBannerImage
+                hashMap.put("sn_content_detail_background_color",snContentDetailBackgroundColor)//hashMap["sn_content_detail_background_color"] = snContentDetailBackgroundColor
+                hashMap.put("sn_title_text",snTitleText)//hashMap["sn_title_text"] = snTitleText
+                hashMap.put("sn_title_text_color",snTitleTextColor)//hashMap["sn_title_text_color"] = snTitleTextColor
+                hashMap.put("sn_description_text",snDescriptionText)//hashMap["sn_description_text"] = snDescriptionText
+                hashMap.put("sn_description_text_color",snDescriptionTextColor)//hashMap["sn_description_text_color"] = snDescriptionTextColor
+                hashMap.put("sn_selected_social_network",selectedList)//hashMap["sn_selected_social_network"] = snSelectedSocialNetwork
+                Log.d("TEST199", hashMap.toString())
             }
             else -> {
 
