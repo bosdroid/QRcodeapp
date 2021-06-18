@@ -20,14 +20,23 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.SocialNetworkAdapter
+import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.SNPayload
 import com.expert.qrgenerator.model.SocialNetwork
+import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
+import com.expert.qrgenerator.viewmodel.CouponQrViewModel
+import com.expert.qrgenerator.viewmodel.SocialNetworkQrViewModel
+import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -65,7 +74,8 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private var snDescriptionText = ""
     private var snDescriptionTextColor = ""
     private var snSelectedSocialNetwork = ""
-
+    private lateinit var viewModel: SocialNetworkQrViewModel
+    private lateinit var appViewModel: AppViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +90,14 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
         context = this
+        viewModel = ViewModelProviders.of(
+            this,
+            ViewModelFactory(SocialNetworkQrViewModel()).createFor()
+        )[SocialNetworkQrViewModel::class.java]
+        appViewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory(this.application)
+        ).get(AppViewModel::class.java)
         toolbar = findViewById(R.id.toolbar)
         snHeaderImageEditHint = findViewById(R.id.sn_header_image_edit_hint)
         snHeaderImageEditBtn = findViewById(R.id.sn_header_image_edit_btn)
@@ -118,6 +136,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 "facebook",
                 R.drawable.facebook,
                 "Facebook",
+                "facebook",
                 "www.your-url.com",
                 1
             )
@@ -127,6 +146,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 "www",
                 R.drawable.www,
                 "Visit us online",
+                "www",
                 "www.your-website.com",
                 0
             )
@@ -136,6 +156,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 "youtube",
                 R.drawable.youtube,
                 "Youtube",
+                "youtube",
                 "www.your-url.com",
                 0
             )
@@ -145,6 +166,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 "instagram",
                 R.drawable.instagram_sn,
                 "Instagram",
+                "instagram",
                 "www.your-url.com",
                 0
             )
@@ -154,6 +176,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 "twitter",
                 R.drawable.twitter,
                 "Twitter",
+                "twitter",
                 "www.your-url.com",
                 0
             )
@@ -163,6 +186,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 "vk",
                 R.drawable.vk,
                 "VK",
+                "vk",
                 "www.your-url.com",
                 0
             )
@@ -172,6 +196,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 "telegram",
                 R.drawable.telegram,
                 "Telegram",
+                "telegram",
                 "www.your-url.com",
                 0
             )
@@ -216,36 +241,89 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 updateTextAndColor(snDescriptionTextView)
             }
             R.id.sn_share_fab -> {
-                val selectedList = JSONArray()
-                for (i in 0 until socialNetworkList.size) {
-                    val item = socialNetworkList[i]
-                    if (item.isActive == 1) {
-                        val jsonObject = JSONObject()
-                        jsonObject.put("icon",item.icon)
-                        jsonObject.put("iconName",item.iconName)
-                        jsonObject.put("isActive",item.isActive)
-                        jsonObject.put("title",item.title)
-                        jsonObject.put("description",item.iconName)
-                        jsonObject.put("url",item.url)
-                        selectedList.put(jsonObject)
+                if (validation()) {
+                    val selectedList = mutableListOf<SocialNetwork>()
+                    for (i in 0 until socialNetworkList.size) {
+                        val item = socialNetworkList[i]
+                        if (item.isActive == 1) {
+                            selectedList.add(item)
+                        }
                     }
-                }
-                snSelectedSocialNetwork = selectedList.toString()
 
-                val hashMap = JSONObject()//hashMapOf<String, String>()
-                hashMap.put("sn_banner_image","")//["sn_banner_image"] = ""//snBannerImage
-                hashMap.put("sn_content_detail_background_color",snContentDetailBackgroundColor)//hashMap["sn_content_detail_background_color"] = snContentDetailBackgroundColor
-                hashMap.put("sn_title_text",snTitleText)//hashMap["sn_title_text"] = snTitleText
-                hashMap.put("sn_title_text_color",snTitleTextColor)//hashMap["sn_title_text_color"] = snTitleTextColor
-                hashMap.put("sn_description_text",snDescriptionText)//hashMap["sn_description_text"] = snDescriptionText
-                hashMap.put("sn_description_text_color",snDescriptionTextColor)//hashMap["sn_description_text_color"] = snDescriptionTextColor
-                hashMap.put("sn_selected_social_network",selectedList)//hashMap["sn_selected_social_network"] = snSelectedSocialNetwork
-                Log.d("TEST199", hashMap.toString())
+                    val requestJsonObject = SNPayload(
+                        snBannerImage,
+                        snContentDetailBackgroundColor,
+                        snTitleText,
+                        snTitleTextColor,
+                        snDescriptionText,
+                        snDescriptionTextColor,
+                        selectedList as ArrayList<SocialNetwork>
+                    )
+
+                    startLoading(context)
+                    viewModel.createSnQrCode(context, requestJsonObject)
+                    viewModel.getSnQrCode().observe(this, Observer { response ->
+                        var url = ""
+                        dismiss()
+                        if (response != null) {
+                            Log.d("TEST199", response.toString())
+                            url = response.get("generatedUrl").asString
+
+                            // SETUP QR DATA HASMAP FOR HISTORY
+                            val qrData = hashMapOf<String, String>()
+                            qrData["login"] = "sattar"
+                            qrData["qrId"] = "${System.currentTimeMillis()}"
+                            qrData["userType"] = "free"
+
+                            val qrHistory = CodeHistory(
+                                qrData["login"]!!,
+                                qrData["qrId"]!!,
+                                url,
+                                "sn",
+                                qrData["userType"]!!,
+                                "qr",
+                                "create",
+                                "",
+                                "0",
+                                url,
+                                System.currentTimeMillis().toString()
+                            )
+                            appViewModel.insert(qrHistory)
+                            val intent = Intent(context, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                            finish()
+
+                        } else {
+                            showAlert(context, "Something went wrong, please try again!")
+                        }
+                    })
+                }
             }
             else -> {
 
             }
         }
+    }
+
+    private fun validation(): Boolean {
+        if (snBannerImage.isEmpty()) {
+            showAlert(context, "Please select the banner image")
+            return false
+        } else if (snContentDetailBackgroundColor.isEmpty()) {
+            showAlert(context, "Please select the background color")
+            return false
+        } else if (snTitleText.isEmpty()) {
+            showAlert(context, "Please enter the title")
+            return false
+        } else if (snDescriptionText.isEmpty()) {
+            showAlert(context, "Please enter the description")
+            return false
+        } else if (socialNetworkList.size == 0) {
+            showAlert(context, "Please select the at least one social network from list")
+            return false
+        }
+        return true
     }
 
     // THIS FUNCTION WILL CALL THE IMAGE INTENT

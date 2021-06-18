@@ -2,6 +2,7 @@ package com.expert.qrgenerator.retrofit
 
 import JSONResponse
 import com.google.gson.JsonObject
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,5 +29,9 @@ interface ApiServices {
 
     @GET("service/user/google/{email}")
     fun signIn(@Path("email") email:String):Call<JsonObject>
+
+    // THIS IS THE POST REQUEST SERVICE FOR CREATING SOCIAL NETWORK QR CODE
+    @POST("service/webpage/create/sntemplate")
+    fun createSnTemplate(@Body body: JsonObject):Call<JsonObject>
 
 }

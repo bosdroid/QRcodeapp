@@ -4,8 +4,10 @@ import JSONResponse
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.expert.qrgenerator.model.SNPayload
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -102,6 +104,23 @@ class ApiRepository {
     fun signIn(email:String): MutableLiveData<JsonObject> {
         val res = MutableLiveData<JsonObject>()
         apiInterface.signIn(email).enqueue(object:Callback<JsonObject>{
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                res.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                res.postValue(null)
+            }
+        })
+
+        return res
+    }
+
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING SOCIAL NETWORK QR
+    fun createSnTemplate(body: SNPayload): MutableLiveData<JsonObject> {
+        val res = MutableLiveData<JsonObject>()
+        val bodyJson = Gson().toJsonTree(body).asJsonObject
+        apiInterface.createSnTemplate(bodyJson).enqueue(object:Callback<JsonObject>{
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 res.postValue(response.body())
             }

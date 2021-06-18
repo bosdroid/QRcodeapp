@@ -81,6 +81,9 @@ class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList
             "feedback"->{
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_feedback)
             }
+            "sn"->{
+                holder.qrTypeIcon.setImageResource(R.drawable.ic_social_networks)
+            }
             else->{
 
             }

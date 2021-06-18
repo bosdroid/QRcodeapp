@@ -271,7 +271,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                                 qrData["login"]!!,
                                 qrData["qrId"]!!,
                                 url,
-                                "feedback",
+                                "coupon",
                                 qrData["userType"]!!,
                                 "qr",
                                 "create",
