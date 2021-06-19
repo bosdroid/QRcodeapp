@@ -163,4 +163,6 @@
     <string name="sn_title_hint_text">Please enter the title</string>
     <string name="sn_description_hint_text">Please enter the description</string>
     <string name="table_saving_data_hint">List of the tables for saving data <br/>Click on table to edit fields of the table</string>
+    <string name="create_table_fields_hint_text">There is a list of the fields for *</string>
+    <string name="create_table_fields_hint2_text">You can add fields here</string>
 </resources>

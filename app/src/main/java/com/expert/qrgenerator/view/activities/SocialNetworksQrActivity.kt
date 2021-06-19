@@ -23,9 +23,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.adapters.SNIconsAdapter
 import com.expert.qrgenerator.adapters.SocialNetworkAdapter
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.SNPayload
@@ -34,17 +36,13 @@ import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
-import com.expert.qrgenerator.viewmodel.CouponQrViewModel
 import com.expert.qrgenerator.viewmodel.SocialNetworkQrViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
-import com.google.gson.Gson
-import org.json.JSONArray
-import org.json.JSONObject
 import top.defaults.colorpicker.ColorPickerPopup
 
 
@@ -56,6 +54,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private lateinit var snHeaderImageEditHint: MaterialTextView
     private lateinit var snHeaderImageEditBtn: AppCompatImageView
     private lateinit var snBannerImageView: AppCompatImageView
+    private lateinit var nextStepBtn: MaterialTextView
     private lateinit var snDetailsBackgroundColorEditBtn: AppCompatImageView
     private lateinit var snContentWrapperLayout: LinearLayout
     private lateinit var snTitleTextView: MaterialTextView
@@ -64,7 +63,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private lateinit var snDescriptionEditBtn: AppCompatImageView
     private lateinit var snRecyclerView: RecyclerView
     private lateinit var adapeter: SocialNetworkAdapter
-    private lateinit var shareFabBtn: FloatingActionButton
+//    private lateinit var shareFabBtn: FloatingActionButton
     private var socialNetworkList = mutableListOf<SocialNetwork>()
     private var updateType = ""
     private var snBannerImage: String = ""
@@ -112,8 +111,8 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         snDescriptionTextView = findViewById(R.id.sn_description_text)
         snDescriptionEditBtn = findViewById(R.id.sn_description_edit_btn)
         snDescriptionEditBtn.setOnClickListener(this)
-        shareFabBtn = findViewById(R.id.sn_share_fab)
-        shareFabBtn.setOnClickListener(this)
+        nextStepBtn = findViewById(R.id.next_step_btn)
+        nextStepBtn.setOnClickListener(this)
         snRecyclerView = findViewById(R.id.sn_list_recyclerview)
         snRecyclerView.layoutManager = LinearLayoutManager(context)
         snRecyclerView.hasFixedSize()
@@ -240,7 +239,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 updateType = "sn_description"
                 updateTextAndColor(snDescriptionTextView)
             }
-            R.id.sn_share_fab -> {
+            R.id.next_step_btn -> {
                 if (validation()) {
                     val selectedList = mutableListOf<SocialNetwork>()
                     for (i in 0 until socialNetworkList.size) {
@@ -285,14 +284,18 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                                 "create",
                                 "",
                                 "0",
-                                url,
+                                "",
                                 System.currentTimeMillis().toString()
                             )
-                            appViewModel.insert(qrHistory)
-                            val intent = Intent(context, MainActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            appViewModel.insert(qrHistory)
+//                            val intent = Intent(context, MainActivity::class.java)
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            startActivity(intent)
+//                            finish()
+                            val intent = Intent(context,DesignActivity::class.java)
+                            intent.putExtra("ENCODED_TEXT",url)
+                            intent.putExtra("QR_HISTORY",qrHistory)
                             startActivity(intent)
-                            finish()
 
                         } else {
                             showAlert(context, "Something went wrong, please try again!")
@@ -590,5 +593,51 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
             socialNetworkList.add(position, item)
             adapeter.notifyDataSetChanged()
         }
+    }
+
+    val iconsList = mutableListOf<Pair<String,Int>>()
+    override fun onItemEditIconClick(position: Int,checkBox:MaterialCheckBox) {
+        if (checkBox.isChecked){
+            val item = socialNetworkList[position]
+            generateIconsList()
+            val snIconsLayout = LayoutInflater.from(context).inflate(R.layout.sn_icons_layout_dialog,null)
+            val snIconsRecyclerview = snIconsLayout.findViewById<RecyclerView>(R.id.sn_icons_recyclerview)
+            snIconsRecyclerview.layoutManager = GridLayoutManager(context,3)
+            snIconsRecyclerview.hasFixedSize()
+            val iconsAdapter = SNIconsAdapter(context, iconsList as ArrayList<Pair<String, Int>>)
+            snIconsRecyclerview.adapter = iconsAdapter
+
+            val builder = MaterialAlertDialogBuilder(context)
+            builder.setView(snIconsLayout)
+            val alert = builder.create()
+            alert.show()
+
+            iconsAdapter.setOnItemClickListener(object : SNIconsAdapter.OnItemClickListener{
+                override fun onItemClick(pos: Int) {
+                    val pair = iconsList[pos]
+                    item.icon = pair.second
+                    item.iconName = pair.first
+                    item.description = pair.first
+
+                    socialNetworkList.removeAt(position)
+                    socialNetworkList.add(position,item)
+                    adapeter.notifyItemChanged(position)
+                    alert.dismiss()
+                }
+            })
+        }
+    }
+
+    private fun generateIconsList(){
+        if (iconsList.isNotEmpty()){
+            iconsList.clear()
+        }
+        iconsList.add(Pair("facebook",R.drawable.facebook))
+        iconsList.add(Pair("www",R.drawable.www))
+        iconsList.add(Pair("youtube",R.drawable.youtube))
+        iconsList.add(Pair("instagram",R.drawable.instagram_sn))
+        iconsList.add(Pair("twitter",R.drawable.twitter))
+        iconsList.add(Pair("vk",R.drawable.vk))
+        iconsList.add(Pair("telegram",R.drawable.telegram))
     }
 }

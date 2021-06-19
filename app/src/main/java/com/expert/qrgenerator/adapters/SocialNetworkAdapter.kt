@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
@@ -17,6 +18,7 @@ class SocialNetworkAdapter(val context: Context, var socialNetworkList:ArrayList
     interface OnItemClickListener{
         fun onItemClick(position: Int)
         fun onItemCheckClick(position: Int,isChecked: Boolean)
+        fun onItemEditIconClick(position: Int,checkBox: MaterialCheckBox)
     }
 
     private var mListener: OnItemClickListener?=null
@@ -30,18 +32,24 @@ class SocialNetworkAdapter(val context: Context, var socialNetworkList:ArrayList
         val titleTextView:MaterialTextView
         val descriptionTextView:MaterialTextView
         val checkBox:MaterialCheckBox
+        val editIconLayout:LinearLayout
 
         init {
             iconImageView = itemView.findViewById(R.id.sn_item_logo)
             titleTextView = itemView.findViewById(R.id.sn_item_heading)
             descriptionTextView = itemView.findViewById(R.id.sn_item_tagline)
             checkBox = itemView.findViewById(R.id.sn_item_checkbox)
+            editIconLayout = itemView.findViewById(R.id.sn_item_edit_icon)
 
             itemView.setOnClickListener {
                 mListener.onItemClick(layoutPosition)
             }
             checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
                 mListener.onItemCheckClick(layoutPosition,isChecked)
+            }
+
+            editIconLayout.setOnClickListener {
+                mListener.onItemEditIconClick(layoutPosition,checkBox)
             }
 
         }

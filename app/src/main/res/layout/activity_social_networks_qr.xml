@@ -23,7 +23,22 @@
             android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="@dimen/sixtyDpMargin"
+                android:layout_marginRight="@dimen/sixtyDpMargin"
+                android:text="@string/next_text"
+                android:textSize="@dimen/xlargeText"
+                android:textColor="@color/teal_700"
+                android:id="@+id/next_step_btn"
+                android:textAllCaps="true"
+                />
+
+        </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -194,15 +209,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_margin="@dimen/sixtyDpMargin"
-        android:src="@drawable/ic_cloud_upload"
-        app:tint="@color/white"
-        android:id="@+id/sn_share_fab"
-        android:contentDescription="sn_fab" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
