@@ -6,6 +6,7 @@ import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
@@ -21,6 +22,7 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.sheets.v4.Sheets
 import java.io.File
 
+
 class Constants {
 
     // HERE WE WILL CREATE ALL THE CONSTANT DATA
@@ -35,14 +37,14 @@ class Constants {
         private const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
         private const val LOGO_IMAGE_PATH = "LogoImages"
         const val BASE_URL = "http://pages.qrmagicapp.com/"
-        var generatedImage:Bitmap?=null
-        var finalQrImageUri:Uri?=null
-        var isLogin:String = "is_login"
-        var user:String = "user"
-        var userData:User?=null
-        var mService:Drive?=null
-        var sheetService: Sheets?=null
-        var captureImagePath:String?=null
+        var generatedImage: Bitmap? = null
+        var finalQrImageUri: Uri? = null
+        var isLogin: String = "is_login"
+        var user: String = "user"
+        var userData: User? = null
+        var mService: Drive? = null
+        var sheetService: Sheets? = null
+        var captureImagePath: String? = null
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)
@@ -81,7 +83,13 @@ class Constants {
             list.add(QRTypes(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 8))
             list.add(QRTypes(R.drawable.ic_coupon, context.getString(R.string.coupon_text), 9))
             list.add(QRTypes(R.drawable.ic_feedback, context.getString(R.string.feedback_text), 10))
-            list.add(QRTypes(R.drawable.ic_social_networks, context.getString(R.string.social_networks_text), 11))
+            list.add(
+                QRTypes(
+                    R.drawable.ic_social_networks,
+                    context.getString(R.string.social_networks_text),
+                    11
+                )
+            )
             return list
         }
 
@@ -90,7 +98,12 @@ class Constants {
         private var encodedData: String = ""
         private var completeListener: OnCompleteAction? = null
         private var wifiSecurity = "WPA"
-        fun getLayout(context: Context, position: Int,layoutContainer:FrameLayout,nextBtn:MaterialTextView) {
+        fun getLayout(
+            context: Context,
+            position: Int,
+            layoutContainer: FrameLayout,
+            nextBtn: MaterialTextView
+        ) {
             completeListener = context as OnCompleteAction
             val builder = MaterialAlertDialogBuilder(context)
             builder.setCancelable(false)
@@ -100,51 +113,17 @@ class Constants {
                         LayoutInflater.from(context).inflate(R.layout.text_dialog_layout, null)
                     val textInputBox =
                         textView!!.findViewById<TextInputEditText>(R.id.text_input_field)
-                    if (layoutContainer.childCount > 0){
+                    if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(textView)
-                    }
-                    else
-                    {
+                    } else {
                         layoutContainer.addView(textView)
                     }
 
                     nextBtn.setOnClickListener {
-                        if (textInputBox.text.toString().isNotEmpty()){
+                        if (textInputBox.text.toString().isNotEmpty()) {
                             encodedData = textInputBox.text.toString()
-                            completeListener!!.onTypeSelected(encodedData, 0,"text")
-                        }
-                        else
-                        {
-                            BaseActivity.showAlert(
-                                context,
-                                "Please enter the required input data!"
-                            )
-                        }
-                    }
-                }
-                1 -> {
-                    val websiteView =
-                        LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
-                    val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
-                    heading.text = context.getString(R.string.static_link_text)
-                    val websiteInputBox =
-                        websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
-                    if (layoutContainer.childCount > 0){
-                        layoutContainer.removeAllViews()
-                        layoutContainer.addView(websiteView)
-                    }
-                    else
-                    {
-                        layoutContainer.addView(websiteView)
-                    }
-
-                    nextBtn.setOnClickListener {
-                        if (websiteInputBox.text.toString().isNotEmpty()) {
-
-                            encodedData = websiteInputBox.text.toString()
-                            completeListener!!.onTypeSelected(encodedData, 1,"link")
-
+                            completeListener!!.onTypeSelected(encodedData, 0, "text")
                         } else {
                             BaseActivity.showAlert(
                                 context,
@@ -152,33 +131,145 @@ class Constants {
                             )
                         }
                     }
+                    textInputBox.requestFocus()
+                    val imm: InputMethodManager? =
+                        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                    imm!!.toggleSoftInput(
+                        InputMethodManager.SHOW_FORCED,
+                        InputMethodManager.HIDE_IMPLICIT_ONLY
+                    )
+                }
+                1 -> {
+                    var selectedProtocol = ""
+                    val websiteView = LayoutInflater.from(context).inflate(
+                        R.layout.website_dialog_layout,
+                        null
+                    )
+                    val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
+                    heading.text = context.getString(R.string.static_link_text)
+                    val websiteInputBox =
+                        websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
+                    val protocolGroup =
+                        websiteView.findViewById<RadioGroup>(R.id.http_protocol_group)
+                    protocolGroup.setOnCheckedChangeListener { group, checkedId ->
+                        when (checkedId) {
+                            R.id.http_protocol_rb -> {
+                                selectedProtocol = "http://"
+                            }
+                            R.id.https_protocol_rb -> {
+                                selectedProtocol = "https://"
+                            }
+                            else -> {
+
+                            }
+                        }
+                    }
+
+                    if (layoutContainer.childCount > 0) {
+                        layoutContainer.removeAllViews()
+                        layoutContainer.addView(websiteView)
+                    } else {
+                        layoutContainer.addView(websiteView)
+                    }
+
+                    nextBtn.setOnClickListener {
+                        val value = websiteInputBox.text.toString().trim()
+                        if (selectedProtocol.isEmpty()) {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please select the URL protocol!"
+                            )
+                        } else if (value.isEmpty()) {
+
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the required input data!"
+                            )
+
+                        } else if (value.substring(0, 7).contains("http://") || value.substring(
+                                0,
+                                8
+                            ).contains("https://")
+                        ) {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the website URL without http:// or https://"
+                            )
+                        } else if (!value.contains(".com")) {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the valid website URL"
+                            )
+                        } else {
+                            encodedData = "$selectedProtocol$value"
+                            completeListener!!.onTypeSelected(encodedData, 1, "link")
+
+                        }
+                    }
                 }
                 2 -> {
+                    var selectedProtocol = ""
                     val websiteView =
                         LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
                     val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
                     heading.text = context.getString(R.string.dynamic_link_text)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
-                    if (layoutContainer.childCount > 0){
+
+                    val protocolGroup =
+                        websiteView.findViewById<RadioGroup>(R.id.http_protocol_group)
+                    protocolGroup.setOnCheckedChangeListener { group, checkedId ->
+                        when (checkedId) {
+                            R.id.http_protocol_rb -> {
+                                selectedProtocol = "http://"
+                            }
+                            R.id.https_protocol_rb -> {
+                                selectedProtocol = "https://"
+                            }
+                            else -> {
+
+                            }
+                        }
+                    }
+
+                    if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(websiteView)
-                    }
-                    else
-                    {
+                    } else {
                         layoutContainer.addView(websiteView)
                     }
                     nextBtn.setOnClickListener {
-                        if (websiteInputBox.text.toString().isNotEmpty()) {
+                        val value = websiteInputBox.text.toString().trim()
+                        if (selectedProtocol.isEmpty()) {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please select the URL protocol!"
+                            )
+                        } else if (value.isEmpty()) {
 
-                            encodedData = websiteInputBox.text.toString()
-                            completeListener!!.onTypeSelected(encodedData, 2,"link")
-
-                        } else {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the required input data!"
                             )
+
+                        } else if (value.substring(0, 7).contains("http://") || value.substring(
+                                0,
+                                8
+                            ).contains("https://")
+                        ) {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the website URL without http:// or https://"
+                            )
+                        } else if (!value.contains(".com")) {
+                            BaseActivity.showAlert(
+                                context,
+                                "Please enter the valid website URL"
+                            )
+                        } else {
+                            encodedData = "$selectedProtocol$value"
+                            completeListener!!.onTypeSelected(encodedData, 2, "link")
+
                         }
                     }
                 }
@@ -187,8 +278,12 @@ class Constants {
                         LayoutInflater.from(context).inflate(R.layout.contact_dialog_layout, null)
                     val contactNameInputBox =
                         contactView!!.findViewById<TextInputEditText>(R.id.contact_name_input_field)
+                    val contactPhoneCcInputBox =
+                        contactView.findViewById<TextInputEditText>(R.id.contact_phone_cc_input_field)
+                    val contactPhoneStartNumberInputBox =
+                        contactView.findViewById<TextInputEditText>(R.id.contact_phone_start_number_input_field)
                     val contactPhoneNumberInputBox =
-                        contactView.findViewById<TextInputEditText>(R.id.contact_phone_input_field)
+                        contactView.findViewById<TextInputEditText>(R.id.contact_phone_number_input_field)
                     val contactEmailInputBox =
                         contactView.findViewById<TextInputEditText>(R.id.contact_email_input_field)
                     val contactCompanyInputBox =
@@ -199,23 +294,25 @@ class Constants {
                         contactView.findViewById<TextInputEditText>(R.id.contact_address_input_field)
                     val contactDetailInputBox =
                         contactView.findViewById<TextInputEditText>(R.id.contact_detail_input_field)
-                    if (layoutContainer.childCount > 0){
+                    if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(contactView)
-                    }
-                    else
-                    {
+                    } else {
                         layoutContainer.addView(contactView)
                     }
 
                     nextBtn.setOnClickListener {
-                        if (!TextUtils.isEmpty(contactNameInputBox.text.toString())&&
-                                !TextUtils.isEmpty(contactPhoneNumberInputBox.text.toString())) {
+                        if (!TextUtils.isEmpty(contactNameInputBox.text.toString())
+                            && !TextUtils.isEmpty(contactPhoneNumberInputBox.text.toString())
+                            && !TextUtils.isEmpty(contactPhoneCcInputBox.text.toString())
+                            && !TextUtils.isEmpty(contactPhoneStartNumberInputBox.text.toString())
+                        ) {
+                            val phoneNumber = "+${contactPhoneCcInputBox.text.toString()}${contactPhoneStartNumberInputBox.text.toString()}${contactPhoneNumberInputBox.text.toString()}"
                             encodedData =
                                 "BEGIN:VCARD\nVERSION:4.0\nN:${
                                     contactNameInputBox.text.toString().trim()
                                 }\nTEL:${
-                                    contactPhoneNumberInputBox.text.toString().trim()
+                                    phoneNumber
                                 }\nTITLE:${
                                     contactJobTitleInputBox.text.toString().trim()
                                 }\nEMAIL:${
@@ -228,9 +325,7 @@ class Constants {
                                     contactDetailInputBox.text.toString().trim()
                                 }\nEND:VCARD"
                             completeListener!!.onTypeSelected(encodedData, 3, "contact")
-                        }
-                        else
-                        {
+                        } else {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the required contact name and phone input data!"
@@ -263,23 +358,24 @@ class Constants {
                             }
                         }
                     }
-                    if (layoutContainer.childCount > 0){
+                    if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(wifiView)
-                    }
-                    else
-                    {
+                    } else {
                         layoutContainer.addView(wifiView)
                     }
 
                     nextBtn.setOnClickListener {
-                        if (!TextUtils.isEmpty(wifiNetWorkName.text.toString()) && !TextUtils.isEmpty(wifiPassword.text.toString())) {
+                        if (!TextUtils.isEmpty(wifiNetWorkName.text.toString()) && !TextUtils.isEmpty(
+                                wifiPassword.text.toString()
+                            )
+                        ) {
                             encodedData =
-                                "WIFI:T:$wifiSecurity;S:${wifiNetWorkName.text.toString().trim()};P:${wifiPassword.text.toString().trim()};;"
+                                "WIFI:T:$wifiSecurity;S:${
+                                    wifiNetWorkName.text.toString().trim()
+                                };P:${wifiPassword.text.toString().trim()};;"
                             completeListener!!.onTypeSelected(encodedData, 4, "wifi")
-                        }
-                        else
-                        {
+                        } else {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the required input data!"
@@ -290,24 +386,27 @@ class Constants {
                 5 -> {
                     val phoneView =
                         LayoutInflater.from(context).inflate(R.layout.phone_dialog_layout, null)
-                    val phoneInputBox =
-                        phoneView!!.findViewById<TextInputEditText>(R.id.phone_input_field)
-                    if (layoutContainer.childCount > 0){
+                    val phoneCcInputBox =
+                        phoneView.findViewById<TextInputEditText>(R.id.phone_cc_input_field)
+                    val phoneStartNumberInputBox =
+                        phoneView.findViewById<TextInputEditText>(R.id.phone_start_number_input_field)
+                    val phoneNumberInputBox =
+                        phoneView.findViewById<TextInputEditText>(R.id.phone_number_input_field)
+                    if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(phoneView)
-                    }
-                    else
-                    {
+                    } else {
                         layoutContainer.addView(phoneView)
                     }
 
                     nextBtn.setOnClickListener {
-                        if (!TextUtils.isEmpty(phoneInputBox.text.toString())) {
-                            encodedData = "tel:${phoneInputBox.text.toString().trim()}"
+                        if (!TextUtils.isEmpty(phoneCcInputBox.text.toString())
+                            && !TextUtils.isEmpty(phoneStartNumberInputBox.text.toString())
+                            && !TextUtils.isEmpty(phoneNumberInputBox.text.toString())) {
+                            val phoneNumber = "+${phoneCcInputBox.text.toString()}${phoneStartNumberInputBox.text.toString()}${phoneNumberInputBox.text.toString()}"
+                            encodedData = "tel:$phoneNumber"
                             completeListener!!.onTypeSelected(encodedData, 5, "phone")
-                        }
-                        else
-                        {
+                        } else {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the required input data!"
@@ -318,29 +417,32 @@ class Constants {
                 6 -> {
                     val smsView =
                         LayoutInflater.from(context).inflate(R.layout.sms_dialog_layout, null)
-                    val smsRecipientInputBox =
-                        smsView!!.findViewById<TextInputEditText>(R.id.sms_recipient_input_field)
+                    val smsCcInputBox =
+                        smsView.findViewById<TextInputEditText>(R.id.sms_phone_cc_input_field)
+                    val smsStartNumberInputBox =
+                        smsView.findViewById<TextInputEditText>(R.id.sms_phone_start_number_input_field)
+                    val smsNumberInputBox =
+                        smsView.findViewById<TextInputEditText>(R.id.sms_phone_number_input_field)
                     val smsMessageInputBox =
                         smsView.findViewById<TextInputEditText>(R.id.sms_message_input_field)
-                    if (layoutContainer.childCount > 0){
+                    if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(smsView)
-                    }
-                    else
-                    {
+                    } else {
                         layoutContainer.addView(smsView)
                     }
 
                     nextBtn.setOnClickListener {
-                        if (!TextUtils.isEmpty(smsRecipientInputBox.text.toString()) && !TextUtils.isEmpty(smsMessageInputBox.text.toString())) {
-
-                            encodedData = "smsto:${
-                                smsRecipientInputBox.text.toString().trim()
-                            }:${smsMessageInputBox.text.toString().trim()}"
+                        if (!TextUtils.isEmpty(smsCcInputBox.text.toString())
+                            && !TextUtils.isEmpty(smsStartNumberInputBox.text.toString())
+                            && !TextUtils.isEmpty(smsNumberInputBox.text.toString())&& !TextUtils.isEmpty(
+                                smsMessageInputBox.text.toString()
+                            )
+                        ) {
+                            val phoneNumber = "+${smsCcInputBox.text.toString()}${smsStartNumberInputBox.text.toString()}${smsNumberInputBox.text.toString()}"
+                            encodedData = "smsto:$phoneNumber:${smsMessageInputBox.text.toString().trim()}"
                             completeListener!!.onTypeSelected(encodedData, 6, "sms")
-                        }
-                        else
-                        {
+                        } else {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the required input data!"
@@ -353,23 +455,21 @@ class Constants {
                         LayoutInflater.from(context).inflate(R.layout.instagram_dialog_layout, null)
                     val instagramInputBox =
                         instagramView!!.findViewById<TextInputEditText>(R.id.instagram_input_field)
-                    if (layoutContainer.childCount > 0){
+                    if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(instagramView)
-                    }
-                    else
-                    {
+                    } else {
                         layoutContainer.addView(instagramView)
                     }
 
                     nextBtn.setOnClickListener {
                         if (!TextUtils.isEmpty(instagramInputBox.text.toString())) {
                             encodedData =
-                                "instagram://user?username=${instagramInputBox.text.toString().trim()}"
+                                "instagram://user?username=${
+                                    instagramInputBox.text.toString().trim()
+                                }"
                             completeListener!!.onTypeSelected(encodedData, 7, "instagram")
-                        }
-                        else
-                        {
+                        } else {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the required input data!"
@@ -380,33 +480,35 @@ class Constants {
                 8 -> {
                     val whatsappView =
                         LayoutInflater.from(context).inflate(R.layout.whatsapp_dialog_layout, null)
-                    val whatsappInputBox =
-                        whatsappView!!.findViewById<TextInputEditText>(R.id.whatsapp_input_field)
-                    if (layoutContainer.childCount > 0){
+                    val whatsappCcInputBox =
+                        whatsappView.findViewById<TextInputEditText>(R.id.whatsapp_phone_cc_input_field)
+                    val whatsappStartNumberInputBox =
+                        whatsappView.findViewById<TextInputEditText>(R.id.whatsapp_phone_start_number_input_field)
+                    val whatsappNumberInputBox =
+                        whatsappView.findViewById<TextInputEditText>(R.id.whatsapp_phone_number_input_field)
+                    if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(whatsappView)
-                    }
-                    else
-                    {
+                    } else {
                         layoutContainer.addView(whatsappView)
                     }
 
                     nextBtn.setOnClickListener {
-                        if (!TextUtils.isEmpty(whatsappInputBox.text.toString())) {
-                            val phone = whatsappInputBox.text.toString()
+                        if (!TextUtils.isEmpty(whatsappCcInputBox.text.toString())
+                            && !TextUtils.isEmpty(whatsappStartNumberInputBox.text.toString())
+                            && !TextUtils.isEmpty(whatsappNumberInputBox.text.toString())) {
+
+                            val phone = "+${whatsappCcInputBox.text.toString()}${whatsappStartNumberInputBox.text.toString()}${whatsappNumberInputBox.text.toString()}"
                             if (phone.substring(0, 1) == "+") {
-                                encodedData =
-                                    "whatsapp://send?phone=${whatsappInputBox.text.toString().trim()}"
-                                completeListener!!.onTypeSelected(encodedData, 8,"whatsapp")
+                                encodedData = "whatsapp://send?phone=$phone"
+                                completeListener!!.onTypeSelected(encodedData, 8, "whatsapp")
                             } else {
                                 BaseActivity.showAlert(
                                     context,
                                     "Please enter the correct phone number with country code!"
                                 )
                             }
-                        }
-                        else
-                        {
+                        } else {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the required input data!"

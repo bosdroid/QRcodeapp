@@ -3,12 +3,12 @@ package com.expert.qrgenerator.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
-import com.expert.qrgenerator.view.activities.BaseActivity
+import android.graphics.Rect
+import android.graphics.RectF
 import com.github.sumimakito.awesomeqr.AwesomeQrRenderer
 import com.github.sumimakito.awesomeqr.option.RenderOption
 import com.github.sumimakito.awesomeqr.option.background.StillBackground
 import com.github.sumimakito.awesomeqr.option.logo.Logo
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 
 class QRGenerator {
 
@@ -29,10 +29,9 @@ class QRGenerator {
             renderOption.content = text // content to encode
             renderOption.size = 800 // size of the final QR code image
             renderOption.borderWidth = 20 // width of the empty space around the QR code
-            renderOption.patternScale = 0.35f // (optional) specify a scale for patterns
-            renderOption.roundedPatterns = true // (optional) if true, blocks will be drawn as dots instead
+            renderOption.patternScale = 0.45f // (optional) specify a scale for patterns
+            renderOption.roundedPatterns = false // (optional) if true, blocks will be drawn as dots instead
             renderOption.clearBorder = true // if set to true, the background will NOT be drawn on the border area
-            renderOption.ecl = ErrorCorrectionLevel.Q
             val color = com.github.sumimakito.awesomeqr.option.color.Color()
             if (col.isNotEmpty()) {
                 previousColor = Color.parseColor("#$col")

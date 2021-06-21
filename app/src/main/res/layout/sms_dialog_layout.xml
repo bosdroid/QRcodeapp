@@ -38,20 +38,68 @@
         app:layout_goneMarginTop="8dp"
         >
 
-        <com.google.android.material.textfield.TextInputEditText
+<!--        <com.google.android.material.textfield.TextInputEditText-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/sms_recipient_input_field"-->
+<!--            android:background="@drawable/input_text_field_design"-->
+<!--            android:padding="5dp"-->
+<!--            android:hint="@string/sms_recipient_hint_text"-->
+<!--            android:inputType="number"-->
+<!--            android:gravity="start"-->
+<!--            />-->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/sms_recipient_input_field"
-            android:background="@drawable/input_text_field_design"
-            android:padding="5dp"
-            android:hint="@string/sms_recipient_hint_text"
-            android:inputType="number"
-            android:gravity="start"
-            />
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            >
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone +"
+                android:textSize="@dimen/largeText"
+                />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sms_phone_cc_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="5dp"
+                android:inputType="number"
+                android:gravity="center"
+                android:maxLength="2"
+                android:layout_marginStart="@dimen/eightDpMargin"
+                />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sms_phone_start_number_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="5dp"
+                android:inputType="number"
+                android:gravity="center"
+                android:maxLength="3"
+                android:layout_marginStart="@dimen/eightDpMargin"
+                />
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sms_phone_number_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="5dp"
+                android:inputType="number"
+                android:gravity="center"
+                android:maxLength="4"
+                android:layout_marginStart="@dimen/eightDpMargin"
+                />
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:id="@+id/sms_message_input_field"
             android:background="@drawable/input_text_field_design"
             android:layout_marginTop="10dp"

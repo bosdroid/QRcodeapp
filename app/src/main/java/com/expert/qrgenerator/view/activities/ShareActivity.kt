@@ -88,10 +88,10 @@ class ShareActivity : BaseActivity(),View.OnClickListener {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 //            if (result.resultCode == Activity.RESULT_OK) {
                 // There are no request codes
-                val intent = Intent(context,MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
-                finish()
+//                val intent = Intent(context,MainActivity::class.java)
+//                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+//                startActivity(intent)
+//                finish()
 //            }
         }
 

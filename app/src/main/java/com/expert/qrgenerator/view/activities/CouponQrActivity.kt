@@ -111,6 +111,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     private var couponRedeemButtonColor: String = ""
     private var couponRedeemWebsiteUrl: String = ""
     private lateinit var viewModel: CouponQrViewModel
+    private var page = 1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -194,30 +195,31 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
             if (couponBackgroundColor.isEmpty()
-                    && couponCompanyNameText.isEmpty()
-                    && couponHeaderImage.isEmpty()
-                    && couponSaleBadgeButtonText.isEmpty()
-                    && couponOfferTitleText.isEmpty()
-                    && couponOfferDescriptionText.isEmpty()
-                    && couponGetButtonText.isEmpty()) {
+                && couponCompanyNameText.isEmpty()
+                && couponHeaderImage.isEmpty()
+                && couponSaleBadgeButtonText.isEmpty()
+                && couponOfferTitleText.isEmpty()
+                && couponOfferDescriptionText.isEmpty()
+                && couponGetButtonText.isEmpty()
+            ) {
                 onBackPressed()
             } else {
-                if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "next") {
+//                if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "next") {
 
                     MaterialAlertDialogBuilder(context)
-                            .setMessage("Changes you made may not be saved.")
-                            .setNegativeButton("Cancel") { dialog, which ->
-                                dialog.dismiss()
-                            }
-                            .setPositiveButton("Leave") { dialog, which ->
-                                onBackPressed()
-                            }
-                            .create().show()
-                } else if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "back") {
-                    nextDesignLayout.visibility = View.GONE
-                    initialDesignLayout.visibility = View.VISIBLE
-                    nextBtnView.text = "Next"
-                }
+                        .setMessage("Changes you made may not be saved.")
+                        .setNegativeButton("Cancel") { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton("Leave") { dialog, which ->
+                            onBackPressed()
+                        }
+                        .create().show()
+//                } else if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "back") {
+//                    nextDesignLayout.visibility = View.GONE
+//                    initialDesignLayout.visibility = View.VISIBLE
+//                    nextBtnView.text = "Next"
+//                }
             }
             true
         } else {
@@ -230,96 +232,115 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         when (v!!.id) {
             R.id.next_step_btn -> {
 
-                if (validation()) {
-                    val hashMap = hashMapOf<String, String>()
-                    hashMap["coupon_company_name"] = couponCompanyNameText
-                    hashMap["coupon_company_name_color"] = couponCompanyNameTextColor
-                    hashMap["coupon_background_color"] = couponBackgroundColor
-                    hashMap["coupon_header_image"] = couponHeaderImage
-                    hashMap["coupon_sale_badge_button_text"] = couponSaleBadgeButtonText
-                    hashMap["coupon_sale_badge_button_color"] = couponSaleBadgeButtonColor
-                    hashMap["coupon_headline_text"] = couponOfferTitleText
-                    hashMap["coupon_headline_text_color"] = couponOfferTitleTextColor
-                    hashMap["coupon_description_text"] = couponOfferDescriptionText
-                    hashMap["coupon_description_text_color"] = couponOfferDescriptionTextColor
-                    hashMap["coupon_get_button_text"] = couponGetButtonText
-                    hashMap["coupon_get_button_color"] = couponGetButtonColor
-                    hashMap["coupon_code_text"] = couponCodeText
-                    hashMap["coupon_code_text_color"] = couponCodeTextColor
-                    hashMap["coupon_valid_date"] = couponValidDate
-                    hashMap["coupon_terms_condition_text"] = couponTermsConditionText
-                    hashMap["coupon_redeem_button_text"] = couponRedeemButtonText
-                    hashMap["coupon_redeem_button_color"] = couponRedeemButtonColor
-                    hashMap["coupon_redeem_website_url"] = couponRedeemWebsiteUrl
-
-                    startLoading(context)
-                    viewModel.createCouponQrCode(context, hashMap)
-                    viewModel.getCouponQrCode().observe(this, { response ->
-                        var url = ""
-                        dismiss()
-                        if (response != null) {
-                            Log.d("TEST199", response.toString())
-                            url = response.get("generatedUrl").asString
-
-                            // SETUP QR DATA HASMAP FOR HISTORY
-                            val qrData = hashMapOf<String, String>()
-                            qrData["login"] = "sattar"
-                            qrData["qrId"] = "${System.currentTimeMillis()}"
-                            qrData["userType"] = "free"
-
-                            val qrHistory = CodeHistory(
-                                qrData["login"]!!,
-                                qrData["qrId"]!!,
-                                url,
-                                "coupon",
-                                qrData["userType"]!!,
-                                "qr",
-                                "create",
-                                "",
-                                "0",
-                                "",
-                                System.currentTimeMillis().toString()
-                            )
-
-                            val intent = Intent(context,DesignActivity::class.java)
-                            intent.putExtra("ENCODED_TEXT",url)
-                            intent.putExtra("QR_HISTORY",qrHistory)
-                            startActivity(intent)
-
-                        } else {
-                            showAlert(context, "Something went wrong, please try again!")
-                        }
-                    })
-
-                }
-            }
-            R.id.next_btn -> {
                 if (couponBackgroundColor.isNotEmpty()
                     && couponCompanyNameText.isNotEmpty()
                     && couponHeaderImage.isNotEmpty()
                     && couponSaleBadgeButtonText.isNotEmpty()
                     && couponOfferTitleText.isNotEmpty()
                     && couponOfferDescriptionText.isNotEmpty()
-                    && couponGetButtonText.isNotEmpty()
+                    && couponGetButtonText.isNotEmpty() && page == 1
                 ) {
-                    if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "next") {
-                        initialDesignLayout.visibility = View.GONE
-                        nextDesignLayout.visibility = View.VISIBLE
-                        nextBtnView.text = "Back"
-                    } else {
-                        nextDesignLayout.visibility = View.GONE
-                        initialDesignLayout.visibility = View.VISIBLE
-                        nextBtnView.text = "Next"
+                    initialDesignLayout.visibility = View.GONE
+                    nextDesignLayout.visibility = View.VISIBLE
+                    nextBtnView.visibility = View.VISIBLE
+                    page = 2
+                } else if (page == 2) {
+                    if (validation()) {
+                        val hashMap = hashMapOf<String, String>()
+                        hashMap["coupon_company_name"] = couponCompanyNameText
+                        hashMap["coupon_company_name_color"] = couponCompanyNameTextColor
+                        hashMap["coupon_background_color"] = couponBackgroundColor
+                        hashMap["coupon_header_image"] = couponHeaderImage
+                        hashMap["coupon_sale_badge_button_text"] = couponSaleBadgeButtonText
+                        hashMap["coupon_sale_badge_button_color"] = couponSaleBadgeButtonColor
+                        hashMap["coupon_headline_text"] = couponOfferTitleText
+                        hashMap["coupon_headline_text_color"] = couponOfferTitleTextColor
+                        hashMap["coupon_description_text"] = couponOfferDescriptionText
+                        hashMap["coupon_description_text_color"] = couponOfferDescriptionTextColor
+                        hashMap["coupon_get_button_text"] = couponGetButtonText
+                        hashMap["coupon_get_button_color"] = couponGetButtonColor
+                        hashMap["coupon_code_text"] = couponCodeText
+                        hashMap["coupon_code_text_color"] = couponCodeTextColor
+                        hashMap["coupon_valid_date"] = couponValidDate
+                        hashMap["coupon_terms_condition_text"] = couponTermsConditionText
+                        hashMap["coupon_redeem_button_text"] = couponRedeemButtonText
+                        hashMap["coupon_redeem_button_color"] = couponRedeemButtonColor
+                        hashMap["coupon_redeem_website_url"] = couponRedeemWebsiteUrl
+
+                        startLoading(context)
+                        viewModel.createCouponQrCode(context, hashMap)
+                        viewModel.getCouponQrCode().observe(this, { response ->
+                            var url = ""
+                            dismiss()
+                            if (response != null) {
+                                Log.d("TEST199", response.toString())
+                                url = response.get("generatedUrl").asString
+
+                                // SETUP QR DATA HASMAP FOR HISTORY
+                                val qrData = hashMapOf<String, String>()
+                                qrData["login"] = "sattar"
+                                qrData["qrId"] = "${System.currentTimeMillis()}"
+                                qrData["userType"] = "free"
+
+                                val qrHistory = CodeHistory(
+                                    qrData["login"]!!,
+                                    qrData["qrId"]!!,
+                                    url,
+                                    "coupon",
+                                    qrData["userType"]!!,
+                                    "qr",
+                                    "create",
+                                    "",
+                                    "0",
+                                    "",
+                                    System.currentTimeMillis().toString()
+                                )
+
+                                val intent = Intent(context, DesignActivity::class.java)
+                                intent.putExtra("ENCODED_TEXT", url)
+                                intent.putExtra("QR_HISTORY", qrHistory)
+                                startActivity(intent)
+
+                            } else {
+                                showAlert(context, "Something went wrong, please try again!")
+                            }
+                        })
+
                     }
                 } else {
                     showAlert(context, "Please set all field that marked with * sign!")
                 }
 
             }
+            R.id.next_btn -> {
+//                if (couponBackgroundColor.isNotEmpty()
+//                    && couponCompanyNameText.isNotEmpty()
+//                    && couponHeaderImage.isNotEmpty()
+//                    && couponSaleBadgeButtonText.isNotEmpty()
+//                    && couponOfferTitleText.isNotEmpty()
+//                    && couponOfferDescriptionText.isNotEmpty()
+//                    && couponGetButtonText.isNotEmpty()
+//                ) {
+//                    if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "next") {
+//                        initialDesignLayout.visibility = View.GONE
+//                        nextDesignLayout.visibility = View.VISIBLE
+//                        nextBtnView.text = "Back"
+//                    } else {
+                nextDesignLayout.visibility = View.GONE
+                initialDesignLayout.visibility = View.VISIBLE
+                nextBtnView.visibility = View.GONE
+                page = 1
+//                    }
+//                } else {
+//                    showAlert(context, "Please set all field that marked with * sign!")
+//                }
+
+            }
             R.id.coupon_code_layout_close_btn -> {
                 nextDesignLayout.visibility = View.GONE
                 initialDesignLayout.visibility = View.VISIBLE
-                nextBtnView.text = "Next"
+                nextBtnView.visibility = View.GONE
+                page = 1
             }
             R.id.company_name_edit_btn -> {
                 updateType = "company"
@@ -449,51 +470,56 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
     // THIS RESULT LAUNCHER WILL CALL THE ACTION PICK FROM FILES FOR BACKGROUND AND LOGO IMAGE
     private var resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-                // THIS LINE OF CODE WILL CHECK THE IMAGE HAS BEEN SELECTED OR NOT
-                if (result.resultCode == Activity.RESULT_OK) {
+            // THIS LINE OF CODE WILL CHECK THE IMAGE HAS BEEN SELECTED OR NOT
+            if (result.resultCode == Activity.RESULT_OK) {
 
-                    val data: Intent? = result.data
-                    val size = ImageManager.getImageWidthHeight(context, data!!.data!!)
-                    val imageWidth = size.split(",")[0].toInt()
-                    val imageHeight = size.split(",")[1].toInt()
-                    if (imageWidth > 640 && imageHeight > 360) {
-                        showAlert(
+                val data: Intent? = result.data
+                val size = ImageManager.getImageWidthHeight(context, data!!.data!!)
+                val imageWidth = size.split(",")[0].toInt()
+                val imageHeight = size.split(",")[1].toInt()
+                if (imageWidth > 640 && imageHeight > 360) {
+                    showAlert(
+                        context,
+                        "Please select the header image having size 640 x 360!"
+                    )
+                } else {
+                    couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
+                    val path = ImageManager.getRealPathFromUri(context, data.data!!)
+                    //uploadOnDrive(path!!)
+                    // THIS LINES OF CODE WILL RE SCALED THE IMAGE WITH ASPECT RATION AND SIZE 640 X 360
+                    val bitmapImage = BitmapFactory.decodeFile(
+                        ImageManager.getRealPathFromUri(
                             context,
-                            "Please select the header image having size 640 x 360!"
+                            data.data!!
                         )
-                    } else {
-                        couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
-                         val path = ImageManager.getRealPathFromUri(context,data.data!!)
-                         //uploadOnDrive(path!!)
-                        // THIS LINES OF CODE WILL RE SCALED THE IMAGE WITH ASPECT RATION AND SIZE 640 X 360
-                        val bitmapImage = BitmapFactory.decodeFile(ImageManager.getRealPathFromUri(context,data.data!!))
-                        val nh = (bitmapImage.height * (640.0 / bitmapImage.width)).toInt()
-                        val scaled = Bitmap.createScaledBitmap(bitmapImage, 640, nh, true)
-                        couponSaleImageView.setImageBitmap(scaled)
-                        headerImageHint.visibility = View.GONE
-                    }
-
+                    )
+                    val nh = (bitmapImage.height * (640.0 / bitmapImage.width)).toInt()
+                    val scaled = Bitmap.createScaledBitmap(bitmapImage, 640, nh, true)
+                    couponSaleImageView.setImageBitmap(scaled)
+                    headerImageHint.visibility = View.GONE
                 }
-            }
 
-    private fun uploadOnDrive(path: String){
+            }
+        }
+
+    private fun uploadOnDrive(path: String) {
 
         CoroutineScope(Dispatchers.IO).launch {
 
-                if (DriveService.instance != null){
-                    val fileMetadata = com.google.api.services.drive.model.File()
-                    fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
-                    val filePath: File = File(path)
-                    val mediaContent = FileContent("image/jpeg", filePath)
-                    val file: com.google.api.services.drive.model.File =
-                        DriveService.instance!!.files().create(fileMetadata, mediaContent)
-                            .setFields("id")
-                            .execute()
-                    Log.e("File ID: ", file.id)
-                    Log.d("TEST199", "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing")
-                }
+            if (DriveService.instance != null) {
+                val fileMetadata = com.google.api.services.drive.model.File()
+                fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
+                val filePath: File = File(path)
+                val mediaContent = FileContent("image/jpeg", filePath)
+                val file: com.google.api.services.drive.model.File =
+                    DriveService.instance!!.files().create(fileMetadata, mediaContent)
+                        .setFields("id")
+                        .execute()
+                Log.e("File ID: ", file.id)
+                Log.d("TEST199", "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing")
+            }
         }
 
     }
@@ -534,9 +560,9 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         val colorBtnView = redeemLayout.findViewById<AppCompatButton>(R.id.redeem_color_btn)
         val colorTextField = redeemLayout.findViewById<TextInputEditText>(R.id.redeem_color_tf)
         val redeemTextSpinner =
-                redeemLayout.findViewById<AppCompatSpinner>(R.id.redeem_text_selector)
+            redeemLayout.findViewById<AppCompatSpinner>(R.id.redeem_text_selector)
         val redeemCustomInputBox =
-                redeemLayout.findViewById<TextInputEditText>(R.id.redeem_text_input_field)
+            redeemLayout.findViewById<TextInputEditText>(R.id.redeem_text_input_field)
         val redeemWebsiteUrl = redeemLayout.findViewById<TextInputEditText>(R.id.redeem_website_url)
         var selectedColor = ""
         if (couponRedeemButtonColor.isEmpty()) {
@@ -549,7 +575,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         if (couponRedeemButtonText.isNotEmpty()) {
             redeemCustomInputBox.setText(couponRedeemButtonText)
         }
-        if (couponRedeemWebsiteUrl.isNotEmpty()){
+        if (couponRedeemWebsiteUrl.isNotEmpty()) {
             redeemWebsiteUrl.setText(couponRedeemWebsiteUrl)
         }
         selectedRedeemButtonText = redeemNowBtn.text.toString()
@@ -569,7 +595,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         cancelBtn.setOnClickListener { alert.dismiss() }
         updateBtn.setOnClickListener {
             if (redeemWebsiteUrl.text.toString().toLowerCase(Locale.ENGLISH).contains("https://")
-                    || redeemWebsiteUrl.text.toString().toLowerCase(Locale.ENGLISH).contains("http://")
+                || redeemWebsiteUrl.text.toString().toLowerCase(Locale.ENGLISH).contains("http://")
             ) {
                 showAlert(context, "Please enter the website URL without https:// or http://")
             } else {
@@ -587,27 +613,27 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         colorBtnView.setOnClickListener {
             colorBtnView.setOnClickListener {
                 ColorPickerPopup.Builder(this)
-                        .initialColor(Color.RED) // Set initial color
-                        .enableBrightness(true) // Enable brightness slider or not
-                        .enableAlpha(true) // Enable alpha slider or not
-                        .okTitle("Choose")
-                        .cancelTitle("Cancel")
-                        .showIndicator(true)
-                        .showValue(true)
-                        .build()
-                        .show(colorBtnView, object : ColorPickerObserver() {
-                            override fun onColorPicked(color: Int) {
-                                val hexColor = "#" + Integer.toHexString(color).substring(2)
-                                colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
-                                colorTextField.setText(hexColor)
-                                selectedColor = hexColor
+                    .initialColor(Color.RED) // Set initial color
+                    .enableBrightness(true) // Enable brightness slider or not
+                    .enableAlpha(true) // Enable alpha slider or not
+                    .okTitle("Choose")
+                    .cancelTitle("Cancel")
+                    .showIndicator(true)
+                    .showValue(true)
+                    .build()
+                    .show(colorBtnView, object : ColorPickerObserver() {
+                        override fun onColorPicked(color: Int) {
+                            val hexColor = "#" + Integer.toHexString(color).substring(2)
+                            colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
+                            colorTextField.setText(hexColor)
+                            selectedColor = hexColor
 
-                            }
+                        }
 
-                            fun onColor(color: Int, fromUser: Boolean) {
+                        fun onColor(color: Int, fromUser: Boolean) {
 
-                            }
-                        })
+                        }
+                    })
             }
         }
         // REDEEM BUTTON TEXT SPINNER
@@ -789,27 +815,27 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
         colorBtnView.setOnClickListener {
             ColorPickerPopup.Builder(this)
-                    .initialColor(Color.RED) // Set initial color
-                    .enableBrightness(true) // Enable brightness slider or not
-                    .enableAlpha(true) // Enable alpha slider or not
-                    .okTitle("Choose")
-                    .cancelTitle("Cancel")
-                    .showIndicator(true)
-                    .showValue(true)
-                    .build()
-                    .show(colorBtnView, object : ColorPickerObserver() {
-                        override fun onColorPicked(color: Int) {
-                            val hexColor = "#" + Integer.toHexString(color).substring(2)
-                            colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
-                            colorTextField.setText(hexColor)
-                            selectedColor = hexColor
+                .initialColor(Color.RED) // Set initial color
+                .enableBrightness(true) // Enable brightness slider or not
+                .enableAlpha(true) // Enable alpha slider or not
+                .okTitle("Choose")
+                .cancelTitle("Cancel")
+                .showIndicator(true)
+                .showValue(true)
+                .build()
+                .show(colorBtnView, object : ColorPickerObserver() {
+                    override fun onColorPicked(color: Int) {
+                        val hexColor = "#" + Integer.toHexString(color).substring(2)
+                        colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
+                        colorTextField.setText(hexColor)
+                        selectedColor = hexColor
 
-                        }
+                    }
 
-                        fun onColor(color: Int, fromUser: Boolean) {
+                    fun onColor(color: Int, fromUser: Boolean) {
 
-                        }
-                    })
+                    }
+                })
         }
 
     }
@@ -817,23 +843,23 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     // THIS FUNCTION WILL UPDATE TEXT AND COLOR
     private fun updateTextAndColor(view: AppCompatButton, type: Int) {
         val dialogLayout =
-                LayoutInflater.from(context).inflate(R.layout.text_with_color_update_dialog, null)
+            LayoutInflater.from(context).inflate(R.layout.text_with_color_update_dialog, null)
         val cancelBtn =
-                dialogLayout.findViewById<MaterialButton>(R.id.text_with_color_dialog_cancel_btn)
+            dialogLayout.findViewById<MaterialButton>(R.id.text_with_color_dialog_cancel_btn)
         val updateBtn =
-                dialogLayout.findViewById<MaterialButton>(R.id.text_with_color_dialog_update_btn)
+            dialogLayout.findViewById<MaterialButton>(R.id.text_with_color_dialog_update_btn)
         val inputBox =
-                dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_text_input_field)
+            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_text_input_field)
         val saleBadgeWrapperLayout =
-                dialogLayout.findViewById<LinearLayout>(R.id.text_with_color_sale_badge_wrapper)
+            dialogLayout.findViewById<LinearLayout>(R.id.text_with_color_sale_badge_wrapper)
         val saleBadgeSpinner =
-                dialogLayout.findViewById<AppCompatSpinner>(R.id.text_with_color_sale_badge_selector)
+            dialogLayout.findViewById<AppCompatSpinner>(R.id.text_with_color_sale_badge_selector)
         val customSaleBadgeView =
-                dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_custom_sale_badge)
+            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_custom_sale_badge)
         val colorBtnView =
-                dialogLayout.findViewById<AppCompatButton>(R.id.text_with_color_color_btn)
+            dialogLayout.findViewById<AppCompatButton>(R.id.text_with_color_color_btn)
         val colorTextField =
-                dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_color_tf)
+            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_color_tf)
         var selectedColor = ""
         when (updateType) {
             "sale_badge" -> {
@@ -888,27 +914,27 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
         colorBtnView.setOnClickListener {
             ColorPickerPopup.Builder(this)
-                    .initialColor(Color.RED) // Set initial color
-                    .enableBrightness(true) // Enable brightness slider or not
-                    .enableAlpha(true) // Enable alpha slider or not
-                    .okTitle("Choose")
-                    .cancelTitle("Cancel")
-                    .showIndicator(true)
-                    .showValue(true)
-                    .build()
-                    .show(colorBtnView, object : ColorPickerObserver() {
-                        override fun onColorPicked(color: Int) {
-                            val hexColor = "#" + Integer.toHexString(color).substring(2)
-                            colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
-                            colorTextField.setText(hexColor)
-                            selectedColor = hexColor
+                .initialColor(Color.RED) // Set initial color
+                .enableBrightness(true) // Enable brightness slider or not
+                .enableAlpha(true) // Enable alpha slider or not
+                .okTitle("Choose")
+                .cancelTitle("Cancel")
+                .showIndicator(true)
+                .showValue(true)
+                .build()
+                .show(colorBtnView, object : ColorPickerObserver() {
+                    override fun onColorPicked(color: Int) {
+                        val hexColor = "#" + Integer.toHexString(color).substring(2)
+                        colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
+                        colorTextField.setText(hexColor)
+                        selectedColor = hexColor
 
-                        }
+                    }
 
-                        fun onColor(color: Int, fromUser: Boolean) {
+                    fun onColor(color: Int, fromUser: Boolean) {
 
-                        }
-                    })
+                    }
+                })
         }
 
         // SALE BADGE SPINNER
@@ -1013,26 +1039,26 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 
     private fun openColorDialog(view: View) {
         ColorPickerPopup.Builder(this)
-                .initialColor(Color.RED) // Set initial color
-                .enableBrightness(true) // Enable brightness slider or not
-                .enableAlpha(true) // Enable alpha slider or not
-                .okTitle("Choose")
-                .cancelTitle("Cancel")
-                .showIndicator(true)
-                .showValue(true)
-                .build()
-                .show(view, object : ColorPickerObserver() {
-                    override fun onColorPicked(color: Int) {
-                        val hexColor = "#" + Integer.toHexString(color).substring(2)
-                        couponParentLayout.setBackgroundColor(Color.parseColor(hexColor))
-                        couponBackgroundColor = hexColor
-                        backgroundColorHint.visibility = View.GONE
-                    }
+            .initialColor(Color.RED) // Set initial color
+            .enableBrightness(true) // Enable brightness slider or not
+            .enableAlpha(true) // Enable alpha slider or not
+            .okTitle("Choose")
+            .cancelTitle("Cancel")
+            .showIndicator(true)
+            .showValue(true)
+            .build()
+            .show(view, object : ColorPickerObserver() {
+                override fun onColorPicked(color: Int) {
+                    val hexColor = "#" + Integer.toHexString(color).substring(2)
+                    couponParentLayout.setBackgroundColor(Color.parseColor(hexColor))
+                    couponBackgroundColor = hexColor
+                    backgroundColorHint.visibility = View.GONE
+                }
 
-                    fun onColor(color: Int, fromUser: Boolean) {
+                fun onColor(color: Int, fromUser: Boolean) {
 
-                    }
-                })
+                }
+            })
     }
 
     override fun onDateSet(picker: DatePicker?, year: Int, month: Int, day: Int) {
