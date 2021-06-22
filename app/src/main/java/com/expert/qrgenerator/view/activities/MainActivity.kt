@@ -267,7 +267,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun saveUserUpdatedDetail(acct: GoogleSignInAccount?, isLastSignUser: String) {
         try {
 
-
             Log.d("TEST199", acct.toString())
             // IF PART WILL RUN IF USER LOGGED AND ACCOUNT DETAIL NOT EMPTY
             if (acct != null && acct.displayName.isNullOrEmpty()) {
