@@ -33,6 +33,8 @@ class QRGenerator {
             renderOption.roundedPatterns = false // (optional) if true, blocks will be drawn as dots instead
             renderOption.clearBorder = true // if set to true, the background will NOT be drawn on the border area
             val color = com.github.sumimakito.awesomeqr.option.color.Color()
+            color.background = 0xFFFFFFFF.toInt()
+            color.auto = false
             if (col.isNotEmpty()) {
                 previousColor = Color.parseColor("#$col")
                 color.dark = previousColor!!
