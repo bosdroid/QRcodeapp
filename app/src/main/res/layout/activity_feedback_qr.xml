@@ -24,17 +24,16 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/next_step_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/sixtyDpMargin"
                 android:layout_marginRight="@dimen/sixtyDpMargin"
                 android:text="@string/next_text"
-                android:textSize="@dimen/xlargeText"
-                android:textColor="@color/teal_700"
-                android:id="@+id/next_step_btn"
                 android:textAllCaps="true"
-                />
+                android:textColor="@color/teal_700"
+                android:textSize="@dimen/xlargeText" />
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -54,283 +53,316 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="@dimen/eightDpMargin"
-            android:orientation="vertical"
             android:background="@color/light_gray"
+            android:orientation="vertical"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/parent_wrapper_layout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            >
-
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/parent_wrapper_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:minHeight="?attr/actionBarSize"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_height="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:id="@+id/feedback_title_text_layout"
-                android:background="@color/dark_gray"
-                >
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
                 <LinearLayout
+                    android:id="@+id/feedback_title_text_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/dark_gray"
+                    android:gravity="center"
+                    android:minHeight="?attr/actionBarSize"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <LinearLayout
+                        android:id="@+id/feedback_top_bar_hint_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/defaultDpMargin"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/feedback_title_text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/feedback_set_text_background_color_hint"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/xlargeText" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/feedback_title_text_edit_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/edit"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/feedback_inner_title_text_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/eightDpMargin"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:gravity="center"
-                    android:id="@+id/feedback_top_bar_hint_layout"
-                    android:layout_margin="@dimen/defaultDpMargin"
-                    >
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feedback_title_text_layout">
+
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/feedback_inner_title_text"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:id="@+id/feedback_title_text"
-                        android:text="@string/feedback_set_text_background_color_hint"
-                        android:gravity="center"
-                        android:textColor="@color/gray"
-                        android:textSize="@dimen/xlargeText"
-                        />
+                        android:gravity="center_vertical"
+                        android:text="@string/feedback_inner_title_hint"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
+
                     <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/feedback_title_text_edit_btn"
+                        android:id="@+id/feedback_inner_text_edit_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/edit"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
                 </LinearLayout>
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:id="@+id/feedback_inner_title_text_layout"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/feedback_title_text_layout"
-                android:layout_marginTop="@dimen/eightDpMargin"
-                >
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/feedback_inner_title_text"
-                    android:text="@string/feedback_inner_title_hint"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="@dimen/largeText"
-                    android:textStyle="bold" />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/feedback_inner_text_edit_btn"
+                <LinearLayout
+                    android:id="@+id/feedback_inner_description_text_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/edit"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:id="@+id/feedback_inner_description_text_layout"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/feedback_inner_title_text_layout"
-                android:layout_marginTop="@dimen/eightDpMargin"
-                >
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/feedback_inner_description_text"
-                    android:text="@string/feedback_inner_description_hint"
+                    android:layout_marginTop="@dimen/eightDpMargin"
                     android:gravity="center_vertical"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="@dimen/largeText"
-                     />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/feedback_inner_description_edit_btn"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feedback_inner_title_text_layout">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/feedback_inner_description_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="@string/feedback_inner_description_hint"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="@dimen/largeText" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/feedback_inner_description_edit_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/edit"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/feedback_rating_stars"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feedback_inner_description_text_layout">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="36dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/yellow_star" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="36dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sixtyDpMargin"
+                        android:src="@drawable/yellow_star" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="36dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sixtyDpMargin"
+                        android:src="@drawable/yellow_star" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="36dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sixtyDpMargin"
+                        android:src="@drawable/yellow_star" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="36dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sixtyDpMargin"
+                        android:src="@drawable/gray_star" />
+                </LinearLayout>
+                <!--            <androidx.appcompat.widget.AppCompatRatingBar-->
+                <!--                android:layout_width="wrap_content"-->
+                <!--                android:layout_height="wrap_content"-->
+                <!--                app:layout_constraintStart_toStartOf="parent"-->
+                <!--                app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                android:id="@+id/feedback_rating_stars"-->
+                <!--                app:layout_constraintTop_toBottomOf="@id/feedback_inner_description_text_layout"-->
+                <!--                android:numStars="5"-->
+                <!--                android:stepSize="1"-->
+                <!--                android:theme="@style/CustomRating"-->
+                <!--                android:layout_marginTop="@dimen/sixtyDpMargin"-->
+                <!--                />-->
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/feedback_comment_input_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:background="@drawable/input_text_field_design"
+                    android:gravity="start"
+                    android:hint="@string/feedback_comment_hint"
+                    android:padding="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feedback_rating_stars" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/feedback_contact_information_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/edit"
+                    android:layout_marginTop="@dimen/defaultDpMargin"
+                    android:text="@string/feedback_contact_information_text"
+                    android:textSize="@dimen/smallText"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feedback_comment_input_field" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/feedback_email_input_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:background="@drawable/input_text_field_design"
+                    android:gravity="start"
+                    android:hint="@string/feedback_email_hint"
+                    android:padding="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feedback_contact_information_hint" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/feedback_phone_number_input_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:background="@drawable/input_text_field_design"
+                    android:gravity="start"
+                    android:hint="@string/feedback_phone_number_hint"
+                    android:padding="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feedback_email_input_field" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/feedback_send_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:background="@color/gray"
+                    android:clickable="false"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/largeText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/feedback_phone_number_input_field" />
+
+                <LinearLayout
+                    android:id="@+id/feedback_send_button_hint_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/defaultDpMargin"
+                    android:elevation="2dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/feedback_send_edit_hint"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/defaultDpMargin"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="@string/feedback_send_button_text_hint"
+                        android:textColor="@color/light_gray"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/feedback_send_button_edit_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/edit" />
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/feedback_next_design_layout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/white"
+                android:elevation="8dp"
+                android:padding="10dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/feedback_code_heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:text="@string/feedback_code_heading_text"
+                    android:textSize="@dimen/largeText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-            </LinearLayout>
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/owner_email_input_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:background="@drawable/input_text_field_design"
+                    android:gravity="start"
+                    android:hint="@string/owner_email_hint"
+                    android:padding="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/feedback_code_heading" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/feedback_inner_description_text_layout"
-                android:layout_marginTop="@dimen/sixtyDpMargin"
-                android:id="@+id/feedback_rating_stars"
-                >
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="36dp"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/yellow_star"
-                    />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="36dp"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/yellow_star"
-                    android:layout_marginStart="@dimen/sixtyDpMargin"
-                    />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="36dp"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/yellow_star"
-                    android:layout_marginStart="@dimen/sixtyDpMargin"
-                    />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="36dp"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/yellow_star"
-                    android:layout_marginStart="@dimen/sixtyDpMargin"
-                    />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="36dp"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/gray_star"
-                    android:layout_marginStart="@dimen/sixtyDpMargin"
-                    />
-            </LinearLayout>
-<!--            <androidx.appcompat.widget.AppCompatRatingBar-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                android:id="@+id/feedback_rating_stars"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/feedback_inner_description_text_layout"-->
-<!--                android:numStars="5"-->
-<!--                android:stepSize="1"-->
-<!--                android:theme="@style/CustomRating"-->
-<!--                android:layout_marginTop="@dimen/sixtyDpMargin"-->
-<!--                />-->
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/feedback_rating_stars"
-                android:background="@drawable/input_text_field_design"
-                android:hint="@string/feedback_comment_hint"
-                android:id="@+id/feedback_comment_input_field"
-                android:gravity="start"
-                android:padding="10dp"
-                android:layout_marginTop="@dimen/sixtyDpMargin"
-                />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/feedback_contact_information_hint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/defaultDpMargin"
-                android:text="@string/feedback_contact_information_text"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/feedback_comment_input_field"
-                android:textSize="@dimen/smallText"
-                />
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/feedback_contact_information_hint"
-                android:background="@drawable/input_text_field_design"
-                android:hint="@string/feedback_email_hint"
-                android:id="@+id/feedback_email_input_field"
-                android:gravity="start"
-                android:padding="10dp"
-                android:layout_marginTop="@dimen/sixtyDpMargin"
-                />
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/feedback_email_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:hint="@string/feedback_phone_number_hint"
-                android:id="@+id/feedback_phone_number_input_field"
-                android:gravity="start"
-                android:padding="10dp"
-                android:layout_marginTop="@dimen/sixtyDpMargin"
-                />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/feedback_send_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/feedback_phone_number_input_field"
-                android:layout_marginTop="@dimen/sixtyDpMargin"
-                android:background="@color/gray"
-                android:text=""
-                android:textColor="@color/white"
-                android:clickable="false"
-                android:textSize="@dimen/largeText" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center_vertical"
-                android:elevation="2dp"
-                android:layout_margin="@dimen/defaultDpMargin"
-                android:id="@+id/feedback_send_button_hint_layout"
-                >
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/feedback_send_button_text_hint"
-                    android:gravity="center_vertical"
-                    android:id="@+id/feedback_send_edit_hint"
-                    android:textColor="@color/light_gray"
-                    android:layout_marginEnd="@dimen/defaultDpMargin"
-                    android:textSize="@dimen/largeText"
-                    android:textStyle="bold" />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/feedback_send_button_edit_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/edit"
-                    />
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/parent_wrapper_layout"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:gravity="center_horizontal"
-                >
+                app:layout_constraintTop_toBottomOf="@id/parent_wrapper_layout">
+
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/coupon_user_hint"
                     android:layout_width="wrap_content"
@@ -339,8 +371,8 @@
                     android:text="@string/coupon_user_hint_text"
                     android:textColor="@color/black"
                     android:textSize="@dimen/smallText"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
+
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -348,8 +380,7 @@
                     android:text="@string/coupon_required_fields_hint_text"
                     android:textColor="@color/black"
                     android:textSize="@dimen/smallText"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
             </LinearLayout>
 
 

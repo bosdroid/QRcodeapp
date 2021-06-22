@@ -19,6 +19,7 @@ import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.request.DownloadRequest
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.utils.Constants.Companion.EMAIL_ADDRESS_PATTERN
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
@@ -183,6 +184,10 @@ open class BaseActivity : AppCompatActivity() {
             context.supportActionBar!!.title = title
             context.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
+        }
+
+        fun checkEmail(email: String): Boolean {
+            return EMAIL_ADDRESS_PATTERN.matcher(email).matches()
         }
 
     }

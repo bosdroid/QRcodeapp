@@ -166,4 +166,6 @@
     <string name="create_table_fields_hint_text">There is a list of the fields for *</string>
     <string name="create_table_fields_hint2_text">You can add fields here</string>
     <string name="back_text">Back</string>
+    <string name="feedback_code_heading_text">Leave your email to get feedbacks</string>
+    <string name="owner_email_hint">Email (Owner)</string>
 </resources>

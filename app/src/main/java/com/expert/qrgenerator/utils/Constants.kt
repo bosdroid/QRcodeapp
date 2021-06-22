@@ -21,6 +21,7 @@ import com.google.android.material.textview.MaterialTextView
 import com.google.api.services.drive.Drive
 import com.google.api.services.sheets.v4.Sheets
 import java.io.File
+import java.util.regex.Pattern
 
 
 class Constants {
@@ -45,6 +46,15 @@ class Constants {
         var mService: Drive? = null
         var sheetService: Sheets? = null
         var captureImagePath: String? = null
+        val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
+            "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                    "\\@" +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                    "(" +
+                    "\\." +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                    ")+"
+        )
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)
