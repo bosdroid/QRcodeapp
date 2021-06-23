@@ -51,8 +51,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_heading"
-        app:layout_constraintBottom_toTopOf="@id/share_wrapper_layout"
+        app:layout_constraintBottom_toTopOf="@id/start_new"
         />
+
+       <com.google.android.material.textview.MaterialTextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toBottomOf="@id/share_qr_generated_img"
+           app:layout_constraintBottom_toTopOf="@id/share_wrapper_layout"
+           android:id="@+id/start_new"
+           android:text="@string/start_new"
+           android:textSize="@dimen/xlargeText"
+           android:textAllCaps="true"
+           android:layout_marginTop="@dimen/defaultDpMargin"
+           />
 
       <LinearLayout
           android:layout_width="match_parent"

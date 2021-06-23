@@ -168,4 +168,5 @@
     <string name="back_text">Back</string>
     <string name="feedback_code_heading_text">Leave your email to get feedbacks</string>
     <string name="owner_email_hint">Email (Owner)</string>
+    <string name="start_new">Start New</string>
 </resources>

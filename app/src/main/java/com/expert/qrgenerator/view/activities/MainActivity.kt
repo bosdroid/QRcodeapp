@@ -126,7 +126,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         mDrawer = findViewById(R.id.drawer)
         privacyPolicy = findViewById(R.id.privacy_policy_view)
         privacyPolicy.movementMethod = LinkMovementMethod.getInstance()
-        privacyPolicy.setPaintFlags(privacyPolicy.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+        privacyPolicy.paintFlags = privacyPolicy.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         privacyPolicy.setOnClickListener {
             mDrawer.closeDrawer(GravityCompat.START)
             val browserIntent = Intent(
