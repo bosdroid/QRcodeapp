@@ -76,18 +76,16 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                 tableObject = TableObject(
                     cursor.getString(0).toInt(),
                     cursor.getString(1),
-                    cursor.getString(2)
+                    cursor.getString(2),
+                    if (cursor.isNull(3)) "" else cursor.getString(3)
                 )
 
-                if (columns!!.size >= 4) {
+                if (columns!!.size >= 5) {
                     for (i in 3 until columns.size) {
                         val col = columns[i]
                         var pair: Pair<String, String>? = null
-//                        pair = if (i == 0) {
                         pair = Pair(col, cursor.getString(i))
-//                        } else {
-//                            Pair(col, cursor.getString(i))
-//                        }
+
                         list.add(pair)
                     }
                     tableObject.dynamicColumns.addAll(list)

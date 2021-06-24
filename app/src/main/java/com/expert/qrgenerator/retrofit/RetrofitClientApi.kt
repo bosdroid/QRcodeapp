@@ -18,4 +18,5 @@ object RetrofitClientApi {
     fun<T> createService(bindService : Class<T>):T{
         return retrofit.create(bindService)
     }
+
 }

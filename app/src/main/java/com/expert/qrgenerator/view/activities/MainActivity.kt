@@ -73,7 +73,7 @@ import java.util.*
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnCompleteAction {
 
-    private lateinit var context: Context
+
     private lateinit var toolbar: Toolbar
     private lateinit var mDrawer: DrawerLayout
     private lateinit var mNavigation: NavigationView
@@ -96,6 +96,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
+        lateinit var context: Context
     }
 
 

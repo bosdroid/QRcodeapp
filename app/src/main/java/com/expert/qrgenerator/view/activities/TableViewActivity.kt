@@ -3,15 +3,14 @@ package com.expert.qrgenerator.view.activities
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.view.*
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
+import android.view.Gravity
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TableLayout
 import android.widget.TableRow
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TableDetailAdapter
@@ -19,16 +18,15 @@ import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.textview.MaterialTextView
 import java.util.*
-import kotlin.collections.ArrayList
 
 
-class TableViewActivity : BaseActivity(),TableDetailAdapter.OnItemClickListener {
+class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener,View.OnClickListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
     private lateinit var tableGenerator: TableGenerator
     private lateinit var tableDetailRecyclerView: RecyclerView
-    private lateinit var tableMainLayout:TableLayout
+    private lateinit var tableMainLayout: TableLayout
     private var tableName: String = ""
     private var dataList = mutableListOf<TableObject>()
     private lateinit var adapter: TableDetailAdapter
@@ -76,64 +74,91 @@ class TableViewActivity : BaseActivity(),TableDetailAdapter.OnItemClickListener 
     }
 
 
-    val layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-    private fun getTableData(){
-         dataList.addAll(tableGenerator.getTableDate(tableName))
-         val columns = tableGenerator.getTableColumns(tableName)
-
+    val layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 90, 2f)
+    private fun getTableData() {
+        layoutParams.setMargins(5, 5, 5, 5)
+        dataList.addAll(tableGenerator.getTableDate(tableName))
+        val columns = tableGenerator.getTableColumns(tableName)
+        tableMainLayout.weightSum = dataList.size * 2F
         val tableHeaders = TableRow(context)
-            for (i in columns!!.indices){
-               val textView = MaterialTextView(context)
-                textView.layoutParams = layoutParams
-                textView.setPadding(5,5,5,5)
-                textView.setBackgroundResource(R.drawable.full_border)
-                textView.gravity = Gravity.CENTER
-                textView.setTextColor(Color.BLUE )
-                textView.text = columns[i].toUpperCase(Locale.ENGLISH)
-                tableHeaders.addView(textView)
+        for (i in columns!!.indices) {
+            val textView = MaterialTextView(context)
+            //textView.textSize = resources.getDimension(R.dimen.smallText)
+            textView.layoutParams =
+                TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 90, 2f)
+            textView.setPadding(10, 10, 10, 10)
+            textView.setBackgroundColor(ContextCompat.getColor(context, R.color.purple_dark))
+            textView.gravity = Gravity.CENTER
+            textView.setTextColor(Color.WHITE)
+            textView.text = columns[i].toUpperCase(Locale.ENGLISH)
+            tableHeaders.addView(textView)
+        }
+
+        tableMainLayout.addView(tableHeaders)
+
+        if (dataList.isNotEmpty()) {
+            for (j in 0 until dataList.size) {
+                val data = dataList[j]
+                val tableRow = TableRow(context)
+                tableRow.id = j
+                tableRow.setOnClickListener(this)
+                val textViewId = MaterialTextView(context)
+
+                textViewId.layoutParams = layoutParams
+                textViewId.setPadding(10, 10, 10, 10)
+                textViewId.gravity = Gravity.CENTER
+
+                val textViewCodeDate = MaterialTextView(context)
+                textViewCodeDate.layoutParams = layoutParams
+                textViewCodeDate.setPadding(10, 10, 10, 10)
+                textViewCodeDate.gravity = Gravity.CENTER
+
+                val textViewDate = MaterialTextView(context)
+                textViewDate.layoutParams = layoutParams
+                textViewDate.setPadding(10, 10, 10, 10)
+                textViewDate.gravity = Gravity.CENTER
+
+                textViewId.text = "${data.id}"
+                textViewCodeDate.text = data.code_data
+                textViewDate.text = data.date
+                tableRow.addView(textViewId)
+                tableRow.addView(textViewCodeDate)
+                tableRow.addView(textViewDate)
+
+
+                val textViewImage = MaterialTextView(context)
+                textViewDate.layoutParams = layoutParams
+                textViewDate.setPadding(10, 10, 10, 10)
+                textViewDate.gravity = Gravity.CENTER
+
+                if (data.image.isNotEmpty() && data.image.length >= 20) {
+                    textViewImage.text = data.image.substring(0, 20)
+                } else {
+                    textViewImage.text = data.image
+                }
+                tableRow.addView(textViewImage)
+
+
+                if (data.dynamicColumns.size > 0) {
+                    for (k in 0 until data.dynamicColumns.size) {
+                        val item = data.dynamicColumns[k]
+                        val textView = MaterialTextView(context)
+                        textView.layoutParams = layoutParams
+                        textView.setPadding(10, 10, 10, 10)
+                        textView.gravity = Gravity.CENTER
+                        textView.text = item.second
+                        tableRow.addView(textView)
+                    }
+
+                }
+                if (j % 2 == 0) {
+                    tableRow.setBackgroundColor(Color.parseColor("#EAEAF6"))
+                } else {
+                    tableRow.setBackgroundColor(Color.parseColor("#f2f2f2"))
+                }
+                tableMainLayout.addView(tableRow)
             }
-           tableMainLayout.addView(tableHeaders)
-
-          if (dataList.isNotEmpty()){
-              for (j in 0 until dataList.size){
-                  val data = dataList[j]
-                  val tableRow = TableRow(context)
-                  val textViewId = MaterialTextView(context)
-                  textViewId.layoutParams = layoutParams
-                  textViewId.setPadding(5,5,5,5)
-                  textViewId.gravity = Gravity.CENTER
-                  val textViewCodeDate = MaterialTextView(context)
-                  textViewCodeDate.layoutParams = layoutParams
-                  textViewCodeDate.setPadding(5,5,5,5)
-                  textViewCodeDate.gravity = Gravity.CENTER
-                  val textViewDate = MaterialTextView(context)
-                  textViewDate.layoutParams = layoutParams
-                  textViewDate.setPadding(5,5,5,5)
-                  textViewDate.gravity = Gravity.CENTER
-
-                  textViewId.text = "${data.id}"
-                  textViewCodeDate.text = data.code_data
-                  textViewDate.text = data.date
-                  tableRow.addView(textViewId)
-                  tableRow.addView(textViewCodeDate)
-                  tableRow.addView(textViewDate)
-                  if (data.dynamicColumns.size > 0){
-                      for (k in 0 until data.dynamicColumns.size){
-                          val item = data.dynamicColumns[k]
-                          val textView = MaterialTextView(context)
-                          textView.layoutParams = layoutParams
-                          textView.setPadding(5,5,5,5)
-                          textView.gravity = Gravity.CENTER
-                          textView.text = item.second
-                          tableRow.addView(textView)
-                      }
-
-                  }
-
-                  tableMainLayout.addView(tableRow)
-              }
-          }
-
+        }
 
 
 //        dataList.addAll(tableGenerator.getTableDate(tableName))
@@ -141,8 +166,17 @@ class TableViewActivity : BaseActivity(),TableDetailAdapter.OnItemClickListener 
     }
 
     override fun onItemClick(position: Int) {
-          val tableObject = dataList[position]
-          showAlert(context,tableObject.toString())
+        val tableObject = dataList[position]
+        showAlert(context, tableObject.toString())
+    }
+
+    override fun onClick(v: View?) {
+//        val position = v!!.id
+//        val item = dataList[position]
+//        if (item.image.isNotEmpty()){
+//            showAlert(context,dataList[position].image)
+//        }
+
     }
 
 }

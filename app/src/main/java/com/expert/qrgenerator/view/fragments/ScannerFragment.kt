@@ -135,7 +135,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    var url = ""
+    var url = " "
     private fun startScanner() {
         if (RuntimePermissionHelper.checkCameraPermission(
                 requireActivity(),
