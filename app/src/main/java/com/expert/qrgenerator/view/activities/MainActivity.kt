@@ -521,7 +521,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         if (position == 2) {
 
 
-            hashMap["data"] = data
+            hashMap["userUrl"] = data
 
             startLoading(context)
             viewModel.createDynamicQrCode(context, hashMap)
@@ -537,7 +537,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     val qrHistory = CodeHistory(
                         hashMap["login"]!!,
                         hashMap["qrId"]!!,
-                        hashMap["data"]!!,
+                        hashMap["userUrl"]!!,
                         type,
                         hashMap["userType"]!!,
                         "qr",
