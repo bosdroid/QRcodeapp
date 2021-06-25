@@ -44,6 +44,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import top.defaults.colorpicker.ColorPickerPopup
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
@@ -63,7 +65,8 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private lateinit var snDescriptionEditBtn: AppCompatImageView
     private lateinit var snRecyclerView: RecyclerView
     private lateinit var adapeter: SocialNetworkAdapter
-//    private lateinit var shareFabBtn: FloatingActionButton
+
+    //    private lateinit var shareFabBtn: FloatingActionButton
     private var socialNetworkList = mutableListOf<SocialNetwork>()
     private var updateType = ""
     private var snBannerImage: String = ""
@@ -292,9 +295,9 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
 //                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
 //                            startActivity(intent)
 //                            finish()
-                            val intent = Intent(context,DesignActivity::class.java)
-                            intent.putExtra("ENCODED_TEXT",url)
-                            intent.putExtra("QR_HISTORY",qrHistory)
+                            val intent = Intent(context, DesignActivity::class.java)
+                            intent.putExtra("ENCODED_TEXT", url)
+                            intent.putExtra("QR_HISTORY", qrHistory)
                             startActivity(intent)
 
                         } else {
@@ -557,10 +560,15 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
             if (snTitleEditText.text.toString().trim().isNotEmpty()
                 && snDescriptionEditText.text.toString().trim().isNotEmpty()
             ) {
-                if (snDescriptionEditText.text.toString().trim().contains("http")
-                    || snDescriptionEditText.text.toString().trim().contains("https")
-                    || snDescriptionEditText.text.toString().trim().contains("www")
-                ) {
+
+                val value = snDescriptionEditText.text.toString().trim().toLowerCase(Locale.ENGLISH)
+                if (value.substring(0, 7).contains("http://") || value.substring(0, 8).contains("https://")
+                    || value.contains("www") || value.contains(".com")) {
+                    showAlert(
+                        context,
+                        "Please enter the plain text!"
+                    )
+                } else {
                     item.title = snTitleEditText.text.toString().trim()
                     item.url = snDescriptionEditText.text.toString().trim()
                     socialNetworkList.removeAt(position)
@@ -569,8 +577,6 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     alert.dismiss()
                     Toast.makeText(context, "List Item updated successfully!", Toast.LENGTH_SHORT)
                         .show()
-                } else {
-                    showAlert(context, "Please enter the URL in second input box.")
                 }
 
             } else {
@@ -595,14 +601,16 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         }
     }
 
-    val iconsList = mutableListOf<Pair<String,Int>>()
-    override fun onItemEditIconClick(position: Int,checkBox:MaterialCheckBox) {
-        if (checkBox.isChecked){
+    val iconsList = mutableListOf<Pair<String, Int>>()
+    override fun onItemEditIconClick(position: Int, checkBox: MaterialCheckBox) {
+        if (checkBox.isChecked) {
             val item = socialNetworkList[position]
             generateIconsList()
-            val snIconsLayout = LayoutInflater.from(context).inflate(R.layout.sn_icons_layout_dialog,null)
-            val snIconsRecyclerview = snIconsLayout.findViewById<RecyclerView>(R.id.sn_icons_recyclerview)
-            snIconsRecyclerview.layoutManager = GridLayoutManager(context,3)
+            val snIconsLayout =
+                LayoutInflater.from(context).inflate(R.layout.sn_icons_layout_dialog, null)
+            val snIconsRecyclerview =
+                snIconsLayout.findViewById<RecyclerView>(R.id.sn_icons_recyclerview)
+            snIconsRecyclerview.layoutManager = GridLayoutManager(context, 3)
             snIconsRecyclerview.hasFixedSize()
             val iconsAdapter = SNIconsAdapter(context, iconsList as ArrayList<Pair<String, Int>>)
             snIconsRecyclerview.adapter = iconsAdapter
@@ -612,7 +620,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
             val alert = builder.create()
             alert.show()
 
-            iconsAdapter.setOnItemClickListener(object : SNIconsAdapter.OnItemClickListener{
+            iconsAdapter.setOnItemClickListener(object : SNIconsAdapter.OnItemClickListener {
                 override fun onItemClick(pos: Int) {
                     val pair = iconsList[pos]
                     item.icon = pair.second
@@ -620,7 +628,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     item.description = pair.first
 
                     socialNetworkList.removeAt(position)
-                    socialNetworkList.add(position,item)
+                    socialNetworkList.add(position, item)
                     adapeter.notifyItemChanged(position)
                     alert.dismiss()
                 }
@@ -628,16 +636,16 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         }
     }
 
-    private fun generateIconsList(){
-        if (iconsList.isNotEmpty()){
+    private fun generateIconsList() {
+        if (iconsList.isNotEmpty()) {
             iconsList.clear()
         }
-        iconsList.add(Pair("facebook",R.drawable.facebook))
-        iconsList.add(Pair("www",R.drawable.www))
-        iconsList.add(Pair("youtube",R.drawable.youtube))
-        iconsList.add(Pair("instagram",R.drawable.instagram_sn))
-        iconsList.add(Pair("twitter",R.drawable.twitter))
-        iconsList.add(Pair("vk",R.drawable.vk))
-        iconsList.add(Pair("telegram",R.drawable.telegram))
+        iconsList.add(Pair("facebook", R.drawable.facebook))
+        iconsList.add(Pair("www", R.drawable.www))
+        iconsList.add(Pair("youtube", R.drawable.youtube))
+        iconsList.add(Pair("instagram", R.drawable.instagram_sn))
+        iconsList.add(Pair("twitter", R.drawable.twitter))
+        iconsList.add(Pair("vk", R.drawable.vk))
+        iconsList.add(Pair("telegram", R.drawable.telegram))
     }
 }

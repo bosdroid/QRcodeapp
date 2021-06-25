@@ -38,6 +38,19 @@
                 android:textAllCaps="true"
                 android:visibility="gone"
                 />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="@dimen/sixtyDpMargin"
+                android:text="@string/qr_code_history"
+                android:textSize="@dimen/xlargeText"
+                android:drawableLeft="@drawable/ic_history"
+                android:textColor="@color/teal_700"
+                android:id="@+id/history_btn"
+                android:visibility="gone"
+                />
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>

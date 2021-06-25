@@ -58,6 +58,8 @@
         app:layout_constraintTop_toBottomOf="@id/http_protocol_group"
         android:background="@drawable/input_text_field_design"
         android:padding="5dp"
+        android:inputType="text"
+        android:imeOptions="actionDone"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginRight="16dp"

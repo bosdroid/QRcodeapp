@@ -36,7 +36,6 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
 
         initViews()
         setUpToolbar()
-        displayTableList()
 
     }
 
@@ -96,6 +95,10 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        displayTableList()
+    }
 
     private fun addTableDialog(){
         val tableCreateLayout = LayoutInflater.from(context).inflate(R.layout.add_table_layout,null)
@@ -107,10 +110,14 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
         alert.show()
         tableCreateBtn.setOnClickListener {
             if(textInputBox.text.toString().isNotEmpty()){
-                tableGenerator.generateTable(textInputBox.text.toString().trim())
+                val tableName = textInputBox.text.toString().trim()
+                tableGenerator.generateTable(tableName)
                 Toast.makeText(context,"Table has been created successfully!",Toast.LENGTH_SHORT).show()
                 alert.dismiss()
-                displayTableList()
+                //displayTableList()
+                val intent = Intent(context,CreateTableActivity::class.java)
+                intent.putExtra("TABLE_NAME",tableName)
+                startActivity(intent)
             }
             else{
                 showAlert(context,"Please enter the table name!")

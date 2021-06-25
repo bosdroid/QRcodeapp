@@ -36,7 +36,7 @@ class FieldListsActivity : BaseActivity() {
 
         initViews()
         setUpToolbar()
-        getList()
+
     }
 
     private fun initViews() {
@@ -52,20 +52,19 @@ class FieldListsActivity : BaseActivity() {
 
     private fun getList() {
         val tempList = tableGenerator.getList()
-        if (tempList.isNotEmpty()){
+        if (tempList.isNotEmpty()) {
             list.clear()
             list.addAll(tempList)
             adapter.notifyDataSetChanged()
-        }
-        else{
+        } else {
             adapter.notifyDataSetChanged()
         }
 
         adapter.setOnItemClickListener(object : FieldListAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val list = list[position]
-                val intent = Intent(context,FieldListValuesActivity::class.java)
-                intent.putExtra("LIST_ITEM",list)
+                val intent = Intent(context, FieldListValuesActivity::class.java)
+                intent.putExtra("LIST_ITEM", list)
                 startActivity(intent)
 //                addListItemDialog(1,list.id)
             }
@@ -81,27 +80,22 @@ class FieldListsActivity : BaseActivity() {
             LayoutInflater.from(context).inflate(R.layout.add_list_value_layout, null)
         val textInputBox =
             listCreateLayout.findViewById<TextInputEditText>(R.id.add_list_value_input_field)
-        val listItemCreateBtn = listCreateLayout.findViewById<MaterialButton>(R.id.add_list_value_btn)
+        val listItemCreateBtn =
+            listCreateLayout.findViewById<MaterialButton>(R.id.add_list_value_btn)
         val builder = MaterialAlertDialogBuilder(context)
         builder.setView(listCreateLayout)
         val alert = builder.create()
         alert.show()
         listItemCreateBtn.setOnClickListener {
             if (textInputBox.text.toString().isNotEmpty()) {
-//                if (type == 0){
-                    tableGenerator.insertList(textInputBox.text.toString().trim().toLowerCase(Locale.ENGLISH))
-                    Toast.makeText(context, "List created successfully!", Toast.LENGTH_SHORT)
-                        .show()
-                    alert.dismiss()
-//                }
-//                else{
-//                    tableGenerator.insertListValue(id,textInputBox.text.toString().trim().toLowerCase(Locale.ENGLISH))
-//                    Toast.makeText(context, "List Item has been added successfully!", Toast.LENGTH_SHORT)
-//                        .show()
-//                    alert.dismiss()
-//                }
-
-                getList()
+                val listName = textInputBox.text.toString().trim().toLowerCase(Locale.ENGLISH)
+                val id = tableGenerator.insertList(listName)
+                Toast.makeText(context, "List created successfully!", Toast.LENGTH_SHORT)
+                    .show()
+                alert.dismiss()
+                val intent = Intent(context, FieldListValuesActivity::class.java)
+                intent.putExtra("LIST_ITEM", ListItem(id.toInt(),listName))
+                startActivity(intent)
             } else {
                 showAlert(context, "Please enter the list name!")
             }
@@ -113,6 +107,11 @@ class FieldListsActivity : BaseActivity() {
         supportActionBar!!.title = getString(R.string.field_type_list)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getList()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

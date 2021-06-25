@@ -93,6 +93,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val httpTransport = NetHttpTransport()
     private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private var user: User? = null
+    private lateinit var historyBtn:MaterialTextView
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
@@ -125,6 +126,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         )[MainActivityViewModel::class.java]
         toolbar = findViewById(R.id.toolbar)
         mDrawer = findViewById(R.id.drawer)
+        historyBtn = findViewById(R.id.history_btn)
+        historyBtn.setOnClickListener{
+            startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+        }
         privacyPolicy = findViewById(R.id.privacy_policy_view)
         privacyPolicy.movementMethod = LinkMovementMethod.getInstance()
         privacyPolicy.paintFlags = privacyPolicy.paintFlags or Paint.UNDERLINE_TEXT_FLAG
@@ -147,12 +152,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         .addToBackStack("scanner")
                         .commit()
                     nextStepTextView.visibility = View.GONE
+                    historyBtn.visibility = View.VISIBLE
                 }
                 R.id.bottom_generator -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, GeneratorFragment(), "generator")
                         .addToBackStack("generator")
                         .commit()
+                    historyBtn.visibility = View.GONE
                     nextStepTextView.visibility = View.VISIBLE
                 }
                 else -> {
@@ -163,13 +170,27 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             true
         }
 
-        supportFragmentManager.beginTransaction().add(
-            R.id.fragment_container,
-            ScannerFragment(),
-            "scanner"
-        )
-            .addToBackStack("scanner")
-            .commit()
+        if (intent != null && intent.hasExtra("KEY") && intent.getStringExtra("KEY") == "generator"){
+            bottomNavigation.selectedItemId = R.id.bottom_generator
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragment_container, GeneratorFragment(), "generator")
+                .addToBackStack("generator")
+                .commit()
+            historyBtn.visibility = View.GONE
+            nextStepTextView.visibility = View.VISIBLE
+        }
+        else{
+            nextStepTextView.visibility = View.GONE
+            historyBtn.visibility = View.VISIBLE
+            supportFragmentManager.beginTransaction().add(
+                R.id.fragment_container,
+                ScannerFragment(),
+                "scanner"
+            )
+                .addToBackStack("scanner")
+                .commit()
+        }
+
     }
 
     private fun getAccountsPermission() {
@@ -319,9 +340,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.barcode_history -> {
-                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
-            }
+//            R.id.barcode_history -> {
+//                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+//            }
             R.id.sheets -> {
                 if (appSettings.getBoolean(Constants.isLogin)) {
                     startActivity(Intent(context, SheetsActivity::class.java))

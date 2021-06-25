@@ -241,12 +241,12 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
     }
 
-    fun insertList(listName: String) {
+    fun insertList(listName: String) :Long{
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(L_COLUMN_LIST_NAME, listName)
-        db.insert(L_TABLE_NAME, null, values)
-        db.close()
+        return db.insert(L_TABLE_NAME, null, values)
+        //db.close()
     }
 
     fun insertListValue(listId: Int, value: String) {

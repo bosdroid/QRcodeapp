@@ -238,7 +238,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
             showAlert(context, "Please edit the button text and color!")
             return false
         }
-        else if (page == 2 && feedbackOwnerEmail.isEmpty()){
+        else if (page == 2 && ownerEmailTextInputEditText.text.toString().trim().isEmpty()){
             showAlert(context, "Please enter the Owner email!")
             return false
         }

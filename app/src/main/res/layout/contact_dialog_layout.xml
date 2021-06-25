@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
@@ -43,7 +46,11 @@
             android:id="@+id/contact_name_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
+            android:inputType="text"
+            android:imeOptions="actionNext"
+            android:singleLine="true"
             android:hint="@string/name_text"
+            android:nextFocusForward="@id/contact_phone_cc_input_field"
             android:gravity="start"
             />
         <LinearLayout
@@ -60,37 +67,43 @@
                 />
 
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="40dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/contact_phone_cc_input_field"
                 android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/contact_phone_start_number_input_field"
                 android:padding="5dp"
+                android:imeOptions="actionNext"
                 android:inputType="number"
                 android:gravity="center"
-                android:maxLength="2"
+                android:maxLength="3"
                 android:layout_marginStart="@dimen/eightDpMargin"
                 />
 
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="60dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/contact_phone_start_number_input_field"
                 android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/contact_phone_number_input_field"
                 android:padding="5dp"
+                android:imeOptions="actionNext"
                 android:inputType="number"
                 android:gravity="center"
                 android:maxLength="3"
                 android:layout_marginStart="@dimen/eightDpMargin"
                 />
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/contact_phone_number_input_field"
                 android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/contact_email_input_field"
                 android:padding="5dp"
                 android:inputType="number"
+                android:imeOptions="actionNext"
                 android:gravity="center"
-                android:maxLength="4"
+                android:maxLength="7"
                 android:layout_marginStart="@dimen/eightDpMargin"
                 />
         </LinearLayout>
@@ -100,7 +113,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/contact_email_input_field"
             android:background="@drawable/input_text_field_design"
+            android:nextFocusForward="@id/contact_company_input_field"
             android:padding="5dp"
+            android:inputType="textEmailAddress"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
             android:hint="@string/email_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
@@ -111,7 +128,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/contact_company_input_field"
             android:background="@drawable/input_text_field_design"
+            android:nextFocusForward="@id/contact_job_input_field"
             android:padding="5dp"
+            android:inputType="text"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
             android:hint="@string/company_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
@@ -122,8 +143,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/contact_job_input_field"
             android:background="@drawable/input_text_field_design"
+            android:nextFocusForward="@id/contact_address_input_field"
             android:padding="5dp"
+            android:inputType="text"
+            android:singleLine="true"
             android:hint="@string/job_title_text"
+            android:imeOptions="actionNext"
             android:gravity="start"
             android:layout_marginTop="10dp"
             />
@@ -132,7 +157,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/contact_address_input_field"
             android:background="@drawable/input_text_field_design"
+            android:nextFocusForward="@id/contact_detail_input_field"
             android:padding="5dp"
+            android:inputType="text"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
             android:hint="@string/address_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
@@ -141,13 +170,15 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:imeOptions="actionDone"
             android:id="@+id/contact_detail_input_field"
             android:background="@drawable/input_text_field_design"
             android:padding="5dp"
+            android:inputType="text"
             android:hint="@string/detail_text"
             android:gravity="start"
             android:layout_marginTop="10dp"
             />
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

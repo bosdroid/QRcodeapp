@@ -58,13 +58,16 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_cc_input_field"
-            android:layout_width="40dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/eightDpMargin"
             android:background="@drawable/input_text_field_design"
+            android:nextFocusForward="@id/phone_start_number_input_field"
             android:gravity="center"
+            android:imeOptions="actionNext"
+            android:singleLine="true"
             android:inputType="number"
-            android:maxLength="2"
+            android:maxLength="3"
             android:padding="5dp" />
 
         <com.google.android.material.textfield.TextInputEditText
@@ -73,20 +76,25 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/eightDpMargin"
             android:background="@drawable/input_text_field_design"
+            android:nextFocusForward="@id/phone_number_input_field"
+            android:imeOptions="actionNext"
             android:gravity="center"
+            android:singleLine="true"
             android:inputType="number"
             android:maxLength="3"
             android:padding="5dp" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phone_number_input_field"
-            android:layout_width="100dp"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/eightDpMargin"
+            android:imeOptions="actionDone"
             android:background="@drawable/input_text_field_design"
             android:gravity="center"
+            android:singleLine="true"
             android:inputType="number"
-            android:maxLength="4"
+            android:maxLength="7"
             android:padding="5dp" />
     </LinearLayout>
 

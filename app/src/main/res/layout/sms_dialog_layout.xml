@@ -62,14 +62,17 @@
                 />
 
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="40dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/sms_phone_cc_input_field"
                 android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/sms_phone_start_number_input_field"
                 android:padding="5dp"
+                android:imeOptions="actionNext"
                 android:inputType="number"
+                android:singleLine="true"
                 android:gravity="center"
-                android:maxLength="2"
+                android:maxLength="3"
                 android:layout_marginStart="@dimen/eightDpMargin"
                 />
 
@@ -78,21 +81,27 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/sms_phone_start_number_input_field"
                 android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/sms_phone_number_input_field"
                 android:padding="5dp"
                 android:inputType="number"
+                android:singleLine="true"
+                android:imeOptions="actionNext"
                 android:gravity="center"
                 android:maxLength="3"
                 android:layout_marginStart="@dimen/eightDpMargin"
                 />
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/sms_phone_number_input_field"
                 android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/sms_message_input_field"
                 android:padding="5dp"
+                android:imeOptions="actionNext"
                 android:inputType="number"
+                android:singleLine="true"
                 android:gravity="center"
-                android:maxLength="4"
+                android:maxLength="7"
                 android:layout_marginStart="@dimen/eightDpMargin"
                 />
         </LinearLayout>
@@ -104,6 +113,8 @@
             android:background="@drawable/input_text_field_design"
             android:layout_marginTop="10dp"
             android:padding="5dp"
+            android:inputType="text"
+            android:imeOptions="actionDone"
             android:hint="@string/sms_message_hint_text"
             android:gravity="start"
             />

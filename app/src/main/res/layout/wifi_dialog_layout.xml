@@ -43,7 +43,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/wifi_name_input_field"
             android:background="@drawable/input_text_field_design"
+            android:nextFocusForward="@id/wifi_password_input_field"
             android:padding="5dp"
+            android:inputType="text"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
             android:hint="@string/network_name_hint_text"
             android:gravity="start"
             />
@@ -53,7 +57,10 @@
             android:id="@+id/wifi_password_input_field"
             android:background="@drawable/input_text_field_design"
             android:layout_marginTop="10dp"
+            android:inputType="textPassword"
+            android:singleLine="true"
             android:padding="5dp"
+            android:imeOptions="actionDone"
             android:hint="@string/password"
             android:gravity="start"
             />

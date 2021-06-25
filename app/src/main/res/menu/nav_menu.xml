@@ -12,11 +12,11 @@
                     android:title="@string/login"
                     android:visible="false" />
 
-                <item
-                    android:icon="@drawable/ic_history"
-                    android:id="@+id/barcode_history"
-                    android:title="@string/barcode_history_text"
-                    />
+<!--                <item-->
+<!--                    android:icon="@drawable/ic_history"-->
+<!--                    android:id="@+id/barcode_history"-->
+<!--                    android:title="@string/barcode_history_text"-->
+<!--                    />-->
 
                 <item
                     android:icon="@drawable/ic_sheets"

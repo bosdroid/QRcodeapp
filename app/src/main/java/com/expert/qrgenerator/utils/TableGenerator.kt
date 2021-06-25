@@ -52,8 +52,8 @@ class TableGenerator(context: Context) {
         return database.getFieldList(fieldName,tableName)
     }
 
-    fun insertList(listName:String){
-        database.insertList(listName)
+    fun insertList(listName:String):Long{
+        return database.insertList(listName)
     }
 
     fun insertListValue(listId:Int,value:String){

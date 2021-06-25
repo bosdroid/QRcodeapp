@@ -7,6 +7,8 @@ import android.net.Uri
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +16,7 @@ import androidx.appcompat.widget.AppCompatRatingBar
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
@@ -188,6 +191,18 @@ open class BaseActivity : AppCompatActivity() {
 
         fun checkEmail(email: String): Boolean {
             return EMAIL_ADDRESS_PATTERN.matcher(email).matches()
+        }
+
+        fun showSoftKeyboard(context: Context,view: View) {
+            if (view.requestFocus()) {
+                val imm: InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
+
+        fun hideSoftKeyboard(context: Context,view: View) {
+            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
 
     }

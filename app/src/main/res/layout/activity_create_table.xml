@@ -148,6 +148,8 @@
                android:layout_height="wrap_content"
                android:background="@drawable/input_text_field_design"
                android:padding="10dp"
+               android:inputType="text"
+               android:singleLine="true"
                android:hint="Please enter the field name"
                android:id="@+id/table_new_field_text_input"
                />

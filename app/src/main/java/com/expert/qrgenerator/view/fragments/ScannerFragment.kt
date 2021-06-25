@@ -146,9 +146,9 @@ class ScannerFragment : Fragment() {
             if (codeScanner == null) {
                 codeScanner = CodeScanner(requireActivity(), scannerView)
             }
-            if (!isFileSelected){
-                codeScanner!!.startPreview()
-            }
+//            if (!isFileSelected){
+//                codeScanner!!.startPreview()
+//            }
             // Parameters (default values)
             codeScanner!!.apply {
                 camera = CodeScanner.CAMERA_BACK // or CAMERA_FRONT or specific camera id

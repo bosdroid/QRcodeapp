@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat.getSystemService
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.QRTypes
@@ -131,7 +132,9 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
+
                         if (textInputBox.text.toString().isNotEmpty()) {
+                            BaseActivity.hideSoftKeyboard(context, textView)
                             encodedData = textInputBox.text.toString()
                             completeListener!!.onTypeSelected(encodedData, 0, "text")
                         } else {
@@ -148,6 +151,7 @@ class Constants {
                         InputMethodManager.SHOW_FORCED,
                         InputMethodManager.HIDE_IMPLICIT_ONLY
                     )
+
                 }
                 1 -> {
                     var selectedProtocol = ""
@@ -183,8 +187,10 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
+
                         val value = websiteInputBox.text.toString().trim()
                         if (selectedProtocol.isEmpty()) {
+                            BaseActivity.hideSoftKeyboard(context, websiteView)
                             BaseActivity.showAlert(
                                 context,
                                 "Please select the URL protocol!"
@@ -249,6 +255,7 @@ class Constants {
                         layoutContainer.addView(websiteView)
                     }
                     nextBtn.setOnClickListener {
+
                         val value = websiteInputBox.text.toString().trim()
                         if (selectedProtocol.isEmpty()) {
                             BaseActivity.showAlert(
@@ -277,6 +284,7 @@ class Constants {
                                 "Please enter the valid website URL"
                             )
                         } else {
+                            BaseActivity.hideSoftKeyboard(context, websiteView)
                             encodedData = "$selectedProtocol$value"
                             completeListener!!.onTypeSelected(encodedData, 2, "link")
 
@@ -312,12 +320,15 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
+
                         if (!TextUtils.isEmpty(contactNameInputBox.text.toString())
                             && !TextUtils.isEmpty(contactPhoneNumberInputBox.text.toString())
                             && !TextUtils.isEmpty(contactPhoneCcInputBox.text.toString())
                             && !TextUtils.isEmpty(contactPhoneStartNumberInputBox.text.toString())
                         ) {
-                            val phoneNumber = "+${contactPhoneCcInputBox.text.toString()}${contactPhoneStartNumberInputBox.text.toString()}${contactPhoneNumberInputBox.text.toString()}"
+                            BaseActivity.hideSoftKeyboard(context, contactView)
+                            val phoneNumber =
+                                "+${contactPhoneCcInputBox.text.toString()}${contactPhoneStartNumberInputBox.text.toString()}${contactPhoneNumberInputBox.text.toString()}"
                             encodedData =
                                 "BEGIN:VCARD\nVERSION:4.0\nN:${
                                     contactNameInputBox.text.toString().trim()
@@ -376,10 +387,12 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
+
                         if (!TextUtils.isEmpty(wifiNetWorkName.text.toString()) && !TextUtils.isEmpty(
                                 wifiPassword.text.toString()
                             )
                         ) {
+                            BaseActivity.hideSoftKeyboard(context, wifiView)
                             encodedData =
                                 "WIFI:T:$wifiSecurity;S:${
                                     wifiNetWorkName.text.toString().trim()
@@ -410,10 +423,14 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
+
                         if (!TextUtils.isEmpty(phoneCcInputBox.text.toString())
                             && !TextUtils.isEmpty(phoneStartNumberInputBox.text.toString())
-                            && !TextUtils.isEmpty(phoneNumberInputBox.text.toString())) {
-                            val phoneNumber = "+${phoneCcInputBox.text.toString()}${phoneStartNumberInputBox.text.toString()}${phoneNumberInputBox.text.toString()}"
+                            && !TextUtils.isEmpty(phoneNumberInputBox.text.toString())
+                        ) {
+                            BaseActivity.hideSoftKeyboard(context, phoneView)
+                            val phoneNumber =
+                                "+${phoneCcInputBox.text.toString()}${phoneStartNumberInputBox.text.toString()}${phoneNumberInputBox.text.toString()}"
                             encodedData = "tel:$phoneNumber"
                             completeListener!!.onTypeSelected(encodedData, 5, "phone")
                         } else {
@@ -443,14 +460,18 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
+
                         if (!TextUtils.isEmpty(smsCcInputBox.text.toString())
                             && !TextUtils.isEmpty(smsStartNumberInputBox.text.toString())
-                            && !TextUtils.isEmpty(smsNumberInputBox.text.toString())&& !TextUtils.isEmpty(
+                            && !TextUtils.isEmpty(smsNumberInputBox.text.toString()) && !TextUtils.isEmpty(
                                 smsMessageInputBox.text.toString()
                             )
                         ) {
-                            val phoneNumber = "+${smsCcInputBox.text.toString()}${smsStartNumberInputBox.text.toString()}${smsNumberInputBox.text.toString()}"
-                            encodedData = "smsto:$phoneNumber:${smsMessageInputBox.text.toString().trim()}"
+                            BaseActivity.hideSoftKeyboard(context, smsView)
+                            val phoneNumber =
+                                "+${smsCcInputBox.text.toString()}${smsStartNumberInputBox.text.toString()}${smsNumberInputBox.text.toString()}"
+                            encodedData =
+                                "smsto:$phoneNumber:${smsMessageInputBox.text.toString().trim()}"
                             completeListener!!.onTypeSelected(encodedData, 6, "sms")
                         } else {
                             BaseActivity.showAlert(
@@ -473,7 +494,9 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
+
                         if (!TextUtils.isEmpty(instagramInputBox.text.toString())) {
+                            BaseActivity.hideSoftKeyboard(context, instagramView)
                             encodedData =
                                 "instagram://user?username=${
                                     instagramInputBox.text.toString().trim()
@@ -504,11 +527,14 @@ class Constants {
                     }
 
                     nextBtn.setOnClickListener {
+
                         if (!TextUtils.isEmpty(whatsappCcInputBox.text.toString())
                             && !TextUtils.isEmpty(whatsappStartNumberInputBox.text.toString())
-                            && !TextUtils.isEmpty(whatsappNumberInputBox.text.toString())) {
-
-                            val phone = "+${whatsappCcInputBox.text.toString()}${whatsappStartNumberInputBox.text.toString()}${whatsappNumberInputBox.text.toString()}"
+                            && !TextUtils.isEmpty(whatsappNumberInputBox.text.toString())
+                        ) {
+                            BaseActivity.hideSoftKeyboard(context, whatsappView)
+                            val phone =
+                                "+${whatsappCcInputBox.text.toString()}${whatsappStartNumberInputBox.text.toString()}${whatsappNumberInputBox.text.toString()}"
                             if (phone.substring(0, 1) == "+") {
                                 encodedData = "whatsapp://send?phone=$phone"
                                 completeListener!!.onTypeSelected(encodedData, 8, "whatsapp")
