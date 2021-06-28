@@ -3,12 +3,10 @@ package com.expert.qrgenerator.view.activities
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.view.Gravity
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TableLayout
 import android.widget.TableRow
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -20,24 +18,23 @@ import com.google.android.material.textview.MaterialTextView
 import java.util.*
 
 
-class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener,View.OnClickListener {
+class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener, View.OnClickListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
     private lateinit var tableGenerator: TableGenerator
-    private lateinit var tableDetailRecyclerView: RecyclerView
     private lateinit var tableMainLayout: TableLayout
     private var tableName: String = ""
     private var dataList = mutableListOf<TableObject>()
-    private lateinit var adapter: TableDetailAdapter
-
+    private var sortingImages = mutableListOf<AppCompatImageView>()
+    val layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 2f)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_table_view)
 
         initViews()
         setUpToolbar()
-        getTableData()
+        getTableData(tableName, "", "")
     }
 
     private fun initViews() {
@@ -47,13 +44,33 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         if (intent != null && intent.hasExtra("TABLE_NAME")) {
             tableName = intent.getStringExtra("TABLE_NAME")!!
         }
-//        tableDetailRecyclerView = findViewById(R.id.tables_detail_recyclerview)
-//        tableDetailRecyclerView.layoutManager = LinearLayoutManager(context)
-//        tableDetailRecyclerView.hasFixedSize()
-//        adapter = TableDetailAdapter(context, dataList as ArrayList<TableObject>)
-//        tableDetailRecyclerView.adapter = adapter
-//        adapter.setOnItemClickListener(this)
+
         tableMainLayout = findViewById(R.id.table_main)
+        val columns = tableGenerator.getTableColumns(tableName)
+
+        val tableHeaders = TableRow(context)
+        for (i in columns!!.indices) {
+            val headerLayout = LayoutInflater.from(context).inflate(R.layout.header_table_row_cell, null)
+            headerLayout.layoutParams = layoutParams
+            val textView = headerLayout.findViewById<MaterialTextView>(R.id.header_cell_name)
+            val sortAscImageView = headerLayout.findViewById<AppCompatImageView>(R.id.sort_asc_image)
+            sortAscImageView.id = i
+            sortAscImageView.tag = "asc:${columns[i].toLowerCase(Locale.ENGLISH)}"
+            sortAscImageView.setOnClickListener(this)
+            val sortDescImageView = headerLayout.findViewById<AppCompatImageView>(R.id.sort_desc_image)
+            sortDescImageView.id = i
+            sortDescImageView.tag = "desc:${columns[i].toLowerCase(Locale.ENGLISH)}"
+            sortDescImageView.setOnClickListener(this)
+            sortingImages.add(sortAscImageView)
+            sortingImages.add(sortDescImageView)
+            headerLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.purple_dark))
+
+            textView.text = columns[i].toUpperCase(Locale.ENGLISH)
+            tableHeaders.addView(headerLayout)
+        }
+
+        tableMainLayout.addView(tableHeaders)
+
     }
 
     private fun setUpToolbar() {
@@ -74,80 +91,67 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
     }
 
 
-    val layoutParams = TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 90, 2f)
-    private fun getTableData() {
-        layoutParams.setMargins(5, 5, 5, 5)
-        dataList.addAll(tableGenerator.getTableDate(tableName))
-        val columns = tableGenerator.getTableColumns(tableName)
-        tableMainLayout.weightSum = dataList.size * 2F
-        val tableHeaders = TableRow(context)
-        for (i in columns!!.indices) {
-            val textView = MaterialTextView(context)
-            //textView.textSize = resources.getDimension(R.dimen.smallText)
-            textView.layoutParams =
-                TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 90, 2f)
-            textView.setPadding(10, 10, 10, 10)
-            textView.setBackgroundColor(ContextCompat.getColor(context, R.color.purple_dark))
-            textView.gravity = Gravity.CENTER
-            textView.setTextColor(Color.WHITE)
-            textView.text = columns[i].toUpperCase(Locale.ENGLISH)
-            tableHeaders.addView(textView)
+    private fun getTableData(tName: String, column: String, order: String) {
+        val tempList = tableGenerator.getTableDate(tName, column, order)
+        if (tempList.isNotEmpty()) {
+            dataList.clear()
+            if (tableMainLayout.childCount > 2) {
+                tableMainLayout.removeViews(1, tableMainLayout.childCount - 1)
+            }
         }
-
-        tableMainLayout.addView(tableHeaders)
+        dataList.addAll(tempList)
+        tableMainLayout.weightSum = dataList.size * 2F
 
         if (dataList.isNotEmpty()) {
+            startLoading(context)
             for (j in 0 until dataList.size) {
+                val textViewIdLayout = LayoutInflater.from(context).inflate(R.layout.table_row_cell, null)
+                textViewIdLayout.layoutParams = layoutParams
+                val textViewId = textViewIdLayout.findViewById<MaterialTextView>(R.id.cell_value)
                 val data = dataList[j]
                 val tableRow = TableRow(context)
                 tableRow.id = j
+                tableRow.tag = "row"
                 tableRow.setOnClickListener(this)
-                val textViewId = MaterialTextView(context)
-
-                textViewId.layoutParams = layoutParams
-                textViewId.setPadding(10, 10, 10, 10)
-                textViewId.gravity = Gravity.CENTER
-
-                val textViewCodeDate = MaterialTextView(context)
-                textViewCodeDate.layoutParams = layoutParams
-                textViewCodeDate.setPadding(10, 10, 10, 10)
-                textViewCodeDate.gravity = Gravity.CENTER
-
-                val textViewDate = MaterialTextView(context)
-                textViewDate.layoutParams = layoutParams
-                textViewDate.setPadding(10, 10, 10, 10)
-                textViewDate.gravity = Gravity.CENTER
 
                 textViewId.text = "${data.id}"
+                tableRow.addView(textViewIdLayout)
+                val textViewCodeDateLayout = LayoutInflater.from(context).inflate(R.layout.table_row_cell, null)
+                textViewCodeDateLayout.layoutParams = layoutParams
+                val textViewCodeDate = textViewCodeDateLayout.findViewById<MaterialTextView>(R.id.cell_value)
                 textViewCodeDate.text = data.code_data
+                tableRow.addView(textViewCodeDateLayout)
+
+                val textViewDateLayout = LayoutInflater.from(context).inflate(R.layout.table_row_cell, null)
+                textViewDateLayout.layoutParams = layoutParams
+                val textViewDate = textViewDateLayout.findViewById<MaterialTextView>(R.id.cell_value)
                 textViewDate.text = data.date
-                tableRow.addView(textViewId)
-                tableRow.addView(textViewCodeDate)
-                tableRow.addView(textViewDate)
+                tableRow.addView(textViewDateLayout)
 
-
-                val textViewImage = MaterialTextView(context)
-                textViewDate.layoutParams = layoutParams
-                textViewDate.setPadding(10, 10, 10, 10)
-                textViewDate.gravity = Gravity.CENTER
+                val textViewImageLayout = LayoutInflater.from(context).inflate(R.layout.table_row_cell, null)
+                textViewImageLayout.layoutParams = layoutParams
+                val textViewImage = textViewImageLayout.findViewById<MaterialTextView>(R.id.cell_value)
 
                 if (data.image.isNotEmpty() && data.image.length >= 20) {
                     textViewImage.text = data.image.substring(0, 20)
                 } else {
                     textViewImage.text = data.image
                 }
-                tableRow.addView(textViewImage)
+                tableRow.addView(textViewImageLayout)
 
 
                 if (data.dynamicColumns.size > 0) {
                     for (k in 0 until data.dynamicColumns.size) {
                         val item = data.dynamicColumns[k]
-                        val textView = MaterialTextView(context)
-                        textView.layoutParams = layoutParams
-                        textView.setPadding(10, 10, 10, 10)
-                        textView.gravity = Gravity.CENTER
-                        textView.text = item.second
-                        tableRow.addView(textView)
+                        val cell = LayoutInflater.from(context).inflate(R.layout.table_row_cell, null)
+                        cell.layoutParams = layoutParams
+                        val textV = cell.findViewById<MaterialTextView>(R.id.cell_value)
+                        if (item.first == "size")
+                        {
+                            cell.setBackgroundColor(Color.RED)
+                        }
+                        textV.text = item.second
+                        tableRow.addView(cell)
                     }
 
                 }
@@ -158,11 +162,9 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                 }
                 tableMainLayout.addView(tableRow)
             }
+            dismiss()
         }
 
-
-//        dataList.addAll(tableGenerator.getTableDate(tableName))
-//        adapter.notifyDataSetChanged()
     }
 
     override fun onItemClick(position: Int) {
@@ -171,11 +173,36 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
     }
 
     override fun onClick(v: View?) {
-//        val position = v!!.id
-//        val item = dataList[position]
-//        if (item.image.isNotEmpty()){
-//            showAlert(context,dataList[position].image)
-//        }
+        val view = v!!
+        if (view.tag == "row") {
+            val position = view.id
+            val item = dataList[position]
+            if (item.image.isNotEmpty()) {
+                showAlert(context, dataList[position].image)
+            }
+        } else {
+            if (dataList.isNotEmpty()){
+                val parts = view.tag.toString().split(":")
+                if (parts.isNotEmpty() && parts.size == 2) {
+                    val image = view as AppCompatImageView
+                    updateSortingImage(image, parts[0])
+                    getTableData(tableName, parts[1], parts[0])
+                }
+            }
+
+        }
+
+    }
+
+    private fun updateSortingImage(imageView: AppCompatImageView, order: String) {
+        for (i in 0 until sortingImages.size) {
+            val sImage = sortingImages[i]
+            if (imageView.id == sImage.id && sImage.tag.toString().split(":")[0] == order) {
+                sImage.setColorFilter(Color.WHITE)
+            } else {
+                sImage.setColorFilter(Color.parseColor("#808080"))
+            }
+        }
 
     }
 

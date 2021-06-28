@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:id="@+id/scroll_create_table"
     android:background="@color/light_gray"
     tools:context=".view.activities.CreateTableActivity">
 
@@ -153,33 +154,54 @@
                android:hint="Please enter the field name"
                android:id="@+id/table_new_field_text_input"
                />
-
-             <RadioGroup
+             <LinearLayout
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
-                 android:orientation="vertical"
-                 android:id="@+id/value_types_radio_group"
+                 android:orientation="horizontal"
+                 android:layout_marginTop="@dimen/defaultDpMargin"
                  >
-                 <com.google.android.material.radiobutton.MaterialRadioButton
+                 <RadioGroup
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
-                     android:text="Input data field"
-                     android:id="@+id/none_radio_btn"
-                     android:checked="true"
-                     />
-                 <com.google.android.material.radiobutton.MaterialRadioButton
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:text="Non Changeable Field"
-                     android:id="@+id/non_changeable_radio_btn"
-                     />
-                 <com.google.android.material.radiobutton.MaterialRadioButton
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:text="List with Values Field"
-                     android:id="@+id/list_with_values_radio_btn"
-                     />
-             </RadioGroup>
+                     android:orientation="vertical"
+                     android:id="@+id/value_types_radio_group"
+                     >
+                     <com.google.android.material.radiobutton.MaterialRadioButton
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="Input data field"
+                         android:id="@+id/none_radio_btn"
+                         android:checked="true"
+                         />
+                     <com.google.android.material.radiobutton.MaterialRadioButton
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="Non Changeable Field"
+                         android:id="@+id/non_changeable_radio_btn"
+                         />
+                     <com.google.android.material.radiobutton.MaterialRadioButton
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="List with Values Field"
+                         android:id="@+id/list_with_values_radio_btn"
+                         />
+                 </RadioGroup>
+                 <LinearLayout
+                     android:layout_width="0dp"
+                     android:layout_height="match_parent"
+                     android:layout_weight="1"
+                     android:layout_marginStart="@dimen/defaultDpMargin"
+                     android:gravity="bottom"
+                     >
+                     <com.google.android.material.textview.MaterialTextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginBottom="@dimen/eightDpMargin"
+                         android:id="@+id/select_list_text_view"
+                         />
+                 </LinearLayout>
+             </LinearLayout>
+
 
              <com.google.android.material.button.MaterialButton
                  android:layout_width="match_parent"
@@ -198,6 +220,8 @@
                  android:hint="Set the default value"
                  android:id="@+id/table_non_changeable_default_text_input"
                  android:visibility="gone"
+                 android:inputType="text"
+                 android:imeOptions="actionDone"
                  />
 
          </LinearLayout>

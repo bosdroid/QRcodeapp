@@ -562,8 +562,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
             ) {
 
                 val value = snDescriptionEditText.text.toString().trim().toLowerCase(Locale.ENGLISH)
-                if (value.substring(0, 7).contains("http://") || value.substring(0, 8).contains("https://")
-                    || value.contains("www") || value.contains(".com")) {
+                if (value.substring(0, 7).contains("http://") || value.substring(0, 8).contains("https://")) {
                     showAlert(
                         context,
                         "Please enter the plain text!"

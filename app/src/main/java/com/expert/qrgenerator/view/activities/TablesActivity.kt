@@ -90,7 +90,22 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
             addTableDialog()
         }
         else{
-            showAlert(context,"You can not create dynamic table without account login!")
+            //showAlert(context,"You can not create dynamic table without account login!")
+            MaterialAlertDialogBuilder(context)
+                    .setTitle("Alert!")
+                    .setMessage("You can not create dynamic table without account login!")
+                    .setNegativeButton("LATER"){dialog,which->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("LOGIN"){dialog,which->
+                        dialog.dismiss()
+                        val intent = Intent(context,MainActivity::class.java)
+                        intent.putExtra("REQUEST","login")
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                    .create().show()
         }
 
     }

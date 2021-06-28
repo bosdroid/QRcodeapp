@@ -24,4 +24,5 @@
     <dimen name="_80dp">80dp</dimen>
     <dimen name="_8dp">8dp</dimen>
     <dimen name="_25sp">25sp</dimen>
+    <dimen name="tenDpMargin">10dp</dimen>
 </resources>

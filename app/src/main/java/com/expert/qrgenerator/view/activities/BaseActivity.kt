@@ -3,7 +3,10 @@ package com.expert.qrgenerator.view.activities
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
@@ -36,6 +39,37 @@ open class BaseActivity : AppCompatActivity() {
     companion object {
         private var prDownloader: DownloadRequest? = null
         var alert: AlertDialog? = null
+
+        // THIS FUNCTION WILL CHECK THE INTERNET CONNECTION AVAILABLE OR NOT
+        fun isNetworkAvailable(context: Context): Boolean
+        {
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val capabilities = connectivityManager.getNetworkCapabilities(
+                        connectivityManager.activeNetwork
+                )
+                if (capabilities != null) {
+                    when {
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                            return true
+                        }
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                            return true
+                        }
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                            return true
+                        }
+                    }
+                }
+            } else {
+                val activeNetworkInfo = connectivityManager.activeNetworkInfo
+                if (activeNetworkInfo != null && activeNetworkInfo.isConnected)
+                {
+                    return true
+                }
+            }
+            return false
+        }
 
         // THIS FUNCTION WILL RETURN THE DATE TIME STRING FROM TIMESTAMP
         fun getDateTimeFromTimeStamp(timeStamp: Long): String {

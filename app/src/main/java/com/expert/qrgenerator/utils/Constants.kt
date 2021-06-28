@@ -38,7 +38,7 @@ class Constants {
         const val CAMERA_PERMISSION = "android.permission.CAMERA"
         private const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
         private const val LOGO_IMAGE_PATH = "LogoImages"
-        const val BASE_URL = "http://pages.qrmagicapp.com/"
+        const val BASE_URL = "https://pages.qrmagicapp.com/"
         var generatedImage: Bitmap? = null
         var finalQrImageUri: Uri? = null
         var isLogin: String = "is_login"

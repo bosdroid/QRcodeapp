@@ -37,6 +37,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
@@ -48,6 +49,7 @@ import java.io.File
 
 class ScannerFragment : Fragment() {
 
+    private var arrayList = mutableListOf<String>()
     private var filePathView: MaterialTextView? = null
     var currentPhotoPath: String? = null
     private var codeScanner: CodeScanner? = null
@@ -257,12 +259,14 @@ class ScannerFragment : Fragment() {
                                             val columnDropDwonLayout =
                                                 tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
                                             columnName.text = value
-                                            val fieldList =
-                                                tableGenerator.getFieldList(value, tableName)
+                                            val fieldList = tableGenerator.getFieldList(value, tableName)
 
                                             if (fieldList.isNotEmpty()) {
-                                                if (fieldList.contains(",")) {
-                                                    val arrayList = fieldList.split(",")
+                                                if (fieldList.contains(",") || !fieldList.contains(",")) {
+                                                    arrayList.addAll(fieldList.split(","))
+                                                    if (arrayList.isEmpty() && fieldList.length == 1){
+                                                        arrayList.add(fieldList)
+                                                    }
                                                     columnValue.visibility = View.GONE
                                                     columnDropDwonLayout.visibility = View.VISIBLE
                                                     val adapter = ArrayAdapter(
@@ -320,6 +324,8 @@ class ScannerFragment : Fragment() {
                                     alert.show()
 
                                     submitBtn.setOnClickListener {
+                                        if (BaseActivity.isNetworkAvailable(requireActivity()))
+                                        {
                                         alert.dismiss()
                                         BaseActivity.startLoading(requireActivity())
                                         CoroutineScope(Dispatchers.IO).launch {
@@ -440,7 +446,7 @@ class ScannerFragment : Fragment() {
                                                             spinnerIdsList.clear()
                                                             params.clear()
                                                             tableDetailLayoutWrapper.removeAllViews()
-
+                                                            startPreview()
                                                         }, 1000)
                                                     }
                                                 }
@@ -448,6 +454,10 @@ class ScannerFragment : Fragment() {
                                             } catch (e: Exception) {
                                                 e.printStackTrace()
                                             }
+                                        }
+                                        }
+                                        else{
+                                            BaseActivity.showAlert(requireActivity(),"TO UPLOAD AN IMAGE TURN ON THE INTERNET")
                                         }
                                     }
                                 }
@@ -537,7 +547,7 @@ class ScannerFragment : Fragment() {
                 scannerView.setOnClickListener {
                     startPreview()
                 }
-
+               startPreview()
             }
         }
     }
@@ -563,7 +573,12 @@ class ScannerFragment : Fragment() {
             // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
             url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
             return true
-        } catch (e: GoogleJsonResponseException) {
+        }
+        catch (e:UserRecoverableAuthIOException){
+            e.printStackTrace()
+            return false
+        }
+        catch (e: GoogleJsonResponseException) {
             BaseActivity.showAlert(
                 requireActivity(),
                 e.details.message

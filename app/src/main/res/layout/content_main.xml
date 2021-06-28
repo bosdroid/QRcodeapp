@@ -46,7 +46,6 @@
                 android:layout_marginEnd="@dimen/sixtyDpMargin"
                 android:text="@string/qr_code_history"
                 android:textSize="@dimen/xlargeText"
-                android:drawableLeft="@drawable/ic_history"
                 android:textColor="@color/teal_700"
                 android:id="@+id/history_btn"
                 android:visibility="gone"

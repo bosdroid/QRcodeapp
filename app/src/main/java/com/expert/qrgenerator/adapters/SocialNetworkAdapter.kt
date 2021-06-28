@@ -42,14 +42,15 @@ class SocialNetworkAdapter(val context: Context, var socialNetworkList:ArrayList
             editIconLayout = itemView.findViewById(R.id.sn_item_edit_icon)
 
             itemView.setOnClickListener {
-                mListener.onItemClick(layoutPosition)
+                //mListener.onItemClick(layoutPosition)
             }
             checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
                 mListener.onItemCheckClick(layoutPosition,isChecked)
             }
 
             editIconLayout.setOnClickListener {
-                mListener.onItemEditIconClick(layoutPosition,checkBox)
+                //mListener.onItemEditIconClick(layoutPosition,checkBox)
+                mListener.onItemClick(layoutPosition)
             }
 
         }

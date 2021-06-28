@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.RadioGroup
+import android.widget.ScrollView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
@@ -39,6 +40,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private lateinit var tableGenerator: TableGenerator
     private var tableName: String = ""
     private lateinit var createTableFieldHint: MaterialTextView
+    private lateinit var selectedListTextView:MaterialTextView
 //    private lateinit var addNewFieldBtn: AppCompatButton
     private lateinit var addNewFieldLayoutWrapper: CardView
     private lateinit var tableNewFieldNameTInput: TextInputEditText
@@ -53,6 +55,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private lateinit var listWithFieldsBtn: MaterialButton
     private lateinit var appViewModel: AppViewModel
     private var fieldType:String = "none"
+    private lateinit var scrollCreateTable:ScrollView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         ).get(AppViewModel::class.java)
         tableGenerator = TableGenerator(context)
         toolbar = findViewById(R.id.toolbar)
+        scrollCreateTable = findViewById(R.id.scroll_create_table)
         if (intent != null && intent.hasExtra("TABLE_NAME")) {
             tableName = intent.getStringExtra("TABLE_NAME")!!
         }
@@ -89,6 +93,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         tableColumnsDetailLayout = findViewById(R.id.table_columns_detail_layout)
         listWithFieldsBtn = findViewById(R.id.list_with_fields_btn)
         listWithFieldsBtn.setOnClickListener(this)
+        selectedListTextView = findViewById(R.id.select_list_text_view)
 
         // fieldValueTypesRadioGroup RADIO GROUP LISTENER
         fieldValueTypesRadioGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -97,12 +102,15 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     fieldType = "none"
                     defaultValueFieldTInput.visibility = View.GONE
                     listWithFieldsBtn.visibility = View.GONE
+                    isNonChangeableCheckBox = false
                 }
                 R.id.non_changeable_radio_btn -> {
                     isNonChangeableCheckBox = true
                     defaultValueFieldTInput.visibility = View.VISIBLE
                     listWithFieldsBtn.visibility = View.GONE
                     fieldType = "nonChangeable"
+                    scrollCreateTable.fullScroll(ScrollView.FOCUS_UP)
+                    hideSoftKeyboard(context,scrollCreateTable)
                 }
                 R.id.list_with_values_radio_btn -> {
                     isNonChangeableCheckBox = false
@@ -246,6 +254,11 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 //                        addNewFieldLayoutWrapper.visibility = View.GONE
 //                        addNewFieldBtn.visibility = View.VISIBLE
                         resetViews()
+                        val intent = Intent(context,MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        finish()
+
                     }, 2000)
                 }
 
@@ -290,7 +303,24 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
             override fun onItemClick(position: Int) {
                 val listValue = listItems[position]
                 listId = listValue.id
-                alert.dismiss()
+                val list = tableGenerator.getListValues(listId!!)
+                if (list.isNotEmpty()){
+                    selectedListTextView.text = listValue.value
+                    alert.dismiss()
+                }
+                else{
+                    MaterialAlertDialogBuilder(context)
+                            .setMessage("List can't be empty please add a value or cancel the creation!")
+                            .setNegativeButton("Cancel"){dialog,which->
+                                dialog.dismiss()
+                            }
+                            .setPositiveButton("Add"){dialog,which->
+                                 dialog.dismiss()
+                                 addTableDialog(listId!!)
+                            }
+                            .create().show()
+                }
+
             }
 
             override fun onAddItemClick(position: Int) {
@@ -300,8 +330,10 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         })
     }
 
-    private fun addTableDialog(){
+    private fun addTableDialog(id:Int){
         val listValueLayout = LayoutInflater.from(context).inflate(R.layout.add_list_value_layout,null)
+        val heading = listValueLayout.findViewById<MaterialTextView>(R.id.dialog_heading)
+        heading.text = "Enter the List value"
         val listValueInputBox = listValueLayout.findViewById<TextInputEditText>(R.id.add_list_value_input_field)
         val listValueAddBtn = listValueLayout.findViewById<MaterialButton>(R.id.add_list_value_btn)
         val builder = MaterialAlertDialogBuilder(context)
@@ -311,7 +343,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         listValueAddBtn.setOnClickListener {
             if(listValueInputBox.text.toString().isNotEmpty()){
                val value = listValueInputBox.text.toString().trim()
-                appViewModel.insertListValue(ListValue(value))
+                tableGenerator.insertListValue(id,value)
                 alert.dismiss()
             }
             else{

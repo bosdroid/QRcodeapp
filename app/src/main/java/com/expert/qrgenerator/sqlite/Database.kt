@@ -63,37 +63,70 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
     }
 
 
-    fun getTableDate(tableName: String): List<TableObject> {
+    fun getTableDate(tableName: String,column:String,order:String): List<TableObject> {
         val db = this.readableDatabase
         val columns = getTableColumns(tableName)
-        val selectQuery = "SELECT  * FROM $tableName"
         val tableObjectList = mutableListOf<TableObject>()
-        val list = mutableListOf<Pair<String, String>>()
-        var tableObject: TableObject? = null
-        val cursor: Cursor = db.rawQuery(selectQuery, null)
-        if (cursor.moveToFirst()) {
-            do {
-                tableObject = TableObject(
-                    cursor.getString(0).toInt(),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    if (cursor.isNull(3)) "" else cursor.getString(3)
-                )
+        if (column.isEmpty() && order.isEmpty()){
+            val selectQuery = "SELECT  * FROM $tableName"
 
-                if (columns!!.size >= 5) {
-                    for (i in 3 until columns.size) {
-                        val col = columns[i]
-                        var pair: Pair<String, String>? = null
-                        pair = Pair(col, cursor.getString(i))
+            val list = mutableListOf<Pair<String, String>>()
+            var tableObject: TableObject? = null
+            val cursor: Cursor = db.rawQuery(selectQuery, null)
+            if (cursor.moveToFirst()) {
+                do {
+                    tableObject = TableObject(
+                            cursor.getString(0).toInt(),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            if (cursor.isNull(3)) "" else cursor.getString(3)
+                    )
 
-                        list.add(pair)
+                    if (columns!!.size >= 5) {
+                        for (i in 3 until columns.size) {
+                            val col = columns[i]
+                            var pair: Pair<String, String>? = null
+                            pair = Pair(col, cursor.getString(i))
+
+                            list.add(pair)
+                        }
+                        tableObject.dynamicColumns.addAll(list)
+                        list.clear()
                     }
-                    tableObject.dynamicColumns.addAll(list)
-                    list.clear()
-                }
-                tableObjectList.add(tableObject)
-            } while (cursor.moveToNext())
+                    tableObjectList.add(tableObject)
+                } while (cursor.moveToNext())
+            }
         }
+        else{
+            val selectQuery = "SELECT  * FROM $tableName ORDER BY $column ${order.toUpperCase(Locale.ENGLISH)}"
+            val list = mutableListOf<Pair<String, String>>()
+            var tableObject: TableObject? = null
+            val cursor: Cursor = db.rawQuery(selectQuery, null)
+            if (cursor.moveToFirst()) {
+                do {
+                    tableObject = TableObject(
+                            cursor.getString(0).toInt(),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            if (cursor.isNull(3)) "" else cursor.getString(3)
+                    )
+
+                    if (columns!!.size >= 5) {
+                        for (i in 3 until columns.size) {
+                            val col = columns[i]
+                            var pair: Pair<String, String>? = null
+                            pair = Pair(col, cursor.getString(i))
+
+                            list.add(pair)
+                        }
+                        tableObject.dynamicColumns.addAll(list)
+                        list.clear()
+                    }
+                    tableObjectList.add(tableObject)
+                } while (cursor.moveToNext())
+            }
+        }
+
         db.close()
         return tableObjectList
 

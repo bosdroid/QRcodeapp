@@ -94,6 +94,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private var user: User? = null
     private lateinit var historyBtn:MaterialTextView
+    private var requestLogin:String?=null
 
     companion object {
         lateinit var nextStepTextView: MaterialTextView
@@ -190,7 +191,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 .addToBackStack("scanner")
                 .commit()
         }
-
     }
 
     private fun getAccountsPermission() {
@@ -282,7 +282,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             saveUserUpdatedDetail(acct, "last")
         }
 
-
+        if (intent != null && intent.hasExtra("REQUEST") && intent.getStringExtra("REQUEST") == "login"){
+            requestLogin = "login"
+            startLogin()
+        }
     }
 
 
@@ -315,6 +318,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     appSettings.putBoolean(Constants.isLogin, true)
                     Toast.makeText(context,"User has been signIn successfully!",Toast.LENGTH_SHORT).show()
                 }
+                if (requestLogin!!.isNotEmpty() && requestLogin == "login"){
+                    startActivity(Intent(context,TablesActivity::class.java))
+                }
             }
             // ELSE PART WILL WORK WHEN USER LOGGED BUT ACCOUNT DETAIL EMPTY
             // AND IN CASE ACCOUNT DETAIL IS EMPTY THEN APP FETCH THE ACCOUNT DETAIL FROM PREFERENCE FOR AVOID NULL ANC CRASH THE APP
@@ -340,9 +346,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-//            R.id.barcode_history -> {
-//                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
-//            }
+            R.id.dynamic_links -> {
+                startActivity(Intent(context, DynamicQrActivity::class.java))
+            }
             R.id.sheets -> {
                 if (appSettings.getBoolean(Constants.isLogin)) {
                     startActivity(Intent(context, SheetsActivity::class.java))
@@ -420,6 +426,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 appSettings.remove(Constants.user)
                 Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
                     .show()
+                Constants.userData = null
+                Constants.sheetService = null
+                Constants.mService  = null
                 checkUserLoginStatus()
             }
 
@@ -613,7 +622,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = true
             mNavigation.menu.findItem(R.id.tables).isVisible = true
             mNavigation.menu.findItem(R.id.field_list).isVisible = true
-//            mNavigation.menu.findItem(R.id.sheets).isVisible = true
+            mNavigation.menu.findItem(R.id.dynamic_links).isVisible = true
 
 
         } else {
@@ -622,7 +631,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = false
             mNavigation.menu.findItem(R.id.tables).isVisible = false
             mNavigation.menu.findItem(R.id.field_list).isVisible = false
-//            mNavigation.menu.findItem(R.id.sheets).isVisible = false
+            mNavigation.menu.findItem(R.id.dynamic_links).isVisible = false
         }
     }
 

@@ -36,8 +36,8 @@ class TableGenerator(context: Context) {
         return database.tableExists(tableName)
     }
 
-    fun getTableDate(tableName: String):List<TableObject>{
-        return database.getTableDate(tableName)
+    fun getTableDate(tableName: String,column:String,order:String):List<TableObject>{
+        return database.getTableDate(tableName,column,order)
     }
 
     fun insertDefaultTable(code_data:String,date:String){
