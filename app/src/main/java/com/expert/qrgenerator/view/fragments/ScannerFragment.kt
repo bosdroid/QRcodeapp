@@ -230,15 +230,41 @@ class ScannerFragment : Fragment() {
                                 intent.putExtra("HISTORY_ITEM", qrHistory)
                                 requireActivity().startActivity(intent)
                             }, 2000)
+                        } else {
+                            if (RuntimePermissionHelper.checkCameraPermission(
+                                    requireActivity(),
+                                    Constants.CAMERA_PERMISSION
+                                )
+                            ) {
+                                initMlScanner()
+                            }
+                            Log.d("TAG", "startScanner: $text")
                         }
 
-                        if (it.text == null) {
+                        if (it.text == null || it.text.isEmpty()) {
+                            if (RuntimePermissionHelper.checkCameraPermission(
+                                    requireActivity(),
+                                    Constants.CAMERA_PERMISSION
+                                )
+                            ) {
+                                initMlScanner()
+                            }
 
                             playSound(false)
                         }
 
                     }
                 }
+                if (decodeCallback == null) {
+                    if (RuntimePermissionHelper.checkCameraPermission(
+                            requireActivity(),
+                            Constants.CAMERA_PERMISSION
+                        )
+                    ) {
+                        initMlScanner()
+                    }
+                }
+
                 errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
                     if (RuntimePermissionHelper.checkCameraPermission(
                             requireActivity(),
