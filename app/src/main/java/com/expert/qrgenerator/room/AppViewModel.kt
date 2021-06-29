@@ -10,14 +10,14 @@ import com.expert.qrgenerator.model.ListValue
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private var repository : DatabaseRepository = DatabaseRepository(application)
-//    private var dynamicQrCodes : LiveData<List<QREntity>>
+    private var dynamicQrCodes : LiveData<List<CodeHistory>>
     private var allQRCodeHistory: LiveData<List<CodeHistory>>
     private var allScanQRCodeHistory: LiveData<List<CodeHistory>>
     private var allCreateQRCodeHistory: LiveData<List<CodeHistory>>
     private var allListValues:LiveData<List<ListValue>>
 
     init {
-//        dynamicQrCodes = repository.getAllDynamicQrCodes()
+        dynamicQrCodes = repository.getAllDynamicQrCodes()
         allQRCodeHistory = repository.getAllQRCodeHistory()
         allScanQRCodeHistory = repository.getAllScanQRCodeHistory()
         allCreateQRCodeHistory = repository.getAllCreateQRCodeHistory()
@@ -32,17 +32,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         repository.insertListValue(listValue)
     }
 
-//    public fun update(inputUrl:String,url:String,id:Int){
-//        repository.update(inputUrl,url,id)
-//    }
+    public fun update(inputUrl:String,url:String,id:Int){
+        repository.update(inputUrl,url,id)
+    }
 
     public fun delete(qrHistory: CodeHistory){
         repository.delete(qrHistory)
     }
 
-//    public fun getAllDynamicQrCodes():LiveData<List<QREntity>>{
-//        return dynamicQrCodes
-//    }
+    public fun getAllDynamicQrCodes():LiveData<List<CodeHistory>>{
+        return dynamicQrCodes
+    }
 
     public fun getAllQRCodeHistory():LiveData<List<CodeHistory>>{
         return allQRCodeHistory

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.DynamicQrAdapter
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.QREntity
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
@@ -34,7 +35,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
     private lateinit var context: Context
     private lateinit var dynamicQrRecyclerView: RecyclerView
     private lateinit var adapter: DynamicQrAdapter
-    private var dynamicQrList = mutableListOf<QREntity>()
+    private var dynamicQrList = mutableListOf<CodeHistory>()
     private lateinit var emptyView: MaterialTextView
     private lateinit var appViewModel: AppViewModel
     private lateinit var viewModel: DynamicQrViewModel
@@ -65,7 +66,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
         dynamicQrRecyclerView = findViewById(R.id.dynamic_qr_recyclerview)
         dynamicQrRecyclerView.layoutManager = LinearLayoutManager(context)
         dynamicQrRecyclerView.hasFixedSize()
-        adapter = DynamicQrAdapter(context, dynamicQrList as ArrayList<QREntity>)
+        adapter = DynamicQrAdapter(context, dynamicQrList as ArrayList<CodeHistory>)
         dynamicQrRecyclerView.adapter = adapter
         adapter.setOnClickListener(this)
     }
@@ -80,20 +81,20 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
 
     // THIS FUNCTION WILL DISPLAY THE LIST OF CREATED DYNAMIC QR CODE
     private fun displayDynamicQrCodes() {
-//        appViewModel.getAllDynamicQrCodes().observe(this, Observer { list ->
-//
-//            if (list != null && list.isEmpty()) {
-//                dynamicQrRecyclerView.visibility = View.GONE
-//                emptyView.visibility = View.VISIBLE
-//            } else {
-//                dynamicQrList.clear()
-//                emptyView.visibility = View.GONE
-//                dynamicQrRecyclerView.visibility = View.VISIBLE
-//
-//                dynamicQrList.addAll(list)
-//                adapter.notifyDataSetChanged()
-//            }
-//        })
+        appViewModel.getAllDynamicQrCodes().observe(this, Observer { list ->
+
+            if (list != null && list.isEmpty()) {
+                dynamicQrRecyclerView.visibility = View.GONE
+                emptyView.visibility = View.VISIBLE
+            } else {
+                dynamicQrList.clear()
+                emptyView.visibility = View.GONE
+                dynamicQrRecyclerView.visibility = View.VISIBLE
+
+                dynamicQrList.addAll(list)
+                adapter.notifyDataSetChanged()
+            }
+        })
 
     }
 
@@ -115,13 +116,13 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
 
 
     // THIS FUNCTION WILL POP UP WITH EXISTING URL FOR INPUT NEW UPDATED URL
-    private fun updateDynamicQrUrl(selectedDynamicUrl: QREntity){
+    private fun updateDynamicQrUrl(selectedDynamicUrl: CodeHistory){
 
         val dynamicUrlUpdateView = LayoutInflater.from(context).inflate(R.layout.update_dynamic_url_dialog_layout, null)
         val updateInputBox = dynamicUrlUpdateView!!.findViewById<TextInputEditText>(R.id.dynamic_url_update_input_field)
         val cancelBtn = dynamicUrlUpdateView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
         val updateBtn = dynamicUrlUpdateView.findViewById<MaterialButton>(R.id.dialog_update_btn)
-        updateInputBox.setText(selectedDynamicUrl.userUrl)
+        updateInputBox.setText(selectedDynamicUrl.data)
 
         val builder = MaterialAlertDialogBuilder(context)
         builder.setCancelable(false)

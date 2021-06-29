@@ -105,6 +105,18 @@
                 android:padding="5dp"
                 />
         </RadioGroup>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/eightDpMargin"
+            android:text="@string/generate"
+            android:textSize="@dimen/xlargeText"
+            android:textColor="@color/purple_700"
+            android:id="@+id/next_step_btn"
+            android:textAllCaps="true"
+            />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

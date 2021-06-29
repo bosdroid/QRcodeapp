@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.ScrollView
 import androidx.appcompat.widget.AppCompatButton
@@ -49,7 +50,8 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private lateinit var fieldValueTypesRadioGroup: RadioGroup
     private lateinit var defaultValueFieldTInput: TextInputEditText
     private var isNonChangeableCheckBox = false
-    private lateinit var submitBtnView: AppCompatButton
+    private lateinit var submitBtnView: MaterialButton
+    private lateinit var finishBtnView: MaterialButton
     private var defaultColumnValue: String = ""
     private lateinit var tableColumnsDetailLayout: LinearLayout
     private lateinit var listWithFieldsBtn: MaterialButton
@@ -90,6 +92,8 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         defaultValueFieldTInput = findViewById(R.id.table_non_changeable_default_text_input)
         submitBtnView = findViewById(R.id.field_submit_btn)
         submitBtnView.setOnClickListener(this)
+        finishBtnView = findViewById(R.id.field_finish_btn)
+        finishBtnView.setOnClickListener(this)
         tableColumnsDetailLayout = findViewById(R.id.table_columns_detail_layout)
         listWithFieldsBtn = findViewById(R.id.list_with_fields_btn)
         listWithFieldsBtn.setOnClickListener(this)
@@ -195,18 +199,18 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun resetViews() {
         tableNewFieldNameTInput.setText("")
         defaultValueFieldTInput.setText("")
+        fieldValueTypesRadioGroup.findViewById<RadioButton>(R.id.none_radio_btn).isChecked = true
+        selectedListTextView.visibility = View.GONE
     }
 
     override fun onClick(v: View?) {
         when (v!!.id) {
-//            R.id.add_new_field_btn -> {
-//                if (Constants.userData != null) {
-//                    addNewFieldBtn.visibility = View.GONE
-//                    addNewFieldLayoutWrapper.visibility = View.VISIBLE
-//                } else {
-//                    showAlert(context, "You can not create dynamic table without account login!")
-//                }
-//            }
+            R.id.field_finish_btn -> {
+                val intent = Intent(context,MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                finish()
+            }
             R.id.list_with_fields_btn -> {
                 openListWithFieldsDialog()
             }
@@ -245,7 +249,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
                     Handler(Looper.myLooper()!!).postDelayed({
                         val layout =
-                            LayoutInflater.from(context).inflate(R.layout.table_column_item_row, null)
+                            LayoutInflater.from(context).inflate(R.layout.table_column_item_row, tableColumnsDetailLayout,false)
                         val columnNameView =
                             layout.findViewById<MaterialTextView>(R.id.table_column_name)
                         columnNameView.text = tableNewFieldNameTInput.text.toString().trim()
@@ -254,10 +258,6 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 //                        addNewFieldLayoutWrapper.visibility = View.GONE
 //                        addNewFieldBtn.visibility = View.VISIBLE
                         resetViews()
-                        val intent = Intent(context,MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        finish()
 
                     }, 2000)
                 }

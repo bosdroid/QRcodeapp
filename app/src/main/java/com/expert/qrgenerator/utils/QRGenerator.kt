@@ -85,5 +85,11 @@ class QRGenerator {
             }
 
         }
+
+        fun resetQRGenerator(){
+            previousBackgroundImage = null
+            previousColor = null
+            previousLogo = null
+        }
     }
 }

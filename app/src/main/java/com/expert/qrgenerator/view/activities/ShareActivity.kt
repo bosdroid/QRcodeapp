@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.QRGenerator
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 
@@ -87,6 +88,7 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
                     .create().show()
             }
             R.id.start_new -> {
+                QRGenerator.resetQRGenerator()
                 val intent = Intent(context, MainActivity::class.java)
                 intent.putExtra("KEY","generator")
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK

@@ -48,6 +48,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginTop="@dimen/sixtyDpMargin"
+        android:id="@+id/wrapper_layout"
         >
 
         <com.google.android.material.textview.MaterialTextView
@@ -97,6 +98,20 @@
             android:maxLength="7"
             android:padding="5dp" />
     </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wrapper_layout"
+        android:layout_margin="@dimen/sixtyDpMargin"
+        android:text="@string/generate"
+        android:textSize="@dimen/xlargeText"
+        android:textColor="@color/purple_700"
+        android:id="@+id/next_step_btn"
+        android:textAllCaps="true"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -112,8 +112,7 @@ class Constants {
         fun getLayout(
             context: Context,
             position: Int,
-            layoutContainer: FrameLayout,
-            nextBtn: MaterialTextView
+            layoutContainer: FrameLayout
         ) {
             completeListener = context as OnCompleteAction
             val builder = MaterialAlertDialogBuilder(context)
@@ -124,6 +123,7 @@ class Constants {
                         LayoutInflater.from(context).inflate(R.layout.text_dialog_layout, null)
                     val textInputBox =
                         textView!!.findViewById<TextInputEditText>(R.id.text_input_field)
+                    val generateBtn = textView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(textView)
@@ -131,7 +131,7 @@ class Constants {
                         layoutContainer.addView(textView)
                     }
 
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         if (textInputBox.text.toString().isNotEmpty()) {
                             BaseActivity.hideSoftKeyboard(context, textView)
@@ -160,6 +160,7 @@ class Constants {
                         null
                     )
                     val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
+                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     heading.text = context.getString(R.string.static_link_text)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
@@ -186,7 +187,7 @@ class Constants {
                         layoutContainer.addView(websiteView)
                     }
 
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         val value = websiteInputBox.text.toString().trim()
                         if (selectedProtocol.isEmpty()) {
@@ -202,10 +203,7 @@ class Constants {
                                 "Please enter the required input data!"
                             )
 
-                        } else if (value.substring(0, 7).contains("http://") || value.substring(
-                                0,
-                                8
-                            ).contains("https://")
+                        } else if (value.contains("http://") || value.contains("https://")
                         ) {
                             BaseActivity.showAlert(
                                 context,
@@ -231,7 +229,7 @@ class Constants {
                     heading.text = context.getString(R.string.dynamic_link_text)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
-
+                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     val protocolGroup =
                         websiteView.findViewById<RadioGroup>(R.id.http_protocol_group)
                     protocolGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -254,7 +252,7 @@ class Constants {
                     } else {
                         layoutContainer.addView(websiteView)
                     }
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         val value = websiteInputBox.text.toString().trim()
                         if (selectedProtocol.isEmpty()) {
@@ -269,10 +267,7 @@ class Constants {
                                 "Please enter the required input data!"
                             )
 
-                        } else if (value.substring(0, 7).contains("http://") || value.substring(
-                                0,
-                                8
-                            ).contains("https://")
+                        } else if (value.contains("http://") || value.contains("https://")
                         ) {
                             BaseActivity.showAlert(
                                 context,
@@ -312,6 +307,7 @@ class Constants {
                         contactView.findViewById<TextInputEditText>(R.id.contact_address_input_field)
                     val contactDetailInputBox =
                         contactView.findViewById<TextInputEditText>(R.id.contact_detail_input_field)
+                    val generateBtn = contactView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(contactView)
@@ -319,7 +315,7 @@ class Constants {
                         layoutContainer.addView(contactView)
                     }
 
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         if (!TextUtils.isEmpty(contactNameInputBox.text.toString())
                             && !TextUtils.isEmpty(contactPhoneNumberInputBox.text.toString())
@@ -363,6 +359,7 @@ class Constants {
                         wifiView.findViewById<TextInputEditText>(R.id.wifi_password_input_field)
                     val wifiSecurityGroup =
                         wifiView.findViewById<RadioGroup>(R.id.securityGroup)
+                    val generateBtn = wifiView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     wifiSecurityGroup.setOnCheckedChangeListener { group, checkedId ->
                         when (checkedId) {
                             R.id.wpa -> {
@@ -386,7 +383,7 @@ class Constants {
                         layoutContainer.addView(wifiView)
                     }
 
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         if (!TextUtils.isEmpty(wifiNetWorkName.text.toString()) && !TextUtils.isEmpty(
                                 wifiPassword.text.toString()
@@ -415,6 +412,7 @@ class Constants {
                         phoneView.findViewById<TextInputEditText>(R.id.phone_start_number_input_field)
                     val phoneNumberInputBox =
                         phoneView.findViewById<TextInputEditText>(R.id.phone_number_input_field)
+                    val generateBtn = phoneView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(phoneView)
@@ -422,7 +420,7 @@ class Constants {
                         layoutContainer.addView(phoneView)
                     }
 
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         if (!TextUtils.isEmpty(phoneCcInputBox.text.toString())
                             && !TextUtils.isEmpty(phoneStartNumberInputBox.text.toString())
@@ -452,6 +450,7 @@ class Constants {
                         smsView.findViewById<TextInputEditText>(R.id.sms_phone_number_input_field)
                     val smsMessageInputBox =
                         smsView.findViewById<TextInputEditText>(R.id.sms_message_input_field)
+                    val generateBtn = smsView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(smsView)
@@ -459,7 +458,7 @@ class Constants {
                         layoutContainer.addView(smsView)
                     }
 
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         if (!TextUtils.isEmpty(smsCcInputBox.text.toString())
                             && !TextUtils.isEmpty(smsStartNumberInputBox.text.toString())
@@ -486,6 +485,7 @@ class Constants {
                         LayoutInflater.from(context).inflate(R.layout.instagram_dialog_layout, null)
                     val instagramInputBox =
                         instagramView!!.findViewById<TextInputEditText>(R.id.instagram_input_field)
+                    val generateBtn = instagramView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(instagramView)
@@ -493,7 +493,7 @@ class Constants {
                         layoutContainer.addView(instagramView)
                     }
 
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         if (!TextUtils.isEmpty(instagramInputBox.text.toString())) {
                             BaseActivity.hideSoftKeyboard(context, instagramView)
@@ -519,6 +519,7 @@ class Constants {
                         whatsappView.findViewById<TextInputEditText>(R.id.whatsapp_phone_start_number_input_field)
                     val whatsappNumberInputBox =
                         whatsappView.findViewById<TextInputEditText>(R.id.whatsapp_phone_number_input_field)
+                    val generateBtn = whatsappView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(whatsappView)
@@ -526,7 +527,7 @@ class Constants {
                         layoutContainer.addView(whatsappView)
                     }
 
-                    nextBtn.setOnClickListener {
+                    generateBtn.setOnClickListener {
 
                         if (!TextUtils.isEmpty(whatsappCcInputBox.text.toString())
                             && !TextUtils.isEmpty(whatsappStartNumberInputBox.text.toString())

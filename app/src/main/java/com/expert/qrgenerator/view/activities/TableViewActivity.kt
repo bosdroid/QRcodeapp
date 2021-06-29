@@ -146,10 +146,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                         val cell = LayoutInflater.from(context).inflate(R.layout.table_row_cell, null)
                         cell.layoutParams = layoutParams
                         val textV = cell.findViewById<MaterialTextView>(R.id.cell_value)
-                        if (item.first == "size")
-                        {
-                            cell.setBackgroundColor(Color.RED)
-                        }
+
                         textV.text = item.second
                         tableRow.addView(cell)
                     }

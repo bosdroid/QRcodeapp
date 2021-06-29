@@ -43,8 +43,8 @@ class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>)
     }
 
     // THIS FUNCTION WILL ENABLE AND DISABLE QR TYPES ON SWITCH CHANGE
-    fun disableEnableViews(flag: Boolean) {
-        isEnableDisable = flag
+    fun updatePosition(position: Int) {
+        selected_position = position
         notifyDataSetChanged()
     }
 

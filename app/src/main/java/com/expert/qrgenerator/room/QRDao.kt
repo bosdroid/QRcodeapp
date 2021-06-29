@@ -16,16 +16,16 @@ interface QRDao {
     fun insert(qrHistory: CodeHistory)
 
     // THIS FUNCTION WILL UPDATE THE EXISTING DYNAMIC QR CODE ENTITY DATA IN DATABASE
-//    @Query("UPDATE dynamic_qr_codes SET userUrl=:inputUrl,generatedUrl=:url WHERE id=:id")
-//    fun update(inputUrl:String,url:String,id:Int)
+    @Query("UPDATE barcode_history SET data=:inputUrl,generatedUrl=:url WHERE id=:id")
+    fun update(inputUrl:String,url:String,id:Int)
 
     // THIS FUNCTION WILL DELETE THE DYNAMIC QR CODE ENTITY DATA IN DATABASE
     @Delete
     fun delete(qrHistory: CodeHistory)
 
     // THIS FUNCTION WILL GET LIST OF DYNAMIC QR CODE ENTITY DATA FROM DATABASE
-//    @Query("SELECT * FROM dynamic_qr_codes ORDER BY qrId")
-//    fun getAllDynamicQrCodes():LiveData<List<QREntity>>
+    @Query("SELECT * FROM barcode_history WHERE isDynamic=1 ORDER BY qrId")
+    fun getAllDynamicQrCodes():LiveData<List<CodeHistory>>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
     @Query("SELECT * FROM barcode_history ORDER BY qrId")

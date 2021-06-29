@@ -228,6 +228,8 @@
                     android:gravity="start"
                     android:hint="@string/feedback_comment_hint"
                     android:padding="10dp"
+                    android:enabled="false"
+                    android:alpha="0.4"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/feedback_rating_stars" />
@@ -252,6 +254,8 @@
                     android:gravity="start"
                     android:hint="@string/feedback_email_hint"
                     android:padding="10dp"
+                    android:enabled="false"
+                    android:alpha="0.4"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/feedback_contact_information_hint" />
@@ -265,6 +269,8 @@
                     android:gravity="start"
                     android:hint="@string/feedback_phone_number_hint"
                     android:padding="10dp"
+                    android:enabled="false"
+                    android:alpha="0.4"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/feedback_email_input_field" />

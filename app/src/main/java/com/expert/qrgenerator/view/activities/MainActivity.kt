@@ -1,8 +1,6 @@
 package com.expert.qrgenerator.view.activities
 
 import android.Manifest
-import android.accounts.Account
-import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -43,8 +41,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import com.google.android.gms.drive.Drive.SCOPE_APPFOLDER
-import com.google.android.gms.drive.Drive.SCOPE_FILE
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -58,20 +54,18 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.SheetsScopes
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-    OnCompleteAction {
+    OnCompleteAction,ScannerFragment.ScannerInterface {
 
 
     private lateinit var toolbar: Toolbar
@@ -97,7 +91,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var requestLogin:String?=null
 
     companion object {
-        lateinit var nextStepTextView: MaterialTextView
+//        lateinit var nextStepTextView: MaterialTextView
         lateinit var context: Context
     }
 
@@ -143,7 +137,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             startActivity(browserIntent)
         }
         mNavigation = findViewById(R.id.navigation)
-        nextStepTextView = findViewById(R.id.next_step_btn)
+//        nextStepTextView = findViewById(R.id.next_step_btn)
         bottomNavigation = findViewById(R.id.bottom_navigation)
         bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -152,16 +146,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         .replace(R.id.fragment_container, ScannerFragment(), "scanner")
                         .addToBackStack("scanner")
                         .commit()
-                    nextStepTextView.visibility = View.GONE
-                    historyBtn.visibility = View.VISIBLE
+//                    nextStepTextView.visibility = View.GONE
+//                    historyBtn.visibility = View.VISIBLE
                 }
                 R.id.bottom_generator -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, GeneratorFragment(), "generator")
                         .addToBackStack("generator")
                         .commit()
-                    historyBtn.visibility = View.GONE
-                    nextStepTextView.visibility = View.VISIBLE
+//                    historyBtn.visibility = View.GONE
+//                    nextStepTextView.visibility = View.VISIBLE
                 }
                 else -> {
 
@@ -174,15 +168,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         if (intent != null && intent.hasExtra("KEY") && intent.getStringExtra("KEY") == "generator"){
             bottomNavigation.selectedItemId = R.id.bottom_generator
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, GeneratorFragment(), "generator")
+                .replace(R.id.fragment_container, GeneratorFragment(), "generator")
                 .addToBackStack("generator")
                 .commit()
-            historyBtn.visibility = View.GONE
-            nextStepTextView.visibility = View.VISIBLE
+            //historyBtn.visibility = View.GONE
+//            nextStepTextView.visibility = View.VISIBLE
         }
         else{
-            nextStepTextView.visibility = View.GONE
-            historyBtn.visibility = View.VISIBLE
+//            nextStepTextView.visibility = View.GONE
+            //historyBtn.visibility = View.VISIBLE
             supportFragmentManager.beginTransaction().add(
                 R.id.fragment_container,
                 ScannerFragment(),
@@ -223,12 +217,22 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun setUpToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar!!.title = getString(R.string.app_name)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
 
         val toggle = ActionBarDrawerToggle(this, mDrawer, toolbar, 0, 0)
         mDrawer.addDrawerListener(toggle)
         toggle.syncState()
         mNavigation.setNavigationItemSelectedListener(this)
+
+        toolbar.setNavigationOnClickListener {
+            hideSoftKeyboard(context, mDrawer)
+            if(mDrawer.isDrawerOpen(GravityCompat.START)){
+                mDrawer.closeDrawer(GravityCompat.START)
+            }else {
+                mDrawer.openDrawer(GravityCompat.START)
+            }
+        }
     }
 
     // THIS FUNCTION WILL INITIALIZE THE GOOGLE LOGIN PARAMETERS
@@ -316,10 +320,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 Constants.userData = user
                 if (isLastSignUser == "new") {
                     appSettings.putBoolean(Constants.isLogin, true)
-                    Toast.makeText(context,"User has been signIn successfully!",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "User has been signIn successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 if (requestLogin!!.isNotEmpty() && requestLogin == "login"){
-                    startActivity(Intent(context,TablesActivity::class.java))
+                    startActivity(Intent(context, TablesActivity::class.java))
                 }
             }
             // ELSE PART WILL WORK WHEN USER LOGGED BUT ACCOUNT DETAIL EMPTY
@@ -345,6 +353,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+
         when (item.itemId) {
             R.id.dynamic_links -> {
                 startActivity(Intent(context, DynamicQrActivity::class.java))
@@ -356,6 +365,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     startLogin()
                 }
 
+            }
+            R.id.nav_setting -> {
+                startActivity(Intent(context, SettingsActivity::class.java))
             }
             R.id.tables -> {
                 startActivity(Intent(context, TablesActivity::class.java))
@@ -397,6 +409,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
         mDrawer.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            android.R.id.home -> {
+                //hideSoftKeyboard(context, mDrawer)
+                return true
+            }
+            else ->{
+                super.onOptionsItemSelected(item)
+            }
+        }
+
     }
 
     private fun startLogin() {
@@ -650,6 +675,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //                saveToDriveAppFolder();
 
         }
+    }
+
+    override fun login() {
+        startLogin()
     }
 
 }

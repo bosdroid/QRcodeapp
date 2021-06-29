@@ -545,7 +545,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         snTitleEditText.setText(item.title)
         val snDescriptionEditText =
             snLayout.findViewById<TextInputEditText>(R.id.sn_description_input_field)
-        snDescriptionEditText.setText(item.url)
+        snDescriptionEditText.hint = item.url
         val cancelBtn = snLayout.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
         val updateBtn = snLayout.findViewById<MaterialButton>(R.id.dialog_update_btn)
 

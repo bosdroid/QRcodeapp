@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.QREntity
 import com.google.android.material.textview.MaterialTextView
 
-class DynamicQrAdapter(val context: Context,var dynamicQrList:ArrayList<QREntity>): RecyclerView.Adapter<DynamicQrAdapter.ItemViewHolder>() {
+class DynamicQrAdapter(val context: Context,var dynamicQrList:ArrayList<CodeHistory>): RecyclerView.Adapter<DynamicQrAdapter.ItemViewHolder>() {
 
     private var listener: OnItemClickListener? = null
 
@@ -47,7 +48,7 @@ class DynamicQrAdapter(val context: Context,var dynamicQrList:ArrayList<QREntity
         val dynamicQr = dynamicQrList[position]
 
         holder.qrIdView.text = dynamicQr.qrId
-        holder.qrBaseUrlView.text = dynamicQr.userUrl
+        holder.qrBaseUrlView.text = dynamicQr.data
         holder.qrUrlView.text = dynamicQr.generatedUrl
     }
 

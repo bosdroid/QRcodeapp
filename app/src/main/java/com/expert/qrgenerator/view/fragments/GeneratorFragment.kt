@@ -13,10 +13,7 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TypesAdapter
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.utils.Constants
-import com.expert.qrgenerator.view.activities.CouponQrActivity
-import com.expert.qrgenerator.view.activities.FeedbackQrActivity
-import com.expert.qrgenerator.view.activities.MainActivity
-import com.expert.qrgenerator.view.activities.SocialNetworksQrActivity
+import com.expert.qrgenerator.view.activities.*
 
 
 class GeneratorFragment : Fragment() {
@@ -32,7 +29,7 @@ class GeneratorFragment : Fragment() {
         val v = inflater.inflate(R.layout.fragment_generator, container, false)
 
         initViews(v)
-        renderQRTypesRecyclerview()
+
         return v
     }
 
@@ -40,7 +37,7 @@ class GeneratorFragment : Fragment() {
     private fun initViews(view: View){
         qrTypesRecyclerView = view.findViewById(R.id.types_recycler_view)
         layoutContainer = view.findViewById(R.id.layout_container)
-        Constants.getLayout(requireActivity(), 0, layoutContainer, MainActivity.nextStepTextView)
+
     }
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL QR TYPES LIST
@@ -52,28 +49,41 @@ class GeneratorFragment : Fragment() {
             false
         )
         qrTypesRecyclerView.hasFixedSize()
-        qrTypeList.addAll(Constants.getQRTypes(requireActivity()))
+        val tempList = Constants.getQRTypes(requireActivity())
+        if (tempList.isNotEmpty()){
+            qrTypeList.clear()
+        }
+        qrTypeList.addAll(tempList)
         typesAdapter = TypesAdapter(requireActivity(), qrTypeList)
         qrTypesRecyclerView.adapter = typesAdapter
+        typesAdapter.updatePosition(0)
         typesAdapter.setOnItemClickListener(object : TypesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val qrType = qrTypeList[position]
                 if (position == 9) {
+                    BaseActivity.hideSoftKeyboard(requireActivity(),layoutContainer)
                     requireActivity().startActivity(Intent(requireActivity(), CouponQrActivity::class.java))
                 }
                 else if (position == 10){
+                    BaseActivity.hideSoftKeyboard(requireActivity(),layoutContainer)
                     requireActivity().startActivity(Intent(requireActivity(), FeedbackQrActivity::class.java))
                 }
                 else if (position == 11){
+                    BaseActivity.hideSoftKeyboard(requireActivity(),layoutContainer)
                     requireActivity().startActivity(Intent(requireActivity(), SocialNetworksQrActivity::class.java))
                 }
                 else {
-                    Constants.getLayout(requireActivity(), position, layoutContainer, MainActivity.nextStepTextView)
+                    Constants.getLayout(requireActivity(), position, layoutContainer)
                 }
 
             }
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        Constants.getLayout(requireActivity(), 0, layoutContainer)
+        renderQRTypesRecyclerview()
+    }
 
 }

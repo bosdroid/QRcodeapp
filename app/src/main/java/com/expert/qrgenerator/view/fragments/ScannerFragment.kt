@@ -17,9 +17,11 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -31,6 +33,7 @@ import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.utils.*
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
+import com.expert.qrgenerator.view.activities.MainActivity
 import com.expert.qrgenerator.view.activities.TablesActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -64,9 +67,15 @@ class ScannerFragment : Fragment() {
     private lateinit var appSettings: AppSettings
     private var imageDrivePath = ""
     private var isFileSelected = false
+    private var listener: ScannerInterface? = null
+
+    interface ScannerInterface {
+        fun login()
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        listener = context as ScannerInterface
         appSettings = AppSettings(requireActivity())
         appViewModel = ViewModelProvider(
             this,
@@ -172,160 +181,181 @@ class ScannerFragment : Fragment() {
 //                                    BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis())
 //                                )
 //                            } else {
-                                if (tableName.isEmpty()) {
-                                    BaseActivity.showAlert(requireActivity(), text)
-                                } else {
-                                    val columns = tableGenerator.getTableColumns(tableName)
-                                    val scanResultLayout = LayoutInflater.from(requireActivity())
-                                        .inflate(R.layout.scan_result_dialog, null)
-                                    val codeDataTInputView =
-                                        scanResultLayout.findViewById<TextInputEditText>(R.id.scan_result_dialog_code_data)
-                                    val tableDetailLayoutWrapper =
-                                        scanResultLayout.findViewById<LinearLayout>(R.id.table_detail_layout_wrapper)
-                                    val submitBtn =
-                                        scanResultLayout.findViewById<MaterialButton>(R.id.scan_result_dialog_submit_btn)
-                                    val addImageCheckBox =
-                                        scanResultLayout.findViewById<MaterialCheckBox>(R.id.add_image_checkbox)
-                                    val imageSourcesWrapperLayout =
-                                        scanResultLayout.findViewById<LinearLayout>(R.id.image_sources_layout)
-                                    filePathView =
-                                        scanResultLayout.findViewById<MaterialTextView>(R.id.filePath)
+                            if (tableName.isEmpty()) {
+                                BaseActivity.showAlert(requireActivity(), text)
+                            } else {
+                                val columns = tableGenerator.getTableColumns(tableName)
+                                val scanResultLayout = LayoutInflater.from(requireActivity())
+                                    .inflate(R.layout.scan_result_dialog, null)
+                                val codeDataTInputView =
+                                    scanResultLayout.findViewById<TextInputEditText>(R.id.scan_result_dialog_code_data)
+                                val tableDetailLayoutWrapper =
+                                    scanResultLayout.findViewById<LinearLayout>(R.id.table_detail_layout_wrapper)
+                                val submitBtn =
+                                    scanResultLayout.findViewById<MaterialButton>(R.id.scan_result_dialog_submit_btn)
+                                val addImageCheckBox =
+                                    scanResultLayout.findViewById<MaterialCheckBox>(R.id.add_image_checkbox)
+                                val imageSourcesWrapperLayout =
+                                    scanResultLayout.findViewById<LinearLayout>(R.id.image_sources_layout)
+                                filePathView =
+                                    scanResultLayout.findViewById<MaterialTextView>(R.id.filePath)
 
-                                    addImageCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                                        if (isChecked) {
-                                            if (Constants.userData == null){
-                                                addImageCheckBox.isChecked = false
-                                                BaseActivity.showAlert(requireActivity(),"You can't use this feature without login!")
-                                            }
-                                            else{
-                                                imageSourcesWrapperLayout.visibility = View.VISIBLE
-                                                filePathView!!.visibility = View.VISIBLE
-                                            }
-
-                                        } else {
-                                            imageSourcesWrapperLayout.visibility = View.GONE
-                                            filePathView!!.visibility = View.GONE
-                                        }
-                                    }
-
-                                    val cameraImageView =
-                                        scanResultLayout.findViewById<AppCompatImageView>(R.id.camera_image_view)
-                                    val imagesImageView =
-                                        scanResultLayout.findViewById<AppCompatImageView>(R.id.images_image_view)
-
-                                    cameraImageView.setOnClickListener {
-                                        if (RuntimePermissionHelper.checkCameraPermission(
-                                                requireActivity(),
-                                                Constants.CAMERA_PERMISSION
-                                            )
-                                        ) {
-                                            //dispatchTakePictureIntent()
-                                            val cameraIntent =
-                                                Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                            cameraResultLauncher.launch(cameraIntent)
-                                        }
-                                    }
-
-                                    imagesImageView.setOnClickListener {
-                                        if (RuntimePermissionHelper.checkStoragePermission(
-                                                requireActivity(),
-                                                Constants.READ_STORAGE_PERMISSION
-                                            )
-                                        ) {
-                                            getImageFromGallery()
-                                        }
-                                    }
-
-                                    for (i in columns!!.indices) {
-                                        val value = columns[i]
-                                        if (value == "id") {
-                                            continue
-                                        } else if (value == "code_data") {
-                                            textInputIdsList.add(Pair(value, codeDataTInputView))
-                                            codeDataTInputView.setText(text)
-                                        } else {
-                                            val tableRowLayout =
-                                                LayoutInflater.from(requireContext())
-                                                    .inflate(
-                                                        R.layout.scan_result_table_row_layout,
-                                                        null
-                                                    )
-                                            val columnName =
-                                                tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
-                                            val columnValue =
-                                                tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
-                                            val columnDropdown =
-                                                tableRowLayout.findViewById<AppCompatSpinner>(R.id.table_column_dropdown)
-                                            val columnDropDwonLayout =
-                                                tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
-                                            columnName.text = value
-                                            val fieldList = tableGenerator.getFieldList(value, tableName)
-
-                                            if (fieldList.isNotEmpty()) {
-                                                if (fieldList.contains(",") || !fieldList.contains(",")) {
-                                                    arrayList.addAll(fieldList.split(","))
-                                                    if (arrayList.isEmpty() && fieldList.length == 1){
-                                                        arrayList.add(fieldList)
-                                                    }
-                                                    columnValue.visibility = View.GONE
-                                                    columnDropDwonLayout.visibility = View.VISIBLE
-                                                    val adapter = ArrayAdapter(
-                                                        requireContext(),
-                                                        android.R.layout.simple_spinner_item,
-                                                        arrayList
-                                                    )
-                                                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                                                    columnDropdown.adapter = adapter
-                                                    spinnerIdsList.add(Pair(value, columnDropdown))
-                                                } else {
-                                                    columnDropDwonLayout.visibility = View.GONE
-                                                    columnValue.visibility = View.VISIBLE
-                                                    columnValue.setText(
-                                                        fieldList
-                                                    )
-                                                    columnValue.isEnabled = false
-                                                    columnValue.isFocusable = false
-                                                    columnValue.isFocusableInTouchMode = false
+                                addImageCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+                                    if (isChecked) {
+                                        if (Constants.userData == null) {
+                                            addImageCheckBox.isChecked = false
+                                            MaterialAlertDialogBuilder(requireActivity())
+                                                .setTitle("Alert!")
+                                                .setMessage("You can't use this feature without login!")
+                                                .setNegativeButton("LATER") { dialog, which ->
+                                                    dialog.dismiss()
                                                 }
+                                                .setPositiveButton("LOGIN") { dialog, which ->
+                                                    dialog.dismiss()
+                                                    listener!!.login()
+                                                }
+                                                .create().show()
+                                        } else {
+                                            imageSourcesWrapperLayout.visibility = View.VISIBLE
+                                            filePathView!!.visibility = View.VISIBLE
+                                        }
 
+                                    } else {
+                                        imageSourcesWrapperLayout.visibility = View.GONE
+                                        filePathView!!.visibility = View.GONE
+                                    }
+                                }
+
+                                val cameraImageView =
+                                    scanResultLayout.findViewById<AppCompatImageView>(R.id.camera_image_view)
+                                val imagesImageView =
+                                    scanResultLayout.findViewById<AppCompatImageView>(R.id.images_image_view)
+
+                                cameraImageView.setOnClickListener {
+                                    if (RuntimePermissionHelper.checkCameraPermission(
+                                            requireActivity(),
+                                            Constants.CAMERA_PERMISSION
+                                        )
+                                    ) {
+                                        //dispatchTakePictureIntent()
+                                        val cameraIntent =
+                                            Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                        cameraResultLauncher.launch(cameraIntent)
+                                    }
+                                }
+
+                                imagesImageView.setOnClickListener {
+                                    if (RuntimePermissionHelper.checkStoragePermission(
+                                            requireActivity(),
+                                            Constants.READ_STORAGE_PERMISSION
+                                        )
+                                    ) {
+                                        getImageFromGallery()
+                                    }
+                                }
+
+                                for (i in columns!!.indices) {
+                                    val value = columns[i]
+                                    if (value == "id") {
+                                        continue
+                                    } else if (value == "code_data") {
+                                        textInputIdsList.add(Pair(value, codeDataTInputView))
+                                        codeDataTInputView.setText(text)
+                                    } else {
+                                        val tableRowLayout =
+                                            LayoutInflater.from(requireContext())
+                                                .inflate(
+                                                    R.layout.scan_result_table_row_layout,
+                                                    null
+                                                )
+                                        val columnName =
+                                            tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
+                                        val columnValue =
+                                            tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
+                                        val columnDropdown =
+                                            tableRowLayout.findViewById<AppCompatSpinner>(R.id.table_column_dropdown)
+                                        val columnDropDwonLayout =
+                                            tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
+                                        columnName.text = value
+                                        val fieldList = tableGenerator.getFieldList(value, tableName)
+
+                                        if (fieldList.isNotEmpty()) {
+                                            arrayList = mutableListOf()
+                                            if (!fieldList.contains(",")) {
+                                                arrayList.add(fieldList)
+
+                                                columnValue.visibility = View.GONE
+                                                columnDropDwonLayout.visibility = View.VISIBLE
+                                                val adapter = ArrayAdapter(
+                                                    requireContext(),
+                                                    android.R.layout.simple_spinner_item,
+                                                    arrayList
+                                                )
+                                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                                columnDropdown.adapter = adapter
+                                                spinnerIdsList.add(Pair(value, columnDropdown))
+                                            } else if (fieldList.contains(",")) {
+
+                                                arrayList.addAll(fieldList.split(","))
+
+                                                columnValue.visibility = View.GONE
+                                                columnDropDwonLayout.visibility = View.VISIBLE
+                                                val adapter = ArrayAdapter(
+                                                    requireContext(),
+                                                    android.R.layout.simple_spinner_item,
+                                                    arrayList
+                                                )
+                                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                                columnDropdown.adapter = adapter
+                                                spinnerIdsList.add(Pair(value, columnDropdown))
                                             } else {
-                                                if (value == "image") {
-                                                    textInputIdsList.add(Pair(value, columnValue))
-                                                    continue
-                                                }
                                                 columnDropDwonLayout.visibility = View.GONE
                                                 columnValue.visibility = View.VISIBLE
-
-                                                if (value == "date") {
-                                                    columnValue.setText(
-                                                        BaseActivity.getDateTimeFromTimeStamp(
-                                                            System.currentTimeMillis()
-                                                        )
-                                                    )
-                                                    columnValue.isEnabled = false
-                                                    columnValue.isFocusable = false
-                                                    columnValue.isFocusableInTouchMode = false
-                                                } else {
-                                                    columnValue.isEnabled = true
-                                                    columnValue.isFocusable = true
-                                                    columnValue.isFocusableInTouchMode = true
-                                                    columnValue.setText("")
-                                                }
-                                                textInputIdsList.add(Pair(value, columnValue))
+                                                columnValue.setText(
+                                                    fieldList
+                                                )
+                                                columnValue.isEnabled = false
+                                                columnValue.isFocusable = false
+                                                columnValue.isFocusableInTouchMode = false
                                             }
-                                            tableDetailLayoutWrapper.addView(tableRowLayout)
+
+                                        } else {
+                                            if (value == "image") {
+                                                textInputIdsList.add(Pair(value, columnValue))
+                                                continue
+                                            }
+                                            columnDropDwonLayout.visibility = View.GONE
+                                            columnValue.visibility = View.VISIBLE
+
+                                            if (value == "date") {
+                                                columnValue.setText(
+                                                    BaseActivity.getDateTimeFromTimeStamp(
+                                                        System.currentTimeMillis()
+                                                    )
+                                                )
+                                                columnValue.isEnabled = false
+                                                columnValue.isFocusable = false
+                                                columnValue.isFocusableInTouchMode = false
+                                            } else {
+                                                columnValue.isEnabled = true
+                                                columnValue.isFocusable = true
+                                                columnValue.isFocusableInTouchMode = true
+                                                columnValue.setText("")
+                                            }
+                                            textInputIdsList.add(Pair(value, columnValue))
                                         }
+                                        tableDetailLayoutWrapper.addView(tableRowLayout)
                                     }
+                                }
 
-                                    val builder = MaterialAlertDialogBuilder(requireActivity())
-                                    builder.setView(scanResultLayout)
-                                    builder.setCancelable(false)
-                                    val alert = builder.create()
-                                    alert.show()
+                                val builder = MaterialAlertDialogBuilder(requireActivity())
+                                builder.setView(scanResultLayout)
+                                builder.setCancelable(false)
+                                val alert = builder.create()
+                                alert.show()
 
-                                    submitBtn.setOnClickListener {
-                                        if (BaseActivity.isNetworkAvailable(requireActivity()))
-                                        {
+                                submitBtn.setOnClickListener {
+                                    if (BaseActivity.isNetworkAvailable(requireActivity())) {
                                         alert.dismiss()
                                         BaseActivity.startLoading(requireActivity())
                                         CoroutineScope(Dispatchers.IO).launch {
@@ -455,12 +485,79 @@ class ScannerFragment : Fragment() {
                                                 e.printStackTrace()
                                             }
                                         }
-                                        }
-                                        else{
-                                            BaseActivity.showAlert(requireActivity(),"TO UPLOAD AN IMAGE TURN ON THE INTERNET")
-                                        }
+                                    } else {
+                                        val b = MaterialAlertDialogBuilder(requireActivity())
+                                            .setCancelable(true)
+                                            .setTitle("Alert!")
+                                            .setMessage("To Upload an Image Turn on the Internet!")
+                                            .setNegativeButton("Close") { dialog, which ->
+                                                dialog.dismiss()
+                                            }
+                                            .setPositiveButton("Save without Image") { dialog, which ->
+                                                dialog.dismiss()
+                                                alert.dismiss()
+                                                val params = mutableListOf<Pair<String, String>>()
+                                                for (i in 0 until textInputIdsList.size) {
+                                                    val pair = textInputIdsList[i]
+                                                    // THIS WILL CHECK IF TEXTINPUTIDSLIST HAVE IMAGE PARAMETER THEN SET THE URL
+                                                    // WITH COLUMN IMAGE ELSE MAP THE OTHER TEXTINPUTIDS LIST OBJECTS
+                                                    if (pair.first == "image") {
+                                                        params.add(
+                                                            Pair(
+                                                                pair.first,
+                                                                pair.second.text.toString()
+                                                                    .trim()
+                                                            )
+                                                        )
+                                                    } else {
+                                                        params.add(
+                                                            Pair(
+                                                                pair.first,
+                                                                pair.second.text.toString()
+                                                                    .trim()
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                                // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED DROPDOWNS
+                                                for (j in 0 until spinnerIdsList.size) {
+                                                    val pair = spinnerIdsList[j]
+                                                    params.add(
+                                                        Pair(
+                                                            pair.first,
+                                                            pair.second.selectedItem.toString()
+                                                        )
+                                                    )
+                                                }
+                                                tableGenerator.insertData(tableName, params)
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    Handler(Looper.myLooper()!!).postDelayed({
+                                                        isFileSelected = false
+                                                        BaseActivity.dismiss()
+                                                        Toast.makeText(
+                                                            requireActivity(),
+                                                            "Scan data saved successfully!",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                        textInputIdsList.clear()
+                                                        spinnerIdsList.clear()
+                                                        params.clear()
+                                                        tableDetailLayoutWrapper.removeAllViews()
+                                                        startPreview()
+                                                    }, 1000)
+                                                }
+                                            }
+                                        val iAlert = b.create()
+                                        iAlert.show()
+                                        iAlert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                                            ContextCompat.getColor(
+                                                requireActivity(),
+                                                R.color.purple_700
+                                            )
+                                        )
                                     }
                                 }
+                            }
 //                            }
                         } else {
 
@@ -547,7 +644,7 @@ class ScannerFragment : Fragment() {
                 scannerView.setOnClickListener {
                     startPreview()
                 }
-               startPreview()
+                startPreview()
             }
         }
     }
@@ -573,12 +670,10 @@ class ScannerFragment : Fragment() {
             // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
             url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
             return true
-        }
-        catch (e:UserRecoverableAuthIOException){
+        } catch (e: UserRecoverableAuthIOException) {
             e.printStackTrace()
             return false
-        }
-        catch (e: GoogleJsonResponseException) {
+        } catch (e: GoogleJsonResponseException) {
             BaseActivity.showAlert(
                 requireActivity(),
                 e.details.message
@@ -609,7 +704,8 @@ class ScannerFragment : Fragment() {
                 val data: Intent? = result.data
                 if (data!!.data != null) {
                     val imageUri = data.data!!
-                    filePathView!!.text = ImageManager.getRealPathFromUri(requireActivity(), imageUri)
+                    filePathView!!.text =
+                        ImageManager.getRealPathFromUri(requireActivity(), imageUri)
                     isFileSelected = true
                 }
             }
