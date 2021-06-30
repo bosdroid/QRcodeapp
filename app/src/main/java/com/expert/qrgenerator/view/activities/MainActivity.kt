@@ -12,7 +12,6 @@ import android.os.StrictMode
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -41,6 +40,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.android.gms.drive.Drive.SCOPE_APPFOLDER
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -91,7 +91,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var requestLogin:String?=null
 
     companion object {
-//        lateinit var nextStepTextView: MaterialTextView
         lateinit var context: Context
     }
 
@@ -249,6 +248,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .requestEmail()
             .requestScopes(Scope(DriveScopes.DRIVE_FILE))
             .requestScopes(Scope(SheetsScopes.SPREADSHEETS))
+            .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(this, signInOptions)
 
@@ -570,7 +570,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onTypeSelected(data: String, position: Int, type: String) {
         var url = ""
         val hashMap = hashMapOf<String, String>()
-        hashMap["login"] = "sattar"
+        hashMap["login"] = "qrmagicapp"
         hashMap["qrId"] = System.currentTimeMillis().toString()
         hashMap["userType"] = "free"
         if (position == 2) {

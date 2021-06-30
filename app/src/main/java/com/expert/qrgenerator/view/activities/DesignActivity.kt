@@ -292,7 +292,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         // CLICK ON EACH IMAGE ITEM
         imageAdapter.setOnItemClickListener(object : ImageAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (imagePreviousPosition != position || !isBackgroundSet) {
+                if (imagePreviousPosition != position) {
                     imagePreviousPosition = position
                     qrImage = QRGenerator.generatorQRImage(
                         context,
@@ -300,7 +300,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                         "", imageList[position], ""
                     )
                     qrGeneratedImage.setImageBitmap(qrImage)
-                    isBackgroundSet = qrImage != null
+//                    isBackgroundSet = qrImage != null
                 }
             }
 
@@ -365,7 +365,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         // CLICK ON EACH COLOR ITEM
         colorAdapter.setOnItemClickListener(object : ColorAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (isBackgroundSet) {
+//                if (isBackgroundSet) {
                     colorAdapter.updateIcon(true)
                     if (previousPosition != position) {
                         previousPosition = position
@@ -377,10 +377,10 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                         )
                         qrGeneratedImage.setImageBitmap(qrImage)
                     }
-                } else {
-                    colorAdapter.updateIcon(false)
-                    showAlert(context, "Please select the background Image first!")
-                }
+//                } else {
+//                    colorAdapter.updateIcon(false)
+//                    showAlert(context, "Please select the background Image first!")
+//                }
 
             }
 
@@ -463,9 +463,9 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         // CLICK ON EACH IMAGE ITEM
         logoAdapter.setOnItemClickListener(object : LogoAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                if (isBackgroundSet) {
+//                if (isBackgroundSet) {
                     logoAdapter.updateIcon(true)
-                    if (logoPreviousPosition != position || isBackgroundSet) {
+                    if (logoPreviousPosition != position) {
                         logoPreviousPosition = position
                         qrImage = QRGenerator.generatorQRImage(
                             context,
@@ -474,10 +474,10 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                         )
                         qrGeneratedImage.setImageBitmap(qrImage)
                     }
-                } else {
-                    logoAdapter.updateIcon(false)
-                    showAlert(context, "Please select the background Image first!")
-                }
+//                } else {
+//                    logoAdapter.updateIcon(false)
+//                    showAlert(context, "Please select the background Image first!")
+//                }
             }
 
             // CLICK ON ADD BUTTON TO GET CUSTOM LOGO IMAGE
@@ -538,7 +538,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         fontAdapter.setOnItemClickListener(object : FontAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val font = fontList[position]
-                if (isBackgroundSet) {
+//                if (isBackgroundSet) {
                     fontAdapter.updateIcon(true)
                     if (previousPosition != position) {
                         previousPosition = position
@@ -546,10 +546,10 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                             setFontFamily(context, qrTextView, font.fontFile)
                         }
                     }
-                } else {
-                    fontAdapter.updateIcon(false)
-                    showAlert(context, "Please select the background Image first!")
-                }
+//                } else {
+//                    fontAdapter.updateIcon(false)
+//                    showAlert(context, "Please select the background Image first!")
+//                }
 
             }
         })
@@ -650,7 +650,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun quitWithoutSaveChanges() {
-        if (isBackgroundSet) {
+//        if (isBackgroundSet) {
             MaterialAlertDialogBuilder(context)
                 .setMessage("You made some design changes, Are you sure you want to leave?")
                 .setCancelable(false)
@@ -658,12 +658,13 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     dialog.dismiss()
                 }
                 .setPositiveButton("Leave") { dialog, which ->
+                    QRGenerator.resetQRGenerator()
                     super.onBackPressed()
                 }
                 .create().show()
-        } else {
-            super.onBackPressed()
-        }
+//        } else {
+//            super.onBackPressed()
+//        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -163,7 +163,7 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
                             url
                         }
 
-//                        appViewModel.update(inputValue,url,selectedDynamicUrl.id)
+                        appViewModel.update(inputValue,url,selectedDynamicUrl.id)
                         showAlert(context,"Dynamic Url update Successfully!")
                     }
                     else{

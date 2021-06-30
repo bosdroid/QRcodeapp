@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,9 @@ import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
 import com.expert.qrgenerator.view.activities.MainActivity
 import com.expert.qrgenerator.view.activities.TablesActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.Scope
+import com.google.android.gms.drive.Drive.SCOPE_APPFOLDER
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -44,6 +48,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -277,12 +282,12 @@ class ScannerFragment : Fragment() {
                                         val columnDropDwonLayout =
                                             tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
                                         columnName.text = value
-                                        val fieldList = tableGenerator.getFieldList(value, tableName)
+                                        val pair = tableGenerator.getFieldList(value, tableName)
 
-                                        if (fieldList.isNotEmpty()) {
+                                        if (pair != null) {
                                             arrayList = mutableListOf()
-                                            if (!fieldList.contains(",")) {
-                                                arrayList.add(fieldList)
+                                            if (!pair.first.contains(",") && pair.second == "listWithValues") {
+                                                arrayList.add(pair.first)
 
                                                 columnValue.visibility = View.GONE
                                                 columnDropDwonLayout.visibility = View.VISIBLE
@@ -294,9 +299,9 @@ class ScannerFragment : Fragment() {
                                                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                                                 columnDropdown.adapter = adapter
                                                 spinnerIdsList.add(Pair(value, columnDropdown))
-                                            } else if (fieldList.contains(",")) {
+                                            } else if (pair.first.contains(",") && pair.second == "listWithValues") {
 
-                                                arrayList.addAll(fieldList.split(","))
+                                                arrayList.addAll(pair.first.split(","))
 
                                                 columnValue.visibility = View.GONE
                                                 columnDropDwonLayout.visibility = View.VISIBLE
@@ -312,7 +317,7 @@ class ScannerFragment : Fragment() {
                                                 columnDropDwonLayout.visibility = View.GONE
                                                 columnValue.visibility = View.VISIBLE
                                                 columnValue.setText(
-                                                    fieldList
+                                                    pair.first
                                                 )
                                                 columnValue.isEnabled = false
                                                 columnValue.isFocusable = false
@@ -324,6 +329,7 @@ class ScannerFragment : Fragment() {
                                                 textInputIdsList.add(Pair(value, columnValue))
                                                 continue
                                             }
+
                                             columnDropDwonLayout.visibility = View.GONE
                                             columnValue.visibility = View.VISIBLE
 
@@ -355,6 +361,7 @@ class ScannerFragment : Fragment() {
                                 alert.show()
 
                                 submitBtn.setOnClickListener {
+
                                     if (BaseActivity.isNetworkAvailable(requireActivity())) {
                                         alert.dismiss()
                                         BaseActivity.startLoading(requireActivity())
@@ -671,7 +678,8 @@ class ScannerFragment : Fragment() {
             url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
             return true
         } catch (e: UserRecoverableAuthIOException) {
-            e.printStackTrace()
+//            Log.d("TEST199",e.localizedMessage!!)
+//            userAuthLauncher.launch(e.intent)
             return false
         } catch (e: GoogleJsonResponseException) {
             BaseActivity.showAlert(
@@ -694,6 +702,14 @@ class ScannerFragment : Fragment() {
         fileIntent.type = "image/*"
         resultLauncher.launch(fileIntent)
     }
+
+//    private var userAuthLauncher =
+//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//
+//            if (result.resultCode == Activity.RESULT_OK) {
+//
+//            }
+//        }
 
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

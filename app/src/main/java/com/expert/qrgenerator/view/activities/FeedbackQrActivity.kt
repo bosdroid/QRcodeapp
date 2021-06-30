@@ -168,7 +168,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
 
                                 // SETUP QR DATA HASMAP FOR HISTORY
                                 val qrData = hashMapOf<String, String>()
-                                qrData["login"] = "sattar"
+                                qrData["login"] = "qrmagicapp"
                                 qrData["qrId"] = qrId
                                 qrData["userType"] = "free"
 

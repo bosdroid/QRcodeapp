@@ -234,7 +234,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                             Pair(fieldName, "TEXT"),
                             defaultColumnValue
                         )
-                        tableGenerator.insertFieldList(fieldName,tableName,defaultColumnValue)
+                        tableGenerator.insertFieldList(fieldName,tableName,defaultColumnValue,"non_changeable")
                     }
                     else if(fieldType == "listWithValues"){
                         tableGenerator.addNewColumn(
@@ -243,7 +243,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                             ""
                         )
                         val listOptions:String = tableGenerator.getListValues(listId!!)
-                        tableGenerator.insertFieldList(fieldName,tableName,listOptions)
+                        tableGenerator.insertFieldList(fieldName,tableName,listOptions,"listWithValues")
                     }
 
 

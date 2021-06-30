@@ -27,6 +27,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         private const val LIST_COLUMN_FIELD_NAME = "field_name"
         private const val LIST_COLUMN_TABLE_NAME = "table_name"
         private const val LIST_COLUMN_OPTIONS = "options"
+        private const val LIST_COLUMN_TYPE = "type"
 
         private const val L_TABLE_NAME = "list"
         private const val L_COLUMN_ID = "id"
@@ -43,7 +44,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CODE_DATA + " TEXT," + COLUMN_DATE + " TEXT,"+COLUMN_IMAGE+" TEXT)")
 
         val listFieldTable =
-            ("CREATE TABLE IF NOT EXISTS $LIST_FIELDS_TABLE_NAME($LIST_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$LIST_COLUMN_FIELD_NAME TEXT,$LIST_COLUMN_TABLE_NAME TEXT,$LIST_COLUMN_OPTIONS TEXT)")
+            ("CREATE TABLE IF NOT EXISTS $LIST_FIELDS_TABLE_NAME($LIST_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$LIST_COLUMN_FIELD_NAME TEXT,$LIST_COLUMN_TABLE_NAME TEXT,$LIST_COLUMN_OPTIONS TEXT, $LIST_COLUMN_TYPE TEXT)")
 
         val listTable =
             ("CREATE TABLE IF NOT EXISTS $L_TABLE_NAME($L_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$L_COLUMN_LIST_NAME TEXT)")
@@ -83,7 +84,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                     )
 
                     if (columns!!.size >= 5) {
-                        for (i in 3 until columns.size) {
+                        for (i in 4 until columns.size) {
                             val col = columns[i]
                             var pair: Pair<String, String>? = null
                             pair = Pair(col, cursor.getString(i))
@@ -236,19 +237,20 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         return count > 0
     }
 
-    fun insertFieldList(fieldName: String, tableName: String, options: String) {
+    fun insertFieldList(fieldName: String, tableName: String, options: String,type:String) {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(LIST_COLUMN_FIELD_NAME, fieldName)
         values.put(LIST_COLUMN_TABLE_NAME, tableName)
         values.put(LIST_COLUMN_OPTIONS, options)
+        values.put(LIST_COLUMN_TYPE, type)
         db.insert(LIST_FIELDS_TABLE_NAME, null, values)
         db.close()
     }
 
-    fun getFieldList(fieldName: String, tableName: String): String {
+    fun getFieldList(fieldName: String, tableName: String): Pair<String,String>? {
         val db = this.readableDatabase
-        var options = ""
+        var options: Pair<String,String>?=null
 
         val selectQuery = "SELECT  * FROM $LIST_FIELDS_TABLE_NAME WHERE $LIST_COLUMN_FIELD_NAME='${
             fieldName.toLowerCase(
@@ -260,7 +262,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         if (cursor != null){
             if (cursor.moveToFirst()) {
                 do {
-                    options = cursor.getString(3)
+                    options = Pair(cursor.getString(3),cursor.getString(4))
 
                 } while (cursor.moveToNext())
             }
@@ -269,7 +271,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             return options
         }
         else{
-            return ""
+            return null
         }
 
     }

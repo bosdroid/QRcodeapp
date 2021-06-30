@@ -145,12 +145,7 @@ class Constants {
                         }
                     }
                     textInputBox.requestFocus()
-                    val imm: InputMethodManager? =
-                        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-                    imm!!.toggleSoftInput(
-                        InputMethodManager.SHOW_FORCED,
-                        InputMethodManager.HIDE_IMPLICIT_ONLY
-                    )
+                    openKeyboar(context)
 
                 }
                 1 -> {
@@ -220,6 +215,8 @@ class Constants {
 
                         }
                     }
+                    websiteInputBox.requestFocus()
+                    openKeyboar(context)
                 }
                 2 -> {
                     var selectedProtocol = ""
@@ -285,6 +282,8 @@ class Constants {
 
                         }
                     }
+                    websiteInputBox.requestFocus()
+                    openKeyboar(context)
                 }
                 3 -> {
                     val contactView =
@@ -349,6 +348,8 @@ class Constants {
                             )
                         }
                     }
+                    contactNameInputBox.requestFocus()
+                    openKeyboar(context)
                 }
                 4 -> {
                     val wifiView =
@@ -402,6 +403,8 @@ class Constants {
                             )
                         }
                     }
+                    wifiNetWorkName.requestFocus()
+                    openKeyboar(context)
                 }
                 5 -> {
                     val phoneView =
@@ -438,6 +441,8 @@ class Constants {
                             )
                         }
                     }
+                    phoneCcInputBox.requestFocus()
+                    openKeyboar(context)
                 }
                 6 -> {
                     val smsView =
@@ -479,6 +484,8 @@ class Constants {
                             )
                         }
                     }
+                    smsCcInputBox.requestFocus()
+                    openKeyboar(context)
                 }
                 7 -> {
                     val instagramView =
@@ -509,6 +516,8 @@ class Constants {
                             )
                         }
                     }
+                    instagramInputBox.requestFocus()
+                    openKeyboar(context)
                 }
                 8 -> {
                     val whatsappView =
@@ -552,12 +561,22 @@ class Constants {
                             )
                         }
                     }
+                    whatsappCcInputBox.requestFocus()
+                    openKeyboar(context)
                 }
                 else -> {
 
                 }
             }
 
+        }
+
+        private fun openKeyboar(context: Context){
+            val imm: InputMethodManager? = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+            imm!!.toggleSoftInput(
+                InputMethodManager.SHOW_FORCED,
+                InputMethodManager.HIDE_IMPLICIT_ONLY
+            )
         }
 
         fun d(TAG: String?, message: String) {

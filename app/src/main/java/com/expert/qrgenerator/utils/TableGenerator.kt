@@ -44,11 +44,11 @@ class TableGenerator(context: Context) {
         database.insertDefaultTable(code_data,date)
     }
 
-    fun insertFieldList(fieldName:String,tableName: String,options:String){
-        database.insertFieldList(fieldName,tableName,options)
+    fun insertFieldList(fieldName:String,tableName: String,options:String,type:String){
+        database.insertFieldList(fieldName,tableName,options,type)
     }
 
-    fun getFieldList(fieldName: String,tableName: String):String{
+    fun getFieldList(fieldName: String,tableName: String):Pair<String,String>?{
         return database.getFieldList(fieldName,tableName)
     }
 

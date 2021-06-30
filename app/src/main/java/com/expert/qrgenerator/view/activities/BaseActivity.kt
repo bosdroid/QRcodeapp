@@ -239,6 +239,8 @@ open class BaseActivity : AppCompatActivity() {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
 
+
+
     }
 
 }

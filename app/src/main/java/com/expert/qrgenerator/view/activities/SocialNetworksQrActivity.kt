@@ -273,7 +273,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
 
                             // SETUP QR DATA HASMAP FOR HISTORY
                             val qrData = hashMapOf<String, String>()
-                            qrData["login"] = "sattar"
+                            qrData["login"] = "qrmagicapp"
                             qrData["qrId"] = "${System.currentTimeMillis()}"
                             qrData["userType"] = "free"
 
