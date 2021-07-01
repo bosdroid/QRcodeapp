@@ -48,7 +48,7 @@ class ScannerFragment : Fragment() {
     private lateinit var appViewModel: AppViewModel
     private lateinit var prefs: SharedPreferences
 
-    //
+    // Vars for Ml Kit Bar code Scanner
     private var cameraProviderFuture: ListenableFuture<*>? = null
     private var cameraExecutor: ExecutorService? = null
     private var previewView: PreviewView? = null
@@ -81,6 +81,8 @@ class ScannerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // You can uncomment these line of codes if want to test MlScanner directly on start of app
 //        if (RuntimePermissionHelper.checkCameraPermission(
 //                requireActivity(),
 //                Constants.CAMERA_PERMISSION
@@ -91,10 +93,13 @@ class ScannerFragment : Fragment() {
 
     }
 
+    // This method will initialize the important libraries or API need to run Scanner
     private fun initMlScanner() {
         requireActivity().window.setFlags(1024, 1024)
-        mBinding.container.visibility = View.VISIBLE
+        //Hiding the budiyev scanner(first scanner)  and showing the mlScanner
+        mBinding.mlScannercontainer.visibility = View.VISIBLE
         mBinding.scannerView.visibility = View.GONE
+
         mBinding.flashImg.setOnClickListener { view: View? ->
             if (cam != null) {
                 Log.d("TAG", "initMlScanner: ")
@@ -131,9 +136,9 @@ class ScannerFragment : Fragment() {
 
 
     private fun initViews() {
-        mBinding.container.visibility = View.GONE
+        //Hiding the mlScanner on start and showing the budiyev scanner(first scanner)
+        mBinding.mlScannercontainer.visibility = View.GONE
         mBinding.scannerView.visibility = View.VISIBLE
-//        scannerView = view.findViewById(R.id.scanner_view)
     }
 
     private fun startScanner() {
@@ -201,7 +206,7 @@ class ScannerFragment : Fragment() {
 
                                 appViewModel.insert(qrHistory)
 
-                            } else {
+                            } else if (CodeScanner.TWO_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
                                 qrHistory = CodeHistory(
                                     "sattar",
                                     "${System.currentTimeMillis()}",
@@ -216,6 +221,15 @@ class ScannerFragment : Fragment() {
                                     System.currentTimeMillis()
                                 )
                                 appViewModel.insert(qrHistory)
+                            } else {
+//                                This else part will run when first scanner will fail to find the QR types
+                                if (RuntimePermissionHelper.checkCameraPermission(
+                                        requireActivity(),
+                                        Constants.CAMERA_PERMISSION
+                                    )
+                                ) {
+                                    initMlScanner()
+                                }
                             }
                             playSound(true)
                             generateVibrate()
@@ -231,6 +245,7 @@ class ScannerFragment : Fragment() {
                                 requireActivity().startActivity(intent)
                             }, 2000)
                         } else {
+//                          This part of the code will trigger Ml Scanner if first scanner return the empty text
                             if (RuntimePermissionHelper.checkCameraPermission(
                                     requireActivity(),
                                     Constants.CAMERA_PERMISSION
@@ -242,6 +257,7 @@ class ScannerFragment : Fragment() {
                         }
 
                         if (it.text == null || it.text.isEmpty()) {
+//                            This part of the code will trigger Ml Scanner if first scanner return the empty or null text
                             if (RuntimePermissionHelper.checkCameraPermission(
                                     requireActivity(),
                                     Constants.CAMERA_PERMISSION
@@ -256,6 +272,7 @@ class ScannerFragment : Fragment() {
                     }
                 }
                 if (decodeCallback == null) {
+//                    if decode callbacks of first scanner will be null Ml scanner will trigger
                     if (RuntimePermissionHelper.checkCameraPermission(
                             requireActivity(),
                             Constants.CAMERA_PERMISSION
@@ -266,6 +283,7 @@ class ScannerFragment : Fragment() {
                 }
 
                 errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
+//                    if first scanner causes some error or failed to start  Ml scanner will trigger
                     if (RuntimePermissionHelper.checkCameraPermission(
                             requireActivity(),
                             Constants.CAMERA_PERMISSION
@@ -419,15 +437,14 @@ class ScannerFragment : Fragment() {
         )
     }
 
+    // This inner class have the ability to analyse the Qr images and identify their types.
     inner class MyImageAnalyzer(supportFragmentManager: FragmentManager) : ImageAnalysis.Analyzer {
         var count = 0;
         private var fragmentManager: FragmentManager? = null
         val appViewModel = ViewModelProvider(requireActivity()).get(AppViewModel::class.java)
-//        var bottomDialog: BottomDialog? = null
 
         init {
             this.fragmentManager = supportFragmentManager
-//            bottomDialog = BottomDialog()
         }
 
         override fun analyze(image: ImageProxy) {
@@ -435,6 +452,7 @@ class ScannerFragment : Fragment() {
         }
 
 
+        // This method defines the type of codes that ML Scanner can support or Scan
         private fun scanBarCode(image: ImageProxy) {
             @SuppressLint("UnsafeOptInUsageError") val image1 = image.image!!
             val inputImage = InputImage.fromMediaImage(image1, image.imageInfo.rotationDegrees)
@@ -456,14 +474,14 @@ class ScannerFragment : Fragment() {
                     readBarCodeData(barcodes)
                 }
                 .addOnFailureListener {
-                    // Task failed with an exception
-                    // ...
+                    Toast.makeText(requireContext(), "" + it.message, Toast.LENGTH_LONG).show()
                 }.addOnCompleteListener { barcodes ->
                     image.close()
                 }
 
         }
 
+        // This method receives the scanned data and process further to save the codes to D.b or copy to clipboard etc
         private fun readBarCodeData(barcodes: List<Barcode>) {
             if (barcodes.isNotEmpty()) {
                 count++
