@@ -30,7 +30,7 @@
                 <item
                     android:title="@string/tables"
                     android:id="@+id/tables"
-                    android:icon="@drawable/ic_table_row"
+                    android:icon="@drawable/ic_gridview"
                     android:visible="false"
                     />
 

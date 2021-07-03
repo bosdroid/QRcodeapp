@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:textColor="@color/black"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
@@ -18,19 +19,59 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:textSize="18sp"
-        android:text="@string/update_dynamic_url_heading"
+        android:text="@string/dynamic_link_text"
         android:id="@+id/dialog_heading"
         />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_heading"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/dark_gray"
+        android:layout_margin="@dimen/eightDpMargin"
+        android:textSize="@dimen/mediumText"
+        android:gravity="center"
+        android:text="@string/dialog_sub_heading"
+        android:id="@+id/dialog_sub_heading"
+        />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_sub_heading"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:id="@+id/http_protocol_group"
+        >
+        <androidx.appcompat.widget.AppCompatRadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="http://"
+            android:id="@+id/http_protocol_rb"
+            />
+
+        <androidx.appcompat.widget.AppCompatRadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="https://"
+            android:layout_marginStart="@dimen/eightDpMargin"
+            android:id="@+id/https_protocol_rb"
+            />
+    </RadioGroup>
+
     <com.google.android.material.textfield.TextInputEditText
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:id="@+id/dynamic_url_update_input_field"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dialog_heading"
+        app:layout_constraintTop_toBottomOf="@id/http_protocol_group"
         android:background="@drawable/input_text_field_design"
-        android:padding="5dp"
+        android:padding="15dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginRight="16dp"
@@ -48,7 +89,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dynamic_url_update_input_field"
         app:layout_constraintEnd_toStartOf="@id/dialog_update_btn"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         />
@@ -61,7 +101,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dynamic_url_update_input_field"
         app:layout_constraintStart_toEndOf="@id/dialog_cancel_btn"
-        android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
         />

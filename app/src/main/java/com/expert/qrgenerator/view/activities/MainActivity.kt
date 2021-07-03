@@ -647,7 +647,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = true
             mNavigation.menu.findItem(R.id.tables).isVisible = true
             mNavigation.menu.findItem(R.id.field_list).isVisible = true
-            mNavigation.menu.findItem(R.id.dynamic_links).isVisible = true
+//            mNavigation.menu.findItem(R.id.dynamic_links).isVisible = true
 
 
         } else {
@@ -656,7 +656,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mNavigation.menu.findItem(R.id.profile).isVisible = false
             mNavigation.menu.findItem(R.id.tables).isVisible = false
             mNavigation.menu.findItem(R.id.field_list).isVisible = false
-            mNavigation.menu.findItem(R.id.dynamic_links).isVisible = false
+//            mNavigation.menu.findItem(R.id.dynamic_links).isVisible = false
         }
     }
 

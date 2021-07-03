@@ -14,19 +14,33 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.TableObject
+import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
+import com.expert.qrgenerator.viewmodel.DynamicQrViewModel
+import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
 import java.io.FileOutputStream
@@ -40,6 +54,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
     private var codeHistory: CodeHistory? = null
+    private var tableObject: TableObject? = null
     private lateinit var topImageCodeType: AppCompatImageView
     private lateinit var typeTextHeading: MaterialTextView
     private lateinit var encodeDataTextView: MaterialTextView
@@ -52,11 +67,22 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var pdfShareButton: AppCompatImageButton
     private lateinit var codeSequenceView: MaterialTextView
     private lateinit var dateTimeView: MaterialTextView
+    private lateinit var dynamicLinkUpdateLayout: CardView
+    private lateinit var barcodeDetailWrapperLayout: CardView
+    private lateinit var barcodeDataView: FrameLayout
+    private lateinit var barcodeImageView: CardView
+    private lateinit var updateDynamicLinkInput: TextInputEditText
+    private lateinit var updateDynamicButton: AppCompatButton
+    private lateinit var protocolGroup: RadioGroup
+    private lateinit var appViewModel: AppViewModel
+    private lateinit var viewModel: DynamicQrViewModel
+    private lateinit var barcodeDetailParentLayout: LinearLayout
     var bitmap: Bitmap? = null
     private val pageWidth = 500
     private val pageHeight = 500
     private var pdfFile: File? = null
     private var isShareAfterCreated: Boolean = false
+    var selectedProtocol = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,9 +99,21 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
         context = this
+        viewModel = ViewModelProviders.of(
+            this,
+            ViewModelFactory(DynamicQrViewModel()).createFor()
+        )[DynamicQrViewModel::class.java]
+        appViewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory(this.application)
+        ).get(AppViewModel::class.java)
         toolbar = findViewById(R.id.toolbar)
         if (intent != null && intent.hasExtra("HISTORY_ITEM")) {
             codeHistory = intent.getSerializableExtra("HISTORY_ITEM") as CodeHistory
+        }
+
+        if (intent != null && intent.hasExtra("TABLE_ITEM")) {
+            tableObject = intent.getSerializableExtra("TABLE_ITEM") as TableObject
         }
         topImageCodeType = findViewById(R.id.code_detail_top_image_type)
         typeTextHeading = findViewById(R.id.code_detail_type_text_heading)
@@ -94,6 +132,28 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         pdfShareButton.setOnClickListener(this)
         codeSequenceView = findViewById(R.id.code_detail_code_sequence_view)
         dateTimeView = findViewById(R.id.code_detail_date_time_view)
+        dynamicLinkUpdateLayout = findViewById(R.id.code_detail_dynamic_link_update_layout)
+        barcodeDataView = findViewById(R.id.code_detail_top_framelayout)
+        barcodeImageView = findViewById(R.id.barcode_image_detail_layout)
+        barcodeDetailWrapperLayout = findViewById(R.id.code_detail_table_layout)
+        updateDynamicLinkInput = findViewById(R.id.qr_code_history_dynamic_link_input_field)
+        updateDynamicButton = findViewById(R.id.dynamic_link_update_btn)
+        updateDynamicButton.setOnClickListener(this)
+        protocolGroup = findViewById(R.id.http_protocol_group)
+        barcodeDetailParentLayout = findViewById(R.id.barcode_detail_wrapper_layout)
+        protocolGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.http_protocol_rb -> {
+                    selectedProtocol = "http://"
+                }
+                R.id.https_protocol_rb -> {
+                    selectedProtocol = "https://"
+                }
+                else -> {
+
+                }
+            }
+        }
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
@@ -107,6 +167,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     // THIS FUNCTION WILL BIND THE HISTORY CODE DETAIL
     private fun displayCodeDetails() {
         if (codeHistory != null) {
+
             if (codeHistory!!.codeType == "barcode") {
                 topImageCodeType.setImageResource(R.drawable.barcode)
                 typeTextHeading.text = "Barcode Text Data"
@@ -121,7 +182,25 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             encodeDataTextView.text = codeHistory!!.data
             codeSequenceView.text = "Code ${codeHistory!!.id}"
             dateTimeView.text = getFormattedDate(context, codeHistory!!.createdAt.toLong())
+
+            if (codeHistory!!.isDynamic.toInt() == 1) {
+                dynamicLinkUpdateLayout.visibility = View.VISIBLE
+            } else {
+                dynamicLinkUpdateLayout.visibility = View.GONE
+
+            }
+
+        } else {
+
+            if (tableObject != null) {
+                barcodeDetailWrapperLayout.visibility = View.VISIBLE
+                encodeDataTextView.text = tableObject!!.code_data
+                codeSequenceView.text = "Code ${tableObject!!.id}"
+                dateTimeView.text = tableObject!!.date
+                displayBarcodeDetail()
+            }
         }
+
     }
 
     // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
@@ -181,9 +260,113 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 }
 
             }
+            R.id.dynamic_link_update_btn -> {
+                val value = updateDynamicLinkInput.text.toString().trim()
+                if (selectedProtocol.isEmpty()) {
+                    showAlert(
+                        context,
+                        "Please select the URL protocol!"
+                    )
+                } else if (value.isEmpty()) {
+
+                    showAlert(
+                        context,
+                        "Please enter the required input data!"
+                    )
+
+                } else if (value.contains("http://") || value.contains("https://")
+                ) {
+                    showAlert(
+                        context,
+                        "Please enter the URL without http:// or https://"
+                    )
+                } else if (!value.contains(".com")) {
+                    showAlert(
+                        context,
+                        "Please enter the valid URL"
+                    )
+                } else {
+                    val hashMap = hashMapOf<String, String>()
+                    hashMap["login"] = codeHistory!!.login
+                    hashMap["qrId"] = codeHistory!!.qrId
+                    hashMap["userUrl"] = "$selectedProtocol$value"
+                    hashMap["userType"] = codeHistory!!.userType
+
+                    startLoading(context)
+                    viewModel.createDynamicQrCode(context, hashMap)
+                    viewModel.getDynamicQrCode().observe(this, { response ->
+                        var url = ""
+                        dismiss()
+                        if (response != null) {
+                            url = response.get("generatedUrl").asString
+                            url = if (url.contains(":8990")) {
+                                url.replace(":8990", "")
+                            } else {
+                                url
+                            }
+                            encodeDataTextView.text = "$selectedProtocol$value"
+                            appViewModel.update("$selectedProtocol$value", url, codeHistory!!.id)
+                            showAlert(context, "Dynamic Url update Successfully!")
+                        } else {
+                            showAlert(context, "Something went wrong, please try again!")
+                        }
+                    })
+                }
+            }
             else -> {
 
             }
+        }
+    }
+
+    private fun displayBarcodeDetail() {
+        if (tableObject != null) {
+            val codeDataLayout = LayoutInflater.from(context)
+                .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+            val codeDataColumnValue =
+                codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+            val codeDataColumnName =
+                codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+            val codeDataColumnEditView =
+                codeDataLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+
+            codeDataColumnValue.text = tableObject!!.code_data
+            codeDataColumnName.text = "code_data"
+            barcodeDetailParentLayout.addView(codeDataLayout)
+            val dateLayout = LayoutInflater.from(context)
+                .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+            val dateColumnValue =
+                dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+            val dateColumnName =
+                dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+            val dateColumnEditView = dateLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+            dateColumnValue.text = tableObject!!.date
+            dateColumnName.text = "date"
+            barcodeDetailParentLayout.addView(dateLayout)
+            val imageLayout = LayoutInflater.from(context)
+                .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+            val imageColumnValue =
+                imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+            val imageColumnName =
+                imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+            val imageColumnEditView =
+                imageLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+            imageColumnValue.text = tableObject!!.image
+            imageColumnName.text = "image"
+            barcodeDetailParentLayout.addView(imageLayout)
+
+            for (i in 0 until tableObject!!.dynamicColumns.size) {
+                val item = tableObject!!.dynamicColumns[i]
+                val layout = LayoutInflater.from(context)
+                    .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+                val columnValue = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+                val columnName = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+                val columnEditView = layout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+                columnValue.text = item.second
+                columnName.text = item.first
+                barcodeDetailParentLayout.addView(layout)
+            }
+
         }
     }
 

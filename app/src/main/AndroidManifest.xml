@@ -39,6 +39,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QRGenerator"
         tools:replace="android:allowBackup">
+        <activity android:name=".view.activities.BarcodeDetailActivity"></activity>
 
         <uses-library
             android:name="org.apache.http.legacy"

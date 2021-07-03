@@ -15,6 +15,7 @@ class FieldListValuesAdapter(val context: Context, val listValues: ArrayList<Str
     interface OnItemClickListener {
         fun onItemClick(position: Int)
         fun onAddItemClick(position: Int)
+        fun onFinishItemClick()
     }
 
     private var mListener: OnItemClickListener? = null
@@ -32,8 +33,7 @@ class FieldListValuesAdapter(val context: Context, val listValues: ArrayList<Str
         RecyclerView.ViewHolder(itemView) {
         val addCardViewBtn: CardView = itemView.findViewById(R.id.add_card_view)
         val cardTextView:MaterialTextView = itemView.findViewById(R.id.card_text_view)
-
-
+        val finishCardViewBtn :CardView = itemView.findViewById(R.id.finish_card_view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -68,6 +68,10 @@ class FieldListValuesAdapter(val context: Context, val listValues: ArrayList<Str
                 addViewHolder.cardTextView.text = "+ add value"
                 addViewHolder.addCardViewBtn.setOnClickListener {
                     mListener!!.onAddItemClick(position)
+                }
+                addViewHolder.finishCardViewBtn.visibility = View.VISIBLE
+                addViewHolder.finishCardViewBtn.setOnClickListener {
+                    mListener!!.onFinishItemClick()
                 }
             }
             else -> {

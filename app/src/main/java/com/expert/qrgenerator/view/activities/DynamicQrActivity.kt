@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.RadioGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -108,21 +110,56 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
         }
     }
 
+    override fun onItemEditClick(position: Int) {
+        val dynamicQr = dynamicQrList[position]
+        updateDynamicQrUrl(dynamicQr)
+    }
+
     // THIS FUNCTION WILL HANDLE THE DYNAMIC QR CODE LIST FOR UPDATE
     override fun onItemClick(position: Int) {
         val dynamicQr = dynamicQrList[position]
-        updateDynamicQrUrl(dynamicQr)
+        val intent = Intent(context, CodeDetailActivity::class.java)
+        intent.putExtra("HISTORY_ITEM", dynamicQr)
+        startActivity(intent)
     }
 
 
     // THIS FUNCTION WILL POP UP WITH EXISTING URL FOR INPUT NEW UPDATED URL
     private fun updateDynamicQrUrl(selectedDynamicUrl: CodeHistory){
-
+        var selectedProtocol = ""
         val dynamicUrlUpdateView = LayoutInflater.from(context).inflate(R.layout.update_dynamic_url_dialog_layout, null)
         val updateInputBox = dynamicUrlUpdateView!!.findViewById<TextInputEditText>(R.id.dynamic_url_update_input_field)
         val cancelBtn = dynamicUrlUpdateView.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
         val updateBtn = dynamicUrlUpdateView.findViewById<MaterialButton>(R.id.dialog_update_btn)
-        updateInputBox.setText(selectedDynamicUrl.data)
+        val protocolGroup = dynamicUrlUpdateView.findViewById<RadioGroup>(R.id.http_protocol_group)
+        protocolGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.http_protocol_rb -> {
+                    selectedProtocol = "http://"
+                }
+                R.id.https_protocol_rb -> {
+                    selectedProtocol = "https://"
+                }
+                else -> {
+
+                }
+            }
+        }
+        if (selectedDynamicUrl.data.contains("http://"))
+        {
+            protocolGroup.check(R.id.http_protocol_rb)
+            selectedProtocol = "http://"
+            updateInputBox.setText(selectedDynamicUrl.data.removePrefix("http://"))
+        } else if(selectedDynamicUrl.data.contains("https://")){
+            selectedProtocol = "https://"
+            protocolGroup.check(R.id.https_protocol_rb)
+            updateInputBox.setText(selectedDynamicUrl.data.removePrefix("https://"))
+        }
+        else{
+            updateInputBox.setText(selectedDynamicUrl.data)
+        }
+
+
 
         val builder = MaterialAlertDialogBuilder(context)
         builder.setCancelable(false)
@@ -137,17 +174,39 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
         }
 
         updateBtn.setOnClickListener {
-            if (updateInputBox.text.toString().contains("http") || updateInputBox.text.toString().contains("https")
-                || updateInputBox.text.toString().contains("www")
-            ) {
+            val value = updateInputBox.text.toString().trim()
+            if (selectedProtocol.isEmpty()) {
+                showAlert(
+                    context,
+                    "Please select the URL protocol!"
+                )
+            } else if (value.isEmpty()) {
 
-                val inputValue = updateInputBox.text.toString()
+                showAlert(
+                    context,
+                    "Please enter the required input data!"
+                )
+
+            } else if (value.contains("http://") || value.contains("https://")
+            ) {
+                showAlert(
+                    context,
+                    "Please enter the URL without http:// or https://"
+                )
+            } else if (!value.contains(".com")) {
+                showAlert(
+                    context,
+                    "Please enter the valid URL"
+                )
+            }
+            else{
+//                val inputValue = updateInputBox.text.toString()
 
                 // THIS IS THE TESTING USER DATA FOR DYNAMIC QR CODE GENERATION
                 val hashMap = hashMapOf<String, String>()
                 hashMap["login"] = selectedDynamicUrl.login
                 hashMap["qrId"] = selectedDynamicUrl.qrId
-                hashMap["userUrl"] = inputValue
+                hashMap["userUrl"] = "$selectedProtocol$value"
                 hashMap["userType"] = selectedDynamicUrl.userType
                 alert.dismiss()
                 startLoading(context)
@@ -163,20 +222,26 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
                             url
                         }
 
-                        appViewModel.update(inputValue,url,selectedDynamicUrl.id)
+                        appViewModel.update("$selectedProtocol$value",url,selectedDynamicUrl.id)
                         showAlert(context,"Dynamic Url update Successfully!")
                     }
                     else{
                         showAlert(context,"Something went wrong, please try again!")
                     }
                 })
-
-            } else {
-               showAlert(
-                    context,
-                    "Please enter the correct format of url!"
-                )
             }
+//            if (updateInputBox.text.toString().contains("http") || updateInputBox.text.toString().contains("https")
+//                || updateInputBox.text.toString().contains("www")
+//            ) {
+//
+//
+//
+//            } else {
+//               showAlert(
+//                    context,
+//                    "Please enter the correct format of url!"
+//                )
+//            }
         }
 
     }

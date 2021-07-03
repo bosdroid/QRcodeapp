@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.view.activities
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -91,6 +92,14 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
 
     override fun onAddItemClick(position: Int) {
         addListItemDialog(listItem!!.id)
+    }
+
+    override fun onFinishItemClick() {
+//        val intent = Intent(context,MainActivity::class.java)
+//        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+//        startActivity(intent)
+//        finish()
+         finish()
     }
 
     private fun addListItemDialog(id:Int) {

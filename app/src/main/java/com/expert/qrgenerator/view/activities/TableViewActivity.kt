@@ -14,6 +14,7 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TableDetailAdapter
+import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.textview.MaterialTextView
@@ -203,9 +204,12 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         if (view.tag == "row") {
             val position = view.id
             val item = dataList[position]
-            if (item.image.isNotEmpty()) {
-                showAlert(context, dataList[position].image)
-            }
+
+            val intent = Intent(context, CodeDetailActivity::class.java)
+            intent.putExtra("TABLE_NAME", tableName)
+            intent.putExtra("TABLE_ITEM", item)
+            startActivity(intent)
+
         } else {
             if (dataList.isNotEmpty()) {
                 val parts = view.tag.toString().split(":")
@@ -273,9 +277,8 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }
-        else{
-            showAlert(context,"Table data not exported due to empty!")
+        } else {
+            showAlert(context, "Table data not exported due to empty!")
         }
     }
 

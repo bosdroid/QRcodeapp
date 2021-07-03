@@ -40,6 +40,7 @@ class Constants {
         private const val LOGO_IMAGE_PATH = "LogoImages"
         const val BASE_URL = "https://pages.qrmagicapp.com/"
         var generatedImage: Bitmap? = null
+        var intentFrom :String = ""
         var finalQrImageUri: Uri? = null
         var isLogin: String = "is_login"
         var user: String = "user"

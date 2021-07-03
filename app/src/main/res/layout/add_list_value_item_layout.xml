@@ -29,4 +29,26 @@
 
     </androidx.cardview.widget.CardView>
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/teal_200"
+        android:id="@+id/finish_card_view"
+        android:layout_margin="@dimen/defaultDpMargin"
+        android:visibility="gone"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/finish"
+            android:textColor="@color/white"
+            android:textSize="@dimen/xlargeText"
+            android:padding="5dp"
+            android:id="@+id/finish_card_text_view"
+            />
+
+    </androidx.cardview.widget.CardView>
+
 </LinearLayout>

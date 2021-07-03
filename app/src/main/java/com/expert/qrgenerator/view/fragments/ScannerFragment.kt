@@ -596,7 +596,7 @@ class ScannerFragment : Fragment() {
 
                                 if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
                                     qrHistory = CodeHistory(
-                                        "sattar",
+                                        "qrmagicapp",
                                         "${System.currentTimeMillis()}",
                                         text,
                                         "code",
@@ -613,7 +613,7 @@ class ScannerFragment : Fragment() {
 
                                 } else {
                                     qrHistory = CodeHistory(
-                                        "sattar",
+                                        "qrmagicapp",
                                         "${System.currentTimeMillis()}",
                                         text,
                                         type,

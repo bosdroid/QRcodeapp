@@ -162,7 +162,7 @@
     <string name="social_networks_qr">Social Netwroks QR</string>
     <string name="sn_title_hint_text">Please enter the title</string>
     <string name="sn_description_hint_text">Please enter the description</string>
-    <string name="table_saving_data_hint">List of the tables for saving data <br/>Click on table to edit fields of the table</string>
+    <string name="table_saving_data_hint">List of the tables for saving data <br />Click on table to edit fields of the table</string>
     <string name="create_table_fields_hint_text">There is a list of the fields for *</string>
     <string name="create_table_fields_hint2_text">You can add fields here</string>
     <string name="back_text">Back</string>
@@ -173,4 +173,8 @@
     <string name="generate">Generate</string>
     <string name="finish">Finish</string>
     <string name="add_field">+ ADD FIELD</string>
+    <string name="barcode_info">Barcode Info</string>
+    <string name="dialog_sub_heading">Insert new link to update the QR code</string>
+    <string name="barcode_detail_text">Barcode Detail</string>
+    <string name="notes">Notes</string>
 </resources>
