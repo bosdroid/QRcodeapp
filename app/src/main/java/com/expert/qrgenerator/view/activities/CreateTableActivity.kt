@@ -10,10 +10,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.ScrollView
+import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -93,6 +90,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 var newStr = s.toString()
                 newStr = newStr.replace("[^a-zA-Z ]*".toRegex(), "")
                 if (s.toString() != newStr) {
+                    Toast.makeText(context,"Characters and numbers are not allowed",Toast.LENGTH_SHORT).show()
                     tableNewFieldNameTInput.setText(newStr)
                     tableNewFieldNameTInput.setSelection(tableNewFieldNameTInput.text!!.length)
                 }
@@ -116,6 +114,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 var newStr = s.toString()
                 newStr = newStr.replace("[^a-zA-Z0-9 ]*".toRegex(), "")
                 if (s.toString() != newStr) {
+                    Toast.makeText(context,"Characters and numbers are not allowed",Toast.LENGTH_SHORT).show()
                     defaultValueFieldTInput.setText(newStr)
                     defaultValueFieldTInput.setSelection(defaultValueFieldTInput.text!!.length)
                 }

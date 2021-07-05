@@ -130,6 +130,7 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
                 var newStr = s.toString()
                 newStr = newStr.replace("[^a-zA-Z ]*".toRegex(), "")
                 if (s.toString() != newStr) {
+                    Toast.makeText(context,"Characters and numbers are not allowed",Toast.LENGTH_SHORT).show()
                     textInputBox.setText(newStr)
                     textInputBox.setSelection(textInputBox.text!!.length)
                 }
