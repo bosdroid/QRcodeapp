@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.Toast
@@ -119,6 +121,25 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
         val tableCreateLayout = LayoutInflater.from(context).inflate(R.layout.add_table_layout,null)
         val textInputBox = tableCreateLayout.findViewById<TextInputEditText>(R.id.add_table_text_input_field)
         val tableCreateBtn = tableCreateLayout.findViewById<MaterialButton>(R.id.add_table_btn)
+        textInputBox.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                var newStr = s.toString()
+                newStr = newStr.replace("[^a-zA-Z ]*".toRegex(), "")
+                if (s.toString() != newStr) {
+                    textInputBox.setText(newStr)
+                    textInputBox.setSelection(textInputBox.text!!.length)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
         val builder = MaterialAlertDialogBuilder(context)
         builder.setView(tableCreateLayout)
         val alert = builder.create()
