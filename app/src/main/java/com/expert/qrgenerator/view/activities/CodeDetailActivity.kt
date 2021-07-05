@@ -77,6 +77,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var appViewModel: AppViewModel
     private lateinit var viewModel: DynamicQrViewModel
     private lateinit var barcodeDetailParentLayout: LinearLayout
+    private lateinit var dialogSubHeading:MaterialTextView
     var bitmap: Bitmap? = null
     private val pageWidth = 500
     private val pageHeight = 500
@@ -141,6 +142,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         updateDynamicButton.setOnClickListener(this)
         protocolGroup = findViewById(R.id.http_protocol_group)
         barcodeDetailParentLayout = findViewById(R.id.barcode_detail_wrapper_layout)
+        dialogSubHeading = findViewById(R.id.dialog_sub_heading)
         protocolGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.http_protocol_rb -> {
@@ -185,19 +187,20 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
             if (codeHistory!!.isDynamic.toInt() == 1) {
                 dynamicLinkUpdateLayout.visibility = View.VISIBLE
-                if (codeHistory!!.data.contains("http://"))
-                {
-                    protocolGroup.check(R.id.http_protocol_rb)
-                    selectedProtocol = "http://"
-                    updateDynamicLinkInput.setText(codeHistory!!.data.removePrefix("http://"))
-                } else if(codeHistory!!.data.contains("https://")){
-                    selectedProtocol = "https://"
-                    protocolGroup.check(R.id.https_protocol_rb)
-                    updateDynamicLinkInput.setText(codeHistory!!.data.removePrefix("https://"))
-                }
-                else{
-                    updateDynamicLinkInput.setText(codeHistory!!.data)
-                }
+                dialogSubHeading.text = "Current link: ${codeHistory!!.data}"
+//                if (codeHistory!!.data.contains("http://"))
+//                {
+//                    protocolGroup.check(R.id.http_protocol_rb)
+//                    selectedProtocol = "http://"
+//                    updateDynamicLinkInput.setText(codeHistory!!.data.removePrefix("http://"))
+//                } else if(codeHistory!!.data.contains("https://")){
+//                    selectedProtocol = "https://"
+//                    protocolGroup.check(R.id.https_protocol_rb)
+//                    updateDynamicLinkInput.setText(codeHistory!!.data.removePrefix("https://"))
+//                }
+//                else{
+//                    updateDynamicLinkInput.setText(codeHistory!!.data)
+//                }
             } else {
                 dynamicLinkUpdateLayout.visibility = View.GONE
 
@@ -317,6 +320,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                             } else {
                                 url
                             }
+                            dialogSubHeading.text = "Current link: $selectedProtocol$value"
                             encodeDataTextView.text = "$selectedProtocol$value"
                             appViewModel.update("$selectedProtocol$value", url, codeHistory!!.id)
                             showAlert(context, "Dynamic Url update Successfully!")
