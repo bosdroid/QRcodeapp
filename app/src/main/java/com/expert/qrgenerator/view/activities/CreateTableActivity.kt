@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -12,7 +14,6 @@ import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.ScrollView
-import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -22,9 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.FieldListsAdapter
 import com.expert.qrgenerator.model.ListItem
-import com.expert.qrgenerator.model.ListValue
 import com.expert.qrgenerator.room.AppViewModel
-import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -32,7 +31,6 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import java.util.*
-import kotlin.collections.ArrayList
 
 class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
@@ -86,10 +84,48 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 //        addNewFieldBtn.setOnClickListener(this)
         addNewFieldLayoutWrapper = findViewById(R.id.add_field_layout_wrapper)
         tableNewFieldNameTInput = findViewById(R.id.table_new_field_text_input)
+        tableNewFieldNameTInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                var newStr = s.toString()
+                newStr = newStr.replace("[^a-zA-Z ]*".toRegex(), "")
+                if (s.toString() != newStr) {
+                    tableNewFieldNameTInput.setText(newStr)
+                    tableNewFieldNameTInput.setSelection(tableNewFieldNameTInput.text!!.length)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
         nonChangeableCheckBoxRadioButton = findViewById(R.id.non_changeable_radio_btn)
         listWithValuesFieldRadioButton = findViewById(R.id.list_with_values_radio_btn)
         fieldValueTypesRadioGroup = findViewById(R.id.value_types_radio_group)
         defaultValueFieldTInput = findViewById(R.id.table_non_changeable_default_text_input)
+        defaultValueFieldTInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                var newStr = s.toString()
+                newStr = newStr.replace("[^a-zA-Z0-9 ]*".toRegex(), "")
+                if (s.toString() != newStr) {
+                    defaultValueFieldTInput.setText(newStr)
+                    defaultValueFieldTInput.setSelection(defaultValueFieldTInput.text!!.length)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
         submitBtnView = findViewById(R.id.field_submit_btn)
         submitBtnView.setOnClickListener(this)
         finishBtnView = findViewById(R.id.field_finish_btn)
@@ -102,7 +138,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         // fieldValueTypesRadioGroup RADIO GROUP LISTENER
         fieldValueTypesRadioGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
-                R.id.none_radio_btn ->{
+                R.id.none_radio_btn -> {
                     fieldType = "none"
                     defaultValueFieldTInput.visibility = View.GONE
                     listWithFieldsBtn.visibility = View.GONE
@@ -114,7 +150,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     listWithFieldsBtn.visibility = View.GONE
                     fieldType = "nonChangeable"
                     scrollCreateTable.fullScroll(ScrollView.FOCUS_UP)
-                    hideSoftKeyboard(context,scrollCreateTable)
+                    hideSoftKeyboard(context, scrollCreateTable)
                 }
                 R.id.list_with_values_radio_btn -> {
                     isNonChangeableCheckBox = false
@@ -162,7 +198,11 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     }
                     for (i in columns.indices) {
                         val layout = LayoutInflater.from(context)
-                            .inflate(R.layout.table_column_item_row, tableColumnsDetailLayout,false)
+                            .inflate(
+                                R.layout.table_column_item_row,
+                                tableColumnsDetailLayout,
+                                false
+                            )
                         val columnNameView =
                             layout.findViewById<MaterialTextView>(R.id.table_column_name)
                         val columnNameSubTitleView =
@@ -174,11 +214,13 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                             }
                             "code_data" -> {
                                 columnNameView.text = "Barcode data"
-                                columnNameSubTitleView.text = "(populates after barcode ben scanned)"
+                                columnNameSubTitleView.text =
+                                    "(populates after barcode ben scanned)"
                             }
                             "date" -> {
                                 columnNameView.text = "Date of scanning"
-                                columnNameSubTitleView.text = "(system generated date automatically)"
+                                columnNameSubTitleView.text =
+                                    "(system generated date automatically)"
                             }
                             "image" -> {
                                 columnNameView.text = "Image link"
@@ -206,7 +248,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.field_finish_btn -> {
-                val intent = Intent(context,MainActivity::class.java)
+                val intent = Intent(context, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
                 finish()
@@ -219,37 +261,49 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     startLoading(context)
                     val fieldName = tableNewFieldNameTInput.text.toString().trim().toLowerCase(
                         Locale.ENGLISH
-                    ).replace(" ","_")
-                    if (fieldType == "none"){
+                    ).replace(" ", "_")
+                    if (fieldType == "none") {
                         tableGenerator.addNewColumn(
                             tableName,
                             Pair(fieldName, "TEXT"),
                             ""
                         )
-                    }
-                    else if (fieldType == "nonChangeable"){
+                    } else if (fieldType == "nonChangeable") {
                         defaultColumnValue = defaultValueFieldTInput.text.toString().trim()
                         tableGenerator.addNewColumn(
                             tableName,
                             Pair(fieldName, "TEXT"),
                             defaultColumnValue
                         )
-                        tableGenerator.insertFieldList(fieldName,tableName,defaultColumnValue,"non_changeable")
-                    }
-                    else if(fieldType == "listWithValues"){
+                        tableGenerator.insertFieldList(
+                            fieldName,
+                            tableName,
+                            defaultColumnValue,
+                            "non_changeable"
+                        )
+                    } else if (fieldType == "listWithValues") {
                         tableGenerator.addNewColumn(
                             tableName,
                             Pair(fieldName, "TEXT"),
                             ""
                         )
-                        val listOptions:String = tableGenerator.getListValues(listId!!)
-                        tableGenerator.insertFieldList(fieldName,tableName,listOptions,"listWithValues")
+                        val listOptions: String = tableGenerator.getListValues(listId!!)
+                        tableGenerator.insertFieldList(
+                            fieldName,
+                            tableName,
+                            listOptions,
+                            "listWithValues"
+                        )
                     }
 
 
                     Handler(Looper.myLooper()!!).postDelayed({
                         val layout =
-                            LayoutInflater.from(context).inflate(R.layout.table_column_item_row, tableColumnsDetailLayout,false)
+                            LayoutInflater.from(context).inflate(
+                                R.layout.table_column_item_row,
+                                tableColumnsDetailLayout,
+                                false
+                            )
                         val columnNameView =
                             layout.findViewById<MaterialTextView>(R.id.table_column_name)
                         columnNameView.text = tableNewFieldNameTInput.text.toString().trim()
@@ -299,39 +353,41 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         }
 
 
-        adapter.setOnItemClickListener(object : FieldListsAdapter.OnItemClickListener{
+        adapter.setOnItemClickListener(object : FieldListsAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val listValue = listItems[position]
                 listId = listValue.id
                 val list = tableGenerator.getListValues(listId!!)
-                if (list.isNotEmpty()){
+                if (list.isNotEmpty()) {
                     selectedListTextView.text = listValue.value
                     alert.dismiss()
-                }
-                else{
+                } else {
                     MaterialAlertDialogBuilder(context)
-                            .setMessage("List can't be empty please add a value or cancel the creation!")
-                            .setNegativeButton("Cancel"){dialog,which->
-                                dialog.dismiss()
-                            }
-                            .setPositiveButton("Add"){dialog,which->
-                                 dialog.dismiss()
-                                 addTableDialog(listId!!)
-                            }
-                            .create().show()
+                        .setMessage("List can't be empty please add a value or cancel the creation!")
+                        .setNegativeButton("Cancel") { dialog, which ->
+                            dialog.dismiss()
+                        }
+                        .setPositiveButton("Add") { dialog, which ->
+                            dialog.dismiss()
+                            addTableDialog(listId!!)
+                        }
+                        .create().show()
                 }
 
             }
 
             override fun onAddItemClick(position: Int) {
                 alert.dismiss()
-                startActivity(Intent(context,FieldListsActivity::class.java))
+                startActivity(Intent(context, FieldListsActivity::class.java))
             }
         })
     }
 
-    private fun addTableDialog(id:Int){
-        val listValueLayout = LayoutInflater.from(context).inflate(R.layout.add_list_value_layout,null)
+    private fun addTableDialog(id: Int){
+        val listValueLayout = LayoutInflater.from(context).inflate(
+            R.layout.add_list_value_layout,
+            null
+        )
         val heading = listValueLayout.findViewById<MaterialTextView>(R.id.dialog_heading)
         heading.text = "Enter the List value"
         val listValueInputBox = listValueLayout.findViewById<TextInputEditText>(R.id.add_list_value_input_field)
@@ -343,11 +399,11 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         listValueAddBtn.setOnClickListener {
             if(listValueInputBox.text.toString().isNotEmpty()){
                val value = listValueInputBox.text.toString().trim()
-                tableGenerator.insertListValue(id,value)
+                tableGenerator.insertListValue(id, value)
                 alert.dismiss()
             }
             else{
-                showAlert(context,"Please enter the list value!")
+                showAlert(context, "Please enter the list value!")
             }
         }
     }

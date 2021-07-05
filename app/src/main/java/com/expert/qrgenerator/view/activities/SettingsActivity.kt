@@ -2,9 +2,12 @@ package com.expert.qrgenerator.view.activities
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.utils.AppSettings
 
 class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,8 +34,21 @@ class SettingsActivity : BaseActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+
+        private lateinit var appSettings: AppSettings
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+            appSettings = AppSettings(requireActivity())
+
+            val soundSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_sound))
+            appSettings.putBoolean(requireActivity().getString(R.string.key_sound),soundSwitch!!.isChecked)
+            val vibrateSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_vibration))
+            appSettings.putBoolean(requireActivity().getString(R.string.key_vibration), vibrateSwitch!!.isChecked)
+            val clipboardSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_clipboard))
+            appSettings.putBoolean(requireActivity().getString(R.string.key_clipboard), clipboardSwitch!!.isChecked)
+
+
         }
     }
 }

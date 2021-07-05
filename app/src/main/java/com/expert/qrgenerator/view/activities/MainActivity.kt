@@ -106,7 +106,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setUpToolbar()
         getAccountsPermission()
         initializeGoogleLoginParameters()
-
     }
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS

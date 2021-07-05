@@ -205,12 +205,14 @@ class Constants {
                                 context,
                                 "Please enter the website URL without http:// or https://"
                             )
-                        } else if (!value.contains(".com")) {
+                        }
+                        else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the valid website URL"
                             )
-                        } else {
+                        }
+                        else {
                             encodedData = "$selectedProtocol$value"
                             completeListener!!.onTypeSelected(encodedData, 1, "link")
 
@@ -271,12 +273,14 @@ class Constants {
                                 context,
                                 "Please enter the website URL without http:// or https://"
                             )
-                        } else if (!value.contains(".com")) {
+                        }
+                        else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
                             BaseActivity.showAlert(
                                 context,
                                 "Please enter the valid website URL"
                             )
-                        } else {
+                        }
+                        else {
                             BaseActivity.hideSoftKeyboard(context, websiteView)
                             encodedData = "$selectedProtocol$value"
                             completeListener!!.onTypeSelected(encodedData, 2, "link")

@@ -185,6 +185,19 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
             if (codeHistory!!.isDynamic.toInt() == 1) {
                 dynamicLinkUpdateLayout.visibility = View.VISIBLE
+                if (codeHistory!!.data.contains("http://"))
+                {
+                    protocolGroup.check(R.id.http_protocol_rb)
+                    selectedProtocol = "http://"
+                    updateDynamicLinkInput.setText(codeHistory!!.data.removePrefix("http://"))
+                } else if(codeHistory!!.data.contains("https://")){
+                    selectedProtocol = "https://"
+                    protocolGroup.check(R.id.https_protocol_rb)
+                    updateDynamicLinkInput.setText(codeHistory!!.data.removePrefix("https://"))
+                }
+                else{
+                    updateDynamicLinkInput.setText(codeHistory!!.data)
+                }
             } else {
                 dynamicLinkUpdateLayout.visibility = View.GONE
 
