@@ -58,6 +58,7 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.SheetsScopes
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -90,6 +91,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var historyBtn:MaterialTextView
     private var requestLogin:String?=null
 
+
+
     companion object {
         lateinit var context: Context
     }
@@ -98,7 +101,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
@@ -106,6 +109,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setUpToolbar()
         getAccountsPermission()
         initializeGoogleLoginParameters()
+
+
     }
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
