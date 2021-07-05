@@ -47,6 +47,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URLEncoder
 import java.util.*
+import java.util.regex.Pattern
 
 
 class CodeDetailActivity : BaseActivity(), View.OnClickListener {
@@ -296,12 +297,14 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                         context,
                         "Please enter the URL without http:// or https://"
                     )
-                } else if (!value.contains(".com")) {
+                }
+                else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
                     showAlert(
                         context,
-                        "Please enter the valid URL"
+                        "Please enter the valid website URL"
                     )
-                } else {
+                }
+                else {
                     val hashMap = hashMapOf<String, String>()
                     hashMap["login"] = codeHistory!!.login
                     hashMap["qrId"] = codeHistory!!.qrId
