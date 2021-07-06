@@ -56,6 +56,7 @@ import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -71,6 +72,8 @@ import java.util.concurrent.Executors
 
 
 class ScannerFragment : Fragment() {
+
+    private var mFirebaseAnalytics: FirebaseAnalytics? = null
 
     private var arrayList = mutableListOf<String>()
     private var filePathView: MaterialTextView? = null
@@ -523,7 +526,9 @@ class ScannerFragment : Fragment() {
                                                     spinnerIdsList.clear()
                                                     params.clear()
                                                     tableDetailLayoutWrapper.removeAllViews()
-
+                                                    val bundle = Bundle()
+                                                    bundle.putString("success","success")
+                                                    mFirebaseAnalytics?.logEvent("scanner", bundle)
                                                 },
                                                 1000
                                             )
@@ -586,10 +591,14 @@ class ScannerFragment : Fragment() {
                                 }
 
                             } catch (e: Exception) {
+                                val bundle = Bundle()
+                                bundle.putString("failure","Error" + e.message)
+                                mFirebaseAnalytics?.logEvent("scanner", bundle)
                                 e.printStackTrace()
                             }
                         }
                     } else {
+
                         val b = MaterialAlertDialogBuilder(requireActivity())
                             .setCancelable(true)
                             .setTitle("Alert!")
@@ -648,6 +657,9 @@ class ScannerFragment : Fragment() {
                                         params.clear()
                                         tableDetailLayoutWrapper.removeAllViews()
                                         codeScanner!!.startPreview()
+                                        val bundle = Bundle()
+                                        bundle.putString("success","success")
+                                        mFirebaseAnalytics?.logEvent("scanner", bundle)
                                     }, 1000)
                                 }
                             }
@@ -664,7 +676,9 @@ class ScannerFragment : Fragment() {
             }
 //                            }
         } else {
-
+            val bundle = Bundle()
+            bundle.putString("second scanner","triggers")
+            mFirebaseAnalytics?.logEvent("scanner", bundle)
             var qrHistory: CodeHistory? = null
             val type =
                 if (text.contains("http") || text.contains("https") || text.contains(
@@ -740,8 +754,11 @@ class ScannerFragment : Fragment() {
 
 
     private fun uploadImageOnDrive(): Boolean {
-
+        val bundle = Bundle()
+        bundle.putString("starts","starts")
+        mFirebaseAnalytics?.logEvent("upload image", bundle)
         try {
+
             val fileMetadata =
                 com.google.api.services.drive.model.File()
             fileMetadata.name =
@@ -758,12 +775,21 @@ class ScannerFragment : Fragment() {
             // WHEN EXECUTE FUNCTION RUN SUCCESSFULLY THEN IT RETURN FILE OBJECT HAVING ID
             // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
             url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+            val bundle = Bundle()
+            bundle.putString("success","success")
+            mFirebaseAnalytics?.logEvent("upload image", bundle)
             return true
         } catch (e: UserRecoverableAuthIOException) {
 //            Log.d("TEST199",e.localizedMessage!!)
 //            userAuthLauncher.launch(e.intent)
+            val bundle = Bundle()
+            bundle.putString("UserRecoverableAuthIOException","Error: " + e.message)
+            mFirebaseAnalytics?.logEvent("upload image", bundle)
             return false
         } catch (e: GoogleJsonResponseException) {
+            val bundle = Bundle()
+            bundle.putString("GoogleJsonResponseException","Error: " + e.message)
+            mFirebaseAnalytics?.logEvent("upload image", bundle)
             BaseActivity.showAlert(
                 requireActivity(),
                 e.details.message
