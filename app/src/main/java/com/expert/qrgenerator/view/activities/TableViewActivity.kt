@@ -11,10 +11,8 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TableDetailAdapter
-import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.textview.MaterialTextView
@@ -35,6 +33,8 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
     private var dataList = mutableListOf<TableObject>()
     private var sortingImages = mutableListOf<AppCompatImageView>()
     private lateinit var csvExportImageView: AppCompatImageView
+    private var currentColumn = ""
+    private var currentOrder = ""
     val layoutParams = TableRow.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -69,21 +69,17 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                 LayoutInflater.from(context).inflate(R.layout.header_table_row_cell, null)
             headerLayout.layoutParams = layoutParams
             val textView = headerLayout.findViewById<MaterialTextView>(R.id.header_cell_name)
-            val sortAscImageView =
-                headerLayout.findViewById<AppCompatImageView>(R.id.sort_asc_image)
-            sortAscImageView.id = i
-            sortAscImageView.tag = "asc:${columns[i].toLowerCase(Locale.ENGLISH)}"
-            sortAscImageView.setOnClickListener(this)
-            val sortDescImageView =
-                headerLayout.findViewById<AppCompatImageView>(R.id.sort_desc_image)
-            sortDescImageView.id = i
-            sortDescImageView.tag = "desc:${columns[i].toLowerCase(Locale.ENGLISH)}"
-            sortDescImageView.setOnClickListener(this)
-            sortingImages.add(sortAscImageView)
-            sortingImages.add(sortDescImageView)
+            val sortImageView =
+                headerLayout.findViewById<AppCompatImageView>(R.id.sort_image)
+            sortImageView.id = i
+            sortingImages.add(sortImageView)
+
             headerLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.purple_dark))
 
             textView.text = columns[i].toUpperCase(Locale.ENGLISH)
+            headerLayout.id = i
+            headerLayout.tag = columns[i].toLowerCase(Locale.ENGLISH)
+            headerLayout.setOnClickListener(this)
             tableHeaders.addView(headerLayout)
         }
 
@@ -212,12 +208,27 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
         } else {
             if (dataList.isNotEmpty()) {
-                val parts = view.tag.toString().split(":")
-                if (parts.isNotEmpty() && parts.size == 2) {
-                    val image = view as AppCompatImageView
-                    updateSortingImage(image, parts[0])
-                    getTableData(tableName, parts[1], parts[0])
+                val tag = view.tag.toString().toLowerCase(Locale.ENGLISH)
+                if (currentOrder.isEmpty()) {
+                    if (tag == "id") {
+                        currentOrder = "DESC"
+                    } else {
+                        currentOrder = "ASC"
+                    }
+
+                } else {
+                    currentOrder = if (currentColumn == tag && currentOrder == "DESC") {
+                        "ASC"
+                    } else {
+                        "DESC"
+                    }
                 }
+                currentColumn = tag
+
+                val image = sortingImages[view.id]
+                updateSortingImage(image, currentOrder)
+                getTableData(tableName, currentColumn, currentOrder)
+
             }
 
         }
@@ -227,8 +238,14 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
     private fun updateSortingImage(imageView: AppCompatImageView, order: String) {
         for (i in 0 until sortingImages.size) {
             val sImage = sortingImages[i]
-            if (imageView.id == sImage.id && sImage.tag.toString().split(":")[0] == order) {
+            if (imageView.id == sImage.id && currentOrder == order) {
                 sImage.setColorFilter(Color.WHITE)
+                if (currentOrder.toLowerCase(Locale.ENGLISH) == "asc") {
+                    sImage.setImageResource(R.drawable.ic_sort_asc)
+                } else {
+                    sImage.setImageResource(R.drawable.ic_sort_desc)
+                }
+
             } else {
                 sImage.setColorFilter(Color.parseColor("#808080"))
             }

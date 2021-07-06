@@ -113,7 +113,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                     )
 
                     if (columns!!.size >= 5) {
-                        for (i in 3 until columns.size) {
+                        for (i in 4 until columns.size) {
                             val col = columns[i]
                             var pair: Pair<String, String>? = null
                             pair = Pair(col, cursor.getString(i))
