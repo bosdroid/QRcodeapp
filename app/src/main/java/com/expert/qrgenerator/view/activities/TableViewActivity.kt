@@ -47,6 +47,11 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
         initViews()
         setUpToolbar()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         getTableData(tableName, "", "")
     }
 
@@ -204,6 +209,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
             val intent = Intent(context, CodeDetailActivity::class.java)
             intent.putExtra("TABLE_NAME", tableName)
             intent.putExtra("TABLE_ITEM", item)
+            intent.putExtra("TABLE_NAME",tableName)
             startActivity(intent)
 
         } else {

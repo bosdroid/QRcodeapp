@@ -341,4 +341,42 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
         return list
     }
+
+    fun updateBarcodeDetail(tableName: String,column:String,value:String,id:Int):Boolean{
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(column,value)
+        return db.update(tableName,contentValues,"id=$id",null)>0
+    }
+
+    fun getUpdateBarcodeDetail(tableName: String,id:Int):TableObject? {
+        val db = this.readableDatabase
+        val columns = getTableColumns(tableName)
+        val selectQuery = "SELECT  * FROM $tableName WHERE id=$id"
+        val list = mutableListOf<Pair<String, String>>()
+        var tableObject: TableObject? = null
+        val cursor: Cursor = db.rawQuery(selectQuery, null)
+        if (cursor.moveToFirst()) {
+            do {
+                tableObject = TableObject(
+                    cursor.getString(0).toInt(),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    if (cursor.isNull(3)) "" else cursor.getString(3)
+                )
+
+                if (columns!!.size >= 5) {
+                    for (i in 4 until columns.size) {
+                        val col = columns[i]
+                        var pair: Pair<String, String>? = null
+                        pair = Pair(col, cursor.getString(i))
+
+                        list.add(pair)
+                    }
+                    tableObject.dynamicColumns.addAll(list)
+                }
+            } while (cursor.moveToNext())
+        }
+        return tableObject
+    }
 }

@@ -71,4 +71,12 @@ class TableGenerator(context: Context) {
     fun getFieldListValues(listId:Int):List<String>{
         return database.getFieldListValues(listId)
     }
+
+    fun updateBarcodeDetail(tableName: String,column:String,value:String,id:Int):Boolean{
+        return database.updateBarcodeDetail(tableName,column,value,id)
+    }
+
+    fun getUpdateBarcodeDetail(tableName: String,id:Int):TableObject? {
+        return database.getUpdateBarcodeDetail(tableName,id)
+    }
 }

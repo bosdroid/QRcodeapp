@@ -36,6 +36,7 @@ import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
+import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.viewmodel.DynamicQrViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
@@ -56,6 +57,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var toolbar: Toolbar
     private var codeHistory: CodeHistory? = null
     private var tableObject: TableObject? = null
+    private lateinit var tableGenerator: TableGenerator
     private lateinit var topImageCodeType: AppCompatImageView
     private lateinit var typeTextHeading: MaterialTextView
     private lateinit var encodeDataTextView: MaterialTextView
@@ -78,13 +80,16 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var appViewModel: AppViewModel
     private lateinit var viewModel: DynamicQrViewModel
     private lateinit var barcodeDetailParentLayout: LinearLayout
-    private lateinit var dialogSubHeading:MaterialTextView
+    private lateinit var dialogSubHeading: MaterialTextView
+    private lateinit var tableName:String
     var bitmap: Bitmap? = null
     private val pageWidth = 500
     private val pageHeight = 500
     private var pdfFile: File? = null
     private var isShareAfterCreated: Boolean = false
     var selectedProtocol = ""
+    var barcodeEditList = mutableListOf<Triple<AppCompatImageView, String, String>>()
+    private var counter: Int = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,6 +106,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
         context = this
+        tableGenerator = TableGenerator(context)
         viewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(DynamicQrViewModel()).createFor()
@@ -117,6 +123,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         if (intent != null && intent.hasExtra("TABLE_ITEM")) {
             tableObject = intent.getSerializableExtra("TABLE_ITEM") as TableObject
         }
+        if (intent != null && intent.hasExtra("TABLE_NAME")) {
+            tableName = intent.getStringExtra("TABLE_NAME") as String
+        }
+
         topImageCodeType = findViewById(R.id.code_detail_top_image_type)
         typeTextHeading = findViewById(R.id.code_detail_type_text_heading)
         encodeDataTextView = findViewById(R.id.code_detail_encode_data)
@@ -210,10 +220,6 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         } else {
 
             if (tableObject != null) {
-                barcodeDetailWrapperLayout.visibility = View.VISIBLE
-                encodeDataTextView.text = tableObject!!.code_data
-                codeSequenceView.text = "Code ${tableObject!!.id}"
-                dateTimeView.text = tableObject!!.date
                 displayBarcodeDetail()
             }
         }
@@ -297,14 +303,14 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                         context,
                         "Please enter the URL without http:// or https://"
                     )
-                }
-                else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
+                } else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$")
+                        .matcher(value).find()
+                ) {
                     showAlert(
                         context,
                         "Please enter the valid website URL"
                     )
-                }
-                else {
+                } else {
                     val hashMap = hashMapOf<String, String>()
                     hashMap["login"] = codeHistory!!.login
                     hashMap["qrId"] = codeHistory!!.qrId
@@ -334,13 +340,83 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 }
             }
             else -> {
-
+                val position = v.id
+                val id = barcodeEditList[0].second.toInt()
+                val triple = barcodeEditList[position+1]
+                //Toast.makeText(context, triple.second,Toast.LENGTH_SHORT).show()
+                updateBarcodeDetail(id, triple)
             }
         }
     }
 
+    private fun updateBarcodeDetail(id: Int, triple: Triple<AppCompatImageView, String, String>) {
+        val updateBarcodeLayout =
+            LayoutInflater.from(context).inflate(R.layout.update_barcode_detail_dialog, null)
+        val updateInputBox =
+            updateBarcodeLayout.findViewById<TextInputEditText>(R.id.update_barcode_detail_text_input_field)
+
+        val cleanBrushView =
+            updateBarcodeLayout.findViewById<AppCompatImageView>(R.id.update_barcode_detail_cleaning_text_view)
+        val cancelBtn =
+            updateBarcodeLayout.findViewById<MaterialButton>(R.id.update_barcode_detail_dialog_cancel_btn)
+        val updateBtn =
+            updateBarcodeLayout.findViewById<MaterialButton>(R.id.update_barcode_detail_dialog_update_btn)
+
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setView(updateBarcodeLayout)
+        builder.setCancelable(false)
+        val alert = builder.create()
+        alert.show()
+        cancelBtn.setOnClickListener {
+            hideSoftKeyboard(context,cancelBtn)
+            alert.dismiss()
+        }
+
+        cleanBrushView.setOnClickListener { updateInputBox.setText("") }
+
+        updateBtn.setOnClickListener {
+
+            val value = updateInputBox.text.toString().trim()
+            if (value.isNotEmpty()){
+                hideSoftKeyboard(context,updateBtn)
+                alert.dismiss()
+                val isUpdate = tableGenerator.updateBarcodeDetail(tableName,triple.third,value,id)
+                if (isUpdate){
+                    tableObject  = tableGenerator.getUpdateBarcodeDetail(tableName,id)
+                    displayBarcodeDetail()
+                }
+            }
+            else{
+               Toast.makeText(context,"Please enter the text",Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        updateInputBox.setText(triple.second)
+        updateInputBox.setSelection(updateInputBox.text!!.length)
+        updateInputBox.requestFocus()
+        Constants.openKeyboar(context)
+
+    }
+
     private fun displayBarcodeDetail() {
         if (tableObject != null) {
+
+            barcodeDetailWrapperLayout.visibility = View.VISIBLE
+            encodeDataTextView.text = tableObject!!.code_data
+            codeSequenceView.text = "Code ${tableObject!!.id}"
+            dateTimeView.text = tableObject!!.date
+
+            if (barcodeDetailParentLayout.childCount > 0) {
+                barcodeDetailParentLayout.removeAllViews()
+            }
+
+            barcodeEditList.add(
+                Triple(
+                    AppCompatImageView(context),
+                    tableObject!!.id.toString(),
+                    "id"
+                )
+            )
             val codeDataLayout = LayoutInflater.from(context)
                 .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
             val codeDataColumnValue =
@@ -349,7 +425,15 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
             val codeDataColumnEditView =
                 codeDataLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
-
+            codeDataColumnEditView.id = counter
+            barcodeEditList.add(
+                Triple(
+                    codeDataColumnEditView,
+                    tableObject!!.code_data,
+                    "code_data"
+                )
+            )
+            codeDataColumnEditView.setOnClickListener(this)
             codeDataColumnValue.text = tableObject!!.code_data
             codeDataColumnName.text = "code_data"
             barcodeDetailParentLayout.addView(codeDataLayout)
@@ -360,6 +444,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             val dateColumnName =
                 dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
             val dateColumnEditView = dateLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+            counter += 1
+            dateColumnEditView.id = counter
+            barcodeEditList.add(Triple(dateColumnEditView, tableObject!!.date, "date"))
+            dateColumnEditView.setOnClickListener(this)
             dateColumnValue.text = tableObject!!.date
             dateColumnName.text = "date"
             barcodeDetailParentLayout.addView(dateLayout)
@@ -371,6 +459,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
             val imageColumnEditView =
                 imageLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+            counter += 1
+            imageColumnEditView.id = counter
+            barcodeEditList.add(Triple(imageColumnEditView, tableObject!!.image, "image"))
+            imageColumnEditView.setOnClickListener(this)
             imageColumnValue.text = tableObject!!.image
             imageColumnName.text = "image"
             barcodeDetailParentLayout.addView(imageLayout)
@@ -382,11 +474,15 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 val columnValue = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
                 val columnName = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
                 val columnEditView = layout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+                counter += 1
+                columnEditView.id = counter
+                barcodeEditList.add(Triple(columnEditView, item.second, item.first))
+                columnEditView.setOnClickListener(this)
                 columnValue.text = item.second
                 columnName.text = item.first
                 barcodeDetailParentLayout.addView(layout)
             }
-
+            counter = 0
         }
     }
 
