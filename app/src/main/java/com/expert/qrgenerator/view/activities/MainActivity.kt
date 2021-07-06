@@ -95,6 +95,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     companion object {
         lateinit var context: Context
+
     }
 
 
