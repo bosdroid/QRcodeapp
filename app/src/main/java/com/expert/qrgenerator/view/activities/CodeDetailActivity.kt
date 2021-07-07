@@ -25,6 +25,7 @@ import androidx.core.content.FileProvider
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
@@ -62,9 +63,12 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_code_detail)
-
-
         initViews()
+        var scans = DialogPrefs.getSuccessScan(context)
+        if (scans >= 0) {
+            scans += 1
+            DialogPrefs.setSuccessScan(context, scans)
+        }
         setUpToolbar()
         displayCodeDetails()
 

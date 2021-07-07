@@ -12,13 +12,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
@@ -28,6 +28,8 @@ import com.expert.qrgenerator.databinding.FragmentScannerBinding
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.DateUtils
+import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -36,12 +38,14 @@ import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
-class ScannerFragment : Fragment() {
+class ScannerFragment : BaseFragment() {
 
     private var codeScanner: CodeScanner? = null
     private lateinit var scannerView: CodeScannerView
@@ -69,7 +73,7 @@ class ScannerFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         mBinding = FragmentScannerBinding.inflate(inflater, container, false);
 //        val v = inflater.inflate(R.layout.fragment_scanner, container, false)
@@ -82,6 +86,16 @@ class ScannerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val prefDate = DialogPrefs.getDate(requireContext())
+        if (prefDate == null) {
+            DialogPrefs.setDate(requireContext(), DateUtils.getCurrentDate())
+        }
+        val scans = DialogPrefs.getSuccessScan(requireContext())
+        val isSharedQr = DialogPrefs.getShared(requireContext())
+        if ((getDateDifference() == 3 && scans >= 2) || (getDateDifference() == 3 && isSharedQr)) {
+            rateUs(requireActivity() as AppCompatActivity)
+        }
+
         // You can uncomment these line of codes if want to test MlScanner directly on start of app
 //        if (RuntimePermissionHelper.checkCameraPermission(
 //                requireActivity(),
@@ -91,6 +105,20 @@ class ScannerFragment : Fragment() {
 //            initMlScanner()
 //        }
 
+    }
+
+    private fun getDateDifference(): Int {
+        val myFormat = SimpleDateFormat(DateUtils.DATE_FORMAT)
+        val currentDate = DateUtils.getCurrentDate()
+        val prefsDate = "11-Jul-2021"
+        val dateCurrent = myFormat.parse(currentDate)
+        val datePrefs = myFormat.parse(prefsDate)
+        val timeCurrent = dateCurrent.time
+        val timePrefs = datePrefs.time
+        val difference = timePrefs - timeCurrent
+        val days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
+        Log.d("TAG", "getDateDifference: $days")
+        return days.toInt()
     }
 
     // This method will initialize the important libraries or API need to run Scanner

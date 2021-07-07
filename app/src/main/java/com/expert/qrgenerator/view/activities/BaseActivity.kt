@@ -19,6 +19,7 @@ import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.request.DownloadRequest
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.utils.DialogPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
@@ -150,6 +151,7 @@ open class BaseActivity : AppCompatActivity() {
                 }
             }
             later.setOnClickListener {
+                DialogPrefs.clearPreferences(context)
                 alertDialog.dismiss()
             }
         }

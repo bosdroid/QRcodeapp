@@ -1,6 +1,5 @@
 package com.expert.qrgenerator.view.activities
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -15,15 +14,16 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.DialogPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class ShareActivity : BaseActivity(),View.OnClickListener {
+class ShareActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
     private lateinit var shareQrImage: AppCompatImageView
-    private lateinit var shareBtn:AppCompatButton
-    private var imageShareUri:Uri?=null
+    private lateinit var shareBtn: AppCompatButton
+    private var imageShareUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,20 +33,20 @@ class ShareActivity : BaseActivity(),View.OnClickListener {
         setUpToolbar()
     }
 
-    private fun initViews(){
+    private fun initViews() {
         context = this
         toolbar = findViewById(R.id.toolbar)
         shareQrImage = findViewById(R.id.share_qr_generated_img)
         shareBtn = findViewById(R.id.share_btn)
         shareBtn.setOnClickListener(this)
 
-        if (Constants.finalQrImageUri != null){
+        if (Constants.finalQrImageUri != null) {
             imageShareUri = Constants.finalQrImageUri
             shareQrImage.setImageURI(Constants.finalQrImageUri)
         }
     }
 
-    private fun setUpToolbar(){
+    private fun setUpToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar!!.title = getString(R.string.share_qr_image)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -54,7 +54,7 @@ class ShareActivity : BaseActivity(),View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        when(v!!.id){
+        when (v!!.id) {
             // SHARE BTN WILL CALL THE SHARE IMAGE FUNCTION
             R.id.share_btn -> {
                 MaterialAlertDialogBuilder(context)
@@ -65,6 +65,7 @@ class ShareActivity : BaseActivity(),View.OnClickListener {
                     }
                     .setPositiveButton("Share") { dialog, which ->
 //                      ImageManager.shareImage(context,imageShareUri)
+                        DialogPrefs.setShared(context, true)
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -72,12 +73,17 @@ class ShareActivity : BaseActivity(),View.OnClickListener {
                         if (imageShareUri != null) {
                             shareIntent.type = "image/*"
                             shareIntent.putExtra(Intent.EXTRA_STREAM, imageShareUri)
-                            shareResultLauncher.launch(Intent.createChooser(shareIntent, "Share with"))
+                            shareResultLauncher.launch(
+                                Intent.createChooser(
+                                    shareIntent,
+                                    "Share with"
+                                )
+                            )
                         }
                     }
                     .create().show()
             }
-            else->{
+            else -> {
 
             }
         }
@@ -87,11 +93,11 @@ class ShareActivity : BaseActivity(),View.OnClickListener {
     private var shareResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 //            if (result.resultCode == Activity.RESULT_OK) {
-                // There are no request codes
-                val intent = Intent(context,MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
-                finish()
+            // There are no request codes
+            val intent = Intent(context, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            finish()
 //            }
         }
 
