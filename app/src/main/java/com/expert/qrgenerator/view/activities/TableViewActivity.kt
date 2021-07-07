@@ -301,7 +301,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                 e.printStackTrace()
             }
         } else {
-            showAlert(context, "Table data not exported due to empty!")
+            showAlert(context, getString(R.string.table_export_error_text))
         }
     }
 

@@ -65,7 +65,7 @@ class FieldListValuesAdapter(val context: Context, val listValues: ArrayList<Str
         when (holder.itemViewType) {
             0 -> {
                 val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.cardTextView.text = "+ add value"
+                addViewHolder.cardTextView.text = context.resources.getString(R.string.add_value_text)
                 addViewHolder.addCardViewBtn.setOnClickListener {
                     mListener!!.onAddItemClick(position)
                 }

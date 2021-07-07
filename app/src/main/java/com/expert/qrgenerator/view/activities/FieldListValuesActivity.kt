@@ -106,7 +106,7 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
         val listCreateLayout =
             LayoutInflater.from(context).inflate(R.layout.add_list_value_layout, null)
         val dialogHeading = listCreateLayout.findViewById<MaterialTextView>(R.id.dialog_heading)
-        dialogHeading.text = "Enter the List value"
+        dialogHeading.text = getString(R.string.list_value_hint_text)
         val textInputBox =
             listCreateLayout.findViewById<TextInputEditText>(R.id.add_list_value_input_field)
         val listItemCreateBtn = listCreateLayout.findViewById<MaterialButton>(R.id.add_list_value_btn)
@@ -119,13 +119,13 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
 
                     tableGenerator.insertListValue(id,textInputBox.text.toString().trim().toLowerCase(
                         Locale.ENGLISH))
-                    Toast.makeText(context, "List Item has been added successfully!", Toast.LENGTH_SHORT)
+                    Toast.makeText(context, getString(R.string.list_item_success_text), Toast.LENGTH_SHORT)
                         .show()
                     alert.dismiss()
 
                 getListValues()
             } else {
-                showAlert(context, "Please enter the list name!")
+                showAlert(context, getString(R.string.list_name_empty_error_text))
             }
         }
     }

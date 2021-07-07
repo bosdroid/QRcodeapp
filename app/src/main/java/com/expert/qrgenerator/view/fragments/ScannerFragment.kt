@@ -33,18 +33,13 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.budiyev.android.codescanner.*
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.databinding.FragmentScannerBinding
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.utils.*
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
-import com.expert.qrgenerator.view.activities.MainActivity
 import com.expert.qrgenerator.view.activities.TablesActivity
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.common.api.Scope
-import com.google.android.gms.drive.Drive.SCOPE_APPFOLDER
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -53,8 +48,6 @@ import com.google.android.material.textview.MaterialTextView
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
-import com.google.api.services.drive.Drive
-import com.google.api.services.drive.DriveScopes
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.mlkit.vision.barcode.Barcode
@@ -140,6 +133,7 @@ class ScannerFragment : Fragment() {
         addNewTableBtn.setOnClickListener {
             startActivity(Intent(requireActivity(), TablesActivity::class.java))
         }
+
     }
 
     private fun getTableList() {
@@ -259,10 +253,10 @@ class ScannerFragment : Fragment() {
                         initMlScanner()
                     }
                     requireActivity().runOnUiThread {
-                        Toast.makeText(
-                            requireContext(), "Camera initialization error: ${it.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
+//                        Toast.makeText(
+//                            requireContext(), "Camera initialization error: ${it.message}",
+//                            Toast.LENGTH_LONG
+//                        ).show()
                     }
                 }
 
@@ -310,12 +304,12 @@ class ScannerFragment : Fragment() {
                         if (Constants.userData == null) {
                             addImageCheckBox.isChecked = false
                             MaterialAlertDialogBuilder(requireActivity())
-                                .setTitle("Alert!")
-                                .setMessage("You can't use this feature without login!")
-                                .setNegativeButton("LATER") { dialog, which ->
+                                .setTitle(requireActivity().resources.getString(R.string.alert_text))
+                                .setMessage(requireActivity().resources.getString(R.string.login_error_text))
+                                .setNegativeButton(requireActivity().resources.getString(R.string.later_text)) { dialog, which ->
                                     dialog.dismiss()
                                 }
-                                .setPositiveButton("LOGIN") { dialog, which ->
+                                .setPositiveButton(requireActivity().resources.getString(R.string.login_text)) { dialog, which ->
                                     dialog.dismiss()
                                     listener!!.login()
                                 }
@@ -460,6 +454,7 @@ class ScannerFragment : Fragment() {
                 val alert = builder.create()
                 alert.show()
 
+
                 submitBtn.setOnClickListener {
 
                     if (BaseActivity.isNetworkAvailable(requireActivity())) {
@@ -519,7 +514,7 @@ class ScannerFragment : Fragment() {
                                                     BaseActivity.dismiss()
                                                     Toast.makeText(
                                                         requireActivity(),
-                                                        "Scan data saved successfully!",
+                                                        requireActivity().resources.getString(R.string.scan_data_save_success_text),
                                                         Toast.LENGTH_SHORT
                                                     ).show()
                                                     textInputIdsList.clear()
@@ -578,7 +573,7 @@ class ScannerFragment : Fragment() {
                                             BaseActivity.dismiss()
                                             Toast.makeText(
                                                 requireActivity(),
-                                                "Scan data saved successfully!",
+                                                requireActivity().resources.getString(R.string.scan_data_save_success_text),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                             textInputIdsList.clear()
@@ -601,12 +596,12 @@ class ScannerFragment : Fragment() {
 
                         val b = MaterialAlertDialogBuilder(requireActivity())
                             .setCancelable(true)
-                            .setTitle("Alert!")
-                            .setMessage("To Upload an Image Turn on the Internet!")
-                            .setNegativeButton("Close") { dialog, which ->
+                            .setTitle(requireActivity().resources.getString(R.string.alert_text))
+                            .setMessage(requireActivity().resources.getString(R.string.image_upload_internet_error_text))
+                            .setNegativeButton(requireActivity().resources.getString(R.string.close_text)) { dialog, which ->
                                 dialog.dismiss()
                             }
-                            .setPositiveButton("Save without Image") { dialog, which ->
+                            .setPositiveButton(requireActivity().resources.getString(R.string.save_without_image_text)) { dialog, which ->
                                 dialog.dismiss()
                                 alert.dismiss()
                                 val params = mutableListOf<Pair<String, String>>()
@@ -649,7 +644,7 @@ class ScannerFragment : Fragment() {
                                         BaseActivity.dismiss()
                                         Toast.makeText(
                                             requireActivity(),
-                                            "Scan data saved successfully!",
+                                            requireActivity().resources.getString(R.string.scan_data_save_success_text),
                                             Toast.LENGTH_SHORT
                                         ).show()
                                         textInputIdsList.clear()
@@ -740,7 +735,7 @@ class ScannerFragment : Fragment() {
                 }
                 Toast.makeText(
                     requireActivity(),
-                    "Scan data saved successfully!",
+                    requireActivity().resources.getString(R.string.scan_data_save_success_text),
                     Toast.LENGTH_SHORT
                 ).show()
                 Handler(Looper.myLooper()!!).postDelayed({
@@ -884,9 +879,9 @@ class ScannerFragment : Fragment() {
                         )
                     } else {
                         MaterialAlertDialogBuilder(requireActivity())
-                            .setMessage("Please allow the Camera permission to use the scanner to scan Image.")
+                            .setMessage(requireActivity().resources.getString(R.string.camera_permission_failed_text))
                             .setCancelable(false)
-                            .setPositiveButton("Ok") { dialog, which ->
+                            .setPositiveButton(requireActivity().resources.getString(R.string.ok_text)) { dialog, which ->
                                 dialog.dismiss()
                             }
                             .create().show()

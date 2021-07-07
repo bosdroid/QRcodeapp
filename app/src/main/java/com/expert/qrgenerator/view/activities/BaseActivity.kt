@@ -19,7 +19,6 @@ import androidx.appcompat.widget.AppCompatRatingBar
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
@@ -106,9 +105,9 @@ open class BaseActivity : AppCompatActivity() {
                 })
             } else {
                 MaterialAlertDialogBuilder(context)
-                    .setMessage("Something went wrong, please check the font file exists and the URL is correct!")
+                    .setMessage(context.resources.getString(R.string.font_file_error_text))
                     .setCancelable(false)
-                    .setPositiveButton("Ok") { dialog, which ->
+                    .setPositiveButton(context.resources.getString(R.string.ok_text)) { dialog, which ->
                         dialog.dismiss()
                     }
                     .create().show()
@@ -210,8 +209,8 @@ open class BaseActivity : AppCompatActivity() {
             try {
                 context.startActivity(Intent.createChooser(intent, "Send Mail..."))
             } catch (e: Exception) {
-                Toast.makeText(context, "No app found to handle this intent", Toast.LENGTH_LONG)
-                    .show()
+//                Toast.makeText(context, "No app found to handle this intent", Toast.LENGTH_LONG)
+//                    .show()
             }
 
         }

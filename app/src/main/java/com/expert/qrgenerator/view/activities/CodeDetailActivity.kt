@@ -30,14 +30,18 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.adapters.FeedbackAdapter
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.Feedback
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.utils.TableGenerator
-import com.expert.qrgenerator.viewmodel.DynamicQrViewModel
+import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -46,6 +50,8 @@ import com.google.android.material.textview.MaterialTextView
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Exception
+import java.lang.StringBuilder
 import java.net.URLEncoder
 import java.util.*
 import java.util.regex.Pattern
@@ -72,16 +78,21 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var dateTimeView: MaterialTextView
     private lateinit var dynamicLinkUpdateLayout: CardView
     private lateinit var barcodeDetailWrapperLayout: CardView
+    private lateinit var feedbackDetailWrapperLayout: CardView
+    private lateinit var feedbackRecyclerView: RecyclerView
     private lateinit var barcodeDataView: FrameLayout
     private lateinit var barcodeImageView: CardView
     private lateinit var updateDynamicLinkInput: TextInputEditText
     private lateinit var updateDynamicButton: AppCompatButton
     private lateinit var protocolGroup: RadioGroup
     private lateinit var appViewModel: AppViewModel
-    private lateinit var viewModel: DynamicQrViewModel
+    private lateinit var feedbackCsvExportImageView: AppCompatImageView
+
+    //    private lateinit var viewModel: DynamicQrViewModel
     private lateinit var barcodeDetailParentLayout: LinearLayout
     private lateinit var dialogSubHeading: MaterialTextView
-    private lateinit var tableName:String
+    private lateinit var tableName: String
+    private lateinit var viewModel: CodeDetailViewModel
     var bitmap: Bitmap? = null
     private val pageWidth = 500
     private val pageHeight = 500
@@ -109,8 +120,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         tableGenerator = TableGenerator(context)
         viewModel = ViewModelProviders.of(
             this,
-            ViewModelFactory(DynamicQrViewModel()).createFor()
-        )[DynamicQrViewModel::class.java]
+            ViewModelFactory(CodeDetailViewModel()).createFor()
+        )[CodeDetailViewModel::class.java]
         appViewModel = ViewModelProvider(
             this,
             ViewModelProvider.AndroidViewModelFactory(this.application)
@@ -148,6 +159,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         barcodeDataView = findViewById(R.id.code_detail_top_framelayout)
         barcodeImageView = findViewById(R.id.barcode_image_detail_layout)
         barcodeDetailWrapperLayout = findViewById(R.id.code_detail_table_layout)
+        feedbackDetailWrapperLayout = findViewById(R.id.code_detail_feedback_layout)
+        feedbackRecyclerView = findViewById(R.id.code_detail_feedback_recyclerview)
+        feedbackCsvExportImageView = findViewById(R.id.code_detail_feedback_csv_export_image)
         updateDynamicLinkInput = findViewById(R.id.qr_code_history_dynamic_link_input_field)
         updateDynamicButton = findViewById(R.id.dynamic_link_update_btn)
         updateDynamicButton.setOnClickListener(this)
@@ -180,40 +194,34 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     // THIS FUNCTION WILL BIND THE HISTORY CODE DETAIL
     private fun displayCodeDetails() {
         if (codeHistory != null) {
-
+            displayFeedbacksDetail(codeHistory!!.qrId)
             if (codeHistory!!.codeType == "barcode") {
                 topImageCodeType.setImageResource(R.drawable.barcode)
-                typeTextHeading.text = "Barcode Text Data"
-                typeImageHeading.text = "Barcode Image"
+                typeTextHeading.text = getString(R.string.barcode_text_data_heding)
+                typeImageHeading.text = getString(R.string.barcode_image_heading)
                 typeImageView.setImageResource(R.drawable.barcode)
             } else {
                 topImageCodeType.setImageResource(R.drawable.ic_qr_code)
-                typeTextHeading.text = "QR Text Data"
-                typeImageHeading.text = "QR Image"
+                typeTextHeading.text = getString(R.string.qr_text_data_heading)
+                typeImageHeading.text = getString(R.string.qr_image_heading)
                 typeImageView.setImageResource(R.drawable.qrcode)
             }
             encodeDataTextView.text = codeHistory!!.data
-            codeSequenceView.text = "Code ${codeHistory!!.id}"
+            codeSequenceView.text = "${getString(R.string.code_text)} ${codeHistory!!.id}"
             dateTimeView.text = getFormattedDate(context, codeHistory!!.createdAt.toLong())
 
-            if (codeHistory!!.isDynamic.toInt() == 1) {
-                dynamicLinkUpdateLayout.visibility = View.VISIBLE
-                dialogSubHeading.text = "Current link: ${codeHistory!!.data}"
-//                if (codeHistory!!.data.contains("http://"))
-//                {
-//                    protocolGroup.check(R.id.http_protocol_rb)
-//                    selectedProtocol = "http://"
-//                    updateDynamicLinkInput.setText(codeHistory!!.data.removePrefix("http://"))
-//                } else if(codeHistory!!.data.contains("https://")){
-//                    selectedProtocol = "https://"
-//                    protocolGroup.check(R.id.https_protocol_rb)
-//                    updateDynamicLinkInput.setText(codeHistory!!.data.removePrefix("https://"))
-//                }
-//                else{
-//                    updateDynamicLinkInput.setText(codeHistory!!.data)
-//                }
+            if (codeHistory!!.codeType == "feedback") {
+                displayFeedbacksDetail(codeHistory!!.qrId)
             } else {
-                dynamicLinkUpdateLayout.visibility = View.GONE
+
+                if (codeHistory!!.isDynamic.toInt() == 1) {
+                    dynamicLinkUpdateLayout.visibility = View.VISIBLE
+                    dialogSubHeading.text =
+                        "${getString(R.string.current_link_text)} ${codeHistory!!.data}"
+                } else {
+                    dynamicLinkUpdateLayout.visibility = View.GONE
+
+                }
 
             }
 
@@ -224,6 +232,100 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
+    }
+
+    var feedbacksList = mutableListOf<Feedback>()
+    lateinit var feedbackAdapter: FeedbackAdapter
+    private fun displayFeedbacksDetail(qrId: String) {
+
+        feedbackRecyclerView.layoutManager = LinearLayoutManager(context)
+        feedbackRecyclerView.hasFixedSize()
+        feedbackAdapter = FeedbackAdapter(context, feedbacksList as ArrayList<Feedback>)
+        feedbackRecyclerView.adapter = feedbackAdapter
+        feedbackCsvExportImageView.setOnClickListener {
+            exportCsv()
+        }
+        startLoading(context)
+        viewModel.callFeedbacks(context, "1624975916895")
+        viewModel.getAllFeedbacks().observe(this, { response ->
+            dismiss()
+            if (response != null) {
+                feedbacksList.addAll(response.feedbacks)
+                if (feedbacksList.size > 0) {
+                    feedbackDetailWrapperLayout.visibility = View.VISIBLE
+                    feedbackAdapter.notifyItemRangeChanged(0, feedbacksList.size)
+                    feedbackAdapter.setOnItemClickListener(object :
+                        FeedbackAdapter.OnItemClickListener {
+                        override fun onItemClick(position: Int) {
+                            val item = feedbacksList[position]
+                            val sharingText =
+                                "Feedback: ${item.comment}\nEmail: ${item.email}\nPhone: ${item.phone}\nStars: ${item.rating}\n ${
+                                    getString(
+                                        R.string.qr_sign
+                                    )
+                                }"
+                            MaterialAlertDialogBuilder(context)
+                                .setMessage(sharingText)
+                                .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
+                                    dialog.dismiss()
+                                }
+                                .setPositiveButton(getString(R.string.share_text)) { dialog, which ->
+                                    dialog.dismiss()
+                                    shareFeedback(sharingText)
+                                }
+                                .create().show()
+                        }
+
+                    })
+                } else {
+                    feedbackDetailWrapperLayout.visibility = View.GONE
+                }
+            }
+        })
+
+    }
+
+    private fun exportCsv() {
+        if (feedbacksList.isNotEmpty()) {
+            startLoading(context)
+            val builder = StringBuilder()
+            builder.append("id,qrId,comment,email,phone,rating")
+
+            for (j in 0 until feedbacksList.size) {
+
+                val data = feedbacksList[j]
+
+                builder.append("\n${data.id},${data.qrId},${data.comment},${data.email},${data.phone},${data.rating}")
+            }
+
+            try {
+                val fileName = "feedbacks_${feedbacksList[0].qrId}.csv"
+                val out = openFileOutput(fileName, Context.MODE_PRIVATE)
+                out.write((builder.toString()).toByteArray())
+                out.close()
+
+                val file = File(filesDir, fileName)
+                val path =
+                    FileProvider.getUriForFile(context, "com.expert.qrgenerator.fileprovider", file)
+                dismiss()
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/csv"
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                intent.putExtra(Intent.EXTRA_STREAM, path)
+                startActivity(Intent.createChooser(intent, getString(R.string.share_using)))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        } else {
+            showAlert(context, getString(R.string.table_export_error_text))
+        }
+    }
+
+    private fun shareFeedback(sharingText: String) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, sharingText)
+        startActivity(Intent.createChooser(intent, getString(R.string.share_using)))
     }
 
     // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
@@ -246,7 +348,11 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     encodeDataTextView.text.toString()
                 )
                 clipboard.setPrimaryClip(clip)
-                Toast.makeText(context, "Text saved in clipboard", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    getString(R.string.text_saved_clipboard),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             R.id.code_detail_text_search_button -> {
                 val escapedQuery: String = URLEncoder.encode(
@@ -288,27 +394,27 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 if (selectedProtocol.isEmpty()) {
                     showAlert(
                         context,
-                        "Please select the URL protocol!"
+                        getString(R.string.protocol_error)
                     )
                 } else if (value.isEmpty()) {
 
                     showAlert(
                         context,
-                        "Please enter the required input data!"
+                        getString(R.string.required_data_input_error)
                     )
 
                 } else if (value.contains("http://") || value.contains("https://")
                 ) {
                     showAlert(
                         context,
-                        "Please enter the URL without http:// or https://"
+                        getString(R.string.without_protocol_error)
                     )
                 } else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$")
                         .matcher(value).find()
                 ) {
                     showAlert(
                         context,
-                        "Please enter the valid website URL"
+                        getString(R.string.valid_website_error)
                     )
                 } else {
                     val hashMap = hashMapOf<String, String>()
@@ -329,12 +435,13 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                             } else {
                                 url
                             }
-                            dialogSubHeading.text = "Current link: $selectedProtocol$value"
+                            dialogSubHeading.text =
+                                "${getString(R.string.current_link_text)} $selectedProtocol$value"
                             encodeDataTextView.text = "$selectedProtocol$value"
                             appViewModel.update("$selectedProtocol$value", url, codeHistory!!.id)
-                            showAlert(context, "Dynamic Url update Successfully!")
+                            showAlert(context, getString(R.string.dynamic_update_success_text))
                         } else {
-                            showAlert(context, "Something went wrong, please try again!")
+                            showAlert(context, getString(R.string.something_wrong_error))
                         }
                     })
                 }
@@ -342,7 +449,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             else -> {
                 val position = v.id
                 val id = barcodeEditList[0].second.toInt()
-                val triple = barcodeEditList[position+1]
+                val triple = barcodeEditList[position + 1]
                 //Toast.makeText(context, triple.second,Toast.LENGTH_SHORT).show()
                 updateBarcodeDetail(id, triple)
             }
@@ -368,7 +475,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         val alert = builder.create()
         alert.show()
         cancelBtn.setOnClickListener {
-            hideSoftKeyboard(context,cancelBtn)
+            hideSoftKeyboard(context, cancelBtn)
             alert.dismiss()
         }
 
@@ -377,17 +484,22 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         updateBtn.setOnClickListener {
 
             val value = updateInputBox.text.toString().trim()
-            if (value.isNotEmpty()){
-                hideSoftKeyboard(context,updateBtn)
+            if (value.isNotEmpty()) {
+                hideSoftKeyboard(context, updateBtn)
                 alert.dismiss()
-                val isUpdate = tableGenerator.updateBarcodeDetail(tableName,triple.third,value,id)
-                if (isUpdate){
-                    tableObject  = tableGenerator.getUpdateBarcodeDetail(tableName,id)
+                val isUpdate = tableGenerator.updateBarcodeDetail(
+                    tableName,
+                    triple.third,
+                    value,
+                    id
+                )
+                if (isUpdate) {
+                    tableObject = tableGenerator.getUpdateBarcodeDetail(tableName, id)
                     displayBarcodeDetail()
                 }
-            }
-            else{
-               Toast.makeText(context,"Please enter the text",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, getString(R.string.empty_text_error), Toast.LENGTH_SHORT)
+                    .show()
             }
         }
 
@@ -403,7 +515,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
             barcodeDetailWrapperLayout.visibility = View.VISIBLE
             encodeDataTextView.text = tableObject!!.code_data
-            codeSequenceView.text = "Code ${tableObject!!.id}"
+            codeSequenceView.text = "${getString(R.string.code_text)} ${tableObject!!.id}"
             dateTimeView.text = tableObject!!.date
 
             if (barcodeDetailParentLayout.childCount > 0) {
@@ -566,13 +678,14 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             document.finishPage(page)
             document.writeTo(fOut)
             document.close()
-            Toast.makeText(this, "Pdf created and saved successfully!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.pdf_saved_success_text), Toast.LENGTH_SHORT)
+                .show()
             if (isShareAfterCreated) {
                 sharePdfFile()
             }
         } catch (e: IOException) {
             e.printStackTrace()
-            Toast.makeText(this, "Something wrong: $e", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "Something wrong: $e", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -595,9 +708,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     }
                 } else {
                     MaterialAlertDialogBuilder(context)
-                        .setMessage("Please allow the READ/WRITE EXTERNAL STORAGE permission for use create and save the pdf file.")
+                        .setMessage(getString(R.string.external_storage_permission_error))
                         .setCancelable(false)
-                        .setPositiveButton("Ok") { dialog, which ->
+                        .setPositiveButton(getString(R.string.ok_text)) { dialog, which ->
                             dialog.dismiss()
                         }
                         .create().show()
@@ -634,7 +747,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     startActivity(Intent.createChooser(fileShareIntent, "Share File"))
                 }
             } else {
-                showAlert(context, "This Pdf file does not exist or created!")
+                showAlert(context, getString(R.string.pdf_create_failed_error))
             }
         }
     }

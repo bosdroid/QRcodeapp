@@ -63,12 +63,12 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
             // SHARE BTN WILL CALL THE SHARE IMAGE FUNCTION
             R.id.share_btn -> {
                 MaterialAlertDialogBuilder(context)
-                    .setMessage("Are you sure you want to share this QR Image?")
+                    .setMessage(getString(R.string.qr_image_share_warning_text))
                     .setCancelable(false)
-                    .setNegativeButton("Cancel") { dialog, which ->
+                    .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
                         dialog.dismiss()
                     }
-                    .setPositiveButton("Share") { dialog, which ->
+                    .setPositiveButton(getString(R.string.share_text)) { dialog, which ->
 //                      ImageManager.shareImage(context,imageShareUri)
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

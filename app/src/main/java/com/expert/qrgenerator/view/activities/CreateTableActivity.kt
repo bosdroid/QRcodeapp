@@ -90,7 +90,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 var newStr = s.toString()
                 newStr = newStr.replace("[^a-zA-Z ]*".toRegex(), "")
                 if (s.toString() != newStr) {
-                    Toast.makeText(context,"Characters and numbers are not allowed",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,getString(R.string.characters_special_error_text),Toast.LENGTH_SHORT).show()
                     tableNewFieldNameTInput.setText(newStr)
                     tableNewFieldNameTInput.setSelection(tableNewFieldNameTInput.text!!.length)
                 }
@@ -114,7 +114,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 var newStr = s.toString()
                 newStr = newStr.replace("[^a-zA-Z0-9 ]*".toRegex(), "")
                 if (s.toString() != newStr) {
-                    Toast.makeText(context,"Characters and numbers are not allowed",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,getString(R.string.characters_special_error_text),Toast.LENGTH_SHORT).show()
                     defaultValueFieldTInput.setText(newStr)
                     defaultValueFieldTInput.setSelection(defaultValueFieldTInput.text!!.length)
                 }
@@ -208,22 +208,22 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                             layout.findViewById<MaterialTextView>(R.id.table_column_sub_title)
                         when (columns[i]) {
                             "id" -> {
-                                columnNameView.text = "# of the barcode"
-                                columnNameSubTitleView.text = "(system generated automatically)"
+                                columnNameView.text = getString(R.string.code_id_heading)
+                                columnNameSubTitleView.text = getString(R.string.code_id_sub_heading)
                             }
                             "code_data" -> {
-                                columnNameView.text = "Barcode data"
+                                columnNameView.text = getString(R.string.code_data_heading)
                                 columnNameSubTitleView.text =
-                                    "(populates after barcode ben scanned)"
+                                    getString(R.string.code_data_sub_heading)
                             }
                             "date" -> {
-                                columnNameView.text = "Date of scanning"
+                                columnNameView.text = getString(R.string.code_date_heading)
                                 columnNameSubTitleView.text =
-                                    "(system generated date automatically)"
+                                    getString(R.string.code_date_sub_heading)
                             }
                             "image" -> {
-                                columnNameView.text = "Image link"
-                                columnNameSubTitleView.text = "(attached image link)"
+                                columnNameView.text = getString(R.string.code_image_heading)
+                                columnNameSubTitleView.text = getString(R.string.code_image_sub_heading)
                             }
                             else ->{
                                     columnNameView.text = columns[i]
@@ -362,11 +362,11 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     alert.dismiss()
                 } else {
                     MaterialAlertDialogBuilder(context)
-                        .setMessage("List can't be empty please add a value or cancel the creation!")
-                        .setNegativeButton("Cancel") { dialog, which ->
+                        .setMessage(getString(R.string.field_list_value_empty_error_text))
+                        .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
                             dialog.dismiss()
                         }
-                        .setPositiveButton("Add") { dialog, which ->
+                        .setPositiveButton(getString(R.string.add_text)) { dialog, which ->
                             dialog.dismiss()
                             addTableDialog(listId!!)
                         }
@@ -388,7 +388,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
             null
         )
         val heading = listValueLayout.findViewById<MaterialTextView>(R.id.dialog_heading)
-        heading.text = "Enter the List value"
+        heading.text = getString(R.string.list_value_hint_text)
         val listValueInputBox = listValueLayout.findViewById<TextInputEditText>(R.id.add_list_value_input_field)
         val listValueAddBtn = listValueLayout.findViewById<MaterialButton>(R.id.add_list_value_btn)
         val builder = MaterialAlertDialogBuilder(context)
@@ -402,22 +402,22 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 alert.dismiss()
             }
             else{
-                showAlert(context, "Please enter the list value!")
+                showAlert(context, getString(R.string.add_list_value_error_text))
             }
         }
     }
 
     private fun validation(): Boolean {
         if(tableNewFieldNameTInput.text.toString().isEmpty()){
-            showAlert(context, "Please enter the field/column name!")
+            showAlert(context, getString(R.string.add_column_name_error_text))
             return false
         }
         else if (isNonChangeableCheckBox && defaultValueFieldTInput.text.toString().isEmpty()) {
-            showAlert(context, "Please set the default value of field/column!")
+            showAlert(context, getString(R.string.default_column_value_error_text))
             return false
         }
         else if (fieldType == "listWithValues" && listId == null){
-            showAlert(context, "You can't use this type because field list is empty!")
+            showAlert(context, getString(R.string.field_type_error_text))
             return false
         }
         return true

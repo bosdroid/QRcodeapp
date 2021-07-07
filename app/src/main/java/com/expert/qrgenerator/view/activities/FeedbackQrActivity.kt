@@ -115,11 +115,11 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                 onBackPressed()
             } else {
                 MaterialAlertDialogBuilder(context)
-                    .setMessage("Changes you made may not be saved.")
-                    .setNegativeButton("Cancel") { dialog, which ->
+                    .setMessage(getString(R.string.changes_saved_alert_text))
+                    .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
                         dialog.dismiss()
                     }
-                    .setPositiveButton("Leave") { dialog, which ->
+                    .setPositiveButton(getString(R.string.leave_text)) { dialog, which ->
                         onBackPressed()
                     }
                     .create().show()
@@ -191,7 +191,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                                 intent.putExtra("QR_HISTORY", qrHistory)
                                 startActivity(intent)
                             } else {
-                                showAlert(context, "Something went wrong, please try again!")
+                                showAlert(context, getString(R.string.something_wrong_error))
                             }
 
 
@@ -226,20 +226,20 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     // THIS FUNCTION WILL VALIDATE ALL THE COUPON INPUT DATA
     private fun validation(): Boolean {
         if (feedbackTitleText.isEmpty()) {
-            showAlert(context, "Please edit the text and background color!")
+            showAlert(context, getString(R.string.feedback_text_background_color_error_text))
             return false
         } else if (feedbackInnerTitleText.isEmpty()) {
-            showAlert(context, "Please edit the title text!")
+            showAlert(context, getString(R.string.feedback_inner_title_error_text))
             return false
         } else if (feedbackInnerDescriptionText.isEmpty()) {
-            showAlert(context, "Please edit the description text!")
+            showAlert(context, getString(R.string.feedback_inner_description_error_text))
             return false
         } else if (feedbackSendButtonText.isEmpty()) {
-            showAlert(context, "Please edit the button text and color!")
+            showAlert(context, getString(R.string.feedback_send_button_text_color_error_text))
             return false
         }
         else if (page == 2 && ownerEmailTextInputEditText.text.toString().trim().isEmpty()){
-            showAlert(context, "Please enter the Owner email!")
+            showAlert(context, getString(R.string.feedback_owner_email_empty_error_text))
             return false
         }
         return true
@@ -317,8 +317,8 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                 .initialColor(Color.RED) // Set initial color
                 .enableBrightness(true) // Enable brightness slider or not
                 .enableAlpha(true) // Enable alpha slider or not
-                .okTitle("Choose")
-                .cancelTitle("Cancel")
+                .okTitle(getString(R.string.chose_text))
+                .cancelTitle(getString(R.string.cancel_text))
                 .showIndicator(true)
                 .showValue(true)
                 .build()
@@ -408,8 +408,8 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                 .initialColor(Color.RED) // Set initial color
                 .enableBrightness(true) // Enable brightness slider or not
                 .enableAlpha(true) // Enable alpha slider or not
-                .okTitle("Choose")
-                .cancelTitle("Cancel")
+                .okTitle(getString(R.string.chose_text))
+                .cancelTitle(getString(R.string.cancel_text))
                 .showIndicator(true)
                 .showValue(true)
                 .build()

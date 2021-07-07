@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.GET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -40,7 +41,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QRGenerator"
         tools:replace="android:allowBackup">
-        <activity android:name=".view.activities.BarcodeDetailActivity"/>
+
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -61,7 +62,6 @@
         <activity android:name=".view.activities.ProfileActivity" />
         <activity android:name=".view.activities.CodeDetailActivity" />
         <activity android:name=".view.activities.FeedbackQrActivity" />
-        <activity android:name=".view.activities.ScannerActivity" />
         <activity android:name=".view.activities.ShareActivity" />
         <activity android:name=".view.activities.DesignActivity" />
         <activity

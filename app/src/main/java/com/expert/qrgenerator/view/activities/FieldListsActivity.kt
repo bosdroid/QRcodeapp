@@ -90,14 +90,14 @@ class FieldListsActivity : BaseActivity() {
             if (textInputBox.text.toString().isNotEmpty()) {
                 val listName = textInputBox.text.toString().trim().toLowerCase(Locale.ENGLISH)
                 val id = tableGenerator.insertList(listName)
-                Toast.makeText(context, "List created successfully!", Toast.LENGTH_SHORT)
+                Toast.makeText(context, getString(R.string.list_create_success_text), Toast.LENGTH_SHORT)
                     .show()
                 alert.dismiss()
                 val intent = Intent(context, FieldListValuesActivity::class.java)
                 intent.putExtra("LIST_ITEM", ListItem(id.toInt(),listName))
                 startActivity(intent)
             } else {
-                showAlert(context, "Please enter the list name!")
+                showAlert(context, getString(R.string.list_name_empty_error_text))
             }
         }
     }

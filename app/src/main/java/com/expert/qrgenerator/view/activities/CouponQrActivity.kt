@@ -207,11 +207,11 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
 //                if (nextBtnView.text.toString().toLowerCase(Locale.ENGLISH) == "next") {
 
                     MaterialAlertDialogBuilder(context)
-                        .setMessage("Changes you made may not be saved.")
-                        .setNegativeButton("Cancel") { dialog, which ->
+                        .setMessage(getString(R.string.changes_saved_alert_text))
+                        .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
                             dialog.dismiss()
                         }
-                        .setPositiveButton("Leave") { dialog, which ->
+                        .setPositiveButton(getString(R.string.leave_text)) { dialog, which ->
                             onBackPressed()
                         }
                         .create().show()
@@ -302,13 +302,13 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                                 startActivity(intent)
 
                             } else {
-                                showAlert(context, "Something went wrong, please try again!")
+                                showAlert(context, getString(R.string.something_wrong_error))
                             }
                         })
 
                     }
                 } else {
-                    showAlert(context, "Please set all field that marked with * sign!")
+                    showAlert(context, getString(R.string.fields_marked_with_sign_text))
                 }
 
             }
@@ -410,52 +410,52 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     // THIS FUNCTION WILL VALIDATE ALL THE COUPON INPUT DATA
     private fun validation(): Boolean {
         if (couponCompanyNameText.isEmpty()) {
-            showAlert(context, "Please edit the company name!")
+            showAlert(context, getString(R.string.company_name_error_text))
             return false
         } else if (couponBackgroundColor.isEmpty()) {
-            showAlert(context, "Please edit the background color!")
+            showAlert(context, getString(R.string.background_color_error_text))
             return false
         } else if (couponHeaderImage.isEmpty()) {
-            showAlert(context, "Please edit the header image!")
+            showAlert(context, getString(R.string.header_image_error_text))
             return false
         } else if (couponSaleBadgeButtonText.isEmpty()) {
-            showAlert(context, "Please edit the sale badge text!")
+            showAlert(context, getString(R.string.sale_badge_text_error_text))
             return false
         } else if (couponSaleBadgeButtonColor.isEmpty()) {
-            showAlert(context, "Please edit the sale badge button color!")
+            showAlert(context, getString(R.string.sale_badge_button_color_error_text))
             return false
         } else if (couponOfferTitleText.isEmpty()) {
-            showAlert(context, "Please edit the coupon headline!")
+            showAlert(context, getString(R.string.coupon_headline_error_text))
             return false
         } else if (couponOfferDescriptionText.isEmpty()) {
-            showAlert(context, "Please edit the coupon description!")
+            showAlert(context, getString(R.string.coupon_description_error_text))
             return false
         } else if (couponGetButtonText.isEmpty()) {
-            showAlert(context, "Please edit the coupon get button text!")
+            showAlert(context, getString(R.string.coupon_get_button_text_error_text))
             return false
         } else if (couponGetButtonColor.isEmpty()) {
-            showAlert(context, "Please edit the coupon get button color!")
+            showAlert(context, getString(R.string.coupon_get_button_color_error_text))
             return false
         } else if (couponCodeText.isEmpty()) {
-            showAlert(context, "Please edit the coupon code text!")
+            showAlert(context, getString(R.string.coupon_code_text_error_text))
             return false
         } else if (couponCodeTextColor.isEmpty()) {
-            showAlert(context, "Please edit the coupon code text color!")
+            showAlert(context, getString(R.string.coupon_code_text_color_error_text))
             return false
         } else if (couponValidDate.isEmpty()) {
-            showAlert(context, "Please edit the coupon valid date!")
+            showAlert(context, getString(R.string.coupon_valid_date_error_text))
             return false
         } else if (couponTermsConditionText.isEmpty()) {
-            showAlert(context, "Please edit the coupon terms and conditions!")
+            showAlert(context, getString(R.string.coupon_terms_condition_error_text))
             return false
         } else if (couponRedeemButtonText.isEmpty()) {
-            showAlert(context, "Please edit the redeem button text!")
+            showAlert(context, getString(R.string.redeem_button_text_error_text))
             return false
         } else if (couponRedeemButtonColor.isEmpty()) {
-            showAlert(context, "Please edit the redeem button color!")
+            showAlert(context, getString(R.string.redeem_button_color_error_text))
             return false
         } else if (couponRedeemWebsiteUrl.isEmpty()) {
-            showAlert(context, "Please edit the redeem targer website url!")
+            showAlert(context, getString(R.string.redeem_target_website_error_text))
             return false
         }
         return true
@@ -482,7 +482,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 if (imageWidth > 640 && imageHeight > 360) {
                     showAlert(
                         context,
-                        "Please select the header image having size 640 x 360!"
+                        getString(R.string.header_image_size_error_text)
                     )
                 } else {
                     couponHeaderImage = ImageManager.convertImageToBase64(context, data.data!!)
@@ -538,9 +538,9 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     getImageFromLocalStorage()
                 } else {
                     MaterialAlertDialogBuilder(context)
-                        .setMessage("Please allow the READ EXTERNAL STORAGE permission for use own Image in QR Image.")
+                        .setMessage(getString(R.string.external_storage_permission_error1))
                         .setCancelable(false)
-                        .setPositiveButton("Ok") { dialog, which ->
+                        .setPositiveButton(getString(R.string.ok_text)) { dialog, which ->
                             dialog.dismiss()
                         }
                         .create().show()
@@ -597,7 +597,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             if (redeemWebsiteUrl.text.toString().toLowerCase(Locale.ENGLISH).contains("https://")
                 || redeemWebsiteUrl.text.toString().toLowerCase(Locale.ENGLISH).contains("http://")
             ) {
-                showAlert(context, "Please enter the website URL without https:// or http://")
+                showAlert(context, getString(R.string.without_protocol_error))
             } else {
                 couponRedeemButtonText = selectedRedeemButtonText
                 couponRedeemButtonColor = selectedColor
@@ -616,8 +616,8 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     .initialColor(Color.RED) // Set initial color
                     .enableBrightness(true) // Enable brightness slider or not
                     .enableAlpha(true) // Enable alpha slider or not
-                    .okTitle("Choose")
-                    .cancelTitle("Cancel")
+                    .okTitle(getString(R.string.chose_text))
+                    .cancelTitle(getString(R.string.cancel_text))
                     .showIndicator(true)
                     .showValue(true)
                     .build()
@@ -749,7 +749,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             "terms_conditions" -> {
                 if (couponTermsConditionText.isNotEmpty()) {
                     inputBox.setText(couponTermsConditionText)
-                    termsConditionsTextBtn.text = "Terms & Conditions"
+                    termsConditionsTextBtn.text = getString(R.string.terms_conditions1)
                     termsConditionsTextBtn.paintFlags =
                         termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                 }
@@ -801,7 +801,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 }
                 "terms_conditions" -> {
                     couponTermsConditionText = value
-                    termsConditionsTextBtn.text = "Terms & Conditions"
+                    termsConditionsTextBtn.text = getString(R.string.terms_conditions1)
                     termsConditionsTextBtn.paintFlags =
                         termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                 }
@@ -818,8 +818,8 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 .initialColor(Color.RED) // Set initial color
                 .enableBrightness(true) // Enable brightness slider or not
                 .enableAlpha(true) // Enable alpha slider or not
-                .okTitle("Choose")
-                .cancelTitle("Cancel")
+                .okTitle(getString(R.string.chose_text))
+                .cancelTitle(getString(R.string.cancel_text))
                 .showIndicator(true)
                 .showValue(true)
                 .build()
@@ -917,8 +917,8 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 .initialColor(Color.RED) // Set initial color
                 .enableBrightness(true) // Enable brightness slider or not
                 .enableAlpha(true) // Enable alpha slider or not
-                .okTitle("Choose")
-                .cancelTitle("Cancel")
+                .okTitle(getString(R.string.chose_text))
+                .cancelTitle(getString(R.string.cancel_text))
                 .showIndicator(true)
                 .showValue(true)
                 .build()
@@ -1042,8 +1042,8 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
             .initialColor(Color.RED) // Set initial color
             .enableBrightness(true) // Enable brightness slider or not
             .enableAlpha(true) // Enable alpha slider or not
-            .okTitle("Choose")
-            .cancelTitle("Cancel")
+            .okTitle(getString(R.string.chose_text))
+            .cancelTitle(getString(R.string.cancel_text))
             .showIndicator(true)
             .showValue(true)
             .build()

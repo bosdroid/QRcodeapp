@@ -4,9 +4,11 @@ import JSONResponse
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.expert.qrgenerator.model.FeedbackResponse
 import com.expert.qrgenerator.model.SNPayload
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -126,6 +128,21 @@ class ApiRepository {
             }
 
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                res.postValue(null)
+            }
+        })
+
+        return res
+    }
+
+    fun getAllFeedbacks(id:String): MutableLiveData<FeedbackResponse> {
+        val res = MutableLiveData<FeedbackResponse>()
+        apiInterface.getAllFeedbacks(id).enqueue(object:Callback<FeedbackResponse>{
+            override fun onResponse(call: Call<FeedbackResponse>, response: Response<FeedbackResponse>) {
+                res.postValue(response.body())
+            }
+
+            override fun onFailure(call: Call<FeedbackResponse>, t: Throwable) {
                 res.postValue(null)
             }
         })

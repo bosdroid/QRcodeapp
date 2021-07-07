@@ -410,7 +410,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                         if (inputText.contains("#")) {
                             Toast.makeText(
                                 context,
-                                "Please enter the Color Value without having #",
+                                getString(R.string.color_value_error_text),
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
@@ -423,13 +423,13 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                             } else {
                                 Toast.makeText(
                                     context,
-                                    "Please enter the valid Color Value!",
+                                    getString(R.string.color_valid_value_error_text),
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
                         }
                     } else {
-                        Toast.makeText(context, "Please enter the Color Value!", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, getString(R.string.color_empty_value_error_text), Toast.LENGTH_SHORT)
                             .show()
                     }
                 }
@@ -585,7 +585,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     if (imageWidth > 800 && imageHeight > 800) {
                         showAlert(
                             context,
-                            "Please select the background image having size 800x800!"
+                            getString(R.string.background_image_size_error_text)
                         )
                     } else {
                         // THIS CODE WILL GET THE CUSTOM BACKGROUND IMAGE PATH AND SAVE INTO imageList
@@ -602,7 +602,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     if (imageWidth > 500 && imageHeight > 500) {
                         showAlert(
                             context,
-                            "Please select the logo image having size 500x500!"
+                            getString(R.string.logo_image_size_error_text)
                         )
                     } else {
                         // THIS CODE WILL GET THE CUSTOM LOGO IMAGE PATH AND SAVE INTO logoList
@@ -635,9 +635,9 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     getImageFromLocalStorage()
                 } else {
                     MaterialAlertDialogBuilder(context)
-                        .setMessage("Please allow the READ EXTERNAL STORAGE permission for use own Image in QR Image.")
+                        .setMessage(getString(R.string.external_storage_permission_error1))
                         .setCancelable(false)
-                        .setPositiveButton("Ok") { dialog, which ->
+                        .setPositiveButton(getString(R.string.ok_text)) { dialog, which ->
                             dialog.dismiss()
                         }
                         .create().show()
@@ -652,12 +652,12 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     private fun quitWithoutSaveChanges() {
 //        if (isBackgroundSet) {
             MaterialAlertDialogBuilder(context)
-                .setMessage("You made some design changes, Are you sure you want to leave?")
+                .setMessage(getString(R.string.changes_design_saved_alert_text))
                 .setCancelable(false)
-                .setNegativeButton("Cancel") { dialog, which ->
+                .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
                     dialog.dismiss()
                 }
-                .setPositiveButton("Leave") { dialog, which ->
+                .setPositiveButton(getString(R.string.leave_text)) { dialog, which ->
                     QRGenerator.resetQRGenerator()
                     super.onBackPressed()
                 }

@@ -301,7 +301,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                             startActivity(intent)
 
                         } else {
-                            showAlert(context, "Something went wrong, please try again!")
+                            showAlert(context, getString(R.string.something_wrong_error))
                         }
                     })
                 }
@@ -314,19 +314,19 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
 
     private fun validation(): Boolean {
         if (snBannerImage.isEmpty()) {
-            showAlert(context, "Please select the banner image")
+            showAlert(context, getString(R.string.sn_banner_image_error_text))
             return false
         } else if (snContentDetailBackgroundColor.isEmpty()) {
-            showAlert(context, "Please select the background color")
+            showAlert(context, getString(R.string.sn_background_color_error_text))
             return false
         } else if (snTitleText.isEmpty()) {
-            showAlert(context, "Please enter the title")
+            showAlert(context, getString(R.string.sn_title_error_text))
             return false
         } else if (snDescriptionText.isEmpty()) {
-            showAlert(context, "Please enter the description")
+            showAlert(context, getString(R.string.sn_description_error_text))
             return false
         } else if (socialNetworkList.size == 0) {
-            showAlert(context, "Please select the at least one social network from list")
+            showAlert(context, getString(R.string.sn_list_empty_error_text))
             return false
         }
         return true
@@ -378,9 +378,9 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     getImageFromLocalStorage()
                 } else {
                     MaterialAlertDialogBuilder(context)
-                        .setMessage("Please allow the READ EXTERNAL STORAGE permission for use own Image in QR Image.")
+                        .setMessage(getString(R.string.external_storage_permission_error1))
                         .setCancelable(false)
-                        .setPositiveButton("Ok") { dialog, which ->
+                        .setPositiveButton(getString(R.string.ok_text)) { dialog, which ->
                             dialog.dismiss()
                         }
                         .create().show()
@@ -404,8 +404,8 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
             .initialColor(Color.RED) // Set initial color
             .enableBrightness(true) // Enable brightness slider or not
             .enableAlpha(true) // Enable alpha slider or not
-            .okTitle("Choose")
-            .cancelTitle("Cancel")
+            .okTitle(getString(R.string.chose_text))
+            .cancelTitle(getString(R.string.cancel_text))
             .showIndicator(true)
             .showValue(true)
             .build()
@@ -487,8 +487,8 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 .initialColor(Color.RED) // Set initial color
                 .enableBrightness(true) // Enable brightness slider or not
                 .enableAlpha(true) // Enable alpha slider or not
-                .okTitle("Choose")
-                .cancelTitle("Cancel")
+                .okTitle(getString(R.string.chose_text))
+                .cancelTitle(getString(R.string.cancel_text))
                 .showIndicator(true)
                 .showValue(true)
                 .build()
@@ -562,10 +562,10 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
             ) {
 
                 val value = snDescriptionEditText.text.toString().trim().toLowerCase(Locale.ENGLISH)
-                if (value.substring(0, 7).contains("http://") || value.substring(0, 8).contains("https://")) {
+                if (value.contains("http://") || value.contains("https://")) {
                     showAlert(
                         context,
-                        "Please enter the plain text!"
+                        getString(R.string.without_protocol_error)
                     )
                 } else {
                     item.title = snTitleEditText.text.toString().trim()
@@ -574,12 +574,12 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     socialNetworkList.add(position, item)
                     adapeter.notifyItemChanged(position)
                     alert.dismiss()
-                    Toast.makeText(context, "List Item updated successfully!", Toast.LENGTH_SHORT)
+                    Toast.makeText(context, getString(R.string.list_item_update_success_text), Toast.LENGTH_SHORT)
                         .show()
                 }
 
             } else {
-                showAlert(context, "Please enter the social network title and description.")
+                showAlert(context, getString(R.string.sn_title_description_error_text))
             }
         }
 

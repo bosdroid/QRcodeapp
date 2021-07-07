@@ -94,12 +94,12 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
         else{
             //showAlert(context,"You can not create dynamic table without account login!")
             MaterialAlertDialogBuilder(context)
-                    .setTitle("Alert!")
-                    .setMessage("You can not create dynamic table without account login!")
-                    .setNegativeButton("LATER"){dialog,which->
+                    .setTitle(getString(R.string.alert_text))
+                    .setMessage(getString(R.string.login_error_text))
+                    .setNegativeButton(getString(R.string.later_text)){dialog,which->
                         dialog.dismiss()
                     }
-                    .setPositiveButton("LOGIN"){dialog,which->
+                    .setPositiveButton(getString(R.string.login_text)){dialog,which->
                         dialog.dismiss()
                         val intent = Intent(context,MainActivity::class.java)
                         intent.putExtra("REQUEST","login")
@@ -130,7 +130,7 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
                 var newStr = s.toString()
                 newStr = newStr.replace("[^a-zA-Z ]*".toRegex(), "")
                 if (s.toString() != newStr) {
-                    Toast.makeText(context,"Characters and numbers are not allowed",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,getString(R.string.characters_special_error_text),Toast.LENGTH_SHORT).show()
                     textInputBox.setText(newStr)
                     textInputBox.setSelection(textInputBox.text!!.length)
                 }
@@ -149,7 +149,7 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
             if(textInputBox.text.toString().isNotEmpty()){
                 val tableName = textInputBox.text.toString().trim()
                 tableGenerator.generateTable(tableName)
-                Toast.makeText(context,"Table has been created successfully!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,getString(R.string.table_create_success_text),Toast.LENGTH_SHORT).show()
                 alert.dismiss()
                 //displayTableList()
                 val intent = Intent(context,CreateTableActivity::class.java)
@@ -157,7 +157,7 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
                 startActivity(intent)
             }
             else{
-                showAlert(context,"Please enter the table name!")
+                showAlert(context,getString(R.string.table_name_empty_error_text))
             }
         }
     }

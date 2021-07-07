@@ -40,7 +40,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import com.google.android.gms.drive.Drive.SCOPE_APPFOLDER
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -58,7 +57,6 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.SheetsScopes
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -66,7 +64,7 @@ import java.util.*
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-    OnCompleteAction,ScannerFragment.ScannerInterface {
+    OnCompleteAction, ScannerFragment.ScannerInterface {
 
 
     private lateinit var toolbar: Toolbar
@@ -88,9 +86,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val httpTransport = NetHttpTransport()
     private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private var user: User? = null
-    private lateinit var historyBtn:MaterialTextView
-    private var requestLogin:String?=null
-
+    private lateinit var historyBtn: MaterialTextView
+    private var requestLogin: String? = null
 
 
     companion object {
@@ -110,7 +107,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         getAccountsPermission()
         initializeGoogleLoginParameters()
 
-
     }
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
@@ -125,7 +121,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toolbar = findViewById(R.id.toolbar)
         mDrawer = findViewById(R.id.drawer)
         historyBtn = findViewById(R.id.history_btn)
-        historyBtn.setOnClickListener{
+        historyBtn.setOnClickListener {
             startActivity(Intent(context, BarcodeHistoryActivity::class.java))
         }
         privacyPolicy = findViewById(R.id.privacy_policy_view)
@@ -168,7 +164,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             true
         }
 
-        if (intent != null && intent.hasExtra("KEY") && intent.getStringExtra("KEY") == "generator"){
+        if (intent != null && intent.hasExtra("KEY") && intent.getStringExtra("KEY") == "generator") {
             bottomNavigation.selectedItemId = R.id.bottom_generator
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, GeneratorFragment(), "generator")
@@ -176,8 +172,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 .commit()
             //historyBtn.visibility = View.GONE
 //            nextStepTextView.visibility = View.VISIBLE
-        }
-        else{
+        } else {
 //            nextStepTextView.visibility = View.GONE
             //historyBtn.visibility = View.VISIBLE
             supportFragmentManager.beginTransaction().add(
@@ -230,9 +225,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         toolbar.setNavigationOnClickListener {
             hideSoftKeyboard(context, mDrawer)
-            if(mDrawer.isDrawerOpen(GravityCompat.START)){
+            if (mDrawer.isDrawerOpen(GravityCompat.START)) {
                 mDrawer.closeDrawer(GravityCompat.START)
-            }else {
+            } else {
                 mDrawer.openDrawer(GravityCompat.START)
             }
         }
@@ -290,7 +285,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             saveUserUpdatedDetail(acct, "last")
         }
 
-        if (intent != null && intent.hasExtra("REQUEST") && intent.getStringExtra("REQUEST") == "login"){
+        if (intent != null && intent.hasExtra("REQUEST") && intent.getStringExtra("REQUEST") == "login") {
             requestLogin = "login"
             startLogin()
         }
@@ -300,12 +295,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun saveUserUpdatedDetail(acct: GoogleSignInAccount?, isLastSignUser: String) {
         try {
 
-            Log.d("TEST199", acct.toString())
             // IF PART WILL RUN IF USER LOGGED AND ACCOUNT DETAIL NOT EMPTY
             if (acct != null && acct.displayName.isNullOrEmpty()) {
                 startLogin()
-            }
-            else if (acct != null){
+            } else if (acct != null) {
                 val personName = acct.displayName
                 val personGivenName = acct.givenName
                 val personFamilyName = acct.familyName
@@ -326,11 +319,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     appSettings.putBoolean(Constants.isLogin, true)
                     Toast.makeText(
                         context,
-                        "User has been signIn successfully!",
+                        getString(R.string.user_signin_success_text),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                if (requestLogin!!.isNotEmpty() && requestLogin == "login"){
+                if (requestLogin!!.isNotEmpty() && requestLogin == "login") {
                     startActivity(Intent(context, TablesActivity::class.java))
                 }
             }
@@ -399,10 +392,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             R.id.logout -> {
                 MaterialAlertDialogBuilder(context)
-                    .setTitle("Logout")
-                    .setMessage("Are you sure you want to logout?")
-                    .setNegativeButton("Cancel") { dialog, which -> dialog.dismiss() }
-                    .setPositiveButton("Logout") { dialog, which ->
+                    .setTitle(getString(R.string.logout))
+                    .setMessage(getString(R.string.logout_warning_text))
+                    .setNegativeButton(getString(R.string.cancel_text)) { dialog, which -> dialog.dismiss() }
+                    .setPositiveButton(getString(R.string.logout)) { dialog, which ->
                         startLoading(context)
                         signOut()
                     }
@@ -416,12 +409,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
+        return when (item.itemId) {
             android.R.id.home -> {
                 //hideSoftKeyboard(context, mDrawer)
                 return true
             }
-            else ->{
+            else -> {
                 super.onOptionsItemSelected(item)
             }
         }
@@ -453,11 +446,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 dismiss()
                 appSettings.remove(Constants.isLogin)
                 appSettings.remove(Constants.user)
-                Toast.makeText(context, "User signout successfully!", Toast.LENGTH_SHORT)
+                Toast.makeText(context, getString(R.string.logout_success_text), Toast.LENGTH_SHORT)
                     .show()
                 Constants.userData = null
                 Constants.sheetService = null
-                Constants.mService  = null
+                Constants.mService = null
                 checkUserLoginStatus()
             }
 
@@ -541,7 +534,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         saveUserUpdatedDetail(acct, "new")
                     }
                 } else {
-                    showAlert(context, "Something went wrong, please try again!")
+                    showAlert(context, getString(R.string.something_wrong_error))
                 }
             })
 
@@ -612,7 +605,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     intent.putExtra("QR_HISTORY", qrHistory)
                     startActivity(intent)
                 } else {
-                    showAlert(context, "Something went wrong, please try again!")
+                    showAlert(context, getString(R.string.something_wrong_error))
                 }
             })
         } else {

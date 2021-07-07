@@ -10,7 +10,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat.getSystemService
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.QRTypes
@@ -141,7 +140,7 @@ class Constants {
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
                         }
                     }
@@ -190,26 +189,26 @@ class Constants {
                             BaseActivity.hideSoftKeyboard(context, websiteView)
                             BaseActivity.showAlert(
                                 context,
-                                "Please select the URL protocol!"
+                                context.resources.getString(R.string.protocol_error)
                             )
                         } else if (value.isEmpty()) {
 
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
 
                         } else if (value.contains("http://") || value.contains("https://")
                         ) {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the website URL without http:// or https://"
+                                context.resources.getString(R.string.without_protocol_error)
                             )
                         }
                         else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the valid website URL"
+                                context.resources.getString(R.string.valid_website_error)
                             )
                         }
                         else {
@@ -258,26 +257,26 @@ class Constants {
                         if (selectedProtocol.isEmpty()) {
                             BaseActivity.showAlert(
                                 context,
-                                "Please select the URL protocol!"
+                                context.resources.getString(R.string.protocol_error)
                             )
                         } else if (value.isEmpty()) {
 
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
 
                         } else if (value.contains("http://") || value.contains("https://")
                         ) {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the website URL without http:// or https://"
+                                context.resources.getString(R.string.without_protocol_error)
                             )
                         }
                         else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the valid website URL"
+                                context.resources.getString(R.string.valid_website_error)
                             )
                         }
                         else {
@@ -349,7 +348,7 @@ class Constants {
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required contact name and phone input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
                         }
                     }
@@ -404,7 +403,7 @@ class Constants {
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
                         }
                     }
@@ -442,7 +441,7 @@ class Constants {
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
                         }
                     }
@@ -485,7 +484,7 @@ class Constants {
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
                         }
                     }
@@ -517,7 +516,7 @@ class Constants {
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
                         }
                     }
@@ -556,13 +555,13 @@ class Constants {
                             } else {
                                 BaseActivity.showAlert(
                                     context,
-                                    "Please enter the correct phone number with country code!"
+                                    context.resources.getString(R.string.country_code_data_input_error)
                                 )
                             }
                         } else {
                             BaseActivity.showAlert(
                                 context,
-                                "Please enter the required input data!"
+                                context.resources.getString(R.string.required_data_input_error)
                             )
                         }
                     }
