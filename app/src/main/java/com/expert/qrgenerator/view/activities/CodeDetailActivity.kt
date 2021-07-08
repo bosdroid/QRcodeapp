@@ -39,6 +39,7 @@ import com.expert.qrgenerator.model.Feedback
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
@@ -50,8 +51,6 @@ import com.google.android.material.textview.MaterialTextView
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.net.URLEncoder
 import java.util.*
 import java.util.regex.Pattern
@@ -107,7 +106,11 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_code_detail)
 
-
+        var scans = DialogPrefs.getSuccessScan(context)
+        if (scans >= 0) {
+            scans += 1
+            DialogPrefs.setSuccessScan(context, scans)
+        }
         initViews()
         setUpToolbar()
         displayCodeDetails()

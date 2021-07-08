@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.camera.core.*
@@ -38,6 +39,7 @@ import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.utils.*
 import com.expert.qrgenerator.view.activities.BaseActivity
+import com.expert.qrgenerator.view.activities.BaseActivity.Companion.rateUs
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
 import com.expert.qrgenerator.view.activities.TablesActivity
 import com.google.android.material.button.MaterialButton
@@ -59,9 +61,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
 class ScannerFragment : Fragment() {
@@ -122,6 +126,32 @@ class ScannerFragment : Fragment() {
         return v
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val prefDate = DialogPrefs.getDate(requireContext())
+        if (prefDate == null) {
+            DialogPrefs.setDate(requireContext(), DateUtils.getCurrentDate())
+        }
+        val scans = DialogPrefs.getSuccessScan(requireContext())
+        val isSharedQr = DialogPrefs.getShared(requireContext())
+        if ((getDateDifference() == 3 && scans >= 2) || (getDateDifference() == 3 && isSharedQr)) {
+            rateUs(requireActivity() as AppCompatActivity)
+        }
+    }
+
+    private fun getDateDifference(): Int {
+        val myFormat = SimpleDateFormat(DateUtils.DATE_FORMAT)
+        val currentDate = DateUtils.getCurrentDate()
+        val prefsDate = "11-Jul-2021"
+        val dateCurrent = myFormat.parse(currentDate)
+        val datePrefs = myFormat.parse(prefsDate)
+        val timeCurrent = dateCurrent.time
+        val timePrefs = datePrefs.time
+        val difference = timePrefs - timeCurrent
+        val days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
+        Log.d("TAG", "getDateDifference: $days")
+        return days.toInt()
+    }
 
     private fun initViews(view: View) {
         scannerView = view.findViewById(R.id.scanner_view)
