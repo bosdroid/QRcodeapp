@@ -1,6 +1,5 @@
 package com.expert.qrgenerator.view.activities
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -15,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.QRGenerator
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
@@ -62,6 +62,7 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
         when (v!!.id) {
             // SHARE BTN WILL CALL THE SHARE IMAGE FUNCTION
             R.id.share_btn -> {
+                DialogPrefs.setShared(context, true)
                 MaterialAlertDialogBuilder(context)
                     .setMessage(getString(R.string.qr_image_share_warning_text))
                     .setCancelable(false)
