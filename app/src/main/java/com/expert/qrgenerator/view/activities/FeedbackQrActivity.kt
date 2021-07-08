@@ -40,7 +40,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     private lateinit var feedbackInnerDescriptionTextView: MaterialTextView
     private lateinit var feedbackSendBtn: AppCompatButton
     private lateinit var parentWrapperLayout:ConstraintLayout
-    private lateinit var feedbackNextDesignLayout:ConstraintLayout
+//    private lateinit var feedbackNextDesignLayout:ConstraintLayout
     private var feedbackTitleText: String = ""
     private var feedbackTitleBackgroundColor: String = ""
     private var feedbackInnerTitleText: String = ""
@@ -48,12 +48,12 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     private var feedbackSendButtonText: String = ""
     private var feedbackSendButtonColor: String = ""
     private var feedbackOwnerEmail: String = ""
-    private lateinit var ownerEmailTextInputEditText: TextInputEditText
+//    private lateinit var ownerEmailTextInputEditText: TextInputEditText
     private var qrId: String = ""
     private lateinit var viewModel: FeedbackQrViewModel
     private var updateType = ""
     private lateinit var feedbackSendEditHint:MaterialTextView
-    private var page = 1
+//    private var page = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +89,8 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
         feedbackSendBtn = findViewById(R.id.feedback_send_button)
         feedbackSendEditHint = findViewById(R.id.feedback_send_edit_hint)
         parentWrapperLayout = findViewById(R.id.parent_wrapper_layout)
-        feedbackNextDesignLayout = findViewById(R.id.feedback_next_design_layout)
-        ownerEmailTextInputEditText = findViewById(R.id.owner_email_input_field)
+//        feedbackNextDesignLayout = findViewById(R.id.feedback_next_design_layout)
+//        ownerEmailTextInputEditText = findViewById(R.id.owner_email_input_field)
 
     }
 
@@ -134,20 +134,20 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.next_step_btn -> {
-                if (page == 1)
-                {
-                   if (validation()){
-                       page = 2
-                       parentWrapperLayout.visibility = View.GONE
-                       feedbackNextDesignLayout.visibility = View.VISIBLE
-                   }
-                }
-                else if (page == 2){
+//                if (page == 1)
+//                {
+//                   if (validation()){
+//                       page = 2
+//                       parentWrapperLayout.visibility = View.GONE
+//                       feedbackNextDesignLayout.visibility = View.VISIBLE
+//                   }
+//                }
+//                else if (page == 2){
 
                     if (validation()) {
-                        page = 1
+//                        page = 1
                         val hashMap = hashMapOf<String, String>()
-                        feedbackOwnerEmail = ownerEmailTextInputEditText.text.toString().trim()
+//                        feedbackOwnerEmail = ownerEmailTextInputEditText.text.toString().trim()
                         qrId = "${System.currentTimeMillis()}"
                         hashMap["feedback_title_text"] = feedbackTitleText
                         hashMap["feedback_title_background_color"] = feedbackTitleBackgroundColor
@@ -197,7 +197,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
 
                         })
                     }
-                }
+//                }
 
             }
             R.id.feedback_title_text_edit_btn -> {
@@ -238,10 +238,10 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
             showAlert(context, getString(R.string.feedback_send_button_text_color_error_text))
             return false
         }
-        else if (page == 2 && ownerEmailTextInputEditText.text.toString().trim().isEmpty()){
-            showAlert(context, getString(R.string.feedback_owner_email_empty_error_text))
-            return false
-        }
+//        else if (page == 2 && ownerEmailTextInputEditText.text.toString().trim().isEmpty()){
+//            showAlert(context, getString(R.string.feedback_owner_email_empty_error_text))
+//            return false
+//        }
         return true
     }
 

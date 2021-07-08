@@ -23,6 +23,13 @@
             android:summary="@string/summary_clipboard"
             app:key="@string/key_clipboard"
             app:title="@string/title_clipboard" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:icon="@drawable/ic_tips"
+            android:summary="@string/summary_tips"
+            app:key="@string/key_tips"
+            app:title="@string/title_tips" />
     </PreferenceCategory>
 
 </PreferenceScreen>

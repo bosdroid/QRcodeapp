@@ -194,7 +194,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     // THIS FUNCTION WILL BIND THE HISTORY CODE DETAIL
     private fun displayCodeDetails() {
         if (codeHistory != null) {
-            displayFeedbacksDetail(codeHistory!!.qrId)
+
             if (codeHistory!!.codeType == "barcode") {
                 topImageCodeType.setImageResource(R.drawable.barcode)
                 typeTextHeading.text = getString(R.string.barcode_text_data_heding)

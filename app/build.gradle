@@ -184,4 +184,7 @@ dependencies {
     implementation 'com.google.mlkit:barcode-scanning:16.1.2'
     implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.1.5'
 
+    // TOOLTIPS LIBRARY
+    implementation 'com.github.douglasjunior:android-simple-tooltip:1.0.0-rc.0'
+
 }

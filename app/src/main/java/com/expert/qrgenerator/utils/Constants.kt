@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
@@ -20,6 +21,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.api.services.drive.Drive
 import com.google.api.services.sheets.v4.Sheets
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.io.File
 import java.util.regex.Pattern
 
@@ -39,7 +41,7 @@ class Constants {
         private const val LOGO_IMAGE_PATH = "LogoImages"
         const val BASE_URL = "https://pages.qrmagicapp.com/"
         var generatedImage: Bitmap? = null
-        var intentFrom :String = ""
+        var tipsValue :Boolean = true
         var finalQrImageUri: Uri? = null
         var isLogin: String = "is_login"
         var user: String = "user"
@@ -112,7 +114,8 @@ class Constants {
         fun getLayout(
             context: Context,
             position: Int,
-            layoutContainer: FrameLayout
+            layoutContainer: FrameLayout,
+            generateBtn:MaterialTextView
         ) {
             completeListener = context as OnCompleteAction
             val builder = MaterialAlertDialogBuilder(context)
@@ -123,7 +126,7 @@ class Constants {
                         LayoutInflater.from(context).inflate(R.layout.text_dialog_layout, null)
                     val textInputBox =
                         textView!!.findViewById<TextInputEditText>(R.id.text_input_field)
-                    val generateBtn = textView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = textView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(textView)
@@ -155,7 +158,7 @@ class Constants {
                         null
                     )
                     val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
-                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     heading.text = context.getString(R.string.static_link_text)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
@@ -228,7 +231,7 @@ class Constants {
                     heading.text = context.getString(R.string.dynamic_link_text)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
-                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     val protocolGroup =
                         websiteView.findViewById<RadioGroup>(R.id.http_protocol_group)
                     protocolGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -310,7 +313,7 @@ class Constants {
                         contactView.findViewById<TextInputEditText>(R.id.contact_address_input_field)
                     val contactDetailInputBox =
                         contactView.findViewById<TextInputEditText>(R.id.contact_detail_input_field)
-                    val generateBtn = contactView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = contactView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(contactView)
@@ -364,7 +367,7 @@ class Constants {
                         wifiView.findViewById<TextInputEditText>(R.id.wifi_password_input_field)
                     val wifiSecurityGroup =
                         wifiView.findViewById<RadioGroup>(R.id.securityGroup)
-                    val generateBtn = wifiView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = wifiView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     wifiSecurityGroup.setOnCheckedChangeListener { group, checkedId ->
                         when (checkedId) {
                             R.id.wpa -> {
@@ -419,7 +422,7 @@ class Constants {
                         phoneView.findViewById<TextInputEditText>(R.id.phone_start_number_input_field)
                     val phoneNumberInputBox =
                         phoneView.findViewById<TextInputEditText>(R.id.phone_number_input_field)
-                    val generateBtn = phoneView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = phoneView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(phoneView)
@@ -459,7 +462,7 @@ class Constants {
                         smsView.findViewById<TextInputEditText>(R.id.sms_phone_number_input_field)
                     val smsMessageInputBox =
                         smsView.findViewById<TextInputEditText>(R.id.sms_message_input_field)
-                    val generateBtn = smsView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = smsView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(smsView)
@@ -496,7 +499,7 @@ class Constants {
                         LayoutInflater.from(context).inflate(R.layout.instagram_dialog_layout, null)
                     val instagramInputBox =
                         instagramView!!.findViewById<TextInputEditText>(R.id.instagram_input_field)
-                    val generateBtn = instagramView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = instagramView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(instagramView)
@@ -532,7 +535,7 @@ class Constants {
                         whatsappView.findViewById<TextInputEditText>(R.id.whatsapp_phone_start_number_input_field)
                     val whatsappNumberInputBox =
                         whatsappView.findViewById<TextInputEditText>(R.id.whatsapp_phone_number_input_field)
-                    val generateBtn = whatsappView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val generateBtn = whatsappView.findViewById<MaterialTextView>(R.id.next_step_btn)
                     if (layoutContainer.childCount > 0) {
                         layoutContainer.removeAllViews()
                         layoutContainer.addView(whatsappView)

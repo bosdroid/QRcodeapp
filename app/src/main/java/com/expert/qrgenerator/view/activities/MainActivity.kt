@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.text.method.LinkMovementMethod
 import android.util.Log
+import android.view.Gravity
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,6 +61,7 @@ import com.google.api.services.sheets.v4.SheetsScopes
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.util.*
 
 
@@ -86,13 +88,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val httpTransport = NetHttpTransport()
     private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
     private var user: User? = null
-    private lateinit var historyBtn: MaterialTextView
     private var requestLogin: String? = null
+    private var scannerFragment: ScannerFragment? = null
 
 
     companion object {
         lateinit var context: Context
-
+        lateinit var historyBtn: MaterialTextView
     }
 
 
@@ -107,12 +109,29 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         getAccountsPermission()
         initializeGoogleLoginParameters()
 
+        if (Constants.tipsValue) {
+            SimpleTooltip.Builder(this)
+                .anchorView(bottomNavigation)
+                .text(getString(R.string.bottom_navigation_tip_text))
+                .gravity(Gravity.TOP)
+                .animated(true)
+                .transparentOverlay(false)
+                .onDismissListener { tooltip ->
+                    tooltip.dismiss()
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag("scanner") as ScannerFragment
+                    fragment.showTableSelectTip()
+                }
+                .build()
+                .show()
+        }
     }
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
         context = this
         appSettings = AppSettings(context)
+        scannerFragment = ScannerFragment()
         auth = Firebase.auth
         viewModel = ViewModelProviders.of(
             this,
@@ -183,6 +202,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 .addToBackStack("scanner")
                 .commit()
         }
+        Constants.tipsValue = appSettings.getBoolean(getString(R.string.key_tips))
+
     }
 
     private fun getAccountsPermission() {
