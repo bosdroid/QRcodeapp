@@ -101,6 +101,7 @@ class ScannerFragment : Fragment() {
     private lateinit var container: FrameLayout
     private lateinit var previewView: PreviewView
     private lateinit var flashImg: ImageView
+    private val TAG = ScannerFragment::class.java.name
 
     interface ScannerInterface {
         fun login()
@@ -151,9 +152,10 @@ class ScannerFragment : Fragment() {
         val datePrefs = myFormat.parse(prefsDate)
         val timeCurrent = dateCurrent.time
         val timePrefs = datePrefs.time
-        val difference = timePrefs - timeCurrent
+        val difference = timeCurrent - timePrefs
         val days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
-        Log.d("TAG", "getDateDifference: $days, $datePrefs, $currentDate")
+        Log.d(TAG, "getDateDifference: $days, $currentDate, $datePrefs")
+
         return days.toInt()
     }
 
@@ -495,7 +497,7 @@ class ScannerFragment : Fragment() {
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
                         tooltip.dismiss()
-                        openAddImageTooltip(addImageCheckBox,submitBtn)
+                        openAddImageTooltip(addImageCheckBox, submitBtn)
                     }
                     .build()
                     .show()
@@ -794,7 +796,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private fun openAddImageTooltip(addImageBox:MaterialCheckBox,submitBtn:MaterialButton) {
+    private fun openAddImageTooltip(addImageBox: MaterialCheckBox, submitBtn: MaterialButton) {
         if (Constants.tipsValue) {
             SimpleTooltip.Builder(requireActivity())
                 .anchorView(addImageBox)
@@ -811,7 +813,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private fun openSubmitBtnTip(submitBtn: MaterialButton){
+    private fun openSubmitBtnTip(submitBtn: MaterialButton) {
         if (Constants.tipsValue) {
             SimpleTooltip.Builder(requireActivity())
                 .anchorView(submitBtn)
@@ -827,7 +829,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private fun openHistoryBtnTip(){
+    private fun openHistoryBtnTip() {
         if (Constants.tipsValue) {
             SimpleTooltip.Builder(requireActivity())
                 .anchorView(MainActivity.historyBtn)
