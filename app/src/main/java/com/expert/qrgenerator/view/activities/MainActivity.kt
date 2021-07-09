@@ -90,7 +90,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var user: User? = null
     private var requestLogin: String? = null
     private var scannerFragment: ScannerFragment? = null
-    
+
 
 
     companion object {

@@ -106,11 +106,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_code_detail)
 
-        var scans = DialogPrefs.getSuccessScan(context)
-        if (scans >= 0) {
-            scans += 1
-            DialogPrefs.setSuccessScan(context, scans)
-        }
+
         initViews()
         setUpToolbar()
         displayCodeDetails()
@@ -139,6 +135,12 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         }
         if (intent != null && intent.hasExtra("TABLE_NAME")) {
             tableName = intent.getStringExtra("TABLE_NAME") as String
+        }
+
+        var scans = DialogPrefs.getSuccessScan(context)
+        if (scans >= 0) {
+            scans += 1
+            DialogPrefs.setSuccessScan(context, scans)
         }
 
         topImageCodeType = findViewById(R.id.code_detail_top_image_type)
@@ -249,7 +251,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             exportCsv()
         }
         startLoading(context)
-        viewModel.callFeedbacks(context, "1624975916895")
+        viewModel.callFeedbacks(context, qrId)
         viewModel.getAllFeedbacks().observe(this, { response ->
             dismiss()
             if (response != null) {
