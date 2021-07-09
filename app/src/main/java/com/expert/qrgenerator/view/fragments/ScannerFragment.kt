@@ -142,14 +142,14 @@ class ScannerFragment : Fragment() {
     private fun getDateDifference(): Int {
         val myFormat = SimpleDateFormat(DateUtils.DATE_FORMAT)
         val currentDate = DateUtils.getCurrentDate()
-        val prefsDate = "11-Jul-2021"
+        val prefsDate = DialogPrefs.getDate(requireContext())
         val dateCurrent = myFormat.parse(currentDate)
         val datePrefs = myFormat.parse(prefsDate)
         val timeCurrent = dateCurrent.time
         val timePrefs = datePrefs.time
         val difference = timePrefs - timeCurrent
         val days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
-        Log.d("TAG", "getDateDifference: $days")
+        Log.d("TAG", "getDateDifference: $days, $datePrefs, $currentDate")
         return days.toInt()
     }
 

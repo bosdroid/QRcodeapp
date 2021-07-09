@@ -106,10 +106,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_code_detail)
 
-        var scans = DialogPrefs.getSuccessScan(context)
+        var scans = DialogPrefs.getSuccessScan(this)
         if (scans >= 0) {
             scans += 1
-            DialogPrefs.setSuccessScan(context, scans)
+            DialogPrefs.setSuccessScan(this, scans)
         }
         initViews()
         setUpToolbar()
