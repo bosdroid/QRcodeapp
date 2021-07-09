@@ -14,6 +14,7 @@ import android.os.*
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +42,7 @@ import com.expert.qrgenerator.utils.*
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.expert.qrgenerator.view.activities.BaseActivity.Companion.rateUs
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
+import com.expert.qrgenerator.view.activities.MainActivity
 import com.expert.qrgenerator.view.activities.TablesActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -57,6 +59,7 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.Result
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,13 +93,14 @@ class ScannerFragment : Fragment() {
     private var listener: ScannerInterface? = null
     private var cameraProviderFuture: ListenableFuture<*>? = null
     private var cameraExecutor: ExecutorService? = null
+
     //private var previewView: PreviewView? = null
     private var imageAnalyzer: MyImageAnalyzer? = null
     private var isFlashOn = false
     private lateinit var cam: Camera
-    private lateinit var container:FrameLayout
+    private lateinit var container: FrameLayout
     private lateinit var previewView: PreviewView
-    private lateinit var flashImg:ImageView
+    private lateinit var flashImg: ImageView
 
     interface ScannerInterface {
         fun login()
@@ -207,7 +211,7 @@ class ScannerFragment : Fragment() {
 
     private fun initMlScanner() {
         //requireActivity().window.setFlags(1024, 1024)
-       container.visibility = View.VISIBLE
+        container.visibility = View.VISIBLE
         scannerView.visibility = View.GONE
         flashImg.setOnClickListener { view: View? ->
             if (cam != null) {
@@ -271,7 +275,7 @@ class ScannerFragment : Fragment() {
                 decodeCallback = DecodeCallback {
 
                     requireActivity().runOnUiThread {
-                        displayDataSubmitDialog(it,"")
+                        displayDataSubmitDialog(it, "")
                     }
                 }
                 errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
@@ -298,11 +302,11 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private fun displayDataSubmitDialog(it: Result?,scanText:String) {
+    private fun displayDataSubmitDialog(it: Result?, scanText: String) {
         var text = ""
-        text = if (it == null){
+        text = if (it == null) {
             scanText
-        } else{
+        } else {
             it.text
         }
         playSound(true)
@@ -483,7 +487,18 @@ class ScannerFragment : Fragment() {
                 builder.setCancelable(false)
                 val alert = builder.create()
                 alert.show()
-
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(scanResultLayout)
+                    .text(getString(R.string.after_scan_result_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        tooltip.dismiss()
+                        openAddImageTooltip(addImageCheckBox,submitBtn)
+                    }
+                    .build()
+                    .show()
 
                 submitBtn.setOnClickListener {
 
@@ -552,7 +567,7 @@ class ScannerFragment : Fragment() {
                                                     params.clear()
                                                     tableDetailLayoutWrapper.removeAllViews()
                                                     val bundle = Bundle()
-                                                    bundle.putString("success","success")
+                                                    bundle.putString("success", "success")
                                                     mFirebaseAnalytics?.logEvent("scanner", bundle)
                                                 },
                                                 1000
@@ -611,13 +626,14 @@ class ScannerFragment : Fragment() {
                                             params.clear()
                                             tableDetailLayoutWrapper.removeAllViews()
                                             codeScanner!!.startPreview()
+                                            openHistoryBtnTip()
                                         }, 1000)
                                     }
                                 }
 
                             } catch (e: Exception) {
                                 val bundle = Bundle()
-                                bundle.putString("failure","Error" + e.message)
+                                bundle.putString("failure", "Error" + e.message)
                                 mFirebaseAnalytics?.logEvent("scanner", bundle)
                                 e.printStackTrace()
                             }
@@ -682,8 +698,9 @@ class ScannerFragment : Fragment() {
                                         params.clear()
                                         tableDetailLayoutWrapper.removeAllViews()
                                         codeScanner!!.startPreview()
+                                        openHistoryBtnTip()
                                         val bundle = Bundle()
-                                        bundle.putString("success","success")
+                                        bundle.putString("success", "success")
                                         mFirebaseAnalytics?.logEvent("scanner", bundle)
                                     }, 1000)
                                 }
@@ -702,7 +719,7 @@ class ScannerFragment : Fragment() {
 //                            }
         } else {
             val bundle = Bundle()
-            bundle.putString("second scanner","triggers")
+            bundle.putString("second scanner", "triggers")
             mFirebaseAnalytics?.logEvent("scanner", bundle)
             var qrHistory: CodeHistory? = null
             val type =
@@ -777,10 +794,58 @@ class ScannerFragment : Fragment() {
         }
     }
 
+    private fun openAddImageTooltip(addImageBox:MaterialCheckBox,submitBtn:MaterialButton) {
+        if (Constants.tipsValue) {
+            SimpleTooltip.Builder(requireActivity())
+                .anchorView(addImageBox)
+                .text(getString(R.string.add_image_tip_text))
+                .gravity(Gravity.BOTTOM)
+                .animated(true)
+                .transparentOverlay(false)
+                .onDismissListener { tooltip ->
+                    tooltip.dismiss()
+                    openSubmitBtnTip(submitBtn)
+                }
+                .build()
+                .show()
+        }
+    }
+
+    private fun openSubmitBtnTip(submitBtn: MaterialButton){
+        if (Constants.tipsValue) {
+            SimpleTooltip.Builder(requireActivity())
+                .anchorView(submitBtn)
+                .text(getString(R.string.submit_btn_tip_text))
+                .gravity(Gravity.BOTTOM)
+                .animated(true)
+                .transparentOverlay(false)
+                .onDismissListener { tooltip ->
+                    tooltip.dismiss()
+                }
+                .build()
+                .show()
+        }
+    }
+
+    private fun openHistoryBtnTip(){
+        if (Constants.tipsValue) {
+            SimpleTooltip.Builder(requireActivity())
+                .anchorView(MainActivity.historyBtn)
+                .text(getString(R.string.history_btn_tip_text))
+                .gravity(Gravity.BOTTOM)
+                .animated(true)
+                .transparentOverlay(false)
+                .onDismissListener { tooltip ->
+                    tooltip.dismiss()
+                }
+                .build()
+                .show()
+        }
+    }
 
     private fun uploadImageOnDrive(): Boolean {
         val bundle = Bundle()
-        bundle.putString("starts","starts")
+        bundle.putString("starts", "starts")
         mFirebaseAnalytics?.logEvent("upload image", bundle)
         try {
 
@@ -801,19 +866,19 @@ class ScannerFragment : Fragment() {
             // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
             url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
             val bundle = Bundle()
-            bundle.putString("success","success")
+            bundle.putString("success", "success")
             mFirebaseAnalytics?.logEvent("upload image", bundle)
             return true
         } catch (e: UserRecoverableAuthIOException) {
 //            Log.d("TEST199",e.localizedMessage!!)
 //            userAuthLauncher.launch(e.intent)
             val bundle = Bundle()
-            bundle.putString("UserRecoverableAuthIOException","Error: " + e.message)
+            bundle.putString("UserRecoverableAuthIOException", "Error: " + e.message)
             mFirebaseAnalytics?.logEvent("upload image", bundle)
             return false
         } catch (e: GoogleJsonResponseException) {
             val bundle = Bundle()
-            bundle.putString("GoogleJsonResponseException","Error: " + e.message)
+            bundle.putString("GoogleJsonResponseException", "Error: " + e.message)
             mFirebaseAnalytics?.logEvent("upload image", bundle)
             BaseActivity.showAlert(
                 requireActivity(),
@@ -1056,42 +1121,27 @@ class ScannerFragment : Fragment() {
                     // See API reference for complete list of supported types
                     Log.d("TAG", "readBarCodeData: $rawValue")
                     if (barcodes[0].rawValue != null) {
-                           displayDataSubmitDialog(null,rawValue!!)
-//                        var qrHistory: CodeHistory? = null
-//                        qrHistory = CodeHistory(
-//                            "sattar",
-//                            "${System.currentTimeMillis()}",
-//                            rawValue,
-//                            valueType.toString(),
-//                            "free",
-//                            "qr",
-//                            "scan",
-//                            "",
-//                            0,
-//                            "",
-//                            System.currentTimeMillis()
-//                        )
-////                        appViewModel.insert(qrHistory)
-//                        playSound(true)
-//                        generateVibrate()
-//                        copyToClipBoard(rawValue)
-//                        Toast.makeText(
-//                            requireActivity(),
-//                            "Scan data saved successfully!",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                        Handler(Looper.myLooper()!!).postDelayed({
-//
-////                            val intent = Intent(context, CodeDetailActivity::class.java)
-////                            intent.putExtra("HISTORY_ITEM", qrHistory)
-////                            requireActivity().startActivity(intent)
-//                            count = 0
-//                        }, 3000)
-
+                        displayDataSubmitDialog(null, rawValue!!)
                     }
                 }
 
             }
+        }
+    }
+
+    fun showTableSelectTip() {
+        if (Constants.tipsValue) {
+            SimpleTooltip.Builder(requireActivity())
+                .anchorView(addNewTableBtn)
+                .text(getString(R.string.table_selector_tip_text))
+                .gravity(Gravity.BOTTOM)
+                .animated(true)
+                .transparentOverlay(false)
+                .onDismissListener { tooltip ->
+                    tooltip.dismiss()
+                }
+                .build()
+                .show()
         }
     }
 

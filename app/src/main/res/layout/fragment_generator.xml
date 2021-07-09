@@ -25,6 +25,21 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/types_recycler_view" />
+        app:layout_constraintTop_toBottomOf="@id/types_recycler_view"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_container"
+        android:layout_margin="@dimen/eightDpMargin"
+        android:text="@string/generate"
+        android:textSize="@dimen/xlargeText"
+        android:textColor="@color/purple_700"
+        android:id="@+id/next_step_btn"
+        android:textAllCaps="true"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

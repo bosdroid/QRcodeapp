@@ -1,5 +1,6 @@
 package com.expert.qrgenerator.view.activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -31,7 +32,9 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
     private var listValues = mutableListOf<String>()
     private lateinit var tableGenerator: TableGenerator
     private lateinit var adapter: FieldListValuesAdapter
-    private var listItem:ListItem?=null
+    private var listItem: ListItem? = null
+    private var tableName = ""
+    private var flag = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +47,14 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
 
     private fun initViews() {
         context = this
-        if (intent!= null && intent.hasExtra("LIST_ITEM")){
+        if (intent != null && intent.hasExtra("LIST_ITEM")) {
             listItem = intent.getSerializableExtra("LIST_ITEM") as ListItem
+        }
+        if (intent != null && intent.hasExtra("TABLE_NAME")) {
+            tableName = intent.getStringExtra("TABLE_NAME")!!
+        }
+        if (intent != null && intent.hasExtra("FLAG")) {
+            flag = intent.getStringExtra("FLAG")!!
         }
         tableGenerator = TableGenerator(context)
         toolbar = findViewById(R.id.toolbar)
@@ -65,14 +74,13 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
     }
 
 
-    private fun getListValues(){
+    private fun getListValues() {
         val tempList = tableGenerator.getFieldListValues(listItem!!.id)
-        if (tempList.isNotEmpty()){
+        if (tempList.isNotEmpty()) {
             listValues.clear()
             listValues.addAll(tempList)
             adapter.notifyDataSetChanged()
-        }
-        else{
+        } else {
             adapter.notifyDataSetChanged()
         }
     }
@@ -95,21 +103,26 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
     }
 
     override fun onFinishItemClick() {
-//        val intent = Intent(context,MainActivity::class.java)
-//        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-//        startActivity(intent)
-//        finish()
-         finish()
+        if (tableName.isNotEmpty() && flag.isNotEmpty()) {
+            val intent = Intent(context,CreateTableActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.putExtra("TABLE_NAME",tableName)
+            startActivity(intent)
+            finish()
+        } else {
+            finish()
+        }
     }
 
-    private fun addListItemDialog(id:Int) {
+    private fun addListItemDialog(id: Int) {
         val listCreateLayout =
             LayoutInflater.from(context).inflate(R.layout.add_list_value_layout, null)
         val dialogHeading = listCreateLayout.findViewById<MaterialTextView>(R.id.dialog_heading)
         dialogHeading.text = getString(R.string.list_value_hint_text)
         val textInputBox =
             listCreateLayout.findViewById<TextInputEditText>(R.id.add_list_value_input_field)
-        val listItemCreateBtn = listCreateLayout.findViewById<MaterialButton>(R.id.add_list_value_btn)
+        val listItemCreateBtn =
+            listCreateLayout.findViewById<MaterialButton>(R.id.add_list_value_btn)
         val builder = MaterialAlertDialogBuilder(context)
         builder.setView(listCreateLayout)
         val alert = builder.create()
@@ -117,11 +130,18 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
         listItemCreateBtn.setOnClickListener {
             if (textInputBox.text.toString().isNotEmpty()) {
 
-                    tableGenerator.insertListValue(id,textInputBox.text.toString().trim().toLowerCase(
-                        Locale.ENGLISH))
-                    Toast.makeText(context, getString(R.string.list_item_success_text), Toast.LENGTH_SHORT)
-                        .show()
-                    alert.dismiss()
+                tableGenerator.insertListValue(
+                    id, textInputBox.text.toString().trim().toLowerCase(
+                        Locale.ENGLISH
+                    )
+                )
+                Toast.makeText(
+                    context,
+                    getString(R.string.list_item_success_text),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                alert.dismiss()
 
                 getListValues()
             } else {

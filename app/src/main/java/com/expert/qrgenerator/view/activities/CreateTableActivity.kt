@@ -27,6 +27,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import java.lang.reflect.Field
 import java.util.*
 
 class CreateTableActivity : BaseActivity(), View.OnClickListener {
@@ -377,7 +378,10 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
             override fun onAddItemClick(position: Int) {
                 alert.dismiss()
-                startActivity(Intent(context, FieldListsActivity::class.java))
+                val intent = Intent(context,FieldListsActivity::class.java)
+                intent.putExtra("TABLE_NAME",tableName)
+                intent.putExtra("FLAG","yes")
+                startActivity(intent)
             }
         })
     }

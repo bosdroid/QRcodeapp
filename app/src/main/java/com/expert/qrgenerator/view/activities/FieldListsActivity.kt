@@ -28,6 +28,8 @@ class FieldListsActivity : BaseActivity() {
     private var list = mutableListOf<ListItem>()
     private lateinit var adapter: FieldListAdapter
     private lateinit var tableGenerator: TableGenerator
+    private var tableName = ""
+    private var flag = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,13 @@ class FieldListsActivity : BaseActivity() {
         fieldListRecyclerView.hasFixedSize()
         adapter = FieldListAdapter(context, list as ArrayList<ListItem>)
         fieldListRecyclerView.adapter = adapter
+
+        if (intent != null && intent.hasExtra("TABLE_NAME")) {
+            tableName = intent.getStringExtra("TABLE_NAME")!!
+        }
+        if (intent != null && intent.hasExtra("FLAG")) {
+            flag = intent.getStringExtra("FLAG")!!
+        }
     }
 
     private fun getList() {
@@ -64,6 +73,8 @@ class FieldListsActivity : BaseActivity() {
             override fun onItemClick(position: Int) {
                 val list = list[position]
                 val intent = Intent(context, FieldListValuesActivity::class.java)
+                intent.putExtra("TABLE_NAME",tableName)
+                intent.putExtra("FLAG",flag)
                 intent.putExtra("LIST_ITEM", list)
                 startActivity(intent)
 //                addListItemDialog(1,list.id)

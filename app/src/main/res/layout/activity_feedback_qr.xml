@@ -321,43 +321,43 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/feedback_next_design_layout"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@color/white"
-                android:elevation="8dp"
-                android:padding="10dp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:id="@+id/feedback_next_design_layout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:background="@color/white"-->
+<!--                android:elevation="8dp"-->
+<!--                android:padding="10dp"-->
+<!--                android:visibility="gone"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent">-->
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/feedback_code_heading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sixtyDpMargin"
-                    android:text="@string/feedback_code_heading_text"
-                    android:textSize="@dimen/largeText"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <com.google.android.material.textview.MaterialTextView-->
+<!--                    android:id="@+id/feedback_code_heading"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="@dimen/sixtyDpMargin"-->
+<!--                    android:text="@string/feedback_code_heading_text"-->
+<!--                    android:textSize="@dimen/largeText"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
 
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/owner_email_input_field"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sixtyDpMargin"
-                    android:background="@drawable/input_text_field_design"
-                    android:gravity="start"
-                    android:hint="@string/owner_email_hint"
-                    android:padding="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/feedback_code_heading" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/owner_email_input_field"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="@dimen/sixtyDpMargin"-->
+<!--                    android:background="@drawable/input_text_field_design"-->
+<!--                    android:gravity="start"-->
+<!--                    android:hint="@string/owner_email_hint"-->
+<!--                    android:padding="10dp"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/feedback_code_heading" />-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
             <LinearLayout
                 android:layout_width="match_parent"

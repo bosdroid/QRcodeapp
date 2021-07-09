@@ -8,6 +8,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.AppSettings
+import com.expert.qrgenerator.utils.Constants
 
 class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,8 +48,9 @@ class SettingsActivity : BaseActivity() {
             appSettings.putBoolean(requireActivity().getString(R.string.key_vibration), vibrateSwitch!!.isChecked)
             val clipboardSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_clipboard))
             appSettings.putBoolean(requireActivity().getString(R.string.key_clipboard), clipboardSwitch!!.isChecked)
-
-
+            val tipsSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_tips))
+            appSettings.putBoolean(requireActivity().getString(R.string.key_tips), tipsSwitch!!.isChecked)
+            Constants.tipsValue = tipsSwitch.isChecked
         }
     }
 }

@@ -30,7 +30,16 @@ class AppSettings(context:Context) {
     }
 
     fun getBoolean(key: String): Boolean {
-        return appSharedPrefs.getBoolean(key, false)
+        return if (key == "key_tips") {
+            if (appSharedPrefs.contains(key)){
+                appSharedPrefs.getBoolean(key, false)
+            } else{
+                appSharedPrefs.getBoolean(key, true)
+            }
+        } else{
+            appSharedPrefs.getBoolean(key, false)
+        }
+
     }
 
     fun getUser(key: String): User {
