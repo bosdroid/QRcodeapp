@@ -93,7 +93,6 @@ class ScannerFragment : Fragment() {
     private var listener: ScannerInterface? = null
     private var cameraProviderFuture: ListenableFuture<*>? = null
     private var cameraExecutor: ExecutorService? = null
-
     //private var previewView: PreviewView? = null
     private var imageAnalyzer: MyImageAnalyzer? = null
     private var isFlashOn = false
@@ -175,8 +174,7 @@ class ScannerFragment : Fragment() {
         tablesList.addAll(tableGenerator.getAllDatabaseTables())
         if (tablesList.isNotEmpty()) {
             tableName = tablesList[0]
-            val adapter =
-                ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, tablesList)
+            val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, tablesList)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             tablesSpinner.adapter = adapter
 
@@ -487,19 +485,27 @@ class ScannerFragment : Fragment() {
                 builder.setCancelable(false)
                 val alert = builder.create()
                 alert.show()
-                SimpleTooltip.Builder(requireActivity())
-                    .anchorView(scanResultLayout)
-                    .text(getString(R.string.after_scan_result_tip_text))
-                    .gravity(Gravity.BOTTOM)
-                    .animated(true)
-                    .transparentOverlay(false)
-                    .onDismissListener { tooltip ->
-                        tooltip.dismiss()
-                        openAddImageTooltip(addImageCheckBox,submitBtn)
+                if (appSettings.getBoolean(getString(R.string.key_tips))) {
+                    val duration = appSettings.getLong("tt2")
+                    if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
+                            1
+                        )
+                    ) {
+                        SimpleTooltip.Builder(requireActivity())
+                            .anchorView(scanResultLayout)
+                            .text(getString(R.string.after_scan_result_tip_text))
+                            .gravity(Gravity.BOTTOM)
+                            .animated(true)
+                            .transparentOverlay(false)
+                            .onDismissListener { tooltip ->
+                                tooltip.dismiss()
+                                appSettings.putLong("tt2", System.currentTimeMillis())
+                                openAddImageTooltip(addImageCheckBox, submitBtn)
+                            }
+                            .build()
+                            .show()
                     }
-                    .build()
-                    .show()
-
+                }
                 submitBtn.setOnClickListener {
 
                     if (BaseActivity.isNetworkAvailable(requireActivity())) {
@@ -795,51 +801,63 @@ class ScannerFragment : Fragment() {
     }
 
     private fun openAddImageTooltip(addImageBox:MaterialCheckBox,submitBtn:MaterialButton) {
-        if (Constants.tipsValue) {
-            SimpleTooltip.Builder(requireActivity())
-                .anchorView(addImageBox)
-                .text(getString(R.string.add_image_tip_text))
-                .gravity(Gravity.BOTTOM)
-                .animated(true)
-                .transparentOverlay(false)
-                .onDismissListener { tooltip ->
-                    tooltip.dismiss()
-                    openSubmitBtnTip(submitBtn)
-                }
-                .build()
-                .show()
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt3")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(addImageBox)
+                    .text(getString(R.string.add_image_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        tooltip.dismiss()
+                        appSettings.putLong("tt3",System.currentTimeMillis())
+                        openSubmitBtnTip(submitBtn)
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 
     private fun openSubmitBtnTip(submitBtn: MaterialButton){
-        if (Constants.tipsValue) {
-            SimpleTooltip.Builder(requireActivity())
-                .anchorView(submitBtn)
-                .text(getString(R.string.submit_btn_tip_text))
-                .gravity(Gravity.BOTTOM)
-                .animated(true)
-                .transparentOverlay(false)
-                .onDismissListener { tooltip ->
-                    tooltip.dismiss()
-                }
-                .build()
-                .show()
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt4")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(submitBtn)
+                    .text(getString(R.string.submit_btn_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt4",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 
     private fun openHistoryBtnTip(){
-        if (Constants.tipsValue) {
-            SimpleTooltip.Builder(requireActivity())
-                .anchorView(MainActivity.historyBtn)
-                .text(getString(R.string.history_btn_tip_text))
-                .gravity(Gravity.BOTTOM)
-                .animated(true)
-                .transparentOverlay(false)
-                .onDismissListener { tooltip ->
-                    tooltip.dismiss()
-                }
-                .build()
-                .show()
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt5")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(MainActivity.historyBtn)
+                    .text(getString(R.string.history_btn_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt5",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 
@@ -1130,18 +1148,22 @@ class ScannerFragment : Fragment() {
     }
 
     fun showTableSelectTip() {
-        if (Constants.tipsValue) {
-            SimpleTooltip.Builder(requireActivity())
-                .anchorView(addNewTableBtn)
-                .text(getString(R.string.table_selector_tip_text))
-                .gravity(Gravity.BOTTOM)
-                .animated(true)
-                .transparentOverlay(false)
-                .onDismissListener { tooltip ->
-                    tooltip.dismiss()
-                }
-                .build()
-                .show()
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt10")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(addNewTableBtn)
+                    .text(getString(R.string.table_selector_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt10",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 

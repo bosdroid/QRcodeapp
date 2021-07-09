@@ -151,7 +151,7 @@
     <string name="key_sound">key_sound</string>
     <string name="key_vibration">key_vibration</string>
     <string name="key_clipboard">key_clipboard</string>
-    <string name="plus_table_text">+ add new table</string>
+    <string name="plus_table_text">+ Table</string>
     <string name="add_list_value_hint_text">Enter the List Name</string>
     <string name="new_list_value_text">+ add one more</string>
     <string name="field_type_list">Field Type List</string>

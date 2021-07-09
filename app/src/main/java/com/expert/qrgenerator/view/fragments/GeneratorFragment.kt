@@ -13,10 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TypesAdapter
 import com.expert.qrgenerator.model.QRTypes
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.view.activities.*
 import com.google.android.material.textview.MaterialTextView
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
+import java.util.concurrent.TimeUnit
 
 
 class GeneratorFragment : Fragment() {
@@ -26,6 +28,7 @@ class GeneratorFragment : Fragment() {
     private var qrTypeList = mutableListOf<QRTypes>()
     private lateinit var layoutContainer: FrameLayout
     private lateinit var nextStepBtn:MaterialTextView
+    private lateinit var appSettings:AppSettings
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,12 +36,13 @@ class GeneratorFragment : Fragment() {
         val v = inflater.inflate(R.layout.fragment_generator, container, false)
 
         initViews(v)
-
+        openQrTypeTooltip()
         return v
     }
 
 
     private fun initViews(view: View){
+        appSettings = AppSettings(requireActivity())
         qrTypesRecyclerView = view.findViewById(R.id.types_recycler_view)
         layoutContainer = view.findViewById(R.id.layout_container)
         nextStepBtn = view.findViewById(R.id.next_step_btn)
@@ -83,73 +87,89 @@ class GeneratorFragment : Fragment() {
 
             }
         })
-        openQrTypeTooltip()
+
     }
 
     fun openQrTypeTooltip(){
-            if (Constants.tipsValue) {
-                SimpleTooltip.Builder(requireActivity())
-                    .anchorView(qrTypesRecyclerView)
-                    .text(getString(R.string.qr_types_tip_text))
-                    .gravity(Gravity.BOTTOM)
-                    .animated(true)
-                    .transparentOverlay(false)
-                    .onDismissListener { tooltip ->
-                        tooltip.dismiss()
-                        openInsertBarcodeTooltip()
-                    }
-                    .build()
-                    .show()
+            if (appSettings.getBoolean(getString(R.string.key_tips))) {
+                val duration = appSettings.getLong("tt6")
+                if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                    SimpleTooltip.Builder(requireActivity())
+                        .anchorView(qrTypesRecyclerView)
+                        .text(getString(R.string.qr_types_tip_text))
+                        .gravity(Gravity.BOTTOM)
+                        .animated(true)
+                        .transparentOverlay(false)
+                        .onDismissListener { tooltip ->
+                            appSettings.putLong("tt6",System.currentTimeMillis())
+                            tooltip.dismiss()
+                            openInsertBarcodeTooltip()
+                        }
+                        .build()
+                        .show()
+                }
             }
     }
 
     private fun openInsertBarcodeTooltip() {
-        if (Constants.tipsValue) {
-            SimpleTooltip.Builder(requireActivity())
-                .anchorView(layoutContainer)
-                .text(getString(R.string.insert_barcode_data_tip_text))
-                .gravity(Gravity.BOTTOM)
-                .animated(true)
-                .transparentOverlay(false)
-                .onDismissListener { tooltip ->
-                    tooltip.dismiss()
-                    openGeneratorBtnTooltip()
-                }
-                .build()
-                .show()
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt7")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(layoutContainer)
+                    .text(getString(R.string.insert_barcode_data_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt7",System.currentTimeMillis())
+                        tooltip.dismiss()
+                        openGeneratorBtnTooltip()
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 
     private fun openGeneratorBtnTooltip() {
-        if (Constants.tipsValue) {
-            SimpleTooltip.Builder(requireActivity())
-                .anchorView(nextStepBtn)
-                .text(getString(R.string.next_btn_tip_text))
-                .gravity(Gravity.BOTTOM)
-                .animated(true)
-                .transparentOverlay(false)
-                .onDismissListener { tooltip ->
-                    tooltip.dismiss()
-                    openHistoryBtnTip()
-                }
-                .build()
-                .show()
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt8")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(nextStepBtn)
+                    .text(getString(R.string.next_btn_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt8",System.currentTimeMillis())
+                        tooltip.dismiss()
+                        openHistoryBtnTip()
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 
     private fun openHistoryBtnTip(){
-        if (Constants.tipsValue) {
-            SimpleTooltip.Builder(requireActivity())
-                .anchorView(MainActivity.historyBtn)
-                .text(getString(R.string.generate_history_btn_tip_text))
-                .gravity(Gravity.BOTTOM)
-                .animated(true)
-                .transparentOverlay(false)
-                .onDismissListener { tooltip ->
-                    tooltip.dismiss()
-                }
-                .build()
-                .show()
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt9")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(MainActivity.historyBtn)
+                    .text(getString(R.string.generate_history_btn_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt9",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 

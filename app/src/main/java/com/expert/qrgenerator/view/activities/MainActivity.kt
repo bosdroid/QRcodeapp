@@ -63,6 +63,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -110,21 +111,26 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         getAccountsPermission()
         initializeGoogleLoginParameters()
 
-        if (Constants.tipsValue) {
-            SimpleTooltip.Builder(this)
-                .anchorView(bottomNavigation)
-                .text(getString(R.string.bottom_navigation_tip_text))
-                .gravity(Gravity.TOP)
-                .animated(true)
-                .transparentOverlay(false)
-                .onDismissListener { tooltip ->
-                    tooltip.dismiss()
-                    val fragment =
-                        supportFragmentManager.findFragmentByTag("scanner") as ScannerFragment
-                    fragment.showTableSelectTip()
-                }
-                .build()
-                .show()
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt1")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+
+                SimpleTooltip.Builder(this)
+                    .anchorView(bottomNavigation)
+                    .text(getString(R.string.bottom_navigation_tip_text))
+                    .gravity(Gravity.TOP)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        tooltip.dismiss()
+                        appSettings.putLong("tt1",System.currentTimeMillis())
+                        val fragment =
+                            supportFragmentManager.findFragmentByTag("scanner") as ScannerFragment
+                        fragment.showTableSelectTip()
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 
@@ -203,7 +209,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 .addToBackStack("scanner")
                 .commit()
         }
-        Constants.tipsValue = appSettings.getBoolean(getString(R.string.key_tips))
+//        Constants.tipsValue = appSettings.getBoolean(getString(R.string.key_tips))
 
     }
 

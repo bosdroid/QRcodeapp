@@ -144,7 +144,7 @@
 	<string name="key_sound">key_sound.</string>
 	<string name="key_vibration">key_vibration.</string>
 	<string name="key_clipboard">key_clipboard.</string>
-	<string name="plus_table_text">+ Добавить новую таблицу</string>
+	<string name="plus_table_text">+ Таблица</string>
 	<string name="add_list_value_hint_text">Введите имя списка</string>
 	<string name="new_list_value_text">+ Добавить еще один</string>
 	<string name="field_type_list">Тип поля списка</string>
