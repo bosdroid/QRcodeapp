@@ -215,7 +215,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             codeSequenceView.text = "${getString(R.string.code_text)} ${codeHistory!!.id}"
             dateTimeView.text = getFormattedDate(context, codeHistory!!.createdAt.toLong())
 
-            if (codeHistory!!.codeType == "feedback") {
+            if (codeHistory!!.type == "feedback") {
                 displayFeedbacksDetail(codeHistory!!.qrId)
             } else {
 

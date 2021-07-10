@@ -103,15 +103,15 @@ class FieldListValuesActivity : BaseActivity(), FieldListValuesAdapter.OnItemCli
     }
 
     override fun onFinishItemClick() {
-        if (tableName.isNotEmpty() && flag.isNotEmpty()) {
-            val intent = Intent(context,CreateTableActivity::class.java)
+//        if (tableName.isNotEmpty() && flag.isNotEmpty()) {
+            val intent = Intent(context,TablesActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            intent.putExtra("TABLE_NAME",tableName)
+            //intent.putExtra("TABLE_NAME",tableName)
             startActivity(intent)
             finish()
-        } else {
-            finish()
-        }
+//        } else {
+//            finish()
+//        }
     }
 
     private fun addListItemDialog(id: Int) {

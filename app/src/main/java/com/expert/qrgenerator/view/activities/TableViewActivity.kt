@@ -118,7 +118,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         val tempList = tableGenerator.getTableDate(tName, column, order)
         if (tempList.isNotEmpty()) {
             dataList.clear()
-            if (tableMainLayout.childCount > 2) {
+            if (tableMainLayout.childCount > 1) {
                 tableMainLayout.removeViews(1, tableMainLayout.childCount - 1)
             }
         }
