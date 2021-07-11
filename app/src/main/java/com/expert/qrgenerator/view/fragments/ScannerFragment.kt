@@ -93,6 +93,7 @@ class ScannerFragment : Fragment() {
     private var listener: ScannerInterface? = null
     private var cameraProviderFuture: ListenableFuture<*>? = null
     private var cameraExecutor: ExecutorService? = null
+    private var mContext: AppCompatActivity? = null
 
     //private var previewView: PreviewView? = null
     private var imageAnalyzer: MyImageAnalyzer? = null
@@ -109,6 +110,7 @@ class ScannerFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        mContext = context as AppCompatActivity
         listener = context as ScannerInterface
         appSettings = AppSettings(requireActivity())
         appViewModel = ViewModelProvider(
@@ -139,24 +141,28 @@ class ScannerFragment : Fragment() {
         }
         val scans = DialogPrefs.getSuccessScan(requireContext())
         val isSharedQr = DialogPrefs.getShared(requireContext())
-        if ((getDateDifference() == 3 && scans >= 2) || (getDateDifference() == 3 && isSharedQr)) {
-            rateUs(requireActivity() as AppCompatActivity)
+        if ((getDateDifference() >= 3 && scans >= 2) || (getDateDifference() >= 3 && isSharedQr)) {
+            mContext?.let { rateUs(it) }
         }
     }
 
     private fun getDateDifference(): Int {
+        var days = 0
         val myFormat = SimpleDateFormat(DateUtils.DATE_FORMAT)
         val currentDate = DateUtils.getCurrentDate()
         val prefsDate = DialogPrefs.getDate(requireContext())
         val dateCurrent = myFormat.parse(currentDate)
-        val datePrefs = myFormat.parse(prefsDate)
-        val timeCurrent = dateCurrent.time
-        val timePrefs = datePrefs.time
-        val difference = timeCurrent - timePrefs
-        val days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
-        Log.d(TAG, "getDateDifference: $days, $currentDate, $datePrefs")
-
-        return days.toInt()
+        if (prefsDate != null) {
+            val datePrefs = myFormat.parse(prefsDate)
+            val timeCurrent = dateCurrent?.time
+            val timePrefs = datePrefs?.time
+            if (timeCurrent != null && timePrefs != null) {
+                val difference = timeCurrent - timePrefs
+                days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS).toInt()
+            }
+            Log.d(TAG, "getDateDifference: $days, $currentDate, $datePrefs")
+        }
+        return days
     }
 
     private fun initViews(view: View) {
