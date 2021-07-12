@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatRatingBar
@@ -25,6 +24,7 @@ import com.downloader.PRDownloader
 import com.downloader.request.DownloadRequest
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants.Companion.EMAIL_ADDRESS_PATTERN
+import com.expert.qrgenerator.utils.DialogPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
@@ -33,7 +33,6 @@ import java.util.*
 
 
 open class BaseActivity : AppCompatActivity() {
-
 
     companion object {
         private var prDownloader: DownloadRequest? = null
@@ -186,6 +185,7 @@ open class BaseActivity : AppCompatActivity() {
                 }
             }
             later.setOnClickListener {
+                DialogPrefs.clearPreferences(context)
                 alertDialog.dismiss()
             }
         }

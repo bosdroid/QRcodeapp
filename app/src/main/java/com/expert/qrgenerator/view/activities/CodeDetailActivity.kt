@@ -14,6 +14,7 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -111,6 +112,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             scans += 1
             DialogPrefs.setSuccessScan(this, scans)
         }
+        Log.d("TAG", "ScanCount: $scans")
         initViews()
         setUpToolbar()
         displayCodeDetails()
