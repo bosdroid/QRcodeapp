@@ -427,37 +427,52 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/coupon_code_layout_wrapper">
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_time" />
+                            android:layout_weight="1"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            >
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_time" />
 
-                        <com.google.android.material.textview.MaterialTextView
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/defaultDpMargin"
+                                android:layout_marginLeft="@dimen/defaultDpMargin"
+                                android:text="@string/coupon_valid_till_text"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/mediumText" />
+                        </LinearLayout>
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
                             android:layout_marginStart="@dimen/defaultDpMargin"
-                            android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:text="@string/coupon_valid_till_text"
-                            android:textColor="@color/gray"
-                            android:textSize="@dimen/mediumText" />
+                            >
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/coupon_valid_till_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/coupon_set_valid_date_hint"
+                                android:textColor="@color/dark_gray"
+                                android:textSize="@dimen/mediumText" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/coupon_valid_till_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/defaultDpMargin"
-                            android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:text="@string/coupon_set_valid_date_hint"
-                            android:textColor="@color/dark_gray"
-                            android:textSize="@dimen/mediumText" />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/coupon_valid_till_edit_btn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/defaultDpMargin"
+                                android:src="@drawable/edit" />
+                        </LinearLayout>
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/coupon_valid_till_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/defaultDpMargin"
-                            android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:src="@drawable/edit" />
+
+
                     </LinearLayout>
 
                     <LinearLayout

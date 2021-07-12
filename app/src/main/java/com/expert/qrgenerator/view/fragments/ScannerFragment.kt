@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.util.Log
@@ -861,7 +862,113 @@ class ScannerFragment : Fragment() {
         }
     }
 
+//    var imageUrlList = mutableListOf<String>()
     private fun uploadImageOnDrive(): Boolean {
+//        var isUploadingSuccess = false
+//        val imageList = filePathView!!.text.toString()
+//        if (imageList.contains(",")){
+//            val array = imageList.split(",")
+//            for (i in array.indices){
+//                val imagePath = array[i]
+//
+//                val bundle = Bundle()
+//                bundle.putString("starts", "starts")
+//                mFirebaseAnalytics?.logEvent("upload image", bundle)
+//                try {
+//
+//                    val fileMetadata =
+//                        com.google.api.services.drive.model.File()
+//                    fileMetadata.name =
+//                        "Image_${System.currentTimeMillis()}.jpg"
+//                    val filePath: File =
+//                        File(imagePath)
+//                    val mediaContent = FileContent("image/jpeg", filePath)
+//
+//                    val file: com.google.api.services.drive.model.File =
+//                        DriveService.instance!!.files()
+//                            .create(fileMetadata, mediaContent)
+//                            .setFields("id")
+//                            .execute()
+//                    // WHEN EXECUTE FUNCTION RUN SUCCESSFULLY THEN IT RETURN FILE OBJECT HAVING ID
+//                    // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
+//                    url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+//                    imageUrlList.add(url)
+//                    val bundle = Bundle()
+//                    bundle.putString("success", "success")
+//                    mFirebaseAnalytics?.logEvent("upload image", bundle)
+//                    isUploadingSuccess = true
+//                } catch (e: UserRecoverableAuthIOException) {
+////            Log.d("TEST199",e.localizedMessage!!)
+////            userAuthLauncher.launch(e.intent)
+//                    val bundle = Bundle()
+//                    bundle.putString("UserRecoverableAuthIOException", "Error: " + e.message)
+//                    mFirebaseAnalytics?.logEvent("upload image", bundle)
+//                    isUploadingSuccess = false
+//                } catch (e: GoogleJsonResponseException) {
+//                    val bundle = Bundle()
+//                    bundle.putString("GoogleJsonResponseException", "Error: " + e.message)
+//                    mFirebaseAnalytics?.logEvent("upload image", bundle)
+//                    BaseActivity.showAlert(
+//                        requireActivity(),
+//                        e.details.message
+//                    )
+//                    isUploadingSuccess = false
+//                }
+//            }
+//            return if (isUploadingSuccess){
+//                url = imageUrlList.joinToString(",")
+//                imageUrlList.clear()
+//                true
+//            } else{
+//                false
+//            }
+//        }
+//        else{
+//            val bundle = Bundle()
+//            bundle.putString("starts", "starts")
+//            mFirebaseAnalytics?.logEvent("upload image", bundle)
+//            try {
+//
+//                val fileMetadata =
+//                    com.google.api.services.drive.model.File()
+//                fileMetadata.name =
+//                    "Image_${System.currentTimeMillis()}.jpg"
+//                val filePath: File =
+//                    File(filePathView!!.text.toString())
+//                val mediaContent = FileContent("image/jpeg", filePath)
+//
+//                val file: com.google.api.services.drive.model.File =
+//                    DriveService.instance!!.files()
+//                        .create(fileMetadata, mediaContent)
+//                        .setFields("id")
+//                        .execute()
+//                // WHEN EXECUTE FUNCTION RUN SUCCESSFULLY THEN IT RETURN FILE OBJECT HAVING ID
+//                // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
+//                url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+//                val bundle = Bundle()
+//                bundle.putString("success", "success")
+//                mFirebaseAnalytics?.logEvent("upload image", bundle)
+//                return true
+//            } catch (e: UserRecoverableAuthIOException) {
+////            Log.d("TEST199",e.localizedMessage!!)
+////            userAuthLauncher.launch(e.intent)
+//
+//                val bundle = Bundle()
+//                bundle.putString("UserRecoverableAuthIOException", "Error: " + e.message)
+//                mFirebaseAnalytics?.logEvent("upload image", bundle)
+//                return false
+//            } catch (e: GoogleJsonResponseException) {
+//                val bundle = Bundle()
+//                bundle.putString("GoogleJsonResponseException", "Error: " + e.message)
+//                mFirebaseAnalytics?.logEvent("upload image", bundle)
+//                BaseActivity.showAlert(
+//                    requireActivity(),
+//                    e.details.message
+//                )
+//                return false
+//            }
+//        }
+
         val bundle = Bundle()
         bundle.putString("starts", "starts")
         mFirebaseAnalytics?.logEvent("upload image", bundle)
@@ -915,6 +1022,7 @@ class ScannerFragment : Fragment() {
 
     private fun getImageFromGallery() {
         val fileIntent = Intent(Intent.ACTION_PICK)
+        fileIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true)
         fileIntent.type = "image/*"
         resultLauncher.launch(fileIntent)
     }
@@ -927,6 +1035,8 @@ class ScannerFragment : Fragment() {
 //            }
 //        }
 
+
+    var multiImagesList = mutableListOf<String>()
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
@@ -934,12 +1044,28 @@ class ScannerFragment : Fragment() {
             if (result.resultCode == Activity.RESULT_OK) {
 //                val path: String? = null
                 val data: Intent? = result.data
-                if (data!!.data != null) {
+                val clipData:ClipData? = data!!.clipData
+
+                if (clipData != null){
+                    if (clipData.itemCount > 0){
+                        for (i in 0 until clipData.itemCount){
+                            val imageUri = clipData.getItemAt(i).uri
+                            multiImagesList.add(ImageManager.getRealPathFromUri(requireActivity(), imageUri)!!)
+                        }
+                        filePathView!!.text = multiImagesList.joinToString(",")
+                        isFileSelected = true
+                        //Log.d("TEST199",multiImagesList.toString())
+                    }
+                }
+                else{
+                  if (data.data != null) {
                     val imageUri = data.data!!
                     filePathView!!.text =
                         ImageManager.getRealPathFromUri(requireActivity(), imageUri)
                     isFileSelected = true
                 }
+                }
+
             }
         }
 

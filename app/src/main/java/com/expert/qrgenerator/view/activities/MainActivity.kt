@@ -497,7 +497,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         override fun onSuccess(googleSignInAccount: GoogleSignInAccount?) {
                             val credential = GoogleAccountCredential.usingOAuth2(
                                 context,
-                                Collections.singleton(DriveScopes.DRIVE_FILE)
+                                scopes
                             )
                             if (googleSignInAccount != null) {
                                 credential.selectedAccount = googleSignInAccount.account
