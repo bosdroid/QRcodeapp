@@ -706,4 +706,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         startLogin()
     }
 
+    override fun onPause() {
+        hideKeyboard(context,this)
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        hideKeyboard(context,this)
+        super.onDestroy()
+
+    }
+
 }
