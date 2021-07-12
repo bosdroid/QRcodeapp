@@ -565,6 +565,7 @@ class ScannerFragment : Fragment() {
                                                 {
                                                     isFileSelected = false
                                                     BaseActivity.dismiss()
+                                                    saveSuccessScans()
                                                     Toast.makeText(
                                                         requireActivity(),
                                                         requireActivity().resources.getString(R.string.scan_data_save_success_text),
@@ -624,6 +625,7 @@ class ScannerFragment : Fragment() {
                                         Handler(Looper.myLooper()!!).postDelayed({
                                             isFileSelected = false
                                             BaseActivity.dismiss()
+                                            saveSuccessScans()
                                             Toast.makeText(
                                                 requireActivity(),
                                                 requireActivity().resources.getString(R.string.scan_data_save_success_text),
@@ -696,6 +698,7 @@ class ScannerFragment : Fragment() {
                                     Handler(Looper.myLooper()!!).postDelayed({
                                         isFileSelected = false
                                         BaseActivity.dismiss()
+                                        saveSuccessScans()
                                         Toast.makeText(
                                             requireActivity(),
                                             requireActivity().resources.getString(R.string.scan_data_save_success_text),
@@ -788,6 +791,7 @@ class ScannerFragment : Fragment() {
                     )
                     appViewModel.insert(qrHistory)
                 }
+                saveSuccessScans()
                 Toast.makeText(
                     requireActivity(),
                     requireActivity().resources.getString(R.string.scan_data_save_success_text),
@@ -801,6 +805,7 @@ class ScannerFragment : Fragment() {
             }
         }
     }
+
 
     private fun openAddImageTooltip(addImageBox: MaterialCheckBox, submitBtn: MaterialButton) {
         if (Constants.tipsValue) {
@@ -1151,6 +1156,15 @@ class ScannerFragment : Fragment() {
                 .build()
                 .show()
         }
+    }
+
+    private fun saveSuccessScans() {
+        var scans = DialogPrefs.getSuccessScan(requireActivity())
+        if (scans >= 0) {
+            scans += 1
+            DialogPrefs.setSuccessScan(requireActivity(), scans)
+        }
+        Log.d("TAG", "ScanCount: $scans")
     }
 
 }
