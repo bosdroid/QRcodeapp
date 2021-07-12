@@ -73,8 +73,10 @@ class FieldListsActivity : BaseActivity() {
             override fun onItemClick(position: Int) {
                 val list = list[position]
                 val intent = Intent(context, FieldListValuesActivity::class.java)
-                intent.putExtra("TABLE_NAME",tableName)
-                intent.putExtra("FLAG",flag)
+                if (tableName.isNotEmpty() && flag.isNotEmpty()){
+                    intent.putExtra("TABLE_NAME",tableName)
+                    intent.putExtra("FLAG",flag)
+                }
                 intent.putExtra("LIST_ITEM", list)
                 startActivity(intent)
 //                addListItemDialog(1,list.id)
@@ -105,6 +107,10 @@ class FieldListsActivity : BaseActivity() {
                     .show()
                 alert.dismiss()
                 val intent = Intent(context, FieldListValuesActivity::class.java)
+                if (tableName.isNotEmpty() && flag.isNotEmpty()){
+                    intent.putExtra("TABLE_NAME",tableName)
+                    intent.putExtra("FLAG",flag)
+                }
                 intent.putExtra("LIST_ITEM", ListItem(id.toInt(),listName))
                 startActivity(intent)
             } else {
