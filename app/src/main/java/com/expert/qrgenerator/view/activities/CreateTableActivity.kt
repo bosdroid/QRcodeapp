@@ -77,7 +77,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
             tableName = intent.getStringExtra("TABLE_NAME")!!
         }
         createTableFieldHint = findViewById(R.id.create_table_fields_hint)
-        createTableFieldHint.text = "${getString(R.string.create_table_fields_hint_text)}$tableName"
+        createTableFieldHint.text = "${getString(R.string.create_table_fields_hint_text)}"
 //        addNewFieldBtn = findViewById(R.id.add_new_field_btn)
 //        addNewFieldBtn.setOnClickListener(this)
         addNewFieldLayoutWrapper = findViewById(R.id.add_field_layout_wrapper)

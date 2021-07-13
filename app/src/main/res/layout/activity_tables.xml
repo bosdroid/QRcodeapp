@@ -52,7 +52,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:textSize="@dimen/largeText"
                 android:textColor="@color/black"
-                android:text="List of the tables for saving data\nClick on table to edit fields of the table"
+                android:text="@string/table_saving_data_hint"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

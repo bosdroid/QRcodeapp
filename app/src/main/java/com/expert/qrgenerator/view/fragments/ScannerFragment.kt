@@ -130,33 +130,6 @@ class ScannerFragment : Fragment() {
         return v
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val prefDate = DialogPrefs.getDate(requireContext())
-        if (prefDate == null) {
-            DialogPrefs.setDate(requireContext(), DateUtils.getCurrentDate())
-        }
-        val scans = DialogPrefs.getSuccessScan(requireContext())
-        val isSharedQr = DialogPrefs.getShared(requireContext())
-        if ((getDateDifference() == 3 && scans >= 2) || (getDateDifference() == 3 && isSharedQr)) {
-            rateUs(requireActivity() as AppCompatActivity)
-        }
-    }
-
-    private fun getDateDifference(): Int {
-        val myFormat = SimpleDateFormat(DateUtils.DATE_FORMAT)
-        val currentDate = DateUtils.getCurrentDate()
-        val prefsDate = "11-Jul-2021"
-        val dateCurrent = myFormat.parse(currentDate)
-        val datePrefs = myFormat.parse(prefsDate)
-        val timeCurrent = dateCurrent.time
-        val timePrefs = datePrefs.time
-        val difference = timePrefs - timeCurrent
-        val days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS)
-        Log.d("TAG", "getDateDifference: $days")
-        return days.toInt()
-    }
-
     private fun initViews(view: View) {
         scannerView = view.findViewById(R.id.scanner_view)
         tablesSpinner = view.findViewById(R.id.tables_spinner)

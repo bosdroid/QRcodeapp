@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
-                android:text="Scan Result you can change the input data."
+                android:text="@string/scan_result_you_can_change_the_input_data"
                 android:textColor="@color/black"
                 android:textSize="@dimen/mediumText"
                 />
@@ -43,7 +43,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="Code Data"
+                    android:text="@string/code_data"
                     android:textSize="@dimen/mediumText"
                     android:textColor="@color/black"
                     android:gravity="end"
@@ -79,7 +79,7 @@
              <com.google.android.material.checkbox.MaterialCheckBox
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
-                 android:text="add product image"
+                 android:text="@string/add_product_image"
                  android:layout_gravity="center_horizontal"
                  android:id="@+id/add_image_checkbox"
                  />
@@ -152,7 +152,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Submit"
+                    android:text="@string/submit"
                     android:layout_marginTop="@dimen/eightDpMargin"
                     android:id="@+id/scan_result_dialog_submit_btn"
                     />

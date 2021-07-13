@@ -276,7 +276,7 @@
     <string name="title_tips">Tips</string>
     <string name="key_tips" translatable="false">key_tips</string>
     <string name="summary_tips">How to use app</string>
-    <string name="bottom_navigation_tip_text">CHOOSE SCANNER OR GENERATOR</string>
+    <string name="bottom_navigation_tip_text">CHOOSE SCANNER OR GENERATOR1</string>
     <string name="table_selector_tip_text">YOU CAN CHOOSE THE TABLE WHERE SCANNED ITEM WILL SAVED.</string>
     <string name="after_scan_result_tip_text">HERE YOU CAN ADD DATA BEFORE SAVE BARCODE IN THE TABLE. YOU CAN ADD YOUR OWN FIELDS IN TABLE EDITOR.</string>
     <string name="add_image_tip_text">YOU CAN ATTACH IMAGE FROM GALLERY OR MAKE A PHOTO. AND ATTACH IT TO THE BARCODE</string>
@@ -288,4 +288,32 @@
     <string name="generate_history_btn_tip_text">YOU WILL FIND RESULT IN HISTORY</string>
     <string name="external_storage_permission_error2">Please allow the READ EXTERNAL STORAGE permission for selecting images from gallery.</string>
     <string name="several_images_hint_text">(you can add several images or photos)</string>
+    <string name="you_can_add_custom_fields_like_brand_price_description">(You can add custom fields like brand / price / description)</string>
+    <string name="input_data_edit_and_add_data_after_scan">Input data. Edit and add data after scan</string>
+    <string name="non_changeable_fixed_value">Non Changeable. Fixed value.</string>
+    <string name="list_with_values_choose_the_value_from_the_list">List with Values. Choose the value from the list.</string>
+    <string name="please_enter_the_field_name">Please enter the field name</string>
+    <string name="set_the_default_value">Set the default value</string>
+    <string name="choose_the_list_of_values">Choose the list of values</string>
+    <string name="lists_with_values_for_table">Lists with values for table</string>
+    <string name="generator_type_description_text">Share text so user can use it</string>
+    <string name="generator_type_description_static_link">Redirect user to a website</string>
+    <string name="generator_type_description_dynamic_link">Change the link after print</string>
+    <string name="generator_type_description_contacts">Share your contacts</string>
+    <string name="generator_type_description_wifi">User able to connect WiFi without password</string>
+    <string name="generator_type_description_phone">Quick dial the phone</string>
+    <string name="generator_type_description_sms">Sending quick SMS</string>
+    <string name="generator_type_description_instagram">Redirect user to Instagram account</string>
+    <string name="generator_type_description_whatsapp">Open Whatsapp for fast messaging</string>
+    <string name="generator_type_description_coupon">Share coupons to increase sales</string>
+    <string name="generator_type_description_feedback">Get feedbacks from your customers</string>
+    <string name="generator_type_description_social">Share your social networks links</string>
+    <string name="phone">Phone +</string>
+    <string name="set_banner_image">* set banner image 640x360px</string>
+    <string name="set_the_text_for_the_title">* set the title text</string>
+    <string name="set_the_text_for_the_description">* set the description text</string>
+    <string name="scan_result_you_can_change_the_input_data">Scan Result you can change the input data.</string>
+    <string name="code_data">Code Data</string>
+    <string name="date">Date</string>
+    <string name="add_product_image">+ add product image</string>
 </resources>

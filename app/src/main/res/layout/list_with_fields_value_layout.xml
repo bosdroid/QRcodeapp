@@ -12,7 +12,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="@dimen/sixtyDpMargin"
         android:id="@+id/heading"
-        android:text="Create choose list"
+        android:text="@string/lists_with_values_for_table"
         android:textAllCaps="true"
         android:textColor="@color/black"
         android:gravity="center"

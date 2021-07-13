@@ -159,7 +159,7 @@ class Constants {
                     )
                     val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
 //                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
-                    heading.text = context.getString(R.string.static_link_text)
+                    heading.text = context.getString(R.string.generator_type_description_static_link)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
                     val protocolGroup =
@@ -228,7 +228,7 @@ class Constants {
                     val websiteView =
                         LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
                     val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
-                    heading.text = context.getString(R.string.dynamic_link_text)
+                    heading.text = context.getString(R.string.generator_type_description_dynamic_link)
                     val websiteInputBox =
                         websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
 //                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
