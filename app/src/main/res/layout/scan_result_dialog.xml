@@ -114,8 +114,7 @@
                             android:id="@+id/camera_image_view"
                             android:layout_width="60dp"
                             android:layout_height="60dp"
-                            android:background="@drawable/border"
-                            android:src="@drawable/ic_photo_camera" />
+                            android:src="@drawable/camera" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -131,8 +130,7 @@
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:padding="5dp"
-                            android:background="@drawable/border"
-                            android:src="@drawable/ic_images" />
+                            android:src="@drawable/gallery" />
                     </LinearLayout>
 
                 </LinearLayout>

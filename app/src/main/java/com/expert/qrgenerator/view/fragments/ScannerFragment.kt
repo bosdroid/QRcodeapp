@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.appcompat.widget.SwitchCompat
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -48,6 +49,7 @@ import com.expert.qrgenerator.view.activities.TablesActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
@@ -83,6 +85,7 @@ class ScannerFragment : Fragment() {
     private lateinit var scannerView: CodeScannerView
     private lateinit var appViewModel: AppViewModel
     private lateinit var tableGenerator: TableGenerator
+    private lateinit var tipsSwitchBtn: SwitchMaterial
     private var tableName: String = ""
     private lateinit var tablesSpinner: AppCompatSpinner
     private var textInputIdsList = mutableListOf<Pair<String, TextInputEditText>>()
@@ -136,6 +139,7 @@ class ScannerFragment : Fragment() {
         addNewTableBtn = view.findViewById(R.id.add_new_table_btn)
         container = view.findViewById(R.id.container)
         previewView = view.findViewById(R.id.previewview)
+        tipsSwitchBtn = view.findViewById(R.id.home_tips_switch)
         flashImg = view.findViewById(R.id.flashImg)
         addNewTableBtn.setOnClickListener {
             startActivity(Intent(requireActivity(), TablesActivity::class.java))
@@ -1105,6 +1109,26 @@ class ScannerFragment : Fragment() {
         super.onResume()
         startScanner()
         getTableList()
+        val flag = appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
+        if(flag){
+            tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_on_text))
+        }
+        else{
+            tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_off_text))
+        }
+        tipsSwitchBtn.isChecked = flag
+
+        tipsSwitchBtn.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                if(isChecked){
+                    tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_on_text))
+                }
+                else{
+                    tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_off_text))
+                }
+                appSettings.putBoolean(requireActivity().getString(R.string.key_tips),isChecked)
+            }
+        })
     }
 
     override fun onPause() {

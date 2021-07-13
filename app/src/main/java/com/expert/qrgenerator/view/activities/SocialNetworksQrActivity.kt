@@ -65,6 +65,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private lateinit var snDescriptionEditBtn: AppCompatImageView
     private lateinit var snRecyclerView: RecyclerView
     private lateinit var adapeter: SocialNetworkAdapter
+    private lateinit var snBackgroundColorTextHintView:MaterialTextView
 
     //    private lateinit var shareFabBtn: FloatingActionButton
     private var socialNetworkList = mutableListOf<SocialNetwork>()
@@ -122,6 +123,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         adapeter = SocialNetworkAdapter(context, socialNetworkList as ArrayList<SocialNetwork>)
         snRecyclerView.adapter = adapeter
         adapeter.setOnItemClickListener(this)
+        snBackgroundColorTextHintView = findViewById(R.id.sn_details_background_color_hint_text)
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
@@ -414,6 +416,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     val hexColor = "#" + Integer.toHexString(color).substring(2)
                     snContentWrapperLayout.setBackgroundColor(Color.parseColor(hexColor))
                     snContentDetailBackgroundColor = hexColor
+                    snBackgroundColorTextHintView.visibility = View.GONE
                 }
 
                 fun onColor(color: Int, fromUser: Boolean) {

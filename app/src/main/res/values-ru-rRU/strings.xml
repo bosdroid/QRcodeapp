@@ -14,4 +14,7 @@
     <string name="generate_history_btn_tip_text">YOU WILL FIND RESULT IN HISTORY</string>
     <string name="external_storage_permission_error2">Please allow the READ EXTERNAL STORAGE permission for selecting images from gallery.</string>
     <string name="several_images_hint_text">(you can add several images or photos)</string>
+    <string name="set_the_text_for_the_sn_details_background_color">*set the background color</string>
+    <string name="tip_switch_on_text">TIPS ON</string>
+    <string name="tip_switch_off_text">TIPS OFF</string>
 </resources>

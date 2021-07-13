@@ -316,4 +316,7 @@
     <string name="code_data">Code Data</string>
     <string name="date">Date</string>
     <string name="add_product_image">+ add product image</string>
+    <string name="set_the_text_for_the_sn_details_background_color">*set the background color</string>
+    <string name="tip_switch_on_text">TIPS ON</string>
+    <string name="tip_switch_off_text">TIPS OFF</string>
 </resources>

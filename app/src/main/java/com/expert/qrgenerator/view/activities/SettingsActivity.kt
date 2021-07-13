@@ -44,7 +44,7 @@ class SettingsActivity : BaseActivity() {
             appSettings = AppSettings(requireActivity())
 
             val soundSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_sound))
-            appSettings.putBoolean(requireActivity().getString(R.string.key_sound),soundSwitch!!.isChecked)
+            soundSwitch!!.isChecked  = appSettings.getBoolean(requireActivity().getString(R.string.key_sound))
             soundSwitch.setOnPreferenceChangeListener(object : Preference.OnPreferenceChangeListener{
                 override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
                     appSettings.putBoolean(requireActivity().getString(R.string.key_sound),
@@ -54,7 +54,7 @@ class SettingsActivity : BaseActivity() {
                 }
             })
             val vibrateSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_vibration))
-            appSettings.putBoolean(requireActivity().getString(R.string.key_vibration), vibrateSwitch!!.isChecked)
+            vibrateSwitch!!.isChecked = appSettings.getBoolean(requireActivity().getString(R.string.key_vibration))
             vibrateSwitch.setOnPreferenceChangeListener(object : Preference.OnPreferenceChangeListener{
                 override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
                     appSettings.putBoolean(requireActivity().getString(R.string.key_vibration),
@@ -64,7 +64,7 @@ class SettingsActivity : BaseActivity() {
                 }
             })
             val clipboardSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_clipboard))
-            appSettings.putBoolean(requireActivity().getString(R.string.key_clipboard), clipboardSwitch!!.isChecked)
+            clipboardSwitch!!.isChecked = appSettings.getBoolean(requireActivity().getString(R.string.key_clipboard))
             clipboardSwitch.setOnPreferenceChangeListener(object : Preference.OnPreferenceChangeListener{
                 override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
                     appSettings.putBoolean(requireActivity().getString(R.string.key_clipboard),
@@ -73,9 +73,10 @@ class SettingsActivity : BaseActivity() {
                     return true
                 }
             })
-            val tipsSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_tips))
-            appSettings.putBoolean(requireActivity().getString(R.string.key_tips), tipsSwitch!!.isChecked)
 
+
+            val tipsSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_tips))
+            tipsSwitch!!.isChecked = appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
             tipsSwitch.setOnPreferenceChangeListener(object : Preference.OnPreferenceChangeListener{
                 override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
                     appSettings.putBoolean(requireActivity().getString(R.string.key_tips),
@@ -84,7 +85,7 @@ class SettingsActivity : BaseActivity() {
                     return true
                 }
             })
-            //Constants.tipsValue = tipsSwitch.isChecked
+
         }
     }
 }

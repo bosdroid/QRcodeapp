@@ -72,6 +72,19 @@
     </LinearLayout>
     </LinearLayout>
 
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scanner_top_layout"
+        android:layout_marginEnd="@dimen/sixtyFourDpMargin"
+        android:elevation="3dp"
+        android:layout_marginTop="@dimen/eightDpMargin"
+        android:text="@string/tip_switch_off_text"
+        android:textColor="@color/white"
+        android:id="@+id/home_tips_switch"
+        />
+
     <com.budiyev.android.codescanner.CodeScannerView
         android:id="@+id/scanner_view"
         android:layout_width="match_parent"
@@ -103,7 +116,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/add_new_table_btn">
+        app:layout_constraintTop_toBottomOf="@id/scanner_top_layout">
 
         <androidx.camera.view.PreviewView
             android:id="@+id/previewview"
