@@ -121,7 +121,7 @@
 	<string name="new_table_text">Новая таблица</string>
 	<string name="add_table_hin_text">Введите имя таблицы</string>
 	<string name="create_table_hint_text">Создать таблицу</string>
-	<string name="submit">Представлять на рассмотрение</string>
+	<string name="submit">Сохранить</string>
 	<string name="tables_data">Таблицы с данными</string>
 	<string name="menu">Меню</string>
 	<string name="contacts">Контакты</string>
@@ -176,7 +176,7 @@
 	<string name="without_protocol_error">Пожалуйста, введите URL-адрес сайта без http: // или https: //</string>
 	<string name="valid_website_error">Пожалуйста, введите действительный URL-адрес сайта</string>
 	<string name="country_code_data_input_error">Пожалуйста, введите правильный номер телефона с кодом страны!</string>
-	<string name="alert_text">Тревога!</string>
+	<string name="alert_text">Внимание!</string>
 	<string name="login_error_text">Вы не можете использовать эту функцию без входа в систему!</string>
 	<string name="later_text">ПОЗЖЕ</string>
 	<string name="login_text">АВТОРИЗОВАТЬСЯ</string>
@@ -252,7 +252,7 @@
 	<string name="list_name_empty_error_text">Пожалуйста, введите имя списка!</string>
 	<string name="list_create_success_text">Список создан успешно!</string>
 	<string name="list_item_success_text">Список товаров был успешно добавлен!</string>
-	<string name="user_signin_success_text">Пользователь успешно подписан!</string>
+	<string name="user_signin_success_text">Пользователь успешно авторизован!</string>
 	<string name="logout_warning_text">Вы действительно хотите выйти?</string>
 	<string name="logout_success_text">Пользовательский подпись Успешно!</string>
 	<string name="qr_image_share_warning_text">Вы уверены, что хотите поделиться этим изображением QR?</string>
@@ -269,7 +269,7 @@
 	<string name="table_export_error_text">Таблица данных не экспортирована из-за пустого!</string>
     <string name="title_tips">Подсказки</string>
 	<string name="summary_tips">Включить / выключить всплывающие подсказки</string>
-    <string name="bottom_navigation_tip_text">CHOOSE SCANNER OR GENERATOR</string>
+    <string name="bottom_navigation_tip_text">Выберите сканер или генератор</string>
 	<string name="table_selector_tip_text">YOU CAN CHOOSE THE TABLE WHERE SCANNED ITEM WILL SAVED.</string>
     <string name="after_scan_result_tip_text">HERE YOU CAN ADD DATA BEFORE SAVE BARCODE IN THE TABLE. YOU CAN ADD YOUR OWN FIELDS IN TABLE EDITOR.</string>
 	<string name="add_image_tip_text">YOU CAN ATTACH IMAGE FROM GALLERY OR MAKE A PHOTO. AND ATTACH IT TO THE BARCODE</string>
@@ -303,5 +303,10 @@
 	<string name="set_banner_image">* установить баннер 640х360px</string>
 	<string name="set_the_text_for_the_title">* установить текст заголовка</string>
 	<string name="set_the_text_for_the_description">* установить текст описания</string>
+	<string name="scan_result_you_can_change_the_input_data">Результаты сканирования перед сохранением в таблицу</string>
+	<string name="code_data">Данные</string>
+	<string name="date">Дата</string>
+	<string name="add_product_image">+ добавить изображение</string>
+
 
 </resources>

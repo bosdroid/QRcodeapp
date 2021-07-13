@@ -276,7 +276,7 @@
     <string name="title_tips">Tips</string>
     <string name="key_tips" translatable="false">key_tips</string>
     <string name="summary_tips">How to use app</string>
-    <string name="bottom_navigation_tip_text">CHOOSE SCANNER OR GENERATOR</string>
+    <string name="bottom_navigation_tip_text">CHOOSE SCANNER OR GENERATOR1</string>
     <string name="table_selector_tip_text">YOU CAN CHOOSE THE TABLE WHERE SCANNED ITEM WILL SAVED.</string>
     <string name="after_scan_result_tip_text">HERE YOU CAN ADD DATA BEFORE SAVE BARCODE IN THE TABLE. YOU CAN ADD YOUR OWN FIELDS IN TABLE EDITOR.</string>
     <string name="add_image_tip_text">YOU CAN ATTACH IMAGE FROM GALLERY OR MAKE A PHOTO. AND ATTACH IT TO THE BARCODE</string>
@@ -310,4 +310,8 @@
     <string name="set_banner_image">* set banner image 640x360px</string>
     <string name="set_the_text_for_the_title">* set the title text</string>
     <string name="set_the_text_for_the_description">* set the description text</string>
+    <string name="scan_result_you_can_change_the_input_data">Scan Result you can change the input data.</string>
+    <string name="code_data">Code Data</string>
+    <string name="date">Date</string>
+    <string name="add_product_image">+ add product image</string>
 </resources>

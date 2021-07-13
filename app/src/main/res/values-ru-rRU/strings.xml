@@ -2,14 +2,14 @@
 <resources>
     <string name="title_tips">Tips</string>
     <string name="summary_tips">Tips: How to use app</string>
-    <string name="bottom_navigation_tip_text">CHOOSE SCANNER OR GENERATOR</string>
-    <string name="table_selector_tip_text">YOU CAN CHOOSE THE TABLE WHERE SCANNED ITEM WILL SAVED.</string>
-    <string name="after_scan_result_tip_text">HERE YOU CAN ADD DATA BEFORE SAVE BARCODE IN THE TABLE. YOU CAN ADD YOUR OWN FIELDS IN TABLE EDITOR.</string>
-    <string name="add_image_tip_text">YOU CAN ATTACH IMAGE FROM GALLERY OR MAKE A PHOTO. AND ATTACH IT TO THE BARCODE</string>
-    <string name="submit_btn_tip_text">WHEN YOU FINISH EDIT BARCODE INFORMATION JUST CLICK SUBMIT</string>
-    <string name="history_btn_tip_text">WHEN BARCODE BEEN SAVED. YOU CAN LOOK AT IT IN THE HISTORY SECTION</string>
-    <string name="qr_types_tip_text">CHOOSE TYPE</string>
-    <string name="insert_barcode_data_tip_text">INSERT BARCODE DATA</string>
-    <string name="next_btn_tip_text">GENERATE WHEN READY</string>
-    <string name="generate_history_btn_tip_text">YOU WILL FIND RESULT IN HISTORY</string>
+    <string name="bottom_navigation_tip_text">Выберите Сканер или Генератор</string>
+    <string name="table_selector_tip_text">Данные сканера сохраняются в таблицы. Тут можно добавить новую</string>
+    <string name="after_scan_result_tip_text">Вы можете добавлять данные к баркоду. Добавить собственные поля Вы можете в редакторе таблиц</string>
+    <string name="add_image_tip_text">Прикрепляйте ссылку на изображение к баркоду из галлереи или сделав фото. Для этого нужно авторизоваться</string>
+    <string name="submit_btn_tip_text">Когда Вы закончили, нажмите эту кнопку</string>
+    <string name="history_btn_tip_text">Данные баркода сохраняются в истории</string>
+    <string name="qr_types_tip_text">Выберите тип QR кода, который нужно сгенерировать</string>
+    <string name="insert_barcode_data_tip_text">Вставьте данные, которые нужно передать в QR коде</string>
+    <string name="next_btn_tip_text">Жмите эту кнопку, когда готовы перейти к дизайну</string>
+    <string name="generate_history_btn_tip_text">Все сгенерированные QR коды сохраняются в истории</string>
 </resources>
