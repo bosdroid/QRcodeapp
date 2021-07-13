@@ -89,6 +89,8 @@ class ScannerFragment : Fragment() {
     private var listener: ScannerInterface? = null
     private var cameraProviderFuture: ListenableFuture<*>? = null
     private var cameraExecutor: ExecutorService? = null
+    private var mContext: AppCompatActivity? = null
+
     //private var previewView: PreviewView? = null
     private var imageAnalyzer: MyImageAnalyzer? = null
     private var isFlashOn = false
@@ -96,6 +98,7 @@ class ScannerFragment : Fragment() {
     private lateinit var container: FrameLayout
     private lateinit var previewView: PreviewView
     private lateinit var flashImg: ImageView
+    private val TAG = ScannerFragment::class.java.name
 
     interface ScannerInterface {
         fun login()
@@ -103,6 +106,7 @@ class ScannerFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        mContext = context as AppCompatActivity
         listener = context as ScannerInterface
         appSettings = AppSettings(requireActivity())
         appViewModel = ViewModelProvider(
@@ -123,6 +127,38 @@ class ScannerFragment : Fragment() {
         initViews(v)
 
         return v
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val prefDate = DialogPrefs.getDate(requireContext())
+        if (prefDate == null) {
+            DialogPrefs.setDate(requireContext(), DateUtils.getCurrentDate())
+        }
+        val scans = DialogPrefs.getSuccessScan(requireContext())
+        val isSharedQr = DialogPrefs.getShared(requireContext())
+        if ((getDateDifference() >= 3 && scans >= 2) || (getDateDifference() >= 3 && isSharedQr)) {
+            mContext?.let { rateUs(it) }
+        }
+    }
+
+    private fun getDateDifference(): Int {
+        var days = 0
+        val myFormat = SimpleDateFormat(DateUtils.DATE_FORMAT)
+        val currentDate = DateUtils.getCurrentDate()
+        val prefsDate = DialogPrefs.getDate(requireContext())
+        val dateCurrent = myFormat.parse(currentDate)
+        if (prefsDate != null) {
+            val datePrefs = myFormat.parse(prefsDate)
+            val timeCurrent = dateCurrent?.time
+            val timePrefs = datePrefs?.time
+            if (timeCurrent != null && timePrefs != null) {
+                val difference = timeCurrent - timePrefs
+                days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS).toInt()
+            }
+            Log.d(TAG, "getDateDifference: $days, $currentDate, $datePrefs")
+        }
+        return days
     }
 
     private fun initViews(view: View) {
@@ -532,6 +568,7 @@ class ScannerFragment : Fragment() {
                                                 {
                                                     isFileSelected = false
                                                     BaseActivity.dismiss()
+                                                    saveSuccessScans()
                                                     Toast.makeText(
                                                         requireActivity(),
                                                         requireActivity().resources.getString(R.string.scan_data_save_success_text),
@@ -591,6 +628,7 @@ class ScannerFragment : Fragment() {
                                         Handler(Looper.myLooper()!!).postDelayed({
                                             isFileSelected = false
                                             BaseActivity.dismiss()
+                                            saveSuccessScans()
                                             Toast.makeText(
                                                 requireActivity(),
                                                 requireActivity().resources.getString(R.string.scan_data_save_success_text),
@@ -663,6 +701,7 @@ class ScannerFragment : Fragment() {
                                     Handler(Looper.myLooper()!!).postDelayed({
                                         isFileSelected = false
                                         BaseActivity.dismiss()
+                                        saveSuccessScans()
                                         Toast.makeText(
                                             requireActivity(),
                                             requireActivity().resources.getString(R.string.scan_data_save_success_text),
@@ -755,6 +794,7 @@ class ScannerFragment : Fragment() {
                     )
                     appViewModel.insert(qrHistory)
                 }
+                saveSuccessScans()
                 Toast.makeText(
                     requireActivity(),
                     requireActivity().resources.getString(R.string.scan_data_save_success_text),
@@ -1134,6 +1174,15 @@ class ScannerFragment : Fragment() {
                     .show()
             }
         }
+    }
+
+    private fun saveSuccessScans() {
+        var scans = DialogPrefs.getSuccessScan(requireActivity())
+        if (scans >= 0) {
+            scans += 1
+            DialogPrefs.setSuccessScan(requireActivity(), scans)
+        }
+        Log.d("TAG", "ScanCount: $scans")
     }
 
 }
