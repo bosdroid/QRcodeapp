@@ -15,7 +15,7 @@ android {
         applicationId "com.expert.qrgenerator"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 104
+        versionCode 105
         versionName "russian version included"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
