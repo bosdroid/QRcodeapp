@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.camera.core.*
@@ -39,6 +40,7 @@ import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.utils.*
 import com.expert.qrgenerator.view.activities.BaseActivity
+import com.expert.qrgenerator.view.activities.BaseActivity.Companion.rateUs
 import com.expert.qrgenerator.view.activities.CodeDetailActivity
 import com.expert.qrgenerator.view.activities.MainActivity
 import com.expert.qrgenerator.view.activities.TablesActivity
@@ -62,6 +64,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -138,7 +141,11 @@ class ScannerFragment : Fragment() {
         val scans = DialogPrefs.getSuccessScan(requireContext())
         val isSharedQr = DialogPrefs.getShared(requireContext())
         if ((getDateDifference() >= 3 && scans >= 2) || (getDateDifference() >= 3 && isSharedQr)) {
-            mContext?.let { rateUs(it) }
+            mContext.let {
+                if (it != null) {
+                    rateUs(it)
+                }
+            }
         }
     }
 
