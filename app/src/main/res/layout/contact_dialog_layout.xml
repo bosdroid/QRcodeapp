@@ -20,8 +20,8 @@
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:textSize="18sp"
-        android:text="@string/contact_text"
+        android:textSize="14sp"
+        android:text="@string/generator_type_description_contacts"
         android:id="@+id/dialog_heading"
         />
 
@@ -62,7 +62,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Phone +"
+                android:text="@string/phone"
                 android:textSize="@dimen/largeText"
                 />
 

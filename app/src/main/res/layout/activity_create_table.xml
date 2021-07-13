@@ -55,7 +55,7 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/largeText"
+                    android:textSize="18sp"
                     android:textColor="@color/black"
                     android:text="@string/create_table_fields_hint_text"
                     android:id="@+id/create_table_fields_hint"
@@ -138,7 +138,7 @@
                  android:layout_height="wrap_content"
                  android:layout_gravity="center_horizontal"
                  android:gravity="center"
-                 android:text="(You can add custom fields like brand / price / description)"
+                 android:text="@string/you_can_add_custom_fields_like_brand_price_description"
                  android:textSize="@dimen/smallText"
                  android:textColor="@color/black"
                  android:textStyle="bold"
@@ -152,7 +152,7 @@
                android:padding="10dp"
                android:inputType="text"
                android:singleLine="true"
-               android:hint="Please enter the field name"
+               android:hint="@string/please_enter_the_field_name"
                android:id="@+id/table_new_field_text_input"
                />
              <LinearLayout
@@ -170,20 +170,20 @@
                      <com.google.android.material.radiobutton.MaterialRadioButton
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
-                         android:text="Input data field"
+                         android:text="@string/input_data_edit_and_add_data_after_scan"
                          android:id="@+id/none_radio_btn"
                          android:checked="true"
                          />
                      <com.google.android.material.radiobutton.MaterialRadioButton
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
-                         android:text="Non Changeable Field"
+                         android:text="@string/non_changeable_fixed_value"
                          android:id="@+id/non_changeable_radio_btn"
                          />
                      <com.google.android.material.radiobutton.MaterialRadioButton
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
-                         android:text="List with Values Field"
+                         android:text="@string/list_with_values_choose_the_value_from_the_list"
                          android:id="@+id/list_with_values_radio_btn"
                          />
                  </RadioGroup>
@@ -207,7 +207,7 @@
              <com.google.android.material.button.MaterialButton
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
-                 android:text="Tap Here for list"
+                 android:text="@string/choose_the_list_of_values"
                  android:id="@+id/list_with_fields_btn"
                  app:backgroundTint="@color/teal_200"
                  android:visibility="gone"
@@ -218,7 +218,7 @@
                  android:layout_height="wrap_content"
                  android:background="@drawable/input_text_field_design"
                  android:padding="10dp"
-                 android:hint="Set the default value"
+                 android:hint="@string/set_the_default_value"
                  android:id="@+id/table_non_changeable_default_text_input"
                  android:visibility="gone"
                  android:inputType="text"

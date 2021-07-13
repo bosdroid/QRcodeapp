@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QRMagic</string>
+    <string name="app_name">QR Magic</string>
     <string name="input_hint_text">Enter text</string>
     <string name="color_text">Color</string>
     <string name="background_text">Background</string>
@@ -24,7 +24,7 @@
     <string name="share_button_text">Share</string>
     <string name="ready_to_share_text">Ready to share!</string>
     <string name="cancel_text">Cancel</string>
-    <string name="chose_text">Chose</string>
+    <string name="chose_text">Choose</string>
     <string name="background_image_size_hint_text">Note: Background Image size will be 800x800.</string>
     <string name="custom_color_heading_text">Note:  Here you can write the custom color Hex value without #</string>
     <string name="custom_color_input_hint">Enter the color value (eeeeee)</string>
@@ -50,7 +50,7 @@
     <string name="coupon_set_valid_date_hint">*set valid date</string>
     <string name="coupon_set_terms_condition_hint">*set terms &amp; conditions</string>
     <string name="coupon_set_redeem_button_hint">*set button text</string>
-    <string name="coupon_terms_condition_display_hint">Write something about terms and conditions</string>
+    <string name="coupon_terms_condition_display_hint">Write down terms and conditions</string>
     <string name="coupon_user_hint_text">This screen the user will see after scan qr code</string>
     <string name="coupon_required_fields_hint_text">Please set all field that marked with * sign</string>
     <string name="dynamic_qr_id_hint">"QR ID: "</string>
@@ -286,4 +286,28 @@
     <string name="insert_barcode_data_tip_text">INSERT BARCODE DATA</string>
     <string name="next_btn_tip_text">GENERATE WHEN READY</string>
     <string name="generate_history_btn_tip_text">YOU WILL FIND RESULT IN HISTORY</string>
+    <string name="you_can_add_custom_fields_like_brand_price_description">(You can add custom fields like brand / price / description)</string>
+    <string name="input_data_edit_and_add_data_after_scan">Input data. Edit and add data after scan</string>
+    <string name="non_changeable_fixed_value">Non Changeable. Fixed value.</string>
+    <string name="list_with_values_choose_the_value_from_the_list">List with Values. Choose the value from the list.</string>
+    <string name="please_enter_the_field_name">Please enter the field name</string>
+    <string name="set_the_default_value">Set the default value</string>
+    <string name="choose_the_list_of_values">Choose the list of values</string>
+    <string name="lists_with_values_for_table">Lists with values for table</string>
+    <string name="generator_type_description_text">Share text so user can use it</string>
+    <string name="generator_type_description_static_link">Redirect user to a website</string>
+    <string name="generator_type_description_dynamic_link">Change the link after print</string>
+    <string name="generator_type_description_contacts">Share your contacts</string>
+    <string name="generator_type_description_wifi">User able to connect WiFi without password</string>
+    <string name="generator_type_description_phone">Quick dial the phone</string>
+    <string name="generator_type_description_sms">Sending quick SMS</string>
+    <string name="generator_type_description_instagram">Redirect user to Instagram account</string>
+    <string name="generator_type_description_whatsapp">Open Whatsapp for fast messaging</string>
+    <string name="generator_type_description_coupon">Share coupons to increase sales</string>
+    <string name="generator_type_description_feedback">Get feedbacks from your customers</string>
+    <string name="generator_type_description_social">Share your social networks links</string>
+    <string name="phone">Phone +</string>
+    <string name="set_banner_image">* set banner image 640x360px</string>
+    <string name="set_the_text_for_the_title">* set the title text</string>
+    <string name="set_the_text_for_the_description">* set the description text</string>
 </resources>

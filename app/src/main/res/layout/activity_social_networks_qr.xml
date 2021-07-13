@@ -83,7 +83,7 @@
                     android:gravity="center_vertical"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
-                    android:text="set banner image"
+                    android:text="@string/set_banner_image"
                     android:textColor="@color/gray"
                     android:textSize="@dimen/largeText"
                     android:textStyle="bold" />
@@ -151,7 +151,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="set the text for the title"
+                            android:text="@string/set_the_text_for_the_title"
                             android:textColor="@color/dark_gray"
                             android:textSize="@dimen/largeText" />
 
@@ -178,7 +178,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center_vertical"
-                            android:text="set the text for the description"
+                            android:text="@string/set_the_text_for_the_description"
                             android:textColor="@color/dark_gray"
                             android:textSize="@dimen/mediumText" />
 
