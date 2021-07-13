@@ -278,4 +278,6 @@
 	<string name="insert_barcode_data_tip_text">INSERT BARCODE DATA</string>
     <string name="next_btn_tip_text">GENERATE WHEN READY</string>
 	<string name="generate_history_btn_tip_text">YOU WILL FIND RESULT IN HISTORY</string>
+    <string name="external_storage_permission_error2">Please allow the READ EXTERNAL STORAGE permission for selecting images from gallery.</string>
+    <string name="several_images_hint_text">(you can add several images or photos)</string>
 </resources>

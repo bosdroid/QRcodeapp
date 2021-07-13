@@ -81,7 +81,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     var mService: Drive? = null
     var sheetService: Sheets? = null
-    var credential: GoogleAccountCredential? = null
     private lateinit var auth: FirebaseAuth
     private val scopes = mutableListOf<String>()
     private val transport: HttpTransport? = AndroidHttp.newCompatibleTransport()
@@ -97,6 +96,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     companion object {
         lateinit var context: Context
         lateinit var historyBtn: MaterialTextView
+        var credential: GoogleAccountCredential? = null
     }
 
 
@@ -495,13 +495,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 GoogleSignIn.getSignedInAccountFromIntent(result.data)
                     .addOnSuccessListener(object : OnSuccessListener<GoogleSignInAccount> {
                         override fun onSuccess(googleSignInAccount: GoogleSignInAccount?) {
-                            val credential = GoogleAccountCredential.usingOAuth2(
+                            credential = GoogleAccountCredential.usingOAuth2(
                                 context,
                                 scopes
                             )
-                            if (googleSignInAccount != null) {
-                                credential.selectedAccount = googleSignInAccount.account
-                            }
+                                .setSelectedAccount(googleSignInAccount!!.account)
+//                            if (googleSignInAccount != null) {
+//                                credential.selectedAccount = googleSignInAccount.account
+//                            }
 
                             mService = Drive.Builder(
                                 transport, jsonFactory, credential

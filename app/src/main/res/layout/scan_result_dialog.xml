@@ -83,6 +83,14 @@
                  android:layout_gravity="center_horizontal"
                  android:id="@+id/add_image_checkbox"
                  />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/several_images_hint_text"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/several_images_hint_view"
+                    android:visibility="gone"
+                    />
                 <LinearLayout
                     android:id="@+id/image_sources_layout"
                     android:layout_width="match_parent"

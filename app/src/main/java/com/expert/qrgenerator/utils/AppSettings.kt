@@ -30,7 +30,7 @@ class AppSettings(context:Context) {
     }
 
     fun getBoolean(key: String): Boolean {
-        return if (key == "key_tips") {
+        return if (key == "key_tips" || key == "key_sound" || key == "key_vibration" || key == "key_clipboard") {
             if (appSharedPrefs.contains(key)){
                 appSharedPrefs.getBoolean(key, false)
             } else{
