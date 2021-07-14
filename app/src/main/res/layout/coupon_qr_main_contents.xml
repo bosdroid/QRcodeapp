@@ -81,13 +81,28 @@
                     android:textColor="@color/gray"
                     android:textSize="@dimen/largeText"
                     android:textStyle="bold" />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/background_color_edit_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/edit"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="55dp"-->
+<!--                    android:layout_height="55dp">-->
+
+<!--                    <com.airbnb.lottie.LottieAnimationView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                         app:lottie_rawRes="@raw/muzli"-->
+<!--                        app:lottie_loop="true"-->
+<!--                        app:lottie_autoPlay="true"-->
+<!--                        android:elevation="2dp"-->
+<!--                        android:layout_centerInParent="true"-->
+<!--                        />-->
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/background_color_edit_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/edit"
+                        />
+<!--                </RelativeLayout>-->
+
             </LinearLayout>
 
 

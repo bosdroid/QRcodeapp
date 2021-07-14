@@ -187,7 +187,8 @@ dependencies {
     // TOOLTIPS LIBRARY
     implementation 'com.github.douglasjunior:android-simple-tooltip:1.0.0-rc.0'
 
-    // MULTIPLE IMAGE SELECTOR LIBRARY
+    // LOTIE FILES ANIMATION LIBRARY
+    implementation 'com.airbnb.android:lottie:3.7.1'
 
 
 }
