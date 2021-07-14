@@ -60,6 +60,9 @@ android {
             exclude module: 'commons-logging'
         }
     }
+    kapt {
+        correctErrorTypes true
+    }
 }
 
 dependencies {

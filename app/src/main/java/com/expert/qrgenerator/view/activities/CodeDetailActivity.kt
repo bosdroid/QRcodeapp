@@ -39,7 +39,6 @@ import com.expert.qrgenerator.model.Feedback
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
-import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
@@ -105,8 +104,6 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_code_detail)
-
-
         initViews()
         setUpToolbar()
         displayCodeDetails()
@@ -135,12 +132,6 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         }
         if (intent != null && intent.hasExtra("TABLE_NAME")) {
             tableName = intent.getStringExtra("TABLE_NAME") as String
-        }
-
-        var scans = DialogPrefs.getSuccessScan(context)
-        if (scans >= 0) {
-            scans += 1
-            DialogPrefs.setSuccessScan(context, scans)
         }
 
         topImageCodeType = findViewById(R.id.code_detail_top_image_type)

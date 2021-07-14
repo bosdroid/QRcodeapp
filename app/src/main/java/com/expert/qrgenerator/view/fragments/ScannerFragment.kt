@@ -97,6 +97,8 @@ class ScannerFragment : Fragment() {
     private var listener: ScannerInterface? = null
     private var cameraProviderFuture: ListenableFuture<*>? = null
     private var cameraExecutor: ExecutorService? = null
+    private var mContext: AppCompatActivity? = null
+
     //private var previewView: PreviewView? = null
     private var imageAnalyzer: MyImageAnalyzer? = null
     private var isFlashOn = false
@@ -104,6 +106,7 @@ class ScannerFragment : Fragment() {
     private lateinit var container: FrameLayout
     private lateinit var previewView: PreviewView
     private lateinit var flashImg: ImageView
+    private val TAG = ScannerFragment::class.java.name
 
     interface ScannerInterface {
         fun login()
@@ -111,6 +114,7 @@ class ScannerFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        mContext = context as AppCompatActivity
         listener = context as ScannerInterface
         appSettings = AppSettings(requireActivity())
         appViewModel = ViewModelProvider(
@@ -131,6 +135,42 @@ class ScannerFragment : Fragment() {
         initViews(v)
 
         return v
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val prefDate = DialogPrefs.getDate(requireContext())
+        if (prefDate == null) {
+            DialogPrefs.setDate(requireContext(), DateUtils.getCurrentDate())
+        }
+        val scans = DialogPrefs.getSuccessScan(requireContext())
+        val isSharedQr = DialogPrefs.getShared(requireContext())
+        if ((getDateDifference() >= 3 && scans >= 2) || (getDateDifference() >= 3 && isSharedQr)) {
+            mContext.let {
+                if (it != null) {
+                    rateUs(it)
+                }
+            }
+        }
+    }
+
+    private fun getDateDifference(): Int {
+        var days = 0
+        val myFormat = SimpleDateFormat(DateUtils.DATE_FORMAT)
+        val currentDate = DateUtils.getCurrentDate()
+        val prefsDate = DialogPrefs.getDate(requireContext())
+        val dateCurrent = myFormat.parse(currentDate)
+        if (prefsDate != null) {
+            val datePrefs = myFormat.parse(prefsDate)
+            val timeCurrent = dateCurrent?.time
+            val timePrefs = datePrefs?.time
+            if (timeCurrent != null && timePrefs != null) {
+                val difference = timeCurrent - timePrefs
+                days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS).toInt()
+            }
+            Log.d(TAG, "getDateDifference: $days, $currentDate, $datePrefs")
+        }
+        return days
     }
 
     private fun initViews(view: View) {
@@ -653,6 +693,40 @@ class ScannerFragment : Fragment() {
                                 )
                             }
                         }
+                                        // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED DROPDOWNS
+                                        for (j in 0 until spinnerIdsList.size) {
+                                            val pair = spinnerIdsList[j]
+                                            params.add(
+                                                Pair(
+                                                    pair.first,
+                                                    pair.second.selectedItem.toString()
+                                                )
+                                            )
+                                        }
+                                        tableGenerator.insertData(tableName, params)
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            Handler(Looper.myLooper()!!).postDelayed(
+                                                {
+                                                    isFileSelected = false
+                                                    BaseActivity.dismiss()
+                                                    saveSuccessScans()
+                                                    Toast.makeText(
+                                                        requireActivity(),
+                                                        requireActivity().resources.getString(R.string.scan_data_save_success_text),
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    textInputIdsList.clear()
+                                                    spinnerIdsList.clear()
+                                                    params.clear()
+                                                    tableDetailLayoutWrapper.removeAllViews()
+                                                    val bundle = Bundle()
+                                                    bundle.putString("success", "success")
+                                                    mFirebaseAnalytics?.logEvent("scanner", bundle)
+                                                },
+                                                1000
+                                            )
+                                        }
+                                    }
 
                     }
                     // THIS ELSE PART WILL RUN WHEN ADD IMAGE CHECK BOX IS UN-CHECKED
@@ -710,6 +784,62 @@ class ScannerFragment : Fragment() {
                             }, 1000)
                         }
                     }
+                                }
+                                // THIS ELSE PART WILL RUN WHEN ADD IMAGE CHECK BOX IS UN-CHECKED
+                                else {
+                                    // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED EDIT TEXT
+                                    for (i in 0 until textInputIdsList.size) {
+                                        val pair = textInputIdsList[i]
+                                        // THIS WILL CHECK IF TEXTINPUTIDSLIST HAVE IMAGE PARAMETER THEN SET THE URL
+                                        // WITH COLUMN IMAGE ELSE MAP THE OTHER TEXTINPUTIDS LIST OBJECTS
+                                        if (pair.first == "image") {
+                                            params.add(
+                                                Pair(
+                                                    pair.first,
+                                                    pair.second.text.toString()
+                                                        .trim()
+                                                )
+                                            )
+                                        } else {
+                                            params.add(
+                                                Pair(
+                                                    pair.first,
+                                                    pair.second.text.toString()
+                                                        .trim()
+                                                )
+                                            )
+                                        }
+                                    }
+                                    // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED DROPDOWNS
+                                    for (j in 0 until spinnerIdsList.size) {
+                                        val pair = spinnerIdsList[j]
+                                        params.add(
+                                            Pair(
+                                                pair.first,
+                                                pair.second.selectedItem.toString()
+                                            )
+                                        )
+                                    }
+                                    tableGenerator.insertData(tableName, params)
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        Handler(Looper.myLooper()!!).postDelayed({
+                                            isFileSelected = false
+                                            BaseActivity.dismiss()
+                                            saveSuccessScans()
+                                            Toast.makeText(
+                                                requireActivity(),
+                                                requireActivity().resources.getString(R.string.scan_data_save_success_text),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            textInputIdsList.clear()
+                                            spinnerIdsList.clear()
+                                            params.clear()
+                                            tableDetailLayoutWrapper.removeAllViews()
+                                            codeScanner!!.startPreview()
+                                            openHistoryBtnTip()
+                                        }, 1000)
+                                    }
+                                }
 
                 } catch (e: Exception) {
                     val bundle = Bundle()
@@ -721,6 +851,159 @@ class ScannerFragment : Fragment() {
         } else
         {
 
+                        val b = MaterialAlertDialogBuilder(requireActivity())
+                            .setCancelable(true)
+                            .setTitle(requireActivity().resources.getString(R.string.alert_text))
+                            .setMessage(requireActivity().resources.getString(R.string.image_upload_internet_error_text))
+                            .setNegativeButton(requireActivity().resources.getString(R.string.close_text)) { dialog, which ->
+                                dialog.dismiss()
+                            }
+                            .setPositiveButton(requireActivity().resources.getString(R.string.save_without_image_text)) { dialog, which ->
+                                dialog.dismiss()
+                                alert.dismiss()
+                                val params = mutableListOf<Pair<String, String>>()
+                                for (i in 0 until textInputIdsList.size) {
+                                    val pair = textInputIdsList[i]
+                                    // THIS WILL CHECK IF TEXTINPUTIDSLIST HAVE IMAGE PARAMETER THEN SET THE URL
+                                    // WITH COLUMN IMAGE ELSE MAP THE OTHER TEXTINPUTIDS LIST OBJECTS
+                                    if (pair.first == "image") {
+                                        params.add(
+                                            Pair(
+                                                pair.first,
+                                                pair.second.text.toString()
+                                                    .trim()
+                                            )
+                                        )
+                                    } else {
+                                        params.add(
+                                            Pair(
+                                                pair.first,
+                                                pair.second.text.toString()
+                                                    .trim()
+                                            )
+                                        )
+                                    }
+                                }
+                                // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED DROPDOWNS
+                                for (j in 0 until spinnerIdsList.size) {
+                                    val pair = spinnerIdsList[j]
+                                    params.add(
+                                        Pair(
+                                            pair.first,
+                                            pair.second.selectedItem.toString()
+                                        )
+                                    )
+                                }
+                                tableGenerator.insertData(tableName, params)
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    Handler(Looper.myLooper()!!).postDelayed({
+                                        isFileSelected = false
+                                        BaseActivity.dismiss()
+                                        saveSuccessScans()
+                                        Toast.makeText(
+                                            requireActivity(),
+                                            requireActivity().resources.getString(R.string.scan_data_save_success_text),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        textInputIdsList.clear()
+                                        spinnerIdsList.clear()
+                                        params.clear()
+                                        tableDetailLayoutWrapper.removeAllViews()
+                                        codeScanner!!.startPreview()
+                                        openHistoryBtnTip()
+                                        val bundle = Bundle()
+                                        bundle.putString("success", "success")
+                                        mFirebaseAnalytics?.logEvent("scanner", bundle)
+                                    }, 1000)
+                                }
+                            }
+                        val iAlert = b.create()
+                        iAlert.show()
+                        iAlert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                            ContextCompat.getColor(
+                                requireActivity(),
+                                R.color.purple_700
+                            )
+                        )
+                    }
+                }
+            }
+//                            }
+        } else {
+            val bundle = Bundle()
+            bundle.putString("second scanner", "triggers")
+            mFirebaseAnalytics?.logEvent("scanner", bundle)
+            var qrHistory: CodeHistory? = null
+            val type =
+                if (text.contains("http") || text.contains("https") || text.contains(
+                        "www"
+                    )
+                ) {
+                    "link"
+                } else if (text.isDigitsOnly()) {
+                    "number"
+                } else if (text.contains("VCARD") || text.contains("vcard")) {
+                    "contact"
+                } else if (text.contains("WIFI:") || text.contains("wifi:")) {
+                    "wifi"
+                } else if (text.contains("tel:")) {
+                    "phone"
+                } else if (text.contains("smsto:") || text.contains("sms:")) {
+                    "sms"
+                } else if (text.contains("instagram")) {
+                    "instagram"
+                } else if (text.contains("whatsapp")) {
+                    "whatsapp"
+                } else {
+                    "text"
+                }
+            if (text.isNotEmpty()) {
+
+                if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
+                    qrHistory = CodeHistory(
+                        "qrmagicapp",
+                        "${System.currentTimeMillis()}",
+                        text,
+                        "code",
+                        "free",
+                        "barcode",
+                        "scan",
+                        "",
+                        "0",
+                        "",
+                        System.currentTimeMillis().toString()
+                    )
+
+                    appViewModel.insert(qrHistory)
+
+                } else {
+                    qrHistory = CodeHistory(
+                        "qrmagicapp",
+                        "${System.currentTimeMillis()}",
+                        text,
+                        type,
+                        "free",
+                        "qr",
+                        "scan",
+                        "",
+                        "0",
+                        "",
+                        System.currentTimeMillis().toString()
+                    )
+                    appViewModel.insert(qrHistory)
+                }
+                saveSuccessScans()
+                Toast.makeText(
+                    requireActivity(),
+                    requireActivity().resources.getString(R.string.scan_data_save_success_text),
+                    Toast.LENGTH_SHORT
+                ).show()
+                Handler(Looper.myLooper()!!).postDelayed({
+                    val intent = Intent(context, CodeDetailActivity::class.java)
+                    intent.putExtra("HISTORY_ITEM", qrHistory)
+                    requireActivity().startActivity(intent)
+                }, 2000)
+            }
             val b = MaterialAlertDialogBuilder(requireActivity())
                 .setCancelable(true)
                 .setTitle(requireActivity().resources.getString(R.string.alert_text))
@@ -1362,6 +1645,15 @@ class ScannerFragment : Fragment() {
                     .show()
             }
         }
+    }
+
+    private fun saveSuccessScans() {
+        var scans = DialogPrefs.getSuccessScan(requireActivity())
+        if (scans >= 0) {
+            scans += 1
+            DialogPrefs.setSuccessScan(requireActivity(), scans)
+        }
+        Log.d("TAG", "ScanCount: $scans")
     }
 
 }
