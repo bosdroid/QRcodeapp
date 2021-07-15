@@ -90,7 +90,7 @@
             android:name=".view.activities.MainActivity"
             android:configChanges="orientation|screenSize|screenLayout"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
