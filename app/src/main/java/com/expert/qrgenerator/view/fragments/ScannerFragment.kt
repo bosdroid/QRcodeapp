@@ -945,7 +945,7 @@ class ScannerFragment : Fragment() {
                     isUploadingSuccess = true
                 } catch (e: UserRecoverableAuthIOException) {
 //            Log.d("TEST199",e.localizedMessage!!)
-                    //userAuthLauncher.launch(e.intent)
+                    userAuthLauncher.launch(e.intent)
                     val bundle = Bundle()
                     bundle.putString("UserRecoverableAuthIOException", "Error: " + e.message)
                     mFirebaseAnalytics?.logEvent("upload image", bundle)
@@ -997,7 +997,7 @@ class ScannerFragment : Fragment() {
                 return true
             } catch (e: UserRecoverableAuthIOException) {
 //            Log.d("TEST199",e.localizedMessage!!)
-                //userAuthLauncher.launch(e.intent)
+                userAuthLauncher.launch(e.intent)
 
                 val bundle = Bundle()
                 bundle.putString("UserRecoverableAuthIOException", "Error: " + e.message)
