@@ -25,15 +25,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textview.MaterialTextView
+            <com.google.android.material.button.MaterialButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/sixtyDpMargin"
-                android:layout_marginRight="@dimen/sixtyDpMargin"
                 android:text="@string/next_text"
                 android:textSize="@dimen/xlargeText"
-                android:textColor="@color/teal_700"
                 android:id="@+id/next_step_btn"
                 android:textAllCaps="true"
                 />

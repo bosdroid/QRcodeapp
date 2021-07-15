@@ -24,9 +24,8 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/add_new_table_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:minWidth="0dp"
-        android:minHeight="0dp"
         android:textSize="@dimen/smallText"
         android:text="@string/plus_table_text"
         app:layout_constraintHorizontal_chainStyle="spread"

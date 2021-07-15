@@ -17,5 +17,6 @@
     <color name="simpletooltip_text">@android:color/white</color>
     <color name="simpletooltip_arrow">@color/colorAccent</color>
     <color name="primary_positive_color">#6301EF</color>
-    <color name="primary_negative_color">#6600ff</color>
+    <color name="secondary_positive_color">#bb85fe</color>
+    <color name="purple_bright_accent_color">#6200ee</color>
 </resources>

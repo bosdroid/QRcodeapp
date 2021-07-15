@@ -16,6 +16,7 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.QRGenerator
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 
@@ -24,7 +25,7 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
     private lateinit var shareQrImage: AppCompatImageView
-    private lateinit var shareBtn: AppCompatButton
+    private lateinit var shareBtn: MaterialButton
     private var imageShareUri: Uri? = null
     private lateinit var startNew: MaterialTextView
 

@@ -56,7 +56,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private lateinit var snHeaderImageEditHint: MaterialTextView
     private lateinit var snHeaderImageEditBtn: AppCompatImageView
     private lateinit var snBannerImageView: AppCompatImageView
-    private lateinit var nextStepBtn: MaterialTextView
+    private lateinit var nextStepBtn: MaterialButton
     private lateinit var snDetailsBackgroundColorEditBtn: AppCompatImageView
     private lateinit var snContentWrapperLayout: LinearLayout
     private lateinit var snTitleTextView: MaterialTextView

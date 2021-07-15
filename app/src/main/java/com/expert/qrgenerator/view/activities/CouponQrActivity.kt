@@ -90,7 +90,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     private lateinit var tagHint: MaterialTextView
     private lateinit var getCouponButtonHint: MaterialTextView
     private lateinit var redeemButtonHint: MaterialTextView
-    private lateinit var nextStepBtn: MaterialTextView
+    private lateinit var nextStepBtn: MaterialButton
     private var couponCompanyNameText: String = ""
     private var couponCompanyNameTextColor: String = ""
     private var couponBackgroundColor: String = ""

@@ -44,6 +44,7 @@ import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textview.MaterialTextView
@@ -95,7 +96,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     companion object {
         lateinit var context: Context
-        lateinit var historyBtn: MaterialTextView
+        lateinit var historyBtn: MaterialButton
         var credential: GoogleAccountCredential? = null
     }
 

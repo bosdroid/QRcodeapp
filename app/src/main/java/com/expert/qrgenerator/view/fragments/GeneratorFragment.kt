@@ -16,6 +16,7 @@ import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.view.activities.*
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.util.concurrent.TimeUnit
@@ -27,7 +28,7 @@ class GeneratorFragment : Fragment() {
     private lateinit var typesAdapter: TypesAdapter
     private var qrTypeList = mutableListOf<QRTypes>()
     private lateinit var layoutContainer: FrameLayout
-    private lateinit var nextStepBtn:MaterialTextView
+    private lateinit var nextStepBtn: MaterialButton
     private lateinit var appSettings:AppSettings
 
 

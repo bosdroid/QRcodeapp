@@ -48,7 +48,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
-    private lateinit var nextStepTextView: MaterialTextView
+    private lateinit var nextStepTextView: MaterialButton
     private lateinit var secondaryInputBoxView: TextInputEditText
     private lateinit var backgroundImageBtn: LinearLayout
     private lateinit var colorBtn: LinearLayout

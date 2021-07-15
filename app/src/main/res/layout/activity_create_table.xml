@@ -209,7 +209,7 @@
                  android:layout_height="wrap_content"
                  android:text="@string/choose_the_list_of_values"
                  android:id="@+id/list_with_fields_btn"
-                 app:backgroundTint="@color/teal_200"
+                 app:backgroundTint="@color/primary_positive_color"
                  android:visibility="gone"
                  />
 
@@ -233,7 +233,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/add_field"
-            app:backgroundTint="@color/purple_700"
+            app:backgroundTint="@color/primary_positive_color"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:textSize="@dimen/mediumText"

@@ -29,7 +29,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
-    private lateinit var nextBtnView: MaterialTextView
+    private lateinit var nextBtnView: MaterialButton
     private lateinit var feedbackTitleTextLayout:LinearLayout
     private lateinit var feedbackTitleEditBtn: AppCompatImageView
     private lateinit var feedbackInnerTitleEditBtn: AppCompatImageView

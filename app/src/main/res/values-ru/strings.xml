@@ -15,7 +15,7 @@
 	<string name="terms_conditions"><u>Условия и правила использования</u></string>
 	<string name="next_text"><u>Дальше</u></string>
 	<string name="next">Далее</string>
-	<string name="design_customization">Настройка дизайна</string>
+	<string name="design_customization">Настроить дизайн</string>
 	<string name="share_qr_image">Отправьте результат</string>
 	<string name="qr_code_history">История</string>
 	<string name="history_empty_list_text">Нет истории</string>
@@ -307,9 +307,9 @@
 	<string name="code_data">Данные</string>
 	<string name="date">Дата</string>
 	<string name="add_product_image">+ добавить изображение</string>
-    <string name="set_the_text_for_the_sn_details_background_color">*set the background color</string>
-    <string name="tip_switch_on_text">TIPS ON</string>
-	<string name="tip_switch_off_text">TIPS OFF</string>
+    <string name="set_the_text_for_the_sn_details_background_color">* установить цвет фона</string>
+    <string name="tip_switch_on_text">СОВЕТЫ ПО</string>
+	<string name="tip_switch_off_text">СОВЕТЫ ОТКЛЮЧИТЬ</string>
 
 
 </resources>

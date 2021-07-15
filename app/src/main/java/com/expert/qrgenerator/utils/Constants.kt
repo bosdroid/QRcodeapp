@@ -16,6 +16,7 @@ import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.model.User
 import com.expert.qrgenerator.view.activities.BaseActivity
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
@@ -115,7 +116,7 @@ class Constants {
             context: Context,
             position: Int,
             layoutContainer: FrameLayout,
-            generateBtn:MaterialTextView
+            generateBtn: MaterialButton
         ) {
             completeListener = context as OnCompleteAction
             val builder = MaterialAlertDialogBuilder(context)

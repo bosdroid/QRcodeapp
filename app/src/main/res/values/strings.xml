@@ -14,7 +14,7 @@
     <string name="terms_conditions"><u>Terms and Conditions</u></string>
     <string name="next_text"><u>Next</u></string>
     <string name="next">Next</string>
-    <string name="design_customization">Design Customization</string>
+    <string name="design_customization">Customize Design</string>
     <string name="share_qr_image">Share QR Image</string>
     <string name="qr_code_history">History</string>
     <string name="history_empty_list_text">No history</string>
@@ -98,7 +98,7 @@
     <string name="feedback_qr">Feedback QR</string>
     <string name="code_detail_text">Code Detail</string>
     <string name="copy_text">Copy</string>
-    <string name="search_web_text">search<br />in web</string>
+    <string name="search_web_text">search<br /> in web</string>
     <string name="save_text">Save</string>
     <string name="share_using">share with</string>
     <!-- TODO: Remove or change this placeholder text -->
