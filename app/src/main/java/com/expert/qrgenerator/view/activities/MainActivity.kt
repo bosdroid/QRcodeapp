@@ -92,8 +92,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var requestLogin: String? = null
     private var scannerFragment: ScannerFragment? = null
 
-
-
     companion object {
         lateinit var context: Context
         lateinit var historyBtn: MaterialButton
