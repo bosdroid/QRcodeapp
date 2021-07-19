@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.adapters
 
 import android.content.Context
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.model.ListValue
+import com.expert.qrgenerator.utils.AppSettings
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
+import java.util.concurrent.TimeUnit
 
 class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -20,6 +25,7 @@ class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>
     }
 
     private var mListener: OnItemClickListener? = null
+    private var appSettings = AppSettings(context)
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
@@ -68,6 +74,7 @@ class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>
                 addViewHolder.addCardViewBtn.setOnClickListener {
                     mListener!!.onAddItemClick(position)
                 }
+                openAddListTipsDialog(addViewHolder.itemView)
             }
             else -> {
         val listValue = listItems[position]
@@ -82,6 +89,26 @@ class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>
 
     override fun getItemCount(): Int {
         return listItems.size+1
+    }
+
+    private fun openAddListTipsDialog(itemView: View) {
+        if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt22")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(itemView)
+                    .text(context.resources.getString(R.string.tt22_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt22",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
     }
 
 }

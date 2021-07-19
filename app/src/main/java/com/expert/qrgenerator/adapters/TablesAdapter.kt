@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.adapters
 
 import android.content.Context
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +9,11 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.Table
+import com.expert.qrgenerator.utils.AppSettings
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
+import java.util.concurrent.TimeUnit
 
 class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -20,6 +24,7 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
     }
 
     private var mListener: OnItemClickListener? = null
+    private var appSettings = AppSettings(context)
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
@@ -67,10 +72,14 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
                 addViewHolder.addNewTableButton.setOnClickListener {
                     mListener!!.onAddItemClick(position)
                 }
+                openAddTableView(addViewHolder)
             }
             else -> {
                 val table = tableList[position]
                 val viewHolder = holder as ItemViewHolder
+                if (position == tableList.size-1){
+                    tableZeroIndexView(viewHolder)
+                }
                 viewHolder.tableNameView.text = table
                 viewHolder.itemView.setOnClickListener {
                     mListener!!.onItemClick(position)
@@ -81,6 +90,47 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
 
     override fun getItemCount(): Int {
             return tableList.size+1
+    }
+
+    fun tableZeroIndexView(holder: RecyclerView.ViewHolder){
+        if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt11")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+
+                SimpleTooltip.Builder(context)
+                    .anchorView(holder.itemView)
+                    .text(context.resources.getString(R.string.tt11_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt11",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openAddTableView(holder: RecyclerView.ViewHolder) {
+        if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt12")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(holder.itemView)
+                    .text(context.resources.getString(R.string.tt12_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt12",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
     }
 
 }

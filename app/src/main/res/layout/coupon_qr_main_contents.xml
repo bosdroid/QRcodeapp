@@ -80,26 +80,26 @@
                     android:textSize="@dimen/largeText"
                     android:textStyle="bold" />
 
-<!--                <RelativeLayout-->
-<!--                    android:layout_width="55dp"-->
-<!--                    android:layout_height="55dp">-->
+                <RelativeLayout
+                    android:layout_width="70dp"
+                    android:layout_height="70dp">
 
-<!--                    <com.airbnb.lottie.LottieAnimationView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                         app:lottie_rawRes="@raw/muzli"-->
-<!--                        app:lottie_loop="true"-->
-<!--                        app:lottie_autoPlay="true"-->
-<!--                        android:elevation="2dp"-->
-<!--                        android:layout_centerInParent="true"-->
-<!--                        />-->
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                         app:lottie_rawRes="@raw/muzli"
+                        app:lottie_loop="true"
+                        app:lottie_autoPlay="true"
+                        android:layout_centerInParent="true"
+                        />
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/background_color_edit_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/edit"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/pencil"
+                        android:layout_centerInParent="true"
                         />
-<!--                </RelativeLayout>-->
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -132,13 +132,33 @@
                     android:textSize="@dimen/largeText"
                     android:textStyle="bold" />
 
+<!--                    <androidx.appcompat.widget.AppCompatImageView-->
+<!--                        android:id="@+id/company_name_edit_btn"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="@dimen/defaultDpMargin"-->
+<!--                        android:layout_marginLeft="@dimen/defaultDpMargin"-->
+<!--                        android:src="@drawable/edit" />-->
+                <RelativeLayout
+                    android:layout_width="70dp"
+                    android:layout_height="70dp">
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:lottie_rawRes="@raw/muzli"
+                        app:lottie_loop="true"
+                        app:lottie_autoPlay="true"
+                        android:layout_centerInParent="true"
+                        />
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/company_name_edit_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/defaultDpMargin"
-                        android:layout_marginLeft="@dimen/defaultDpMargin"
-                        android:src="@drawable/edit" />
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/pencil"
+                        android:layout_centerInParent="true"
+                        />
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -184,13 +204,33 @@
                             android:textColor="@color/gray"
                             android:textSize="@dimen/largeText"
                             android:textStyle="bold" />
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/header_image_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/defaultDpMargin"
-                            android:src="@drawable/edit"
-                             />
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:id="@+id/header_image_edit_btn"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_margin="@dimen/defaultDpMargin"-->
+<!--                            android:src="@drawable/edit"-->
+<!--                             />-->
+                        <RelativeLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp">
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_rawRes="@raw/muzli"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true"
+                                android:layout_centerInParent="true"
+                                />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/header_image_edit_btn"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/pencil"
+                                android:layout_centerInParent="true"
+                                />
+                        </RelativeLayout>
                     </LinearLayout>
 
 
@@ -232,8 +272,7 @@
                         android:id="@+id/sale_badge_wrapper_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/sixtyDpMargin"
-                        android:layout_marginRight="@dimen/sixtyDpMargin"
+                        android:layout_marginEnd="@dimen/eightDpMargin"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         app:layout_constraintBottom_toTopOf="@id/coupon_content_wrapper_layout"
@@ -254,13 +293,33 @@
                             android:textStyle="bold"
                             />
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/sale_badge_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/defaultDpMargin"
-                            android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:src="@drawable/edit" />
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:id="@+id/sale_badge_edit_btn"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="@dimen/defaultDpMargin"-->
+<!--                            android:layout_marginLeft="@dimen/defaultDpMargin"-->
+<!--                            android:src="@drawable/edit" />-->
+                        <RelativeLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp">
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_rawRes="@raw/muzli"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true"
+                                android:layout_centerInParent="true"
+                                />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/sale_badge_edit_btn"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/pencil"
+                                android:layout_centerInParent="true"
+                                />
+                        </RelativeLayout>
 
                     </LinearLayout>
 
@@ -293,13 +352,33 @@
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/largeText" />
 
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:id="@+id/headline_text_edit_btn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/defaultDpMargin"
-                                android:layout_marginLeft="@dimen/defaultDpMargin"
-                                android:src="@drawable/edit" />
+<!--                            <androidx.appcompat.widget.AppCompatImageView-->
+<!--                                android:id="@+id/headline_text_edit_btn"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginStart="@dimen/defaultDpMargin"-->
+<!--                                android:layout_marginLeft="@dimen/defaultDpMargin"-->
+<!--                                android:src="@drawable/edit" />-->
+                            <RelativeLayout
+                                android:layout_width="70dp"
+                                android:layout_height="70dp">
+
+                                <com.airbnb.lottie.LottieAnimationView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    app:lottie_rawRes="@raw/muzli"
+                                    app:lottie_loop="true"
+                                    app:lottie_autoPlay="true"
+                                    android:layout_centerInParent="true"
+                                    />
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/headline_text_edit_btn"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/pencil"
+                                    android:layout_centerInParent="true"
+                                    />
+                            </RelativeLayout>
 
                         </LinearLayout>
 
@@ -315,12 +394,34 @@
                             android:layout_gravity="center_horizontal"
                             />
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/description_text_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:id="@+id/description_text_edit_btn"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center_horizontal"-->
+<!--                            android:src="@drawable/edit" />-->
+                        <RelativeLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/edit" />
+                            >
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_rawRes="@raw/muzli"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true"
+                                android:layout_centerInParent="true"
+                                />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/description_text_edit_btn"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/pencil"
+                                android:layout_centerInParent="true"
+                                />
+                        </RelativeLayout>
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/get_coupon_btn"
@@ -340,7 +441,6 @@
                         android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_margin="@dimen/sixtyDpMargin"
                         android:gravity="center_vertical"
                         >
                         <com.google.android.material.textview.MaterialTextView
@@ -353,16 +453,36 @@
                             android:minWidth="0dp"
                             android:minHeight="0dp"
                             android:textColor="@color/light_gray"
-                            android:layout_marginRight="@dimen/defaultDpMargin"
                             android:layout_marginEnd="@dimen/defaultDpMargin"
                             android:textSize="@dimen/largeText"
                             android:textStyle="bold" />
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/get_coupon_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/edit"
-                            />
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:id="@+id/get_coupon_edit_btn"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:src="@drawable/edit"-->
+<!--                            />-->
+                        <RelativeLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            >
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_rawRes="@raw/muzli"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true"
+                                android:layout_centerInParent="true"
+                                />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/get_coupon_edit_btn"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/pencil"
+                                android:layout_centerInParent="true"
+                                />
+                        </RelativeLayout>
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

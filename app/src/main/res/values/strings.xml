@@ -319,4 +319,16 @@
     <string name="set_the_text_for_the_sn_details_background_color">*set the background color</string>
     <string name="tip_switch_on_text">TIPS ON</string>
     <string name="tip_switch_off_text">TIPS OFF</string>
+    <string name="tt11_tip_text">THIS IS THE LIST OF THE TABLES YOU HAVE</string>
+    <string name="tt12_tip_text">CLICK HERE IF YOU WANT TO ADD THE TABLE</string>
+    <string name="tt13_tip_text">THESE FIELDS ARE DEFAULT FOR EACH TABLE</string>
+    <string name="tt14_tip_text">YOU CAN ADD 3 TYPES OF FIELDS</string>
+    <string name="tt15_tip_text">INPUT FIELD - YOU BE ABLE TO INPUT DATA</string>
+    <string name="tt16_tip_text">PREDEFINED FIELD - POPULATED WITH VALUE AFTER SCAN</string>
+    <string name="tt17_tip_text">DROP DOWN LIST - CHOOSE VALUE FROM THE LIST</string>
+    <string name="tt18_tip_text">ADDING ANOTHER FIELD</string>
+    <string name="tt19_tip_text">CLICK FINISH AFTER YOU DONE</string>
+    <string name="tt20_tip_text">THIS VALUE WILL BE DEFAULT VALUE</string>
+    <string name="tt21_tip_text">YOU NEED TO ATTACH LIST OF VALUES</string>
+    <string name="tt22_tip_text">ADD A LIST OR CHOOSE THE EXISTING ONE</string>
 </resources>

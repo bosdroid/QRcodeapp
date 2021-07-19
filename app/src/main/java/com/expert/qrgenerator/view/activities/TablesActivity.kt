@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TablesAdapter
 import com.expert.qrgenerator.model.Table
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.button.MaterialButton
@@ -31,6 +32,7 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
     private lateinit var tableGenerator: TableGenerator
     private var tableList = mutableListOf<String>()
     private lateinit var adapter: TablesAdapter
+    private lateinit var appSettings: AppSettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,7 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
 
     private fun initViews() {
         context = this
+        appSettings = AppSettings(context)
         tableGenerator = TableGenerator(context)
         toolbar = findViewById(R.id.toolbar)
         tableRecyclerView = findViewById(R.id.tables_recycler_view)

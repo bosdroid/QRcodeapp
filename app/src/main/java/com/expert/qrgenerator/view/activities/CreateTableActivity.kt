@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -21,14 +22,17 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.FieldListsAdapter
 import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.lang.reflect.Field
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
@@ -41,6 +45,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 //    private lateinit var addNewFieldBtn: AppCompatButton
     private lateinit var addNewFieldLayoutWrapper: CardView
     private lateinit var tableNewFieldNameTInput: TextInputEditText
+    private lateinit var noneRadioBtn: MaterialRadioButton
     private lateinit var nonChangeableCheckBoxRadioButton: MaterialRadioButton
     private lateinit var listWithValuesFieldRadioButton: MaterialRadioButton
     private lateinit var fieldValueTypesRadioGroup: RadioGroup
@@ -54,6 +59,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private lateinit var appViewModel: AppViewModel
     private var fieldType:String = "none"
     private lateinit var scrollCreateTable:ScrollView
+    private lateinit var appSettings:AppSettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +72,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
     private fun initViews() {
         context = this
+        appSettings = AppSettings(context)
         appViewModel = ViewModelProvider(
             this,
             ViewModelProvider.AndroidViewModelFactory(this.application)
@@ -102,6 +109,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
             }
 
         })
+        noneRadioBtn =findViewById(R.id.none_radio_btn)
         nonChangeableCheckBoxRadioButton = findViewById(R.id.non_changeable_radio_btn)
         listWithValuesFieldRadioButton = findViewById(R.id.list_with_values_radio_btn)
         fieldValueTypesRadioGroup = findViewById(R.id.value_types_radio_group)
@@ -232,9 +240,199 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                         }
                         tableColumnsDetailLayout.addView(layout)
                     }
+
+                    openDefaultColumnsTipsDialog(tableColumnsDetailLayout)
                 }
             }
 
+        }
+    }
+
+    private fun openDefaultColumnsTipsDialog(tableColumnsDetailLayout: LinearLayout) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt13")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(tableColumnsDetailLayout)
+                    .text(getString(R.string.tt13_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt13",System.currentTimeMillis())
+                        openAddNewFieldLayoutTipsDialog(addNewFieldLayoutWrapper)
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openAddNewFieldLayoutTipsDialog(addNewFieldLayoutWrapper: CardView) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt14")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(addNewFieldLayoutWrapper)
+                    .text(getString(R.string.tt14_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt14",System.currentTimeMillis())
+                        openInputFieldRadioTipsDialog(noneRadioBtn)
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openInputFieldRadioTipsDialog(noneRadioBtn: MaterialRadioButton) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt15")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(noneRadioBtn)
+                    .text(getString(R.string.tt15_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt15",System.currentTimeMillis())
+                        openPredefinedFieldRadioTipsDialog(nonChangeableCheckBoxRadioButton)
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openPredefinedFieldRadioTipsDialog(nonChangeableCheckBoxRadioButton: MaterialRadioButton) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt16")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(nonChangeableCheckBoxRadioButton)
+                    .text(getString(R.string.tt16_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt16",System.currentTimeMillis())
+                        openDropDownListFieldRadioTipsDialog(listWithValuesFieldRadioButton)
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openDropDownListFieldRadioTipsDialog(listWithValuesFieldRadioButton: MaterialRadioButton) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt17")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(listWithValuesFieldRadioButton)
+                    .text(getString(R.string.tt17_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt17",System.currentTimeMillis())
+                        openAddingAnotherFieldTipsDialog(submitBtnView)
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openAddingAnotherFieldTipsDialog(submitBtnView: MaterialButton) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt18")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(submitBtnView)
+                    .text(getString(R.string.tt18_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt18",System.currentTimeMillis())
+                        openFinishBtnTipsDialog(finishBtnView)
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openFinishBtnTipsDialog(finishBtnView: MaterialButton) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt19")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(finishBtnView)
+                    .text(getString(R.string.tt19_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt19",System.currentTimeMillis())
+                        openDefaultValueTipsDialog(defaultValueFieldTInput)
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openDefaultValueTipsDialog(defaultValueFieldTInput: TextInputEditText) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt20")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(defaultValueFieldTInput)
+                    .text(getString(R.string.tt20_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt20",System.currentTimeMillis())
+                        openAttachListValuesTipsDialog(listWithFieldsBtn)
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openAttachListValuesTipsDialog(listWithFieldsBtn: MaterialButton) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt21")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(listWithFieldsBtn)
+                    .text(getString(R.string.tt21_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt21",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
         }
     }
 
@@ -426,4 +624,6 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         }
         return true
     }
+
+
 }
