@@ -91,27 +91,27 @@ class TablesActivity : BaseActivity(),TablesAdapter.OnItemClickListener {
     }
 
     override fun onAddItemClick(position: Int) {
-        if (Constants.userData != null){
+      //  if (Constants.userData != null){
             addTableDialog()
-        }
-        else{
-            //showAlert(context,"You can not create dynamic table without account login!")
-            MaterialAlertDialogBuilder(context)
-                    .setTitle(getString(R.string.alert_text))
-                    .setMessage(getString(R.string.login_error_text))
-                    .setNegativeButton(getString(R.string.later_text)){dialog,which->
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton(getString(R.string.login_text)){dialog,which->
-                        dialog.dismiss()
-                        val intent = Intent(context,MainActivity::class.java)
-                        intent.putExtra("REQUEST","login")
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        finish()
-                    }
-                    .create().show()
-        }
+       // }
+//        else{
+//            //showAlert(context,"You can not create dynamic table without account login!")
+//            MaterialAlertDialogBuilder(context)
+//                    .setTitle(getString(R.string.alert_text))
+//                    .setMessage(getString(R.string.login_error_text))
+//                    .setNegativeButton(getString(R.string.later_text)){dialog,which->
+//                        dialog.dismiss()
+//                    }
+//                    .setPositiveButton(getString(R.string.login_text)){dialog,which->
+//                        dialog.dismiss()
+//                        val intent = Intent(context,MainActivity::class.java)
+//                        intent.putExtra("REQUEST","login")
+//                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+//                        startActivity(intent)
+//                        finish()
+//                    }
+//                    .create().show()
+//        }
 
     }
 

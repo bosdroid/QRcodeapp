@@ -256,7 +256,7 @@
 	<string name="logout_warning_text">Вы действительно хотите выйти?</string>
 	<string name="logout_success_text">Пользовательский подпись Успешно!</string>
 	<string name="qr_image_share_warning_text">Вы уверены, что хотите поделиться этим изображением QR?</string>
-	<string name="share_text">доля</string>
+	<string name="share_text">Поделиться</string>
 	<string name="sn_banner_image_error_text">Пожалуйста, выберите изображение баннера</string>
 	<string name="sn_background_color_error_text">Пожалуйста, выберите цвет фона</string>
 	<string name="sn_title_error_text">Пожалуйста, введите название</string>
