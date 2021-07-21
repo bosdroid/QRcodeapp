@@ -15,8 +15,8 @@ android {
         applicationId "com.expert.qrgenerator"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 106
-        versionName "full russian translation"
+        versionCode 107
+        versionName "tooltips been added. login system off"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
