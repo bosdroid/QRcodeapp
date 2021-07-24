@@ -95,13 +95,35 @@
                             android:textColor="@color/gray"
                             android:textSize="@dimen/xlargeText" />
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/feedback_title_text_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/edit"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:id="@+id/feedback_title_text_edit_btn"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:src="@drawable/edit"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+                        <RelativeLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            >
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_rawRes="@raw/muzli"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true"
+                                android:id="@+id/lav_feedback_title_text_edit_btn"
+                                android:layout_centerInParent="true"
+                                />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/feedback_title_text_edit_btn"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/pencil"
+                                android:layout_centerInParent="true"
+                                />
+                        </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -126,13 +148,35 @@
                         android:textSize="@dimen/largeText"
                         android:textStyle="bold" />
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/feedback_inner_text_edit_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/edit"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+<!--                    <androidx.appcompat.widget.AppCompatImageView-->
+<!--                        android:id="@+id/feedback_inner_text_edit_btn"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:src="@drawable/edit"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent" />-->
+                    <RelativeLayout
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        >
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:lottie_rawRes="@raw/muzli"
+                            app:lottie_loop="true"
+                            app:lottie_autoPlay="true"
+                            android:id="@+id/lav_feedback_inner_text_edit_btn"
+                            android:layout_centerInParent="true"
+                            />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/feedback_inner_text_edit_btn"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/pencil"
+                            android:layout_centerInParent="true"
+                            />
+                    </RelativeLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -155,13 +199,35 @@
                         android:textColor="@color/dark_gray"
                         android:textSize="@dimen/largeText" />
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/feedback_inner_description_edit_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/edit"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+<!--                    <androidx.appcompat.widget.AppCompatImageView-->
+<!--                        android:id="@+id/feedback_inner_description_edit_btn"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:src="@drawable/edit"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent" />-->
+                    <RelativeLayout
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        >
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:lottie_rawRes="@raw/muzli"
+                            app:lottie_loop="true"
+                            app:lottie_autoPlay="true"
+                            android:id="@+id/lav_feedback_inner_description_edit_btn"
+                            android:layout_centerInParent="true"
+                            />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/feedback_inner_description_edit_btn"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/pencil"
+                            android:layout_centerInParent="true"
+                            />
+                    </RelativeLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -296,6 +362,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/feedback_phone_number_input_field"
                     app:layout_constraintEnd_toEndOf="parent">
 
                     <com.google.android.material.textview.MaterialTextView
@@ -310,11 +377,33 @@
                         android:textSize="@dimen/largeText"
                         android:textStyle="bold" />
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/feedback_send_button_edit_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/edit" />
+<!--                    <androidx.appcompat.widget.AppCompatImageView-->
+<!--                        android:id="@+id/feedback_send_button_edit_btn"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:src="@drawable/edit" />-->
+                    <RelativeLayout
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        >
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:lottie_rawRes="@raw/muzli"
+                            app:lottie_loop="true"
+                            app:lottie_autoPlay="true"
+                            android:id="@+id/lav_feedback_send_button_edit_btn"
+                            android:layout_centerInParent="true"
+                            />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/feedback_send_button_edit_btn"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/pencil"
+                            android:layout_centerInParent="true"
+                            />
+                    </RelativeLayout>
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

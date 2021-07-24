@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.SNIconsAdapter
 import com.expert.qrgenerator.adapters.SocialNetworkAdapter
@@ -55,17 +56,21 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     private lateinit var toolbar: Toolbar
     private lateinit var snHeaderImageEditHint: MaterialTextView
     private lateinit var snHeaderImageEditBtn: AppCompatImageView
+    private lateinit var lavsnHeaderImageEditBtn: LottieAnimationView
     private lateinit var snBannerImageView: AppCompatImageView
     private lateinit var nextStepBtn: MaterialButton
     private lateinit var snDetailsBackgroundColorEditBtn: AppCompatImageView
+    private lateinit var lavsnDetailsBackgroundColorEditBtn: LottieAnimationView
     private lateinit var snContentWrapperLayout: LinearLayout
     private lateinit var snTitleTextView: MaterialTextView
     private lateinit var snTextEditBtn: AppCompatImageView
+    private lateinit var lavsnTextEditBtn: LottieAnimationView
     private lateinit var snDescriptionTextView: MaterialTextView
     private lateinit var snDescriptionEditBtn: AppCompatImageView
+    private lateinit var lavsnDescriptionEditBtn: LottieAnimationView
     private lateinit var snRecyclerView: RecyclerView
     private lateinit var adapeter: SocialNetworkAdapter
-    private lateinit var snBackgroundColorTextHintView:MaterialTextView
+    private lateinit var snBackgroundColorTextHintView: MaterialTextView
 
     //    private lateinit var shareFabBtn: FloatingActionButton
     private var socialNetworkList = mutableListOf<SocialNetwork>()
@@ -105,16 +110,21 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         snHeaderImageEditHint = findViewById(R.id.sn_header_image_edit_hint)
         snHeaderImageEditBtn = findViewById(R.id.sn_header_image_edit_btn)
         snHeaderImageEditBtn.setOnClickListener(this)
+        lavsnHeaderImageEditBtn = findViewById(R.id.lav_sn_header_image_edit_btn)
         snBannerImageView = findViewById(R.id.sn_banner_image)
         snDetailsBackgroundColorEditBtn = findViewById(R.id.sn_details_background_color_edit_btn)
         snDetailsBackgroundColorEditBtn.setOnClickListener(this)
+        lavsnDetailsBackgroundColorEditBtn =
+            findViewById(R.id.lav_sn_details_background_color_edit_btn)
         snContentWrapperLayout = findViewById(R.id.sn_content_wrapper_layout)
         snTitleTextView = findViewById(R.id.sn_title_text)
         snTextEditBtn = findViewById(R.id.sn_text_edit_btn)
         snTextEditBtn.setOnClickListener(this)
+        lavsnTextEditBtn = findViewById(R.id.lav_sn_text_edit_btn)
         snDescriptionTextView = findViewById(R.id.sn_description_text)
         snDescriptionEditBtn = findViewById(R.id.sn_description_edit_btn)
         snDescriptionEditBtn.setOnClickListener(this)
+        lavsnDescriptionEditBtn = findViewById(R.id.lav_sn_description_edit_btn)
         nextStepBtn = findViewById(R.id.next_step_btn)
         nextStepBtn.setOnClickListener(this)
         snRecyclerView = findViewById(R.id.sn_list_recyclerview)
@@ -362,6 +372,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 val scaled = Bitmap.createScaledBitmap(bitmapImage, 640, nh, true)
                 snBannerImageView.setImageBitmap(scaled)
                 snHeaderImageEditHint.visibility = View.GONE
+                lavsnHeaderImageEditBtn.visibility = View.GONE
 
             }
         }
@@ -417,6 +428,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     snContentWrapperLayout.setBackgroundColor(Color.parseColor(hexColor))
                     snContentDetailBackgroundColor = hexColor
                     snBackgroundColorTextHintView.visibility = View.GONE
+                    lavsnDetailsBackgroundColorEditBtn.visibility = View.GONE
                 }
 
                 fun onColor(color: Int, fromUser: Boolean) {
@@ -513,28 +525,34 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
         cancelBtn.setOnClickListener { alert.dismiss() }
         updateBtn.setOnClickListener {
 
-
-            view.text = inputBox.text.toString()
-            if (selectedColor.isNotEmpty()) {
-                view.setTextColor(Color.parseColor(selectedColor))
-            }
-
             val value = view.text.toString().trim()
-            when (updateType) {
-                "sn_title" -> {
-                    snTitleText = value
-                    snTitleTextColor = selectedColor
+            if (value.isNotEmpty()) {
+                view.text = value
+                if (selectedColor.isNotEmpty()) {
+                    view.setTextColor(Color.parseColor(selectedColor))
                 }
-                "sn_description" -> {
-                    snDescriptionText = value
-                    snDescriptionTextColor = selectedColor
-                }
-                else -> {
 
+
+                when (updateType) {
+                    "sn_title" -> {
+                        snTitleText = value
+                        snTitleTextColor = selectedColor
+                        lavsnTextEditBtn.visibility = View.GONE
+                    }
+                    "sn_description" -> {
+                        snDescriptionText = value
+                        snDescriptionTextColor = selectedColor
+                        lavsnDescriptionEditBtn.visibility = View.GONE
+                    }
+                    else -> {
+
+                    }
                 }
+
+                alert.dismiss()
+            } else {
+                showAlert(context, getString(R.string.empty_text_error))
             }
-
-            alert.dismiss()
         }
     }
 
@@ -577,7 +595,11 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     socialNetworkList.add(position, item)
                     adapeter.notifyItemChanged(position)
                     alert.dismiss()
-                    Toast.makeText(context, getString(R.string.list_item_update_success_text), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        context,
+                        getString(R.string.list_item_update_success_text),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
 

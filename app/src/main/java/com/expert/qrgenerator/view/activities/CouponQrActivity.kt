@@ -27,6 +27,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
+import com.airbnb.lottie.LottieAnimationView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.singleton.DriveService
@@ -78,6 +79,20 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
     private lateinit var descriptionTextEditBtn: AppCompatImageView
     private lateinit var getCouponButtonEditBtn: AppCompatImageView
     private lateinit var redeemNowEditBtn: AppCompatImageView
+
+    private lateinit var lavcompanyNameEditBtn: LottieAnimationView
+    private lateinit var lavbackgroundColorEditBtn: LottieAnimationView
+    private lateinit var lavheaderImageEditBtn: LottieAnimationView
+    private lateinit var lavsaleBadgeEditBtn: LottieAnimationView
+    private lateinit var lavheadlineTextEditBtn: LottieAnimationView
+    private lateinit var lavdescriptionTextEditBtn: LottieAnimationView
+    private lateinit var lavgetCouponButtonEditBtn: LottieAnimationView
+
+    private lateinit var lavcouponCodeEditBtn: LottieAnimationView
+    private lateinit var lavcouponValidTillEditBtn: LottieAnimationView
+    private lateinit var lavtermsConditionsEditBtn: LottieAnimationView
+    private lateinit var lavredeemNowEditBtn: LottieAnimationView
+
     private lateinit var redeemNowBtn: AppCompatButton
     private lateinit var couponValidTillView: MaterialTextView
     private lateinit var couponValidTillEditBtn: AppCompatImageView
@@ -144,6 +159,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         headlineView = findViewById(R.id.coupon_content_headline)
         descriptionView = findViewById(R.id.coupon_content_description)
         saleBadgeBtn = findViewById(R.id.coupon_sale_badge)
+
         companyNameEditBtn = findViewById(R.id.company_name_edit_btn)
         companyNameEditBtn.setOnClickListener(this)
         backgroundColorEditBtn = findViewById(R.id.background_color_edit_btn)
@@ -160,6 +176,19 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         getCouponButtonEditBtn.setOnClickListener(this)
         redeemNowEditBtn = findViewById(R.id.redeem_now_edit_btn)
         redeemNowEditBtn.setOnClickListener(this)
+
+        lavcompanyNameEditBtn = findViewById(R.id.lav_company_name_edit_btn)
+        lavbackgroundColorEditBtn = findViewById(R.id.lav_background_color_edit_btn)
+        lavheaderImageEditBtn = findViewById(R.id.lav_header_image_edit_btn)
+        lavsaleBadgeEditBtn = findViewById(R.id.lav_sale_badge_edit_btn)
+        lavheadlineTextEditBtn = findViewById(R.id.lav_headline_text_edit_btn)
+        lavdescriptionTextEditBtn = findViewById(R.id.lav_description_text_edit_btn)
+        lavgetCouponButtonEditBtn = findViewById(R.id.lav_get_coupon_edit_btn)
+        lavcouponCodeEditBtn = findViewById(R.id.lav_coupon_code_edit_btn)
+        lavcouponValidTillEditBtn = findViewById(R.id.lav_coupon_valid_till_edit_btn)
+        lavtermsConditionsEditBtn = findViewById(R.id.lav_coupon_terms_condition_edit_btn)
+        lavredeemNowEditBtn = findViewById(R.id.lav_redeem_now_edit_btn)
+
         redeemNowBtn = findViewById(R.id.redeem_now_btn)
         couponCodeView = findViewById(R.id.coupon_code_text_view)
         couponCodeEditBtn = findViewById(R.id.coupon_code_edit_btn)
@@ -499,6 +528,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     val scaled = Bitmap.createScaledBitmap(bitmapImage, 640, nh, true)
                     couponSaleImageView.setImageBitmap(scaled)
                     headerImageHint.visibility = View.GONE
+                    lavheaderImageEditBtn.visibility = View.GONE
                 }
 
             }
@@ -605,6 +635,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 view.setBackgroundColor(Color.parseColor(selectedColor))
                 view.text = selectedRedeemButtonText
                 redeemButtonHint.visibility = View.GONE
+                lavredeemNowEditBtn.visibility = View.GONE
                 alert.dismiss()
             }
 
@@ -775,42 +806,52 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         }
         updateBtn.setOnClickListener {
             val value = inputBox.text.toString().trim()
-            view.text = value
-            if (type == 1) {
-                if (selectedColor.isNotEmpty()) {
-                    view.setTextColor(Color.parseColor(selectedColor))
+            if (value.isNotEmpty()) {
+                view.text = value
+                if (type == 1) {
+                    if (selectedColor.isNotEmpty()) {
+                        view.setTextColor(Color.parseColor(selectedColor))
 
+                    }
                 }
+                when (updateType) {
+                    "company" -> {
+                        couponCompanyNameText = value
+                        couponCompanyNameTextColor = selectedColor
+                        lavcompanyNameEditBtn.visibility = View.GONE
+                    }
+                    "headline" -> {
+                        couponOfferTitleText = value
+                        couponOfferTitleTextColor = selectedColor
+                        lavheadlineTextEditBtn.visibility = View.GONE
+                    }
+                    "description" -> {
+                        couponOfferDescriptionText = value
+                        couponOfferDescriptionTextColor = selectedColor
+                        lavdescriptionTextEditBtn.visibility = View.GONE
+                    }
+                    "coupon_code" -> {
+                        couponCodeText = value
+                        couponCodeTextColor = selectedColor
+                        lavcouponCodeEditBtn.visibility = View.GONE
+                    }
+                    "terms_conditions" -> {
+                        couponTermsConditionText = value
+                        termsConditionsTextBtn.text = getString(R.string.terms_conditions1)
+                        termsConditionsTextBtn.paintFlags =
+                            termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                        lavtermsConditionsEditBtn.visibility = View.GONE
+                    }
+                    else -> {
+
+                    }
+                }
+
+                alert.dismiss()
             }
-            when (updateType) {
-                "company" -> {
-                    couponCompanyNameText = value
-                    couponCompanyNameTextColor = selectedColor
-                }
-                "headline" -> {
-                    couponOfferTitleText = value
-                    couponOfferTitleTextColor = selectedColor
-                }
-                "description" -> {
-                    couponOfferDescriptionText = value
-                    couponOfferDescriptionTextColor = selectedColor
-                }
-                "coupon_code" -> {
-                    couponCodeText = value
-                    couponCodeTextColor = selectedColor
-                }
-                "terms_conditions" -> {
-                    couponTermsConditionText = value
-                    termsConditionsTextBtn.text = getString(R.string.terms_conditions1)
-                    termsConditionsTextBtn.paintFlags =
-                        termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-                }
-                else -> {
-
-                }
+            else{
+                showAlert(context,getString(R.string.empty_text_error))
             }
-
-            alert.dismiss()
         }
 
         colorBtnView.setOnClickListener {
@@ -1004,11 +1045,13 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     couponSaleBadgeButtonText = value
                     couponSaleBadgeButtonColor = selectedColor
                     tagHint.visibility = View.GONE
+                    lavsaleBadgeEditBtn.visibility = View.GONE
                 }
                 "get_coupon_btn" -> {
                     couponGetButtonText = value
                     couponGetButtonColor = selectedColor
                     getCouponButtonHint.visibility = View.GONE
+                    lavgetCouponButtonEditBtn.visibility = View.GONE
                 }
                 else -> {
 
@@ -1053,6 +1096,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     couponParentLayout.setBackgroundColor(Color.parseColor(hexColor))
                     couponBackgroundColor = hexColor
                     backgroundColorHint.visibility = View.GONE
+                    lavbackgroundColorEditBtn.visibility = View.GONE
                 }
 
                 fun onColor(color: Int, fromUser: Boolean) {
@@ -1069,6 +1113,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         val selectedDate = getDateFromTimeStamp(c.timeInMillis)
         couponValidDate = selectedDate
         couponValidTillView.text = selectedDate
+        lavcouponValidTillEditBtn.visibility = View.GONE
     }
 
 }
