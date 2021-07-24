@@ -267,10 +267,16 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
             builder.append(columns!!.joinToString(","))
 
             for (j in 0 until dataList.size) {
-
+                var image = ""
                 val data = dataList[j]
-
-                builder.append("\n${data.id},${data.code_data},${data.date},${data.image}")
+                if (data.image.contains(",")){
+                    val temp = data.image.replace(",",", ")
+                    image = "\"$temp\""
+                }
+                else{
+                    image = data.image
+                }
+                builder.append("\n${data.id},${data.code_data},${data.date},$image")
                 if (data.dynamicColumns.size > 0) {
                     for (k in 0 until data.dynamicColumns.size) {
                         val item = data.dynamicColumns[k]

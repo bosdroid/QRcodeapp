@@ -373,6 +373,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                 snBannerImageView.setImageBitmap(scaled)
                 snHeaderImageEditHint.visibility = View.GONE
                 lavsnHeaderImageEditBtn.visibility = View.GONE
+                snHeaderImageEditBtn.setImageResource(R.drawable.green_checked_icon)
 
             }
         }
@@ -429,6 +430,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     snContentDetailBackgroundColor = hexColor
                     snBackgroundColorTextHintView.visibility = View.GONE
                     lavsnDetailsBackgroundColorEditBtn.visibility = View.GONE
+                    snDetailsBackgroundColorEditBtn.setImageResource(R.drawable.green_checked_icon)
                 }
 
                 fun onColor(color: Int, fromUser: Boolean) {
@@ -538,11 +540,13 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                         snTitleText = value
                         snTitleTextColor = selectedColor
                         lavsnTextEditBtn.visibility = View.GONE
+                        snTextEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     "sn_description" -> {
                         snDescriptionText = value
                         snDescriptionTextColor = selectedColor
                         lavsnDescriptionEditBtn.visibility = View.GONE
+                        snDescriptionEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     else -> {
 

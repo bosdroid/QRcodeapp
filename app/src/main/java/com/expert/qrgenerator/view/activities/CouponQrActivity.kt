@@ -529,6 +529,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     couponSaleImageView.setImageBitmap(scaled)
                     headerImageHint.visibility = View.GONE
                     lavheaderImageEditBtn.visibility = View.GONE
+                    headerImageEditBtn.setImageResource(R.drawable.green_checked_icon)
                 }
 
             }
@@ -636,6 +637,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                 view.text = selectedRedeemButtonText
                 redeemButtonHint.visibility = View.GONE
                 lavredeemNowEditBtn.visibility = View.GONE
+                redeemNowEditBtn.setImageResource(R.drawable.green_checked_icon)
                 alert.dismiss()
             }
 
@@ -819,21 +821,25 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                         couponCompanyNameText = value
                         couponCompanyNameTextColor = selectedColor
                         lavcompanyNameEditBtn.visibility = View.GONE
+                        companyNameEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     "headline" -> {
                         couponOfferTitleText = value
                         couponOfferTitleTextColor = selectedColor
                         lavheadlineTextEditBtn.visibility = View.GONE
+                        headlineTextEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     "description" -> {
                         couponOfferDescriptionText = value
                         couponOfferDescriptionTextColor = selectedColor
                         lavdescriptionTextEditBtn.visibility = View.GONE
+                        descriptionTextEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     "coupon_code" -> {
                         couponCodeText = value
                         couponCodeTextColor = selectedColor
                         lavcouponCodeEditBtn.visibility = View.GONE
+                        couponCodeEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     "terms_conditions" -> {
                         couponTermsConditionText = value
@@ -841,6 +847,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                         termsConditionsTextBtn.paintFlags =
                             termsConditionsTextBtn.paintFlags or Paint.UNDERLINE_TEXT_FLAG
                         lavtermsConditionsEditBtn.visibility = View.GONE
+                        termsConditionsEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     else -> {
 
@@ -1046,12 +1053,14 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     couponSaleBadgeButtonColor = selectedColor
                     tagHint.visibility = View.GONE
                     lavsaleBadgeEditBtn.visibility = View.GONE
+                    saleBadgeEditBtn.setImageResource(R.drawable.green_checked_icon)
                 }
                 "get_coupon_btn" -> {
                     couponGetButtonText = value
                     couponGetButtonColor = selectedColor
                     getCouponButtonHint.visibility = View.GONE
                     lavgetCouponButtonEditBtn.visibility = View.GONE
+                    getCouponButtonEditBtn.setImageResource(R.drawable.green_checked_icon)
                 }
                 else -> {
 
@@ -1097,6 +1106,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
                     couponBackgroundColor = hexColor
                     backgroundColorHint.visibility = View.GONE
                     lavbackgroundColorEditBtn.visibility = View.GONE
+                    backgroundColorEditBtn.setImageResource(R.drawable.green_checked_icon)
                 }
 
                 fun onColor(color: Int, fromUser: Boolean) {
@@ -1114,6 +1124,7 @@ class CouponQrActivity : BaseActivity(), View.OnClickListener, DatePickerDialog.
         couponValidDate = selectedDate
         couponValidTillView.text = selectedDate
         lavcouponValidTillEditBtn.visibility = View.GONE
+        couponValidTillEditBtn.setImageResource(R.drawable.green_checked_icon)
     }
 
 }

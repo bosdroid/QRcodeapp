@@ -314,11 +314,13 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         feedbackInnerTitleText = value
                         feedbackInnerTitleTextView.setTextColor(Color.BLACK)
                         lavfeedbackInnerTitleEditBtn.visibility = View.GONE
+                        feedbackInnerTitleEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     "inner_description" -> {
                         feedbackInnerDescriptionText = value
                         feedbackInnerDescriptionTextView.setTextColor(Color.BLACK)
                         lavfeedbackInnerDescriptionEditBtn.visibility = View.GONE
+                        feedbackInnerDescriptionEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     else -> {
 
@@ -463,6 +465,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         }
                         feedbackTitleTextView.setTextColor(Color.WHITE)
                         lavfeedbackTitleEditBtn.visibility = View.GONE
+                        feedbackTitleEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     "feedback_send_btn" -> {
                         feedbackSendButtonText = value
@@ -473,6 +476,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                             feedbackSendEditHint.visibility = View.GONE
                         }
                         lavfeedbackSendButtonEditBtn.visibility = View.GONE
+                        feedbackSendButtonEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     else -> {
 
