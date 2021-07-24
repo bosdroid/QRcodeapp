@@ -408,9 +408,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.nav_contact_support -> {
                 contactSupport(this)
             }
-//            R.id.login -> {
-//                startLogin()
-//            }
+            R.id.login -> {
+                startLogin()
+            }
             R.id.field_list -> {
                 startActivity(Intent(context, FieldListsActivity::class.java))
             }
@@ -677,7 +677,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
         } else {
-            mNavigation.menu.findItem(R.id.login).isVisible = false
+            mNavigation.menu.findItem(R.id.login).isVisible = true
             mNavigation.menu.findItem(R.id.logout).isVisible = false
             mNavigation.menu.findItem(R.id.profile).isVisible = false
             mNavigation.menu.findItem(R.id.tables).isVisible = false
