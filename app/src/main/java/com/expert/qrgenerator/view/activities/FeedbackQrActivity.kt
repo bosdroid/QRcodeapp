@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
+import com.airbnb.lottie.LottieAnimationView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.viewmodel.FeedbackQrViewModel
@@ -35,6 +36,12 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     private lateinit var feedbackInnerTitleEditBtn: AppCompatImageView
     private lateinit var feedbackInnerDescriptionEditBtn: AppCompatImageView
     private lateinit var feedbackSendButtonEditBtn: AppCompatImageView
+
+    private lateinit var lavfeedbackTitleEditBtn: LottieAnimationView
+    private lateinit var lavfeedbackInnerTitleEditBtn: LottieAnimationView
+    private lateinit var lavfeedbackInnerDescriptionEditBtn: LottieAnimationView
+    private lateinit var lavfeedbackSendButtonEditBtn: LottieAnimationView
+
     private lateinit var feedbackTitleTextView: MaterialTextView
     private lateinit var feedbackInnerTitleTextView: MaterialTextView
     private lateinit var feedbackInnerDescriptionTextView: MaterialTextView
@@ -83,6 +90,12 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
         feedbackInnerDescriptionEditBtn.setOnClickListener(this)
         feedbackSendButtonEditBtn = findViewById(R.id.feedback_send_button_edit_btn)
         feedbackSendButtonEditBtn.setOnClickListener(this)
+
+        lavfeedbackTitleEditBtn = findViewById(R.id.lav_feedback_title_text_edit_btn)
+        lavfeedbackInnerTitleEditBtn = findViewById(R.id.lav_feedback_inner_text_edit_btn)
+        lavfeedbackInnerDescriptionEditBtn = findViewById(R.id.lav_feedback_inner_description_edit_btn)
+        lavfeedbackSendButtonEditBtn = findViewById(R.id.lav_feedback_send_button_edit_btn)
+
         feedbackTitleTextView = findViewById(R.id.feedback_title_text)
         feedbackInnerTitleTextView = findViewById(R.id.feedback_inner_title_text)
         feedbackInnerDescriptionTextView = findViewById(R.id.feedback_inner_description_text)
@@ -288,28 +301,37 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
         }
         updateBtn.setOnClickListener {
             val value = inputBox.text.toString().trim()
-            view.text = value
-            if (type == 1) {
-                if (selectedColor.isNotEmpty()) {
-                    view.setTextColor(Color.parseColor(selectedColor))
+            if (value.isNotEmpty()) {
+                view.text = value
+                if (type == 1) {
+                    if (selectedColor.isNotEmpty()) {
+                        view.setTextColor(Color.parseColor(selectedColor))
 
+                    }
                 }
+                when (updateType) {
+                    "inner_title" -> {
+                        feedbackInnerTitleText = value
+                        feedbackInnerTitleTextView.setTextColor(Color.BLACK)
+                        lavfeedbackInnerTitleEditBtn.visibility = View.GONE
+                        feedbackInnerTitleEditBtn.setImageResource(R.drawable.green_checked_icon)
+                    }
+                    "inner_description" -> {
+                        feedbackInnerDescriptionText = value
+                        feedbackInnerDescriptionTextView.setTextColor(Color.BLACK)
+                        lavfeedbackInnerDescriptionEditBtn.visibility = View.GONE
+                        feedbackInnerDescriptionEditBtn.setImageResource(R.drawable.green_checked_icon)
+                    }
+                    else -> {
+
+                    }
+                }
+
+                alert.dismiss()
             }
-            when (updateType) {
-                "inner_title" -> {
-                    feedbackInnerTitleText = value
-                    feedbackInnerTitleTextView.setTextColor(Color.BLACK)
-                }
-                "inner_description" -> {
-                    feedbackInnerDescriptionText = value
-                    feedbackInnerDescriptionTextView.setTextColor(Color.BLACK)
-                }
-                else -> {
-
-                }
+            else{
+                showAlert(context,getString(R.string.empty_text_error))
             }
-
-            alert.dismiss()
         }
 
         colorBtnView.setOnClickListener {
@@ -432,31 +454,40 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
         updateBtn.setOnClickListener {
 
             val value = inputBox.text.toString().trim()
-            when (updateType) {
-                "feedback_title" -> {
-                    feedbackTitleText = value
-                    feedbackTitleBackgroundColor = selectedColor
-                    feedbackTitleTextLayout.setBackgroundColor(Color.parseColor(selectedColor))
-                    if (value.isNotEmpty()){
-                        feedbackTitleTextView.text = value
+            if (value.isNotEmpty()) {
+                when (updateType) {
+                    "feedback_title" -> {
+                        feedbackTitleText = value
+                        feedbackTitleBackgroundColor = selectedColor
+                        feedbackTitleTextLayout.setBackgroundColor(Color.parseColor(selectedColor))
+                        if (value.isNotEmpty()) {
+                            feedbackTitleTextView.text = value
+                        }
+                        feedbackTitleTextView.setTextColor(Color.WHITE)
+                        lavfeedbackTitleEditBtn.visibility = View.GONE
+                        feedbackTitleEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
-                    feedbackTitleTextView.setTextColor(Color.WHITE)
-                }
-                "feedback_send_btn" -> {
-                    feedbackSendButtonText = value
-                    feedbackSendButtonColor = selectedColor
-                    view.setBackgroundColor(Color.parseColor(selectedColor))
-                    view.text = value
-                    if (value.isNotEmpty()){
-                        feedbackSendEditHint.visibility = View.GONE
+                    "feedback_send_btn" -> {
+                        feedbackSendButtonText = value
+                        feedbackSendButtonColor = selectedColor
+                        view.setBackgroundColor(Color.parseColor(selectedColor))
+                        view.text = value
+                        if (value.isNotEmpty()) {
+                            feedbackSendEditHint.visibility = View.GONE
+                        }
+                        lavfeedbackSendButtonEditBtn.visibility = View.GONE
+                        feedbackSendButtonEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
-                }
-                else -> {
+                    else -> {
 
+                    }
                 }
+
+                alert.dismiss()
             }
-
-            alert.dismiss()
+            else{
+                showAlert(context,getString(R.string.empty_text_error))
+            }
         }
     }
 }

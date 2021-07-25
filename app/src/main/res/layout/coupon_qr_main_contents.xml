@@ -24,15 +24,14 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/next_step_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginEnd="@dimen/sixtyDpMargin"
                 android:text="@string/next_text"
-                android:textSize="@dimen/xlargeText"
-                android:id="@+id/next_step_btn"
                 android:textAllCaps="true"
-                />
+                android:textSize="@dimen/xlargeText" />
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -59,23 +58,23 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <LinearLayout
+                android:id="@+id/background_color_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/background_color_layout"
                 android:gravity="center_vertical"
-                >
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/background_color_edit_hint"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:id="@+id/background_color_edit_hint"
-                    android:text="@string/coupon_set_background_color_hint"
                     android:gravity="center_vertical"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
+                    android:text="@string/coupon_set_background_color_hint"
                     android:textColor="@color/gray"
                     android:textSize="@dimen/largeText"
                     android:textStyle="bold" />
@@ -87,36 +86,35 @@
                     <com.airbnb.lottie.LottieAnimationView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                         app:lottie_rawRes="@raw/muzli"
-                        app:lottie_loop="true"
-                        app:lottie_autoPlay="true"
                         android:layout_centerInParent="true"
-                        />
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
+                        android:id="@+id/lav_background_color_edit_btn"
+                        app:lottie_rawRes="@raw/muzli" />
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/background_color_edit_btn"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/pencil"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:layout_centerInParent="true"
-                        />
+                        android:src="@drawable/pencil" />
                 </RelativeLayout>
 
             </LinearLayout>
-
 
 
             <LinearLayout
                 android:id="@+id/zero_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
                 android:layout_marginStart="@dimen/eightDpMargin"
                 android:layout_marginLeft="@dimen/eightDpMargin"
                 android:layout_marginEnd="@dimen/eightDpMargin"
                 android:layout_marginRight="@dimen/eightDpMargin"
-                app:layout_constraintStart_toStartOf="parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/background_color_layout">
 
                 <com.google.android.material.textview.MaterialTextView
@@ -124,21 +122,21 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/coupon_set_title_hint"
                     android:gravity="center_vertical"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
+                    android:text="@string/coupon_set_title_hint"
                     android:textColor="@color/gray"
                     android:textSize="@dimen/largeText"
                     android:textStyle="bold" />
 
-<!--                    <androidx.appcompat.widget.AppCompatImageView-->
-<!--                        android:id="@+id/company_name_edit_btn"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="@dimen/defaultDpMargin"-->
-<!--                        android:layout_marginLeft="@dimen/defaultDpMargin"-->
-<!--                        android:src="@drawable/edit" />-->
+                <!--                    <androidx.appcompat.widget.AppCompatImageView-->
+                <!--                        android:id="@+id/company_name_edit_btn"-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_marginStart="@dimen/defaultDpMargin"-->
+                <!--                        android:layout_marginLeft="@dimen/defaultDpMargin"-->
+                <!--                        android:src="@drawable/edit" />-->
                 <RelativeLayout
                     android:layout_width="70dp"
                     android:layout_height="70dp">
@@ -146,18 +144,18 @@
                     <com.airbnb.lottie.LottieAnimationView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:lottie_rawRes="@raw/muzli"
-                        app:lottie_loop="true"
-                        app:lottie_autoPlay="true"
                         android:layout_centerInParent="true"
-                        />
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
+                        android:id="@+id/lav_company_name_edit_btn"
+                        app:lottie_rawRes="@raw/muzli" />
+
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/company_name_edit_btn"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/pencil"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:layout_centerInParent="true"
-                        />
+                        android:src="@drawable/pencil" />
                 </RelativeLayout>
 
             </LinearLayout>
@@ -183,34 +181,34 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <LinearLayout
+                        android:id="@+id/header_image_edit_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:id="@+id/header_image_edit_layout"
                         android:elevation="2dp"
                         android:gravity="center_vertical"
-                        >
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
                         <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/header_image_edit_hint"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:id="@+id/header_image_edit_hint"
-                            android:text="@string/coupon_banner_size_hint"
                             android:gravity="center_vertical"
                             android:minWidth="0dp"
                             android:minHeight="0dp"
+                            android:text="@string/coupon_banner_size_hint"
                             android:textColor="@color/gray"
                             android:textSize="@dimen/largeText"
                             android:textStyle="bold" />
-<!--                        <androidx.appcompat.widget.AppCompatImageView-->
-<!--                            android:id="@+id/header_image_edit_btn"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_margin="@dimen/defaultDpMargin"-->
-<!--                            android:src="@drawable/edit"-->
-<!--                             />-->
+                        <!--                        <androidx.appcompat.widget.AppCompatImageView-->
+                        <!--                            android:id="@+id/header_image_edit_btn"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_margin="@dimen/defaultDpMargin"-->
+                        <!--                            android:src="@drawable/edit"-->
+                        <!--                             />-->
                         <RelativeLayout
                             android:layout_width="70dp"
                             android:layout_height="70dp">
@@ -218,55 +216,53 @@
                             <com.airbnb.lottie.LottieAnimationView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                app:lottie_rawRes="@raw/muzli"
-                                app:lottie_loop="true"
-                                app:lottie_autoPlay="true"
                                 android:layout_centerInParent="true"
-                                />
+                                app:lottie_autoPlay="true"
+                                app:lottie_loop="true"
+                                android:id="@+id/lav_header_image_edit_btn"
+                                app:lottie_rawRes="@raw/muzli" />
+
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/header_image_edit_btn"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/pencil"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_centerInParent="true"
-                                />
+                                android:src="@drawable/pencil" />
                         </RelativeLayout>
                     </LinearLayout>
 
 
-
-<!--                    <com.google.android.material.textview.MaterialTextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="@dimen/defaultDpMargin"-->
-<!--                        android:layout_marginLeft="@dimen/defaultDpMargin"-->
-<!--                        android:layout_marginBottom="@dimen/sixtyDpMargin"-->
-<!--                        android:text="Header Image size 640x360"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toBottomOf="@id/coupon_sale_image" />-->
+                    <!--                    <com.google.android.material.textview.MaterialTextView-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_marginStart="@dimen/defaultDpMargin"-->
+                    <!--                        android:layout_marginLeft="@dimen/defaultDpMargin"-->
+                    <!--                        android:layout_marginBottom="@dimen/sixtyDpMargin"-->
+                    <!--                        android:text="Header Image size 640x360"-->
+                    <!--                        app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                        app:layout_constraintTop_toBottomOf="@id/coupon_sale_image" />-->
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/coupon_sale_image"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:scaleType="fitXY"
                         android:adjustViewBounds="true"
+                        android:scaleType="fitXY"
                         android:src="@drawable/placeholder"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/sale_badge_hint"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/coupon_set_tag_hint"
-                        android:id="@+id/sale_badge_hint"
-                        android:textColor="@color/light_gray"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toTopOf="@id/sale_badge_wrapper_layout"
                         android:layout_marginEnd="@dimen/sixtyDpMargin"
                         android:layout_marginRight="@dimen/sixtyDpMargin"
-                        />
+                        android:text="@string/coupon_set_tag_hint"
+                        android:textColor="@color/light_gray"
+                        app:layout_constraintBottom_toTopOf="@id/sale_badge_wrapper_layout"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <LinearLayout
                         android:id="@+id/sale_badge_wrapper_layout"
@@ -283,23 +279,22 @@
                             android:id="@+id/coupon_sale_badge"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:minHeight="0dp"
                             android:layout_weight="1"
                             android:background="@color/gray"
                             android:elevation="8dp"
+                            android:minHeight="0dp"
                             android:text=""
                             android:textColor="@color/white"
                             android:textSize="@dimen/mediumText"
-                            android:textStyle="bold"
-                            />
+                            android:textStyle="bold" />
 
-<!--                        <androidx.appcompat.widget.AppCompatImageView-->
-<!--                            android:id="@+id/sale_badge_edit_btn"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginStart="@dimen/defaultDpMargin"-->
-<!--                            android:layout_marginLeft="@dimen/defaultDpMargin"-->
-<!--                            android:src="@drawable/edit" />-->
+                        <!--                        <androidx.appcompat.widget.AppCompatImageView-->
+                        <!--                            android:id="@+id/sale_badge_edit_btn"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_marginStart="@dimen/defaultDpMargin"-->
+                        <!--                            android:layout_marginLeft="@dimen/defaultDpMargin"-->
+                        <!--                            android:src="@drawable/edit" />-->
                         <RelativeLayout
                             android:layout_width="70dp"
                             android:layout_height="70dp">
@@ -307,18 +302,18 @@
                             <com.airbnb.lottie.LottieAnimationView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                app:lottie_rawRes="@raw/muzli"
-                                app:lottie_loop="true"
-                                app:lottie_autoPlay="true"
                                 android:layout_centerInParent="true"
-                                />
+                                app:lottie_autoPlay="true"
+                                app:lottie_loop="true"
+                                android:id="@+id/lav_sale_badge_edit_btn"
+                                app:lottie_rawRes="@raw/muzli" />
+
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/sale_badge_edit_btn"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/pencil"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_centerInParent="true"
-                                />
+                                android:src="@drawable/pencil" />
                         </RelativeLayout>
 
                     </LinearLayout>
@@ -336,29 +331,28 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
                             android:layout_marginTop="@dimen/thirtyTwoDpMargin"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center_horizontal"
-                            >
+                            android:orientation="horizontal">
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/coupon_content_headline"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
                                 android:layout_weight="1"
+                                android:gravity="center_vertical"
                                 android:text="@string/coupon_set_offer_title_hint"
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/largeText" />
 
-<!--                            <androidx.appcompat.widget.AppCompatImageView-->
-<!--                                android:id="@+id/headline_text_edit_btn"-->
-<!--                                android:layout_width="wrap_content"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_marginStart="@dimen/defaultDpMargin"-->
-<!--                                android:layout_marginLeft="@dimen/defaultDpMargin"-->
-<!--                                android:src="@drawable/edit" />-->
+                            <!--                            <androidx.appcompat.widget.AppCompatImageView-->
+                            <!--                                android:id="@+id/headline_text_edit_btn"-->
+                            <!--                                android:layout_width="wrap_content"-->
+                            <!--                                android:layout_height="wrap_content"-->
+                            <!--                                android:layout_marginStart="@dimen/defaultDpMargin"-->
+                            <!--                                android:layout_marginLeft="@dimen/defaultDpMargin"-->
+                            <!--                                android:src="@drawable/edit" />-->
                             <RelativeLayout
                                 android:layout_width="70dp"
                                 android:layout_height="70dp">
@@ -366,18 +360,18 @@
                                 <com.airbnb.lottie.LottieAnimationView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    app:lottie_rawRes="@raw/muzli"
-                                    app:lottie_loop="true"
-                                    app:lottie_autoPlay="true"
                                     android:layout_centerInParent="true"
-                                    />
+                                    app:lottie_autoPlay="true"
+                                    app:lottie_loop="true"
+                                    android:id="@+id/lav_headline_text_edit_btn"
+                                    app:lottie_rawRes="@raw/muzli" />
+
                                 <androidx.appcompat.widget.AppCompatImageView
                                     android:id="@+id/headline_text_edit_btn"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:src="@drawable/pencil"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     android:layout_centerInParent="true"
-                                    />
+                                    android:src="@drawable/pencil" />
                             </RelativeLayout>
 
                         </LinearLayout>
@@ -386,41 +380,39 @@
                             android:id="@+id/coupon_content_description"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
                             android:layout_marginTop="@dimen/eightDpMargin"
                             android:text="@string/coupon_set_offer_description_hint"
                             android:textColor="@color/dark_gray"
                             android:textSize="@dimen/mediumText"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_gravity="center_horizontal"
-                            />
+                            app:layout_constraintStart_toStartOf="parent" />
 
-<!--                        <androidx.appcompat.widget.AppCompatImageView-->
-<!--                            android:id="@+id/description_text_edit_btn"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_gravity="center_horizontal"-->
-<!--                            android:src="@drawable/edit" />-->
+                        <!--                        <androidx.appcompat.widget.AppCompatImageView-->
+                        <!--                            android:id="@+id/description_text_edit_btn"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_gravity="center_horizontal"-->
+                        <!--                            android:src="@drawable/edit" />-->
                         <RelativeLayout
                             android:layout_width="70dp"
                             android:layout_height="70dp"
-                            android:layout_gravity="center_horizontal"
-                            >
+                            android:layout_gravity="center_horizontal">
 
                             <com.airbnb.lottie.LottieAnimationView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                app:lottie_rawRes="@raw/muzli"
-                                app:lottie_loop="true"
-                                app:lottie_autoPlay="true"
                                 android:layout_centerInParent="true"
-                                />
+                                app:lottie_autoPlay="true"
+                                app:lottie_loop="true"
+                                android:id="@+id/lav_description_text_edit_btn"
+                                app:lottie_rawRes="@raw/muzli" />
+
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/description_text_edit_btn"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/pencil"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_centerInParent="true"
-                                />
+                                android:src="@drawable/pencil" />
                         </RelativeLayout>
 
                         <androidx.appcompat.widget.AppCompatButton
@@ -429,59 +421,58 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/sixtyDpMargin"
                             android:background="@color/gray"
+                            android:clickable="false"
                             android:text=""
                             android:textColor="@color/white"
-                            android:clickable="false"
                             android:textSize="@dimen/largeText" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:gravity="center_vertical"
-                        >
+                        app:layout_constraintEnd_toEndOf="parent">
+
                         <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/get_coupon_edit_hint"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/defaultDpMargin"
                             android:layout_weight="1"
-                            android:text="@string/coupon_get_coupon_button_text_hint"
                             android:gravity="center_vertical"
-                            android:id="@+id/get_coupon_edit_hint"
                             android:minWidth="0dp"
                             android:minHeight="0dp"
+                            android:text="@string/coupon_get_coupon_button_text_hint"
                             android:textColor="@color/light_gray"
-                            android:layout_marginEnd="@dimen/defaultDpMargin"
                             android:textSize="@dimen/largeText"
                             android:textStyle="bold" />
-<!--                        <androidx.appcompat.widget.AppCompatImageView-->
-<!--                            android:id="@+id/get_coupon_edit_btn"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:src="@drawable/edit"-->
-<!--                            />-->
+                        <!--                        <androidx.appcompat.widget.AppCompatImageView-->
+                        <!--                            android:id="@+id/get_coupon_edit_btn"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:src="@drawable/edit"-->
+                        <!--                            />-->
                         <RelativeLayout
                             android:layout_width="70dp"
-                            android:layout_height="70dp"
-                            >
+                            android:layout_height="70dp">
 
                             <com.airbnb.lottie.LottieAnimationView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                app:lottie_rawRes="@raw/muzli"
-                                app:lottie_loop="true"
-                                app:lottie_autoPlay="true"
                                 android:layout_centerInParent="true"
-                                />
+                                app:lottie_autoPlay="true"
+                                app:lottie_loop="true"
+                                android:id="@+id/lav_get_coupon_edit_btn"
+                                app:lottie_rawRes="@raw/muzli" />
+
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/get_coupon_edit_btn"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/pencil"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_centerInParent="true"
-                                />
+                                android:src="@drawable/pencil" />
                         </RelativeLayout>
                     </LinearLayout>
 
@@ -523,7 +514,7 @@
                         android:id="@+id/coupon_code_layout_wrapper"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/sixtyDpMargin"
+                        android:layout_marginTop="@dimen/eightDpMargin"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -534,26 +525,48 @@
                             android:id="@+id/coupon_code_text_view"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
                             android:layout_weight="1"
+                            android:gravity="center"
                             android:text="@string/coupon_set_coupon_code_hint"
                             android:textColor="@color/dark_gray"
                             android:textSize="@dimen/xlargeText" />
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/coupon_code_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/defaultDpMargin"
-                            android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:src="@drawable/edit" />
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:id="@+id/coupon_code_edit_btn"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="@dimen/defaultDpMargin"-->
+<!--                            android:layout_marginLeft="@dimen/defaultDpMargin"-->
+<!--                            android:src="@drawable/edit" />-->
+                        <RelativeLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            >
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_rawRes="@raw/muzli"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true"
+                                android:id="@+id/lav_coupon_code_edit_btn"
+                                android:layout_centerInParent="true"
+                                />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/coupon_code_edit_btn"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/pencil"
+                                android:layout_centerInParent="true"
+                                />
+                        </RelativeLayout>
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/coupon_valid_date_layout_wrapper"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+                        android:layout_marginTop="@dimen/eightDpMargin"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -564,9 +577,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            >
+                            android:orientation="horizontal">
+
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -576,18 +589,18 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/defaultDpMargin"
-                                android:layout_marginLeft="@dimen/defaultDpMargin"
                                 android:text="@string/coupon_valid_till_text"
                                 android:textColor="@color/gray"
                                 android:textSize="@dimen/mediumText" />
                         </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
                             android:layout_marginStart="@dimen/defaultDpMargin"
-                            >
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/coupon_valid_till_text_view"
                                 android:layout_width="wrap_content"
@@ -596,14 +609,35 @@
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/mediumText" />
 
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:id="@+id/coupon_valid_till_edit_btn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/defaultDpMargin"
-                                android:src="@drawable/edit" />
-                        </LinearLayout>
+<!--                            <androidx.appcompat.widget.AppCompatImageView-->
+<!--                                android:id="@+id/coupon_valid_till_edit_btn"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginStart="@dimen/defaultDpMargin"-->
+<!--                                android:src="@drawable/edit" />-->
+                            <RelativeLayout
+                                android:layout_width="70dp"
+                                android:layout_height="70dp"
+                                >
 
+                                <com.airbnb.lottie.LottieAnimationView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    app:lottie_rawRes="@raw/muzli"
+                                    app:lottie_loop="true"
+                                    app:lottie_autoPlay="true"
+                                    android:id="@+id/lav_coupon_valid_till_edit_btn"
+                                    android:layout_centerInParent="true"
+                                    />
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/coupon_valid_till_edit_btn"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/pencil"
+                                    android:layout_centerInParent="true"
+                                    />
+                            </RelativeLayout>
+                        </LinearLayout>
 
 
                     </LinearLayout>
@@ -612,7 +646,7 @@
                         android:id="@+id/coupon_terms_conditions_layout_wrapper"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+                        android:layout_marginTop="@dimen/eightDpMargin"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -623,19 +657,41 @@
                             android:id="@+id/coupon_terms_condition"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
                             android:layout_weight="1"
-                            android:textColor="@color/dark_gray"
-                            android:text="@string/coupon_set_terms_condition_hint" />
+                            android:gravity="center_vertical"
+                            android:text="@string/coupon_set_terms_condition_hint"
+                            android:textColor="@color/dark_gray" />
 
 
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/coupon_terms_condition_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/defaultDpMargin"
-                            android:layout_marginLeft="@dimen/defaultDpMargin"
-                            android:src="@drawable/edit" />
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:id="@+id/coupon_terms_condition_edit_btn"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="@dimen/defaultDpMargin"-->
+<!--                            android:layout_marginLeft="@dimen/defaultDpMargin"-->
+<!--                            android:src="@drawable/edit" />-->
+                        <RelativeLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            >
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_rawRes="@raw/muzli"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true"
+                                android:id="@+id/lav_coupon_terms_condition_edit_btn"
+                                android:layout_centerInParent="true"
+                                />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/coupon_terms_condition_edit_btn"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/pencil"
+                                android:layout_centerInParent="true"
+                                />
+                        </RelativeLayout>
 
                     </LinearLayout>
 
@@ -645,10 +701,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/thirtyTwoDpMargin"
                         android:background="@color/dark_gray"
+                        android:clickable="false"
                         android:text=""
                         android:textColor="@color/white"
                         android:textSize="@dimen/largeText"
-                        android:clickable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -657,31 +713,53 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_margin="@dimen/eightDpMargin"
                         android:elevation="2dp"
-                        >
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        app:layout_constraintTop_toBottomOf="@id/redeem_now_btn"
+                        app:layout_constraintBottom_toTopOf="@id/redeem_now_btn"
+                        app:layout_constraintEnd_toEndOf="parent">
+
                         <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/redeem_now_edit_hint"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:id="@+id/redeem_now_edit_hint"
-                            android:text="@string/coupon_set_redeem_button_hint"
                             android:gravity="center_vertical"
                             android:minWidth="0dp"
                             android:minHeight="0dp"
+                            android:text="@string/coupon_set_redeem_button_hint"
                             android:textColor="@color/gray"
                             android:textSize="@dimen/largeText"
                             android:textStyle="bold" />
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/redeem_now_edit_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/edit"
-                            />
+
+<!--                        <androidx.appcompat.widget.AppCompatImageView-->
+<!--                            android:id="@+id/redeem_now_edit_btn"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:src="@drawable/edit" />-->
+                        <RelativeLayout
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            >
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_rawRes="@raw/muzli"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true"
+                                android:id="@+id/lav_redeem_now_edit_btn"
+                                android:layout_centerInParent="true"
+                                />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/redeem_now_edit_btn"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/pencil"
+                                android:layout_centerInParent="true"
+                                />
+                        </RelativeLayout>
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -726,25 +804,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/defaultDpMargin"
                 android:layout_marginBottom="@dimen/thirtyTwoDpMargin"
-                android:text="@string/back_text"
-                android:textColor="@color/white"
                 android:drawableStart="@drawable/ic_back_arrow"
                 android:gravity="center_vertical"
-                android:visibility="gone"
+                android:text="@string/back_text"
+                android:textColor="@color/white"
                 android:textSize="@dimen/largeText"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/parent_wrapper_layout" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/next_btn"
-                android:gravity="center_horizontal"
-                >
+                app:layout_constraintTop_toBottomOf="@id/next_btn">
+
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/coupon_user_hint"
                     android:layout_width="wrap_content"
@@ -753,8 +831,8 @@
                     android:text="@string/coupon_user_hint_text"
                     android:textColor="@color/black"
                     android:textSize="@dimen/smallText"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
+
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -762,8 +840,7 @@
                     android:text="@string/coupon_required_fields_hint_text"
                     android:textColor="@color/black"
                     android:textSize="@dimen/smallText"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
             </LinearLayout>
 
 

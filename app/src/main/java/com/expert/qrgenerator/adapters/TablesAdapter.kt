@@ -25,6 +25,7 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
 
     private var mListener: OnItemClickListener? = null
     private var appSettings = AppSettings(context)
+    private var addViewHolder:AddItemViewHolder?=null
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
@@ -68,11 +69,10 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             0 -> {
-                val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.addNewTableButton.setOnClickListener {
+                addViewHolder = holder as AddItemViewHolder
+                addViewHolder!!.addNewTableButton.setOnClickListener {
                     mListener!!.onAddItemClick(position)
                 }
-                openAddTableView(addViewHolder)
             }
             else -> {
                 val table = tableList[position]
@@ -105,6 +105,9 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
                         appSettings.putLong("tt11",System.currentTimeMillis())
+                        if (addViewHolder != null){
+                            openAddTableView(addViewHolder!!)
+                        }
                         tooltip.dismiss()
                     }
                     .build()
