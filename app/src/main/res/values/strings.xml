@@ -314,4 +314,5 @@
     <string name="code_data">Code Data</string>
     <string name="date">Date</string>
     <string name="add_product_image">+ add product image</string>
+    <string name="choose_image_gallery">Choose Image From Gallery</string>
 </resources>

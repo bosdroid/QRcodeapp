@@ -1,5 +1,6 @@
 package com.expert.qrgenerator.view.activities
 
+import android.app.Activity
 import android.app.SearchManager
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -14,13 +15,11 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.RadioGroup
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
@@ -41,12 +40,15 @@ import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.utils.TableGenerator
+import com.expert.qrgenerator.utils.TextRecogniser
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
 import com.expert.qrgenerator.viewmodelfactory.ViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -55,8 +57,10 @@ import java.util.*
 import java.util.regex.Pattern
 
 
+@Suppress("DEPRECATION")
 class CodeDetailActivity : BaseActivity(), View.OnClickListener {
-
+    private val REQUEST_IMAGE_CAPTURE: Int = 200
+    private val REQUEST_PICK_IMAGE: Int = 100
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
     private var codeHistory: CodeHistory? = null
@@ -85,6 +89,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var protocolGroup: RadioGroup
     private lateinit var appViewModel: AppViewModel
     private lateinit var feedbackCsvExportImageView: AppCompatImageView
+    private lateinit var updateInputBox: TextInputEditText
 
     //    private lateinit var viewModel: DynamicQrViewModel
     private lateinit var barcodeDetailParentLayout: LinearLayout
@@ -115,12 +120,12 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         context = this
         tableGenerator = TableGenerator(context)
         viewModel = ViewModelProviders.of(
-            this,
-            ViewModelFactory(CodeDetailViewModel()).createFor()
+                this,
+                ViewModelFactory(CodeDetailViewModel()).createFor()
         )[CodeDetailViewModel::class.java]
         appViewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(this.application)
+                this,
+                ViewModelProvider.AndroidViewModelFactory(this.application)
         ).get(AppViewModel::class.java)
         toolbar = findViewById(R.id.toolbar)
         if (intent != null && intent.hasExtra("HISTORY_ITEM")) {
@@ -213,7 +218,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 if (codeHistory!!.isDynamic.toInt() == 1) {
                     dynamicLinkUpdateLayout.visibility = View.VISIBLE
                     dialogSubHeading.text =
-                        "${getString(R.string.current_link_text)} ${codeHistory!!.data}"
+                            "${getString(R.string.current_link_text)} ${codeHistory!!.data}"
                 } else {
                     dynamicLinkUpdateLayout.visibility = View.GONE
 
@@ -251,25 +256,25 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     feedbackDetailWrapperLayout.visibility = View.VISIBLE
                     feedbackAdapter.notifyItemRangeChanged(0, feedbacksList.size)
                     feedbackAdapter.setOnItemClickListener(object :
-                        FeedbackAdapter.OnItemClickListener {
+                            FeedbackAdapter.OnItemClickListener {
                         override fun onItemClick(position: Int) {
                             val item = feedbacksList[position]
                             val sharingText =
-                                "Feedback: ${item.comment}\nEmail: ${item.email}\nPhone: ${item.phone}\nStars: ${item.rating}\n ${
-                                    getString(
-                                        R.string.qr_sign
-                                    )
-                                }"
+                                    "Feedback: ${item.comment}\nEmail: ${item.email}\nPhone: ${item.phone}\nStars: ${item.rating}\n ${
+                                        getString(
+                                                R.string.qr_sign
+                                        )
+                                    }"
                             MaterialAlertDialogBuilder(context)
-                                .setMessage(sharingText)
-                                .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
-                                    dialog.dismiss()
-                                }
-                                .setPositiveButton(getString(R.string.share_text)) { dialog, which ->
-                                    dialog.dismiss()
-                                    shareFeedback(sharingText)
-                                }
-                                .create().show()
+                                    .setMessage(sharingText)
+                                    .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
+                                        dialog.dismiss()
+                                    }
+                                    .setPositiveButton(getString(R.string.share_text)) { dialog, which ->
+                                        dialog.dismiss()
+                                        shareFeedback(sharingText)
+                                    }
+                                    .create().show()
                         }
 
                     })
@@ -302,7 +307,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
                 val file = File(filesDir, fileName)
                 val path =
-                    FileProvider.getUriForFile(context, "com.expert.qrgenerator.fileprovider", file)
+                        FileProvider.getUriForFile(context, "com.expert.qrgenerator.fileprovider", file)
                 dismiss()
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.type = "text/csv"
@@ -338,21 +343,21 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         when (v!!.id) {
             R.id.code_detail_clipboard_copy_view -> {
                 val clipboard: ClipboardManager =
-                    getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                        getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                 val clip = ClipData.newPlainText(
-                    clipboard.primaryClipDescription!!.label,
-                    encodeDataTextView.text.toString()
+                        clipboard.primaryClipDescription!!.label,
+                        encodeDataTextView.text.toString()
                 )
                 clipboard.setPrimaryClip(clip)
                 Toast.makeText(
-                    context,
-                    getString(R.string.text_saved_clipboard),
-                    Toast.LENGTH_SHORT
+                        context,
+                        getString(R.string.text_saved_clipboard),
+                        Toast.LENGTH_SHORT
                 ).show()
             }
             R.id.code_detail_text_search_button -> {
                 val escapedQuery: String = URLEncoder.encode(
-                    encodeDataTextView.text.toString().trim(), "UTF-8"
+                        encodeDataTextView.text.toString().trim(), "UTF-8"
                 )
                 val intent = Intent(Intent.ACTION_WEB_SEARCH)
                 intent.putExtra(SearchManager.QUERY, escapedQuery)
@@ -363,9 +368,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
             R.id.code_detail_pdf_save_button -> {
                 if (RuntimePermissionHelper.checkStoragePermission(
-                        context,
-                        Constants.READ_STORAGE_PERMISSION
-                    )
+                                context,
+                                Constants.READ_STORAGE_PERMISSION
+                        )
                 ) {
                     createPdf(false)
                 }
@@ -373,9 +378,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             R.id.code_detail_pdf_share_button -> {
                 isShareAfterCreated = true
                 if (RuntimePermissionHelper.checkStoragePermission(
-                        context,
-                        Constants.READ_STORAGE_PERMISSION
-                    )
+                                context,
+                                Constants.READ_STORAGE_PERMISSION
+                        )
                 ) {
                     if (pdfFile == null) {
                         createPdf(true)
@@ -389,28 +394,28 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 val value = updateDynamicLinkInput.text.toString().trim()
                 if (selectedProtocol.isEmpty()) {
                     showAlert(
-                        context,
-                        getString(R.string.protocol_error)
+                            context,
+                            getString(R.string.protocol_error)
                     )
                 } else if (value.isEmpty()) {
 
                     showAlert(
-                        context,
-                        getString(R.string.required_data_input_error)
+                            context,
+                            getString(R.string.required_data_input_error)
                     )
 
                 } else if (value.contains("http://") || value.contains("https://")
                 ) {
                     showAlert(
-                        context,
-                        getString(R.string.without_protocol_error)
+                            context,
+                            getString(R.string.without_protocol_error)
                     )
                 } else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$")
-                        .matcher(value).find()
+                                .matcher(value).find()
                 ) {
                     showAlert(
-                        context,
-                        getString(R.string.valid_website_error)
+                            context,
+                            getString(R.string.valid_website_error)
                     )
                 } else {
                     val hashMap = hashMapOf<String, String>()
@@ -432,7 +437,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                                 url
                             }
                             dialogSubHeading.text =
-                                "${getString(R.string.current_link_text)} $selectedProtocol$value"
+                                    "${getString(R.string.current_link_text)} $selectedProtocol$value"
                             encodeDataTextView.text = "$selectedProtocol$value"
                             appViewModel.update("$selectedProtocol$value", url, codeHistory!!.id)
                             showAlert(context, getString(R.string.dynamic_update_success_text))
@@ -454,26 +459,52 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
     private fun updateBarcodeDetail(id: Int, triple: Triple<AppCompatImageView, String, String>) {
         val updateBarcodeLayout =
-            LayoutInflater.from(context).inflate(R.layout.update_barcode_detail_dialog, null)
-        val updateInputBox =
-            updateBarcodeLayout.findViewById<TextInputEditText>(R.id.update_barcode_detail_text_input_field)
+                LayoutInflater.from(context).inflate(R.layout.update_barcode_detail_dialog, null)
+        updateInputBox =
+                updateBarcodeLayout.findViewById<TextInputEditText>(R.id.update_barcode_detail_text_input_field)
 
         val cleanBrushView =
-            updateBarcodeLayout.findViewById<AppCompatImageView>(R.id.update_barcode_detail_cleaning_text_view)
+                updateBarcodeLayout.findViewById<AppCompatImageView>(R.id.update_barcode_detail_cleaning_text_view)
         val cancelBtn =
-            updateBarcodeLayout.findViewById<MaterialButton>(R.id.update_barcode_detail_dialog_cancel_btn)
+                updateBarcodeLayout.findViewById<MaterialButton>(R.id.update_barcode_detail_dialog_cancel_btn)
         val updateBtn =
-            updateBarcodeLayout.findViewById<MaterialButton>(R.id.update_barcode_detail_dialog_update_btn)
+                updateBarcodeLayout.findViewById<MaterialButton>(R.id.update_barcode_detail_dialog_update_btn)
+        val cameraImg =
+                updateBarcodeLayout.findViewById<ImageView>(R.id.cameraImg)
+        val galleryImg =
+                updateBarcodeLayout.findViewById<ImageView>(R.id.galleryImg)
 
         val builder = MaterialAlertDialogBuilder(context)
         builder.setView(updateBarcodeLayout)
         builder.setCancelable(false)
         val alert = builder.create()
         alert.show()
+
+        cameraImg.setOnClickListener {
+            if (RuntimePermissionHelper.checkCameraPermission(
+                            context, Constants.CAMERA_PERMISSION
+                    )
+            ) {
+                pickImageFromCamera()
+            }
+        }
+        galleryImg.setOnClickListener {
+            if (RuntimePermissionHelper.checkCameraPermission(
+                            context,
+                            Constants.READ_STORAGE_PERMISSION
+                    )
+            ) {
+                pickImageFromGallery()
+            }
+
+        }
+
+
         cancelBtn.setOnClickListener {
             hideSoftKeyboard(context, cancelBtn)
             alert.dismiss()
         }
+
 
         cleanBrushView.setOnClickListener { updateInputBox.setText("") }
 
@@ -484,10 +515,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 hideSoftKeyboard(context, updateBtn)
                 alert.dismiss()
                 val isUpdate = tableGenerator.updateBarcodeDetail(
-                    tableName,
-                    triple.third,
-                    value,
-                    id
+                        tableName,
+                        triple.third,
+                        value,
+                        id
                 )
                 if (isUpdate) {
                     tableObject = tableGenerator.getUpdateBarcodeDetail(tableName, id)
@@ -495,7 +526,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 }
             } else {
                 Toast.makeText(context, getString(R.string.empty_text_error), Toast.LENGTH_SHORT)
-                    .show()
+                        .show()
             }
         }
 
@@ -519,38 +550,38 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
 
             barcodeEditList.add(
-                Triple(
-                    AppCompatImageView(context),
-                    tableObject!!.id.toString(),
-                    "id"
-                )
+                    Triple(
+                            AppCompatImageView(context),
+                            tableObject!!.id.toString(),
+                            "id"
+                    )
             )
             val codeDataLayout = LayoutInflater.from(context)
-                .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+                    .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
             val codeDataColumnValue =
-                codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+                    codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
             val codeDataColumnName =
-                codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+                    codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
             val codeDataColumnEditView =
-                codeDataLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+                    codeDataLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
             codeDataColumnEditView.id = counter
             barcodeEditList.add(
-                Triple(
-                    codeDataColumnEditView,
-                    tableObject!!.code_data,
-                    "code_data"
-                )
+                    Triple(
+                            codeDataColumnEditView,
+                            tableObject!!.code_data,
+                            "code_data"
+                    )
             )
             codeDataColumnEditView.setOnClickListener(this)
             codeDataColumnValue.text = tableObject!!.code_data
             codeDataColumnName.text = "code_data"
             barcodeDetailParentLayout.addView(codeDataLayout)
             val dateLayout = LayoutInflater.from(context)
-                .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+                    .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
             val dateColumnValue =
-                dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+                    dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
             val dateColumnName =
-                dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+                    dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
             val dateColumnEditView = dateLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
             counter += 1
             dateColumnEditView.id = counter
@@ -560,13 +591,13 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             dateColumnName.text = "date"
             barcodeDetailParentLayout.addView(dateLayout)
             val imageLayout = LayoutInflater.from(context)
-                .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+                    .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
             val imageColumnValue =
-                imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+                    imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
             val imageColumnName =
-                imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+                    imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
             val imageColumnEditView =
-                imageLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+                    imageLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
             counter += 1
             imageColumnEditView.id = counter
             barcodeEditList.add(Triple(imageColumnEditView, tableObject!!.image, "image"))
@@ -578,7 +609,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             for (i in 0 until tableObject!!.dynamicColumns.size) {
                 val item = tableObject!!.dynamicColumns[i]
                 val layout = LayoutInflater.from(context)
-                    .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+                        .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
                 val columnValue = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
                 val columnName = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
                 val columnEditView = layout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
@@ -598,7 +629,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private fun textShare() {
         val intent = Intent(Intent.ACTION_SEND)
         val shareBody =
-            "${getString(R.string.app_name)} \n ${encodeDataTextView.text.toString().trim()}"
+                "${getString(R.string.app_name)} \n ${encodeDataTextView.text.toString().trim()}"
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_TEXT, shareBody)
         startActivity(Intent.createChooser(intent, getString(R.string.share_using)))
@@ -645,16 +676,16 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             val appName = getString(R.string.app_name)
             val xPos = (canvas.width / 2) - (appName.length) / 2
             val yPos =
-                (canvas.height / 2 - (titlePaint.descent() + titlePaint.ascent()) / 2).toInt()
+                    (canvas.height / 2 - (titlePaint.descent() + titlePaint.ascent()) / 2).toInt()
             canvas.drawText(appName, xPos.toFloat(), 40.toFloat(), titlePaint)
             paint.textAlign = Paint.Align.CENTER
             val xCodePos = (canvas.width / 2) - (bitmap!!.width) / 2
             canvas.drawBitmap(bitmap!!, xCodePos.toFloat(), 50.toFloat(), paint)
             canvas.drawText(
-                encodeDataTextView.text.toString(),
-                30.toFloat(),
-                280.toFloat(),
-                dataPaint
+                    encodeDataTextView.text.toString(),
+                    30.toFloat(),
+                    280.toFloat(),
+                    dataPaint
             )
             val typePaint = Paint()
             typePaint.textAlign = Paint.Align.RIGHT
@@ -665,17 +696,17 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             val datePaint = Paint()
             datePaint.textSize = 16.toFloat()
             canvas.drawText(
-                getFormattedDate(context, codeHistory!!.createdAt.toLong()),
-                30.toFloat(),
-                300.toFloat(),
-                datePaint
+                    getFormattedDate(context, codeHistory!!.createdAt.toLong()),
+                    30.toFloat(),
+                    300.toFloat(),
+                    datePaint
             )
 
             document.finishPage(page)
             document.writeTo(fOut)
             document.close()
             Toast.makeText(this, getString(R.string.pdf_saved_success_text), Toast.LENGTH_SHORT)
-                .show()
+                    .show()
             if (isShareAfterCreated) {
                 sharePdfFile()
             }
@@ -688,9 +719,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
@@ -704,12 +735,12 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     }
                 } else {
                     MaterialAlertDialogBuilder(context)
-                        .setMessage(getString(R.string.external_storage_permission_error))
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.ok_text)) { dialog, which ->
-                            dialog.dismiss()
-                        }
-                        .create().show()
+                            .setMessage(getString(R.string.external_storage_permission_error))
+                            .setCancelable(false)
+                            .setPositiveButton(getString(R.string.ok_text)) { dialog, which ->
+                                dialog.dismiss()
+                            }
+                            .create().show()
                 }
             }
             else -> {
@@ -725,8 +756,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             if (pdfFile!!.exists()) {
                 val fileUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     FileProvider.getUriForFile(
-                        context,
-                        context.applicationContext.packageName + ".fileprovider", pdfFile!!
+                            context,
+                            context.applicationContext.packageName + ".fileprovider", pdfFile!!
                     )
 
                 } else {
@@ -744,6 +775,48 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 }
             } else {
                 showAlert(context, getString(R.string.pdf_create_failed_error))
+            }
+        }
+    }
+
+    private fun pickImageFromGallery() {
+        val pickPhoto = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(
+                Intent.createChooser(
+                        pickPhoto, getString(R.string.choose_image_gallery)
+                ), REQUEST_PICK_IMAGE
+        )
+    }
+
+    private fun pickImageFromCamera() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+    }
+
+    private fun cropImage(imageUri: Uri) {
+        CropImage.activity(imageUri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setMultiTouchEnabled(true)
+                .start(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+
+        if (requestCode == REQUEST_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
+            val cropPicUri = CropImage.getPickImageResultUri(this, intent)
+            cropImage(cropPicUri)
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val cropPicUri = CropImage.getPickImageResultUri(this, intent)
+            cropImage(cropPicUri)
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            val result = CropImage.getActivityResult(intent)
+            val imgUri = result.uri
+            val uploadUri = imgUri
+            try {
+                TextRecogniser.runTextRecognition(applicationContext, updateInputBox, uploadUri)
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
     }

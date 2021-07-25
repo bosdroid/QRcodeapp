@@ -189,5 +189,9 @@ dependencies {
 
     // TOOLTIPS LIBRARY
     implementation 'com.github.douglasjunior:android-simple-tooltip:1.0.0-rc.0'
+    // Ml Kit Text recognition
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:16.3.0'
+    // cropping image
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
 }
