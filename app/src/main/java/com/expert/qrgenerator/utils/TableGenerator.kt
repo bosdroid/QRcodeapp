@@ -16,6 +16,10 @@ class TableGenerator(context: Context) {
         database.insertData(tableName,data)
     }
 
+    fun updateData(tableName: String, data: List<Pair<String, String>>,id: Int):Boolean {
+        return database.updateData(tableName,data,id)
+    }
+
     fun generateTable(tableName: String){
         database.generateTable(tableName)
     }

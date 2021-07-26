@@ -4,7 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.*
+import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import androidx.appcompat.widget.AppCompatImageView
@@ -15,6 +19,10 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TableDetailAdapter
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.utils.TableGenerator
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
 import java.lang.Exception
@@ -33,8 +41,10 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
     private var dataList = mutableListOf<TableObject>()
     private var sortingImages = mutableListOf<AppCompatImageView>()
     private lateinit var csvExportImageView: AppCompatImageView
+    private lateinit var quickEditCheckbox: MaterialCheckBox
     private var currentColumn = ""
     private var currentOrder = ""
+    private var quickEditFlag = false
     val layoutParams = TableRow.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -92,6 +102,12 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
         csvExportImageView.setOnClickListener {
             exportCsv(tableName)
+        }
+
+        // QUICK EDIT TABLE CHECKBOX LISTENER
+        quickEditCheckbox = findViewById(R.id.quick_edit_table_view_checkbox)
+        quickEditCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+            quickEditFlag = isChecked
         }
 
     }
@@ -205,13 +221,20 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         if (view.tag == "row") {
             val position = view.id
             val item = dataList[position]
+            if (quickEditFlag) {
+                openQuickEditDialog(item)
+            } else {
+                val intent = Intent(context, CodeDetailActivity::class.java)
+                intent.putExtra("TABLE_NAME", tableName)
+                intent.putExtra("TABLE_ITEM", item)
+                startActivity(intent)
+            }
 
-            val intent = Intent(context, CodeDetailActivity::class.java)
-            intent.putExtra("TABLE_NAME", tableName)
-            intent.putExtra("TABLE_ITEM", item)
-            intent.putExtra("TABLE_NAME",tableName)
-            startActivity(intent)
 
+        } else if (view.tag == "qe") {
+            val position = view.id
+            val triple = barcodeEditList[position]
+            triple.first.setText("")
         } else {
             if (dataList.isNotEmpty()) {
                 val tag = view.tag.toString().toLowerCase(Locale.ENGLISH)
@@ -235,6 +258,183 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                 updateSortingImage(image, currentOrder)
                 getTableData(tableName, currentColumn, currentOrder)
 
+            }
+
+        }
+
+    }
+
+
+    private var barcodeEditList = mutableListOf<Triple<TextInputEditText, AppCompatImageView, String>>()
+    private var counter: Int = 0
+    private var detailList = mutableListOf<Pair<String, String>>()
+    private fun openQuickEditDialog(item: TableObject) {
+
+        val quickEditParentLayout =
+            LayoutInflater.from(context).inflate(R.layout.update_quick_edit_table_layout, null)
+        val cancelDialogBtn =
+            quickEditParentLayout.findViewById<MaterialButton>(R.id.quick_edit_dialog_cancel_btn)
+        val updateDialogBtn =
+            quickEditParentLayout.findViewById<MaterialButton>(R.id.quick_edit_dialog_update_btn)
+        val quickEditWrapperLayout =
+            quickEditParentLayout.findViewById<LinearLayout>(R.id.quick_edit_parent_layout)
+
+        val codeDataLayout = LayoutInflater.from(context)
+            .inflate(R.layout.quick_edit_single_layout, quickEditWrapperLayout, false)
+        val codeDataValue =
+            codeDataLayout.findViewById<TextInputEditText>(R.id.quick_edit_barcode_detail_text_input_field)
+        val codeDataClearBrushView =
+            codeDataLayout.findViewById<AppCompatImageView>(R.id.quick_edit_barcode_detail_cleaning_text_view)
+        codeDataClearBrushView.id = counter
+        codeDataClearBrushView.tag = "qe"
+
+        barcodeEditList.add(
+            Triple(
+                codeDataValue,
+                codeDataClearBrushView,
+                "code_data"
+            )
+        )
+        codeDataClearBrushView.setOnClickListener(this)
+        codeDataValue.setText(item.code_data)
+        codeDataValue.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateDialogBtn.isEnabled = true
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+        quickEditWrapperLayout.addView(codeDataLayout)
+        val dateLayout = LayoutInflater.from(context)
+            .inflate(R.layout.quick_edit_single_layout, quickEditWrapperLayout, false)
+        val dateValue =
+            dateLayout.findViewById<TextInputEditText>(R.id.quick_edit_barcode_detail_text_input_field)
+        val dateClearBrushView =
+            dateLayout.findViewById<AppCompatImageView>(R.id.quick_edit_barcode_detail_cleaning_text_view)
+        counter += 1
+        dateClearBrushView.id = counter
+        dateClearBrushView.tag = "qe"
+
+        barcodeEditList.add(Triple(dateValue, dateClearBrushView, "date"))
+        dateClearBrushView.setOnClickListener(this)
+        dateValue.setText(item.date)
+        dateValue.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateDialogBtn.isEnabled = true
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+        quickEditWrapperLayout.addView(dateLayout)
+        val imageLayout = LayoutInflater.from(context)
+            .inflate(R.layout.quick_edit_single_layout, quickEditWrapperLayout, false)
+        val imageValue =
+            imageLayout.findViewById<TextInputEditText>(R.id.quick_edit_barcode_detail_text_input_field)
+        val imageClearBrushView =
+            imageLayout.findViewById<AppCompatImageView>(R.id.quick_edit_barcode_detail_cleaning_text_view)
+        counter += 1
+        imageClearBrushView.id = counter
+        imageClearBrushView.tag = "qe"
+
+        barcodeEditList.add(Triple(imageValue, imageClearBrushView, "image"))
+        imageClearBrushView.setOnClickListener(this)
+        imageValue.setText(item.image)
+        imageValue.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateDialogBtn.isEnabled = true
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+        quickEditWrapperLayout.addView(imageLayout)
+
+        for (i in 0 until item.dynamicColumns.size) {
+            val item1 = item.dynamicColumns[i]
+
+            val layout = LayoutInflater.from(context)
+                .inflate(R.layout.quick_edit_single_layout, quickEditWrapperLayout, false)
+            val value =
+                layout.findViewById<TextInputEditText>(R.id.quick_edit_barcode_detail_text_input_field)
+            val clearBrushView =
+                layout.findViewById<AppCompatImageView>(R.id.quick_edit_barcode_detail_cleaning_text_view)
+            counter += 1
+            clearBrushView.id = counter
+            clearBrushView.tag = "qe"
+
+            barcodeEditList.add(Triple(value, clearBrushView, item1.first))
+            clearBrushView.setOnClickListener(this)
+            value.setText(item1.second)
+            value.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    updateDialogBtn.isEnabled = true
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                }
+
+            })
+            quickEditWrapperLayout.addView(layout)
+
+        }
+        counter = 0
+
+        val builder = MaterialAlertDialogBuilder(context)
+        builder.setView(quickEditParentLayout)
+        builder.setCancelable(false)
+        val alert = builder.create()
+        alert.show()
+
+        cancelDialogBtn.setOnClickListener { alert.dismiss() }
+        updateDialogBtn.setOnClickListener {
+            alert.dismiss()
+            startLoading(context)
+            var flag = false
+
+            for (i in 0 until barcodeEditList.size) {
+                val triple = barcodeEditList[i]
+                val value = triple.first.text.toString().trim()
+                if (value.isEmpty()) {
+                    flag = false
+                    detailList.clear()
+                    break
+                } else {
+                    flag = true
+                    detailList.add(Pair(triple.third,value))
+                }
+            }
+            if (flag) {
+                if (detailList.isNotEmpty()){
+                    val isSuccess = tableGenerator.updateData(tableName, detailList,item.id)
+                    if (isSuccess){
+                        dismiss()
+                        getTableData(tableName,"","")
+                    }
+                    else{
+                        dismiss()
+                        showAlert(context, getString(R.string.database_update_failed_error))
+                    }
+                }
+            } else {
+                dismiss()
+                showAlert(context, getString(R.string.empty_text_error))
             }
 
         }
@@ -269,11 +469,10 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
             for (j in 0 until dataList.size) {
                 var image = ""
                 val data = dataList[j]
-                if (data.image.contains(",")){
-                    val temp = data.image.replace(",",", ")
+                if (data.image.contains(",")) {
+                    val temp = data.image.replace(",", ", ")
                     image = "\"$temp\""
-                }
-                else{
+                } else {
                     image = data.image
                 }
                 builder.append("\n${data.id},${data.code_data},${data.date},$image")

@@ -159,12 +159,14 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     fieldType = "nonChangeable"
                     scrollCreateTable.fullScroll(ScrollView.FOCUS_UP)
                     hideSoftKeyboard(context, scrollCreateTable)
+                    openDefaultValueTipsDialog(defaultValueFieldTInput)
                 }
                 R.id.list_with_values_radio_btn -> {
                     isNonChangeableCheckBox = false
                     defaultValueFieldTInput.visibility = View.GONE
                     listWithFieldsBtn.visibility = View.VISIBLE
                     fieldType = "listWithValues"
+                    openAttachListValuesTipsDialog(listWithFieldsBtn)
                 }
                 else -> {
 
@@ -386,7 +388,6 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
                         appSettings.putLong("tt19",System.currentTimeMillis())
-                        openDefaultValueTipsDialog(defaultValueFieldTInput)
                         tooltip.dismiss()
                     }
                     .build()
@@ -407,7 +408,6 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
                         appSettings.putLong("tt20",System.currentTimeMillis())
-                        openAttachListValuesTipsDialog(listWithFieldsBtn)
                         tooltip.dismiss()
                     }
                     .build()

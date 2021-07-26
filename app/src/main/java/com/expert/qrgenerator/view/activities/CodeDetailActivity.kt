@@ -14,6 +14,8 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -85,6 +87,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var protocolGroup: RadioGroup
     private lateinit var appViewModel: AppViewModel
     private lateinit var feedbackCsvExportImageView: AppCompatImageView
+    private lateinit var qrCodeHistoryNotesInputField: TextInputEditText
+    private lateinit var updateNotesBtn: AppCompatButton
 
     //    private lateinit var viewModel: DynamicQrViewModel
     private lateinit var barcodeDetailParentLayout: LinearLayout
@@ -177,6 +181,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 }
             }
         }
+        qrCodeHistoryNotesInputField = findViewById(R.id.qr_code_history_notes_input_field)
+        updateNotesBtn = findViewById(R.id.update_notes_btn)
+        updateNotesBtn.setOnClickListener(this)
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
@@ -442,6 +449,33 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     })
                 }
             }
+            R.id.update_notes_btn -> {
+                val notesText = qrCodeHistoryNotesInputField.text.toString().trim()
+                if (notesText.isNotEmpty()) {
+                    startLoading(context)
+                    val columns = tableGenerator.getTableColumns(tableName)
+                    if (columns!!.joinToString(",").contains("notes")){
+                        val isSuccess = tableGenerator.updateBarcodeDetail(tableName,"notes",notesText,tableObject!!.id)
+                        if (isSuccess){
+                            Toast.makeText(context,getString(R.string.notes_update_success_text),Toast.LENGTH_SHORT).show()
+                            dismiss()
+                        }
+                    }
+                    else{
+                        tableGenerator.addNewColumn(tableName, Pair("notes","TEXT"),"")
+                        Handler(Looper.myLooper()!!).postDelayed({
+                            val isSuccess = tableGenerator.updateBarcodeDetail(tableName,"notes",notesText,tableObject!!.id)
+                            if (isSuccess){
+                                Toast.makeText(context,getString(R.string.notes_update_success_text),Toast.LENGTH_SHORT).show()
+                                dismiss()
+                            }
+                        },5000)
+
+                    }
+                } else {
+                    showAlert(context,getString(R.string.empty_text_error))
+                }
+            }
             else -> {
                 val position = v.id
                 val id = barcodeEditList[0].second.toInt()
@@ -577,18 +611,24 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
             for (i in 0 until tableObject!!.dynamicColumns.size) {
                 val item = tableObject!!.dynamicColumns[i]
-                val layout = LayoutInflater.from(context)
-                    .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
-                val columnValue = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
-                val columnName = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
-                val columnEditView = layout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
-                counter += 1
-                columnEditView.id = counter
-                barcodeEditList.add(Triple(columnEditView, item.second, item.first))
-                columnEditView.setOnClickListener(this)
-                columnValue.text = item.second
-                columnName.text = item.first
-                barcodeDetailParentLayout.addView(layout)
+                if (item.first == "notes"){
+                    qrCodeHistoryNotesInputField.setText(item.second)
+                }
+                else{
+                    val layout = LayoutInflater.from(context)
+                        .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+                    val columnValue = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+                    val columnName = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+                    val columnEditView = layout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+                    counter += 1
+                    columnEditView.id = counter
+                    barcodeEditList.add(Triple(columnEditView, item.second, item.first))
+                    columnEditView.setOnClickListener(this)
+                    columnValue.text = item.second
+                    columnName.text = item.first
+                    barcodeDetailParentLayout.addView(layout)
+                }
+
             }
             counter = 0
         }

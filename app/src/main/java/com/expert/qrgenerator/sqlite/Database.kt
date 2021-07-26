@@ -156,6 +156,20 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         db.close()
     }
 
+    fun updateData(tableName: String, data: List<Pair<String, String>>,id: Int):Boolean {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        for (i in data.indices) {
+            if (data[i].second.isEmpty()) {
+                continue
+            } else {
+                values.put(data[i].first, data[i].second)
+            }
+        }
+        return db.update(tableName, values,"id=$id", null)>0
+
+    }
+
     fun generateTable(tableName: String) {
         val db = this.writableDatabase
         var tName = ""

@@ -321,6 +321,9 @@
     <string name="tt20_tip_text">ЭТО ЗНАЧЕНИЕ БУДЕТ ЗНАЧЕНИЕМ ПО УМОЛЧАНИЮ</string>
 	<string name="tt21_tip_text">НЕОБХОДИМО ПРИЛОЖИТЬ СПИСОК ЦЕННОСТЕЙ</string>
     <string name="tt22_tip_text">ДОБАВИТЬ СПИСОК ИЛИ ВЫБРАТЬ СУЩЕСТВУЮЩИЙ</string>
+    <string name="notes_update_success_text">Заметки обновлены успешно!</string>
+    <string name="quick_edit_text">Quick Edit</string>
+    <string name="database_update_failed_error">Somthing wrong with database update, please try later!</string>
 
 
 </resources>
