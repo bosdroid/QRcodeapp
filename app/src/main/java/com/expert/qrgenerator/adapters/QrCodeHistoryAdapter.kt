@@ -11,7 +11,8 @@ import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.google.android.material.textview.MaterialTextView
 
-class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList<CodeHistory>): RecyclerView.Adapter<QrCodeHistoryAdapter.ItemViewHolder>() {
+class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList: ArrayList<CodeHistory>) :
+    RecyclerView.Adapter<QrCodeHistoryAdapter.ItemViewHolder>() {
 
     private var listener: OnItemClickListener? = null
 
@@ -23,17 +24,19 @@ class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList
         listener = mListener
     }
 
-    class ItemViewHolder(itemView:View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView){
+    class ItemViewHolder(itemView: View, mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(itemView) {
 
-        val qrTypeIcon : AppCompatImageView
+        val qrTypeIcon: AppCompatImageView
         val qrCodeDataView: MaterialTextView
         val qrCodeCreatedAtView: MaterialTextView
+        val qrCodeNotesView: MaterialTextView
 
         init {
             qrTypeIcon = itemView.findViewById(R.id.qr_code_history_item_type_icon)
             qrCodeDataView = itemView.findViewById(R.id.qr_code_history_item_text)
             qrCodeCreatedAtView = itemView.findViewById(R.id.qr_code_history_item_created_date)
-
+            qrCodeNotesView = itemView.findViewById(R.id.qr_code_history_item_notes_text)
             itemView.setOnClickListener {
                 mListener.onItemClick(layoutPosition)
             }
@@ -41,56 +44,69 @@ class QrCodeHistoryAdapter(val context: Context, var qrCodeHistoryList:ArrayList
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.qr_code_history_item_design,parent,false)
-        return ItemViewHolder(v,listener!!)
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.qr_code_history_item_design, parent, false)
+        return ItemViewHolder(v, listener!!)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val qrHistory = qrCodeHistoryList[position]
-        when(qrHistory.type){
-            "text"->{
-             holder.qrTypeIcon.setImageResource(R.drawable.ic_text)
+        when (qrHistory.type) {
+            "text" -> {
+                holder.qrTypeIcon.setImageResource(R.drawable.ic_text)
             }
-            "link"->{
+            "link" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_link)
             }
-            "contact"->{
+            "contact" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_person)
             }
-            "wifi"->{
+            "wifi" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_wifi)
             }
-            "phone"->{
+            "phone" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_phone)
             }
-            "code"->{
+            "code" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_code)
             }
-            "sms"->{
+            "sms" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_sms)
             }
-            "instagram"->{
+            "instagram" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.instagram)
             }
-            "whatsapp"->{
+            "whatsapp" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.whatsapp)
             }
-            "coupon"->{
+            "coupon" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_coupon)
             }
-            "feedback"->{
+            "feedback" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_feedback)
             }
-            "sn"->{
+            "sn" -> {
                 holder.qrTypeIcon.setImageResource(R.drawable.ic_social_networks)
             }
-            else->{
+            else -> {
 
             }
         }
 
         holder.qrCodeDataView.text = qrHistory.data
-        holder.qrCodeCreatedAtView.text = BaseActivity.getFormattedDate(context,qrHistory.createdAt.toLong())
+        holder.qrCodeCreatedAtView.text =
+            BaseActivity.getFormattedDate(context, qrHistory.createdAt.toLong())
+        if (qrHistory.notes.isNotEmpty()) {
+            holder.qrCodeNotesView.visibility = View.VISIBLE
+            val notesText = qrHistory.notes
+            if (notesText.length >= 110) {
+                holder.qrCodeNotesView.text = "${notesText.substring(0, 107)}..."
+            } else {
+                holder.qrCodeNotesView.text = notesText
+            }
+        } else {
+            holder.qrCodeNotesView.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int {

@@ -36,8 +36,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         repository.update(inputUrl,url,id)
     }
 
-    public fun delete(qrHistory: CodeHistory){
-        repository.delete(qrHistory)
+    public fun updateHistory(qrHistory: CodeHistory){
+        repository.updateHistory(qrHistory)
     }
 
     public fun getAllDynamicQrCodes():LiveData<List<CodeHistory>>{

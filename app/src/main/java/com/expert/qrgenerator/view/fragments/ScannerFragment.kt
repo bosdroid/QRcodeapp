@@ -582,7 +582,8 @@ class ScannerFragment : Fragment() {
                         "",
                         "0",
                         "",
-                        System.currentTimeMillis().toString()
+                        System.currentTimeMillis().toString(),
+                        ""
                     )
 
                     appViewModel.insert(qrHistory)
@@ -599,7 +600,8 @@ class ScannerFragment : Fragment() {
                         "",
                         "0",
                         "",
-                        System.currentTimeMillis().toString()
+                        System.currentTimeMillis().toString(),
+                        ""
                     )
                     appViewModel.insert(qrHistory)
                 }

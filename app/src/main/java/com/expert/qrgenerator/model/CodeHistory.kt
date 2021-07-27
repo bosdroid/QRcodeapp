@@ -19,6 +19,7 @@ data class CodeHistory (
         @ColumnInfo(name = "isDynamic") var isDynamic:String, // 0 OR 1
         @ColumnInfo(name = "generatedUrl") var generatedUrl:String = "",
         @ColumnInfo(name = "createdAt") var createdAt:String,
+        @ColumnInfo(name = "notes") var notes:String,
         ): Serializable {
     @NonNull
     @PrimaryKey(autoGenerate = true)
@@ -26,7 +27,7 @@ data class CodeHistory (
     var id: Int=0
     override fun toString(): String {
         return "ID: $id\nLogin: $login\nQRID: $qrId\nData: $data\nType: $type\nUserType: $userType\nCodeType: $codeType\n" +
-                "CreatedType: $createdType \nImagePath: $localImagePath\nIsDynamic: $isDynamic\nGeneratedUrl: $generatedUrl\nCreated At: $createdAt"
+                "CreatedType: $createdType \nImagePath: $localImagePath\nIsDynamic: $isDynamic\nGeneratedUrl: $generatedUrl\nCreated At: $createdAt\nNotes:$notes"
     }
 
 

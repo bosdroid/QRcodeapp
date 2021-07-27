@@ -17,10 +17,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:orientation="horizontal"
             android:padding="5dp"
             android:gravity="center_vertical"
+            android:id="@+id/qr_code_history_top_layout"
             >
 
          <androidx.appcompat.widget.AppCompatImageView
@@ -65,6 +65,18 @@
                 android:id="@+id/qr_code_history_item_next_arrow"
                 />
         </LinearLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/qr_code_history_top_layout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/qr_code_history_item_notes_text"
+            android:textSize="@dimen/mediumText"
+            android:textColor="@color/dark_gray"
+            android:layout_margin="@dimen/defaultDpMargin"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -196,7 +196,8 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                                     "",
                                     "0",
                                     "",
-                                    System.currentTimeMillis().toString()
+                                    System.currentTimeMillis().toString(),
+                                    ""
                                 )
 
                                 val intent = Intent(context, DesignActivity::class.java)

@@ -626,7 +626,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         "",
                         "1",
                         url,
-                        System.currentTimeMillis().toString()
+                        System.currentTimeMillis().toString(),
+                        ""
                     )
 
                     val intent = Intent(context, DesignActivity::class.java)
@@ -651,7 +652,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 "",
                 "0",
                 "",
-                System.currentTimeMillis().toString()
+                System.currentTimeMillis().toString(),
+                ""
             )
             val intent = Intent(context, DesignActivity::class.java)
             intent.putExtra("ENCODED_TEXT", encodedTextData)

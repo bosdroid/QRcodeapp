@@ -48,9 +48,9 @@ class DatabaseRepository(application: Application) {
         }
     }
 
-    fun delete(qrHistory: CodeHistory){
+    fun updateHistory(qrHistory: CodeHistory){
         scope.launch {
-            qrDao.delete(qrHistory)
+            qrDao.updateHistory(qrHistory)
         }
     }
     fun getAllDynamicQrCodes():LiveData<List<CodeHistory>>{
