@@ -453,25 +453,25 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 val notesText = qrCodeHistoryNotesInputField.text.toString().trim()
                 if (notesText.isNotEmpty()) {
                     startLoading(context)
-                    val columns = tableGenerator.getTableColumns(tableName)
-                    if (columns!!.joinToString(",").contains("notes")){
+//                    val columns = tableGenerator.getTableColumns(tableName)
+//                    if (columns!!.joinToString(",").contains("notes")){
                         val isSuccess = tableGenerator.updateBarcodeDetail(tableName,"notes",notesText,tableObject!!.id)
                         if (isSuccess){
                             Toast.makeText(context,getString(R.string.notes_update_success_text),Toast.LENGTH_SHORT).show()
                             dismiss()
                         }
-                    }
-                    else{
-                        tableGenerator.addNewColumn(tableName, Pair("notes","TEXT"),"")
-                        Handler(Looper.myLooper()!!).postDelayed({
-                            val isSuccess = tableGenerator.updateBarcodeDetail(tableName,"notes",notesText,tableObject!!.id)
-                            if (isSuccess){
-                                Toast.makeText(context,getString(R.string.notes_update_success_text),Toast.LENGTH_SHORT).show()
-                                dismiss()
-                            }
-                        },5000)
-
-                    }
+//                    }
+//                    else{
+//                        tableGenerator.addNewColumn(tableName, Pair("notes","TEXT"),"")
+//                        Handler(Looper.myLooper()!!).postDelayed({
+//                            val isSuccess = tableGenerator.updateBarcodeDetail(tableName,"notes",notesText,tableObject!!.id)
+//                            if (isSuccess){
+//                                Toast.makeText(context,getString(R.string.notes_update_success_text),Toast.LENGTH_SHORT).show()
+//                                dismiss()
+//                            }
+//                        },5000)
+//
+//                    }
                 } else {
                     showAlert(context,getString(R.string.empty_text_error))
                 }

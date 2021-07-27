@@ -333,5 +333,11 @@
     <string name="tt22_tip_text">ADD A LIST OR CHOOSE THE EXISTING ONE</string>
     <string name="notes_update_success_text">Notes Updated Successfully!</string>
     <string name="quick_edit_text">Quick Edit</string>
-    <string name="database_update_failed_error">Somthing wrong with database update, please try later!</string>
+    <string name="database_update_failed_error">Something wrong with the database update, please try later!</string>
+    <string name="remove_text">Remove</string>
+    <string name="move_text">Move</string>
+    <string name="code_notes_heading">Notes</string>
+    <string name="code_notes_sub_heading">Barcode Notes</string>
+    <string name="remove_item_alert_message_text">Are you sure you want to remove the item?</string>
+    <string name="remove_item_success_text">Item has been removed successfully!</string>
 </resources>

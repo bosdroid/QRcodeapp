@@ -322,8 +322,13 @@
 	<string name="tt21_tip_text">НЕОБХОДИМО ПРИЛОЖИТЬ СПИСОК ЦЕННОСТЕЙ</string>
     <string name="tt22_tip_text">ДОБАВИТЬ СПИСОК ИЛИ ВЫБРАТЬ СУЩЕСТВУЮЩИЙ</string>
     <string name="notes_update_success_text">Заметки обновлены успешно!</string>
-    <string name="quick_edit_text">Quick Edit</string>
-    <string name="database_update_failed_error">Somthing wrong with database update, please try later!</string>
+    <string name="quick_edit_text">Быстрое редактирование</string>
+    <string name="database_update_failed_error">Что-то не так с обновлением базы данных, попробуйте позже!</string>
+    <string name="remove_text">Удалять</string>
+    <string name="code_notes_heading">Примечания</string>
+	<string name="code_notes_sub_heading">Примечания по штрих-коду</string>
+    <string name="remove_item_alert_message_text">Вы уверены, что хотите удалить элемент?</string>
+	<string name="remove_item_success_text">Предмет успешно удален!</string>
 
 
 </resources>

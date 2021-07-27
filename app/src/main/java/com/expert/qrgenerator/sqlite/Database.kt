@@ -20,6 +20,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         private const val COLUMN_CODE_DATA = "code_data"
         private const val COLUMN_DATE = "date"
         private const val COLUMN_IMAGE = "image"
+        private const val COLUMN_NOTES = "notes"
         private const val DEFAULT_TABLE_NAME = "default_table"
 
         private const val LIST_FIELDS_TABLE_NAME = "list_fields"
@@ -41,7 +42,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
     override fun onCreate(db: SQLiteDatabase?) {
         val defaultTable = ("CREATE TABLE IF NOT EXISTS " + DEFAULT_TABLE_NAME + "("
-                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CODE_DATA + " TEXT," + COLUMN_DATE + " TEXT,"+COLUMN_IMAGE+" TEXT)")
+                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CODE_DATA + " TEXT," + COLUMN_DATE + " TEXT," + COLUMN_IMAGE + " TEXT," + COLUMN_NOTES + " TEXT)")
 
         val listFieldTable =
             ("CREATE TABLE IF NOT EXISTS $LIST_FIELDS_TABLE_NAME($LIST_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$LIST_COLUMN_FIELD_NAME TEXT,$LIST_COLUMN_TABLE_NAME TEXT,$LIST_COLUMN_OPTIONS TEXT, $LIST_COLUMN_TYPE TEXT)")
@@ -64,11 +65,11 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
     }
 
 
-    fun getTableDate(tableName: String,column:String,order:String): List<TableObject> {
+    fun getTableDate(tableName: String, column: String, order: String): List<TableObject> {
         val db = this.readableDatabase
         val columns = getTableColumns(tableName)
         val tableObjectList = mutableListOf<TableObject>()
-        if (column.isEmpty() && order.isEmpty()){
+        if (column.isEmpty() && order.isEmpty()) {
             val selectQuery = "SELECT  * FROM $tableName"
 
             val list = mutableListOf<Pair<String, String>>()
@@ -77,10 +78,10 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             if (cursor.moveToFirst()) {
                 do {
                     tableObject = TableObject(
-                            cursor.getString(0).toInt(),
-                            cursor.getString(1),
-                            cursor.getString(2),
-                            if (cursor.isNull(3)) "" else cursor.getString(3)
+                        cursor.getString(0).toInt(),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        if (cursor.isNull(3)) "" else cursor.getString(3)
                     )
 
                     if (columns!!.size >= 5) {
@@ -97,19 +98,19 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                     tableObjectList.add(tableObject)
                 } while (cursor.moveToNext())
             }
-        }
-        else{
-            val selectQuery = "SELECT  * FROM $tableName ORDER BY $column ${order.toUpperCase(Locale.ENGLISH)}"
+        } else {
+            val selectQuery =
+                "SELECT  * FROM $tableName ORDER BY $column ${order.toUpperCase(Locale.ENGLISH)}"
             val list = mutableListOf<Pair<String, String>>()
             var tableObject: TableObject? = null
             val cursor: Cursor = db.rawQuery(selectQuery, null)
             if (cursor.moveToFirst()) {
                 do {
                     tableObject = TableObject(
-                            cursor.getString(0).toInt(),
-                            cursor.getString(1),
-                            cursor.getString(2),
-                            if (cursor.isNull(3)) "" else cursor.getString(3)
+                        cursor.getString(0).toInt(),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        if (cursor.isNull(3)) "" else cursor.getString(3)
                     )
 
                     if (columns!!.size >= 5) {
@@ -156,7 +157,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         db.close()
     }
 
-    fun updateData(tableName: String, data: List<Pair<String, String>>,id: Int):Boolean {
+    fun updateData(tableName: String, data: List<Pair<String, String>>, id: Int): Boolean {
         val db = this.writableDatabase
         val values = ContentValues()
         for (i in data.indices) {
@@ -166,7 +167,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                 values.put(data[i].first, data[i].second)
             }
         }
-        return db.update(tableName, values,"id=$id", null)>0
+        return db.update(tableName, values, "id=$id", null) > 0
 
     }
 
@@ -179,7 +180,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             tableName
         }
         val createTable =
-            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,date TEXT,image TEXT)")
+            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,date TEXT,image TEXT,notes TEXT)")
         db.execSQL(createTable)
     }
 
@@ -251,7 +252,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         return count > 0
     }
 
-    fun insertFieldList(fieldName: String, tableName: String, options: String,type:String) {
+    fun insertFieldList(fieldName: String, tableName: String, options: String, type: String) {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(LIST_COLUMN_FIELD_NAME, fieldName)
@@ -262,9 +263,9 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         db.close()
     }
 
-    fun getFieldList(fieldName: String, tableName: String): Pair<String,String>? {
+    fun getFieldList(fieldName: String, tableName: String): Pair<String, String>? {
         val db = this.readableDatabase
-        var options: Pair<String,String>?=null
+        var options: Pair<String, String>? = null
 
         val selectQuery = "SELECT  * FROM $LIST_FIELDS_TABLE_NAME WHERE $LIST_COLUMN_FIELD_NAME='${
             fieldName.toLowerCase(
@@ -273,24 +274,23 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         }' AND $LIST_COLUMN_TABLE_NAME='${tableName.toLowerCase(Locale.ENGLISH)}'"
 
         val cursor: Cursor? = db.rawQuery(selectQuery, null)
-        if (cursor != null){
+        if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    options = Pair(cursor.getString(3),cursor.getString(4))
+                    options = Pair(cursor.getString(3), cursor.getString(4))
 
                 } while (cursor.moveToNext())
             }
             db.close()
 
             return options
-        }
-        else{
+        } else {
             return null
         }
 
     }
 
-    fun insertList(listName: String) :Long{
+    fun insertList(listName: String): Long {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(L_COLUMN_LIST_NAME, listName)
@@ -356,14 +356,14 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         return list
     }
 
-    fun updateBarcodeDetail(tableName: String,column:String,value:String,id:Int):Boolean{
+    fun updateBarcodeDetail(tableName: String, column: String, value: String, id: Int): Boolean {
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(column,value)
-        return db.update(tableName,contentValues,"id=$id",null)>0
+        contentValues.put(column, value)
+        return db.update(tableName, contentValues, "id=$id", null) > 0
     }
 
-    fun getUpdateBarcodeDetail(tableName: String,id:Int):TableObject? {
+    fun getUpdateBarcodeDetail(tableName: String, id: Int): TableObject? {
         val db = this.readableDatabase
         val columns = getTableColumns(tableName)
         val selectQuery = "SELECT  * FROM $tableName WHERE id=$id"
@@ -392,5 +392,10 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             } while (cursor.moveToNext())
         }
         return tableObject
+    }
+
+    fun removeItem(tableName: String,id: Int):Boolean{
+        val db = this.writableDatabase
+        return db.delete(tableName, "id=$id", null) > 0
     }
 }

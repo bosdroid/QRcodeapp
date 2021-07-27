@@ -236,6 +236,10 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                                 columnNameView.text = getString(R.string.code_image_heading)
                                 columnNameSubTitleView.text = getString(R.string.code_image_sub_heading)
                             }
+                            "notes" -> {
+                                columnNameView.text = getString(R.string.code_notes_heading)
+                                columnNameSubTitleView.text = getString(R.string.code_notes_sub_heading)
+                            }
                             else ->{
                                     columnNameView.text = columns[i]
                             }
@@ -362,7 +366,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 SimpleTooltip.Builder(context)
                     .anchorView(submitBtnView)
                     .text(getString(R.string.tt18_tip_text))
-                    .gravity(Gravity.BOTTOM)
+                    .gravity(Gravity.TOP)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
@@ -383,7 +387,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 SimpleTooltip.Builder(context)
                     .anchorView(finishBtnView)
                     .text(getString(R.string.tt19_tip_text))
-                    .gravity(Gravity.BOTTOM)
+                    .gravity(Gravity.TOP)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
@@ -403,7 +407,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 SimpleTooltip.Builder(context)
                     .anchorView(defaultValueFieldTInput)
                     .text(getString(R.string.tt20_tip_text))
-                    .gravity(Gravity.BOTTOM)
+                    .gravity(Gravity.TOP)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
@@ -423,7 +427,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 SimpleTooltip.Builder(context)
                     .anchorView(listWithFieldsBtn)
                     .text(getString(R.string.tt21_tip_text))
-                    .gravity(Gravity.BOTTOM)
+                    .gravity(Gravity.TOP)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->

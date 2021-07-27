@@ -1,16 +1,18 @@
 package com.expert.qrgenerator.view.activities
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.*
-import android.widget.LinearLayout
-import android.widget.TableLayout
-import android.widget.TableRow
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -25,13 +27,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import java.io.File
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.util.*
 
 
 class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener,
-    View.OnClickListener {
+    View.OnClickListener{
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
@@ -79,23 +79,44 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         val columns = tableGenerator.getTableColumns(tableName)
 
         val tableHeaders = TableRow(context)
-        for (i in columns!!.indices) {
-            val headerLayout =
-                LayoutInflater.from(context).inflate(R.layout.header_table_row_cell, null)
-            headerLayout.layoutParams = layoutParams
-            val textView = headerLayout.findViewById<MaterialTextView>(R.id.header_cell_name)
-            val sortImageView =
-                headerLayout.findViewById<AppCompatImageView>(R.id.sort_image)
-            sortImageView.id = i
-            sortingImages.add(sortImageView)
+        for (i in 0 until columns!!.size + 1) {
+            if (i == 0) {
+                val headerLayout =
+                    LayoutInflater.from(context).inflate(R.layout.header_table_row_cell, null)
+                headerLayout.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.purple_dark
+                    )
+                )
+                val sortImageView =
+                    headerLayout.findViewById<AppCompatImageView>(R.id.sort_image)
+                sortImageView.visibility = View.INVISIBLE
+                tableHeaders.addView(headerLayout)
+            } else {
+                val headerLayout =
+                    LayoutInflater.from(context).inflate(R.layout.header_table_row_cell, null)
+                headerLayout.layoutParams = layoutParams
+                val textView = headerLayout.findViewById<MaterialTextView>(R.id.header_cell_name)
+                val sortImageView =
+                    headerLayout.findViewById<AppCompatImageView>(R.id.sort_image)
+                sortImageView.visibility = View.VISIBLE
+                sortImageView.id = i
+                sortingImages.add(sortImageView)
 
-            headerLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.purple_dark))
+                headerLayout.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.purple_dark
+                    )
+                )
 
-            textView.text = columns[i].toUpperCase(Locale.ENGLISH)
-            headerLayout.id = i
-            headerLayout.tag = columns[i].toLowerCase(Locale.ENGLISH)
-            headerLayout.setOnClickListener(this)
-            tableHeaders.addView(headerLayout)
+                textView.text = columns[i - 1].toUpperCase(Locale.ENGLISH)
+                headerLayout.id = i - 1
+                headerLayout.tag = columns[i - 1].toLowerCase(Locale.ENGLISH)
+                headerLayout.setOnClickListener(this)
+                tableHeaders.addView(headerLayout)
+            }
         }
 
         tableMainLayout.addView(tableHeaders)
@@ -134,25 +155,38 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         val tempList = tableGenerator.getTableDate(tName, column, order)
         if (tempList.isNotEmpty()) {
             dataList.clear()
-            if (tableMainLayout.childCount > 1) {
-                tableMainLayout.removeViews(1, tableMainLayout.childCount - 1)
-            }
         }
+        if (tableMainLayout.childCount > 1) {
+            tableMainLayout.removeViews(1, tableMainLayout.childCount - 1)
+        }
+
         dataList.addAll(tempList)
         tableMainLayout.weightSum = dataList.size * 2F
 
         if (dataList.isNotEmpty()) {
             startLoading(context)
             for (j in 0 until dataList.size) {
+
                 val textViewIdLayout =
                     LayoutInflater.from(context).inflate(R.layout.table_row_cell, null)
-                textViewIdLayout.layoutParams = layoutParams
                 val textViewId = textViewIdLayout.findViewById<MaterialTextView>(R.id.cell_value)
                 val data = dataList[j]
                 val tableRow = TableRow(context)
                 tableRow.id = j
                 tableRow.tag = "row"
                 tableRow.setOnClickListener(this)
+
+                val moreLayout =
+                    LayoutInflater.from(context).inflate(R.layout.table_more_option_layout, null)
+                moreLayout.layoutParams = TableRow.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                val moreImage = moreLayout.findViewById<AppCompatImageView>(R.id.cell_more_image)
+                moreImage.id = j
+                moreImage.tag = "more"
+                moreImage.setOnClickListener(this)
+                tableRow.addView(moreLayout)
 
                 textViewId.text = "${data.id}"
                 tableRow.addView(textViewIdLayout)
@@ -235,6 +269,28 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
             val position = view.id
             val triple = barcodeEditList[position]
             triple.first.setText("")
+        } else if (view.tag == "more") {
+            val position = view.id
+            val itemDetail = dataList[position]
+            val popup = PopupMenu(context, view)
+            popup.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
+                override fun onMenuItemClick(item: MenuItem?): Boolean {
+                    return when (item!!.itemId) {
+                        R.id.pp_remove -> {
+                            removeItem(itemDetail.id,position)
+                            true
+                        }
+                        R.id.pp_copy -> {
+                            copyToClipBoard(itemDetail.toString())
+                            true
+                        }
+                        else -> false
+                    }
+                }
+
+            })
+            popup.inflate(R.menu.table_pop_up_menu)
+            popup.show()
         } else {
             if (dataList.isNotEmpty()) {
                 val tag = view.tag.toString().toLowerCase(Locale.ENGLISH)
@@ -264,8 +320,26 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
     }
 
+    private fun removeItem(id:Int,position: Int) {
+        MaterialAlertDialogBuilder(context)
+            .setMessage(getString(R.string.remove_item_alert_message_text))
+            .setNegativeButton(getString(R.string.cancel_text)){dialog,which->
+                dialog.dismiss()
+            }.setPositiveButton(getString(R.string.remove_text)){dialog,which->
+                dialog.dismiss()
+                val isSuccess = tableGenerator.removeItem(tableName,id)
+                if (isSuccess){
+                    dataList.removeAt(position)
+                    Toast.makeText(context,getString(R.string.remove_item_success_text),Toast.LENGTH_SHORT).show()
+                    getTableData(tableName,"","")
+                }
+            }
+            .create().show()
+    }
 
-    private var barcodeEditList = mutableListOf<Triple<TextInputEditText, AppCompatImageView, String>>()
+
+    private var barcodeEditList =
+        mutableListOf<Triple<TextInputEditText, AppCompatImageView, String>>()
     private var counter: Int = 0
     private var detailList = mutableListOf<Pair<String, String>>()
     private fun openQuickEditDialog(item: TableObject) {
@@ -297,7 +371,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         )
         codeDataClearBrushView.setOnClickListener(this)
         codeDataValue.setText(item.code_data)
-        codeDataValue.addTextChangedListener(object : TextWatcher{
+        codeDataValue.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -323,7 +397,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         barcodeEditList.add(Triple(dateValue, dateClearBrushView, "date"))
         dateClearBrushView.setOnClickListener(this)
         dateValue.setText(item.date)
-        dateValue.addTextChangedListener(object : TextWatcher{
+        dateValue.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -349,7 +423,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         barcodeEditList.add(Triple(imageValue, imageClearBrushView, "image"))
         imageClearBrushView.setOnClickListener(this)
         imageValue.setText(item.image)
-        imageValue.addTextChangedListener(object : TextWatcher{
+        imageValue.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -379,8 +453,13 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
             barcodeEditList.add(Triple(value, clearBrushView, item1.first))
             clearBrushView.setOnClickListener(this)
             value.setText(item1.second)
-            value.addTextChangedListener(object : TextWatcher{
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            value.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -404,7 +483,6 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
         cancelDialogBtn.setOnClickListener { alert.dismiss() }
         updateDialogBtn.setOnClickListener {
-            alert.dismiss()
             startLoading(context)
             var flag = false
 
@@ -417,17 +495,17 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                     break
                 } else {
                     flag = true
-                    detailList.add(Pair(triple.third,value))
+                    detailList.add(Pair(triple.third, value))
                 }
             }
             if (flag) {
-                if (detailList.isNotEmpty()){
-                    val isSuccess = tableGenerator.updateData(tableName, detailList,item.id)
-                    if (isSuccess){
+                alert.dismiss()
+                if (detailList.isNotEmpty()) {
+                    val isSuccess = tableGenerator.updateData(tableName, detailList, item.id)
+                    if (isSuccess) {
                         dismiss()
-                        getTableData(tableName,"","")
-                    }
-                    else{
+                        getTableData(tableName, "", "")
+                    } else {
                         dismiss()
                         showAlert(context, getString(R.string.database_update_failed_error))
                     }
@@ -458,6 +536,13 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         }
     }
 
+    private fun copyToClipBoard(content: String) {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Barcode Detail", content)
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(context, "Copied", Toast.LENGTH_LONG).show()
+
+    }
 
     private fun exportCsv(tableName: String) {
         if (dataList.isNotEmpty()) {

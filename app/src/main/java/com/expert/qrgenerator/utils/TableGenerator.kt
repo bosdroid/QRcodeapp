@@ -83,4 +83,8 @@ class TableGenerator(context: Context) {
     fun getUpdateBarcodeDetail(tableName: String,id:Int):TableObject? {
         return database.getUpdateBarcodeDetail(tableName,id)
     }
+
+    fun removeItem(tableName: String,id: Int):Boolean{
+        return database.removeItem(tableName,id)
+    }
 }
