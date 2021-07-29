@@ -30,6 +30,16 @@
             android:summary="@string/summary_tips"
             app:key="@string/key_tips"
             app:title="@string/title_tips" />
+
+        <ListPreference
+            android:title="@string/mode_title_text"
+            android:summary="@string/mode_summary_text"
+            android:icon="@drawable/ic_mode"
+            android:key="@string/key_mode"
+            android:defaultValue="@string/mode_default_value"
+            android:entries="@array/mode_list"
+            android:entryValues="@array/mode_list"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -329,6 +329,20 @@
 	<string name="code_notes_sub_heading">Примечания по штрих-коду</string>
     <string name="remove_item_alert_message_text">Вы уверены, что хотите удалить элемент?</string>
 	<string name="remove_item_success_text">Предмет успешно удален!</string>
+    <string name="mode_title_text">Предпочтение режима</string>
+	<string name="mode_summary_text">Персонализируйте свой режим</string>
+	<string name="mode_default_value">Инвентарь</string>
+	<string name="inventory_text">Инвентарь</string>
+	<string name="seller_text">Продавец</string>
+	<string name="quick_links_text">Быстрые ссылки</string>
+    <string name="scan_item_not_found_text">Сканируемый элемент не найден в выбранной таблице!</string>
+	<string name="scan_item_delete_success_text">Элемент сканирования успешно удален из выбранной таблицы!</string>
+
+	<string-array name="mode_list">
+		<item>Инвентарь</item>
+		<item>Продавец</item>
+		<item>Быстрые ссылки</item>
+	</string-array>
 
 
 </resources>

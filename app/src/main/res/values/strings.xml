@@ -340,4 +340,19 @@
     <string name="code_notes_sub_heading">Barcode Notes</string>
     <string name="remove_item_alert_message_text">Are you sure you want to remove the item?</string>
     <string name="remove_item_success_text">Item has been removed successfully!</string>
+    <string name="mode_title_text">Mode Preference</string>
+    <string name="key_mode" translatable="false">key_mode</string>
+    <string name="mode_summary_text">Personalize your Mode</string>
+    <string name="mode_default_value">Inventory</string>
+    <string name="inventory_text">Inventory</string>
+    <string name="seller_text">Seller</string>
+    <string name="quick_links_text">Quick Links</string>
+    <string name="scan_item_not_found_text">Scan Item not found in selected table!</string>
+    <string name="scan_item_delete_success_text">Scan item deleted successfully from selected table!</string>
+
+    <string-array name="mode_list">
+        <item>Inventory</item>
+        <item>Seller</item>
+        <item>Quick Links</item>
+    </string-array>
 </resources>

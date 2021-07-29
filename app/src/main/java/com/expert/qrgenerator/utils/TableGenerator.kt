@@ -87,4 +87,12 @@ class TableGenerator(context: Context) {
     fun removeItem(tableName: String,id: Int):Boolean{
         return database.removeItem(tableName,id)
     }
+
+    fun deleteItem(tableName: String,code_data: String):Boolean{
+        return database.deleteItem(tableName,code_data)
+    }
+
+    fun searchItem(tableName: String,code_data: String):Boolean{
+        return database.searchItem(tableName,code_data)
+    }
 }

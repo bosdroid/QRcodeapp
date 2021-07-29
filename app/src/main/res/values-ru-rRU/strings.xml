@@ -37,4 +37,14 @@
     <string name="code_notes_sub_heading">Barcode Notes</string>
     <string name="remove_item_alert_message_text">Are you sure you want to remove item?</string>
     <string name="remove_item_success_text">Item has been removed successfully!</string>
+    <string name="title_seller_mode">Seller Mode</string>
+    <string name="summary_seller_mode" />
+    <string name="mode_title_text">Mode Preference</string>
+    <string name="mode_summary_text">Personalize your Mode</string>
+    <string name="mode_default_value">Inventory</string>
+    <string name="inventory_text">Inventory</string>
+    <string name="seller_text">Seller</string>
+    <string name="quick_links_text">Quick Links</string>
+    <string name="scan_item_not_found_text">Scan Item not found in selected table!</string>
+    <string name="scan_item_delete_success_text">Scan item deleted successfully from selected table!</string>
 </resources>

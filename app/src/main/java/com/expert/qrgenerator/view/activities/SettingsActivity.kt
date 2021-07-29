@@ -2,14 +2,13 @@ package com.expert.qrgenerator.view.activities
 
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.AppSettings
-import com.expert.qrgenerator.utils.Constants
 
 class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,9 +44,11 @@ class SettingsActivity : BaseActivity() {
 
             val soundSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_sound))
             soundSwitch!!.isChecked  = appSettings.getBoolean(requireActivity().getString(R.string.key_sound))
-            soundSwitch.setOnPreferenceChangeListener(object : Preference.OnPreferenceChangeListener{
+            soundSwitch.setOnPreferenceChangeListener(object :
+                Preference.OnPreferenceChangeListener {
                 override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-                    appSettings.putBoolean(requireActivity().getString(R.string.key_sound),
+                    appSettings.putBoolean(
+                        requireActivity().getString(R.string.key_sound),
                         newValue as Boolean
                     )
                     return true
@@ -55,19 +56,27 @@ class SettingsActivity : BaseActivity() {
             })
             val vibrateSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_vibration))
             vibrateSwitch!!.isChecked = appSettings.getBoolean(requireActivity().getString(R.string.key_vibration))
-            vibrateSwitch.setOnPreferenceChangeListener(object : Preference.OnPreferenceChangeListener{
+            vibrateSwitch.setOnPreferenceChangeListener(object :
+                Preference.OnPreferenceChangeListener {
                 override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-                    appSettings.putBoolean(requireActivity().getString(R.string.key_vibration),
+                    appSettings.putBoolean(
+                        requireActivity().getString(R.string.key_vibration),
                         newValue as Boolean
                     )
                     return true
                 }
             })
-            val clipboardSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_clipboard))
+            val clipboardSwitch = findPreference<SwitchPreferenceCompat>(
+                requireActivity().getString(
+                    R.string.key_clipboard
+                )
+            )
             clipboardSwitch!!.isChecked = appSettings.getBoolean(requireActivity().getString(R.string.key_clipboard))
-            clipboardSwitch.setOnPreferenceChangeListener(object : Preference.OnPreferenceChangeListener{
+            clipboardSwitch.setOnPreferenceChangeListener(object :
+                Preference.OnPreferenceChangeListener {
                 override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-                    appSettings.putBoolean(requireActivity().getString(R.string.key_clipboard),
+                    appSettings.putBoolean(
+                        requireActivity().getString(R.string.key_clipboard),
                         newValue as Boolean
                     )
                     return true
@@ -77,15 +86,65 @@ class SettingsActivity : BaseActivity() {
 
             val tipsSwitch = findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_tips))
             tipsSwitch!!.isChecked = appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
-            tipsSwitch.setOnPreferenceChangeListener(object : Preference.OnPreferenceChangeListener{
+            tipsSwitch.setOnPreferenceChangeListener(object :
+                Preference.OnPreferenceChangeListener {
                 override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-                    appSettings.putBoolean(requireActivity().getString(R.string.key_tips),
+                    appSettings.putBoolean(
+                        requireActivity().getString(R.string.key_tips),
                         newValue as Boolean
                     )
                     return true
                 }
             })
 
+            val listPreference = findPreference<ListPreference>(getString(R.string.key_mode))
+            getModePreference(listPreference)
+            listPreference!!.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { preference, newValue ->
+                    val type = newValue.toString()
+                    when (type) {
+                        "Inventory" -> {
+                            listPreference.value = getString(R.string.inventory_text)
+                            listPreference.summary = getString(R.string.inventory_text)
+                            appSettings.putString(getString(R.string.key_mode),"Inventory")
+                        }
+                        "Seller" -> {
+                            listPreference.value = getString(R.string.seller_text)
+                            listPreference.summary = getString(R.string.seller_text)
+                            appSettings.putString(getString(R.string.key_mode),"Seller")
+                        }
+                        "Quick Links" -> {
+                            listPreference.value = getString(R.string.quick_links_text)
+                            listPreference.summary = getString(R.string.quick_links_text)
+                            appSettings.putString(getString(R.string.key_mode),"Quick Links")
+                        }
+                    }
+                    false
+                }
+
+        }
+
+        private fun getModePreference(listPreference: ListPreference?) {
+            when(appSettings.getString(getString(R.string.key_mode))){
+                "Inventory" -> {
+                    listPreference!!.value = getString(R.string.inventory_text)
+                    listPreference.summary = getString(R.string.inventory_text)
+
+                }
+                "Seller" -> {
+                    listPreference!!.value = getString(R.string.seller_text)
+                    listPreference.summary = getString(R.string.seller_text)
+                }
+                "Quick Links" -> {
+                    listPreference!!.value = getString(R.string.quick_links_text)
+                    listPreference.summary = getString(R.string.quick_links_text)
+                }
+                else->{
+                    appSettings.putString(getString(R.string.key_mode),"Inventory")
+                    listPreference!!.value = getString(R.string.inventory_text)
+                    listPreference.summary = getString(R.string.inventory_text)
+                }
+            }
         }
     }
 }

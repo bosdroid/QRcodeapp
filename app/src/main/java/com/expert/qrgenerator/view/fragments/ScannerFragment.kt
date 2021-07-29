@@ -25,7 +25,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
-import androidx.appcompat.widget.SwitchCompat
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -98,6 +97,7 @@ class ScannerFragment : Fragment() {
     private var cameraProviderFuture: ListenableFuture<*>? = null
     private var cameraExecutor: ExecutorService? = null
     private var mContext: AppCompatActivity? = null
+
     //private var previewView: PreviewView? = null
     private var imageAnalyzer: MyImageAnalyzer? = null
     private var isFlashOn = false
@@ -156,7 +156,7 @@ class ScannerFragment : Fragment() {
     private fun getDateDifference(): Int {
         var days = 0
         val myFormat = SimpleDateFormat(DateUtils.DATE_FORMAT)
-         val currentDate = DateUtils.getCurrentDate()
+        val currentDate = DateUtils.getCurrentDate()
 //        val currentDate = "2021-07-19"
         val prefsDate = DialogPrefs.getDate(requireContext())
         val dateCurrent = myFormat.parse(currentDate)
@@ -322,9 +322,9 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private lateinit var alert:AlertDialog
-    private lateinit var addImageCheckBox:MaterialCheckBox
-    private lateinit var tableDetailLayoutWrapper:LinearLayout
+    private lateinit var alert: AlertDialog
+    private lateinit var addImageCheckBox: MaterialCheckBox
+    private lateinit var tableDetailLayoutWrapper: LinearLayout
     private fun displayDataSubmitDialog(it: Result?, scanText: String) {
         var text = ""
         text = if (it == null) {
@@ -334,288 +334,310 @@ class ScannerFragment : Fragment() {
         }
         playSound(true)
         generateVibrate()
-        copyToClipBoard(text)
-        if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it!!.barcodeFormat) || scanText.isNotEmpty()) {
 
-            if (tableName.isEmpty()) {
-                BaseActivity.showAlert(requireActivity(), text)
+        if (appSettings.getString(getString(R.string.key_mode)) == "Seller") {
+            val isFound = tableGenerator.searchItem(tableName, text)
+            if (isFound) {
+                val isSuccess = tableGenerator.deleteItem(tableName, text)
+                if (isSuccess) {
+                    BaseActivity.showAlert(
+                        requireActivity(),
+                        getString(R.string.scan_item_delete_success_text)
+                    )
+                }
             } else {
-                val columns = tableGenerator.getTableColumns(tableName)
-                val scanResultLayout = LayoutInflater.from(requireActivity())
-                    .inflate(R.layout.scan_result_dialog, null)
-                val codeDataTInputView =
-                    scanResultLayout.findViewById<TextInputEditText>(R.id.scan_result_dialog_code_data)
-                tableDetailLayoutWrapper =
-                    scanResultLayout.findViewById<LinearLayout>(R.id.table_detail_layout_wrapper)
-                val submitBtn =
-                    scanResultLayout.findViewById<MaterialButton>(R.id.scan_result_dialog_submit_btn)
-                addImageCheckBox =
-                    scanResultLayout.findViewById<MaterialCheckBox>(R.id.add_image_checkbox)
-                val severalImagesHintView = scanResultLayout.findViewById<MaterialTextView>(R.id.several_images_hint_view)
-                val imageSourcesWrapperLayout =
-                    scanResultLayout.findViewById<LinearLayout>(R.id.image_sources_layout)
-                filePathView =
-                    scanResultLayout.findViewById<MaterialTextView>(R.id.filePath)
+                BaseActivity.showAlert(
+                    requireActivity(),
+                    getString(R.string.scan_item_not_found_text)
+                )
+            }
+        } else if (appSettings.getString(getString(R.string.key_mode)) == "Quick Links") {
+            BaseActivity.showAlert(requireActivity(), text)
+        } else {
+            copyToClipBoard(text)
+            if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it!!.barcodeFormat) || scanText.isNotEmpty()) {
 
-                addImageCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-                    if (isChecked) {
-                        if (Constants.userData == null) {
-                            addImageCheckBox.isChecked = false
-                            MaterialAlertDialogBuilder(requireActivity())
-                                .setTitle(requireActivity().resources.getString(R.string.alert_text))
-                                .setMessage(requireActivity().resources.getString(R.string.login_error_text))
-                                .setNegativeButton(requireActivity().resources.getString(R.string.later_text)) { dialog, which ->
-                                    dialog.dismiss()
-                                }
-                                .setPositiveButton(requireActivity().resources.getString(R.string.login_text)) { dialog, which ->
-                                    dialog.dismiss()
-                                    listener!!.login()
-                                }
-                                .create().show()
-                        } else {
-                            severalImagesHintView.visibility = View.VISIBLE
-                            imageSourcesWrapperLayout.visibility = View.VISIBLE
-                            filePathView!!.visibility = View.VISIBLE
-                        }
+                if (tableName.isEmpty()) {
+                    BaseActivity.showAlert(requireActivity(), text)
+                } else {
+                    val columns = tableGenerator.getTableColumns(tableName)
+                    val scanResultLayout = LayoutInflater.from(requireActivity())
+                        .inflate(R.layout.scan_result_dialog, null)
+                    val codeDataTInputView =
+                        scanResultLayout.findViewById<TextInputEditText>(R.id.scan_result_dialog_code_data)
+                    tableDetailLayoutWrapper =
+                        scanResultLayout.findViewById<LinearLayout>(R.id.table_detail_layout_wrapper)
+                    val submitBtn =
+                        scanResultLayout.findViewById<MaterialButton>(R.id.scan_result_dialog_submit_btn)
+                    addImageCheckBox =
+                        scanResultLayout.findViewById<MaterialCheckBox>(R.id.add_image_checkbox)
+                    val severalImagesHintView =
+                        scanResultLayout.findViewById<MaterialTextView>(R.id.several_images_hint_view)
+                    val imageSourcesWrapperLayout =
+                        scanResultLayout.findViewById<LinearLayout>(R.id.image_sources_layout)
+                    filePathView =
+                        scanResultLayout.findViewById<MaterialTextView>(R.id.filePath)
 
-                    } else {
-                        severalImagesHintView.visibility = View.GONE
-                        imageSourcesWrapperLayout.visibility = View.GONE
-                        filePathView!!.visibility = View.GONE
-                    }
-                }
-
-                val cameraImageView =
-                    scanResultLayout.findViewById<AppCompatImageView>(R.id.camera_image_view)
-                val imagesImageView =
-                    scanResultLayout.findViewById<AppCompatImageView>(R.id.images_image_view)
-
-                cameraImageView.setOnClickListener {
-                    if (RuntimePermissionHelper.checkCameraPermission(
-                            requireActivity(),
-                            Constants.CAMERA_PERMISSION
-                        )
-                    ) {
-                        //dispatchTakePictureIntent()
-                        val cameraIntent =
-                            Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        cameraResultLauncher.launch(cameraIntent)
-                    }
-                }
-
-                imagesImageView.setOnClickListener {
-                    if (RuntimePermissionHelper.checkStoragePermission(
-                            requireActivity(),
-                            Constants.READ_STORAGE_PERMISSION
-                        )
-                    ) {
-                        getImageFromGallery()
-                    }
-                }
-
-                for (i in columns!!.indices) {
-                    val value = columns[i]
-                    if (value == "id") {
-                        continue
-                    } else if (value == "code_data") {
-                        textInputIdsList.add(Pair(value, codeDataTInputView))
-                        codeDataTInputView.setText(text)
-                    } else {
-                        val tableRowLayout =
-                            LayoutInflater.from(requireContext())
-                                .inflate(
-                                    R.layout.scan_result_table_row_layout,
-                                    null
-                                )
-                        val columnName =
-                            tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
-                        val columnValue =
-                            tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
-                        val columnDropdown =
-                            tableRowLayout.findViewById<AppCompatSpinner>(R.id.table_column_dropdown)
-                        val columnDropDwonLayout =
-                            tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
-                        columnName.text = value
-                        val pair = tableGenerator.getFieldList(value, tableName)
-
-                        if (pair != null) {
-                            arrayList = mutableListOf()
-                            if (!pair.first.contains(",") && pair.second == "listWithValues") {
-                                arrayList.add(pair.first)
-
-                                columnValue.visibility = View.GONE
-                                columnDropDwonLayout.visibility = View.VISIBLE
-                                val adapter = ArrayAdapter(
-                                    requireContext(),
-                                    android.R.layout.simple_spinner_item,
-                                    arrayList
-                                )
-                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                                columnDropdown.adapter = adapter
-                                spinnerIdsList.add(Pair(value, columnDropdown))
-                            } else if (pair.first.contains(",") && pair.second == "listWithValues") {
-
-                                arrayList.addAll(pair.first.split(","))
-
-                                columnValue.visibility = View.GONE
-                                columnDropDwonLayout.visibility = View.VISIBLE
-                                val adapter = ArrayAdapter(
-                                    requireContext(),
-                                    android.R.layout.simple_spinner_item,
-                                    arrayList
-                                )
-                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                                columnDropdown.adapter = adapter
-                                spinnerIdsList.add(Pair(value, columnDropdown))
+                    addImageCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+                        if (isChecked) {
+                            if (Constants.userData == null) {
+                                addImageCheckBox.isChecked = false
+                                MaterialAlertDialogBuilder(requireActivity())
+                                    .setTitle(requireActivity().resources.getString(R.string.alert_text))
+                                    .setMessage(requireActivity().resources.getString(R.string.login_error_text))
+                                    .setNegativeButton(requireActivity().resources.getString(R.string.later_text)) { dialog, which ->
+                                        dialog.dismiss()
+                                    }
+                                    .setPositiveButton(requireActivity().resources.getString(R.string.login_text)) { dialog, which ->
+                                        dialog.dismiss()
+                                        listener!!.login()
+                                    }
+                                    .create().show()
                             } else {
+                                severalImagesHintView.visibility = View.VISIBLE
+                                imageSourcesWrapperLayout.visibility = View.VISIBLE
+                                filePathView!!.visibility = View.VISIBLE
+                            }
+
+                        } else {
+                            severalImagesHintView.visibility = View.GONE
+                            imageSourcesWrapperLayout.visibility = View.GONE
+                            filePathView!!.visibility = View.GONE
+                        }
+                    }
+
+                    val cameraImageView =
+                        scanResultLayout.findViewById<AppCompatImageView>(R.id.camera_image_view)
+                    val imagesImageView =
+                        scanResultLayout.findViewById<AppCompatImageView>(R.id.images_image_view)
+
+                    cameraImageView.setOnClickListener {
+                        if (RuntimePermissionHelper.checkCameraPermission(
+                                requireActivity(),
+                                Constants.CAMERA_PERMISSION
+                            )
+                        ) {
+                            //dispatchTakePictureIntent()
+                            val cameraIntent =
+                                Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            cameraResultLauncher.launch(cameraIntent)
+                        }
+                    }
+
+                    imagesImageView.setOnClickListener {
+                        if (RuntimePermissionHelper.checkStoragePermission(
+                                requireActivity(),
+                                Constants.READ_STORAGE_PERMISSION
+                            )
+                        ) {
+                            getImageFromGallery()
+                        }
+                    }
+
+                    for (i in columns!!.indices) {
+                        val value = columns[i]
+                        if (value == "id") {
+                            continue
+                        } else if (value == "code_data") {
+                            textInputIdsList.add(Pair(value, codeDataTInputView))
+                            codeDataTInputView.setText(text)
+                        } else {
+                            val tableRowLayout =
+                                LayoutInflater.from(requireContext())
+                                    .inflate(
+                                        R.layout.scan_result_table_row_layout,
+                                        null
+                                    )
+                            val columnName =
+                                tableRowLayout.findViewById<MaterialTextView>(R.id.table_column_name)
+                            val columnValue =
+                                tableRowLayout.findViewById<TextInputEditText>(R.id.table_column_value)
+                            val columnDropdown =
+                                tableRowLayout.findViewById<AppCompatSpinner>(R.id.table_column_dropdown)
+                            val columnDropDwonLayout =
+                                tableRowLayout.findViewById<LinearLayout>(R.id.table_column_dropdown_layout)
+                            columnName.text = value
+                            val pair = tableGenerator.getFieldList(value, tableName)
+
+                            if (pair != null) {
+                                arrayList = mutableListOf()
+                                if (!pair.first.contains(",") && pair.second == "listWithValues") {
+                                    arrayList.add(pair.first)
+
+                                    columnValue.visibility = View.GONE
+                                    columnDropDwonLayout.visibility = View.VISIBLE
+                                    val adapter = ArrayAdapter(
+                                        requireContext(),
+                                        android.R.layout.simple_spinner_item,
+                                        arrayList
+                                    )
+                                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                    columnDropdown.adapter = adapter
+                                    spinnerIdsList.add(Pair(value, columnDropdown))
+                                } else if (pair.first.contains(",") && pair.second == "listWithValues") {
+
+                                    arrayList.addAll(pair.first.split(","))
+
+                                    columnValue.visibility = View.GONE
+                                    columnDropDwonLayout.visibility = View.VISIBLE
+                                    val adapter = ArrayAdapter(
+                                        requireContext(),
+                                        android.R.layout.simple_spinner_item,
+                                        arrayList
+                                    )
+                                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                    columnDropdown.adapter = adapter
+                                    spinnerIdsList.add(Pair(value, columnDropdown))
+                                } else {
+                                    columnDropDwonLayout.visibility = View.GONE
+                                    columnValue.visibility = View.VISIBLE
+                                    columnValue.setText(
+                                        pair.first
+                                    )
+                                    columnValue.isEnabled = false
+                                    columnValue.isFocusable = false
+                                    columnValue.isFocusableInTouchMode = false
+                                }
+
+                            } else {
+                                if (value == "image") {
+                                    textInputIdsList.add(Pair(value, columnValue))
+                                    continue
+                                }
+
                                 columnDropDwonLayout.visibility = View.GONE
                                 columnValue.visibility = View.VISIBLE
-                                columnValue.setText(
-                                    pair.first
-                                )
-                                columnValue.isEnabled = false
-                                columnValue.isFocusable = false
-                                columnValue.isFocusableInTouchMode = false
-                            }
 
-                        } else {
-                            if (value == "image") {
-                                textInputIdsList.add(Pair(value, columnValue))
-                                continue
-                            }
-
-                            columnDropDwonLayout.visibility = View.GONE
-                            columnValue.visibility = View.VISIBLE
-
-                            if (value == "date") {
-                                columnValue.setText(
-                                    BaseActivity.getDateTimeFromTimeStamp(
-                                        System.currentTimeMillis()
+                                if (value == "date") {
+                                    columnValue.setText(
+                                        BaseActivity.getDateTimeFromTimeStamp(
+                                            System.currentTimeMillis()
+                                        )
                                     )
-                                )
-                                columnValue.isEnabled = false
-                                columnValue.isFocusable = false
-                                columnValue.isFocusableInTouchMode = false
-                            } else {
-                                columnValue.isEnabled = true
-                                columnValue.isFocusable = true
-                                columnValue.isFocusableInTouchMode = true
-                                columnValue.setText("")
+                                    columnValue.isEnabled = false
+                                    columnValue.isFocusable = false
+                                    columnValue.isFocusableInTouchMode = false
+                                } else {
+                                    columnValue.isEnabled = true
+                                    columnValue.isFocusable = true
+                                    columnValue.isFocusableInTouchMode = true
+                                    columnValue.setText("")
+                                }
+                                textInputIdsList.add(Pair(value, columnValue))
                             }
-                            textInputIdsList.add(Pair(value, columnValue))
+                            tableDetailLayoutWrapper.addView(tableRowLayout)
                         }
-                        tableDetailLayoutWrapper.addView(tableRowLayout)
+                    }
+
+                    val builder = MaterialAlertDialogBuilder(requireActivity())
+                    builder.setView(scanResultLayout)
+                    builder.setCancelable(false)
+                    alert = builder.create()
+                    alert.show()
+                    if (appSettings.getBoolean(getString(R.string.key_tips))) {
+                        val duration = appSettings.getLong("tt2")
+                        if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
+                                1
+                            )
+                        ) {
+                            SimpleTooltip.Builder(requireActivity())
+                                .anchorView(scanResultLayout)
+                                .text(getString(R.string.after_scan_result_tip_text))
+                                .gravity(Gravity.BOTTOM)
+                                .animated(true)
+                                .transparentOverlay(false)
+                                .onDismissListener { tooltip ->
+                                    tooltip.dismiss()
+                                    appSettings.putLong("tt2", System.currentTimeMillis())
+                                    openAddImageTooltip(addImageCheckBox, submitBtn)
+                                }
+                                .build()
+                                .show()
+                        }
+                    }
+                    submitBtn.setOnClickListener {
+                        alert.dismiss()
+                        saveToDriveAppFolder()
+
                     }
                 }
-
-                val builder = MaterialAlertDialogBuilder(requireActivity())
-                builder.setView(scanResultLayout)
-                builder.setCancelable(false)
-                alert = builder.create()
-                alert.show()
-                if (appSettings.getBoolean(getString(R.string.key_tips))) {
-                    val duration = appSettings.getLong("tt2")
-                    if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
-                            1
+            } else {
+                val bundle = Bundle()
+                bundle.putString("second scanner", "triggers")
+                mFirebaseAnalytics?.logEvent("scanner", bundle)
+                var qrHistory: CodeHistory? = null
+                val type =
+                    if (text.contains("http") || text.contains("https") || text.contains(
+                            "www"
                         )
                     ) {
-                        SimpleTooltip.Builder(requireActivity())
-                            .anchorView(scanResultLayout)
-                            .text(getString(R.string.after_scan_result_tip_text))
-                            .gravity(Gravity.BOTTOM)
-                            .animated(true)
-                            .transparentOverlay(false)
-                            .onDismissListener { tooltip ->
-                                tooltip.dismiss()
-                                appSettings.putLong("tt2", System.currentTimeMillis())
-                                openAddImageTooltip(addImageCheckBox, submitBtn)
-                            }
-                            .build()
-                            .show()
+                        "link"
+                    } else if (text.isDigitsOnly()) {
+                        "number"
+                    } else if (text.contains("VCARD") || text.contains("vcard")) {
+                        "contact"
+                    } else if (text.contains("WIFI:") || text.contains("wifi:")) {
+                        "wifi"
+                    } else if (text.contains("tel:")) {
+                        "phone"
+                    } else if (text.contains("smsto:") || text.contains("sms:")) {
+                        "sms"
+                    } else if (text.contains("instagram")) {
+                        "instagram"
+                    } else if (text.contains("whatsapp")) {
+                        "whatsapp"
+                    } else {
+                        "text"
                     }
-                }
-                submitBtn.setOnClickListener {
-                    alert.dismiss()
-                    saveToDriveAppFolder()
+                if (text.isNotEmpty()) {
 
-                }
-            }
-        } else {
-            val bundle = Bundle()
-            bundle.putString("second scanner", "triggers")
-            mFirebaseAnalytics?.logEvent("scanner", bundle)
-            var qrHistory: CodeHistory? = null
-            val type =
-                if (text.contains("http") || text.contains("https") || text.contains(
-                        "www"
-                    )
-                ) {
-                    "link"
-                } else if (text.isDigitsOnly()) {
-                    "number"
-                } else if (text.contains("VCARD") || text.contains("vcard")) {
-                    "contact"
-                } else if (text.contains("WIFI:") || text.contains("wifi:")) {
-                    "wifi"
-                } else if (text.contains("tel:")) {
-                    "phone"
-                } else if (text.contains("smsto:") || text.contains("sms:")) {
-                    "sms"
-                } else if (text.contains("instagram")) {
-                    "instagram"
-                } else if (text.contains("whatsapp")) {
-                    "whatsapp"
-                } else {
-                    "text"
-                }
-            if (text.isNotEmpty()) {
+                    if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
+                        qrHistory = CodeHistory(
+                            "qrmagicapp",
+                            "${System.currentTimeMillis()}",
+                            text,
+                            "code",
+                            "free",
+                            "barcode",
+                            "scan",
+                            "",
+                            "0",
+                            "",
+                            System.currentTimeMillis().toString(),
+                            ""
+                        )
 
-                if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it.barcodeFormat)) {
-                    qrHistory = CodeHistory(
-                        "qrmagicapp",
-                        "${System.currentTimeMillis()}",
-                        text,
-                        "code",
-                        "free",
-                        "barcode",
-                        "scan",
-                        "",
-                        "0",
-                        "",
-                        System.currentTimeMillis().toString(),
-                        ""
-                    )
+                        appViewModel.insert(qrHistory)
 
-                    appViewModel.insert(qrHistory)
-
-                } else {
-                    qrHistory = CodeHistory(
-                        "qrmagicapp",
-                        "${System.currentTimeMillis()}",
-                        text,
-                        type,
-                        "free",
-                        "qr",
-                        "scan",
-                        "",
-                        "0",
-                        "",
-                        System.currentTimeMillis().toString(),
-                        ""
-                    )
-                    appViewModel.insert(qrHistory)
+                    } else {
+                        qrHistory = CodeHistory(
+                            "qrmagicapp",
+                            "${System.currentTimeMillis()}",
+                            text,
+                            type,
+                            "free",
+                            "qr",
+                            "scan",
+                            "",
+                            "0",
+                            "",
+                            System.currentTimeMillis().toString(),
+                            ""
+                        )
+                        appViewModel.insert(qrHistory)
+                    }
+                    saveSuccessScans()
+                    Toast.makeText(
+                        requireActivity(),
+                        requireActivity().resources.getString(R.string.scan_data_save_success_text),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Handler(Looper.myLooper()!!).postDelayed({
+                        val intent = Intent(context, CodeDetailActivity::class.java)
+                        intent.putExtra("HISTORY_ITEM", qrHistory)
+                        requireActivity().startActivity(intent)
+                    }, 2000)
                 }
-                saveSuccessScans()
-                Toast.makeText(
-                    requireActivity(),
-                    requireActivity().resources.getString(R.string.scan_data_save_success_text),
-                    Toast.LENGTH_SHORT
-                ).show()
-                Handler(Looper.myLooper()!!).postDelayed({
-                    val intent = Intent(context, CodeDetailActivity::class.java)
-                    intent.putExtra("HISTORY_ITEM", qrHistory)
-                    requireActivity().startActivity(intent)
-                }, 2000)
             }
         }
     }
@@ -636,7 +658,7 @@ class ScannerFragment : Fragment() {
                         // IF isUpload IS TRUE THEN DATA SAVE WITH IMAGE URL
                         // ELSE DISPLAY THE EXCEPTION MESSAGE WITHOUT DATA SAVING
                         if (isUpload && url.isNotEmpty()) {
-                            if (multiImagesList.isNotEmpty()){
+                            if (multiImagesList.isNotEmpty()) {
                                 multiImagesList.clear()
                             }
                             // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED EDIT TEXT
@@ -763,8 +785,7 @@ class ScannerFragment : Fragment() {
                     e.printStackTrace()
                 }
             }
-        } else
-        {
+        } else {
 
             val b = MaterialAlertDialogBuilder(requireActivity())
                 .setCancelable(true)
@@ -846,9 +867,10 @@ class ScannerFragment : Fragment() {
     private fun openAddImageTooltip(addImageBox: MaterialCheckBox, submitBtn: MaterialButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt3")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
                     1
-                ) ) {
+                )
+            ) {
                 SimpleTooltip.Builder(requireActivity())
                     .anchorView(addImageBox)
                     .text(getString(R.string.add_image_tip_text))
@@ -866,12 +888,13 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private fun openSubmitBtnTip(submitBtn: MaterialButton){
+    private fun openSubmitBtnTip(submitBtn: MaterialButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt4")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
                     1
-                ) ) {
+                )
+            ) {
                 SimpleTooltip.Builder(requireActivity())
                     .anchorView(submitBtn)
                     .text(getString(R.string.submit_btn_tip_text))
@@ -888,12 +911,13 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    private fun openHistoryBtnTip(){
+    private fun openHistoryBtnTip() {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt5")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
                     1
-                ) ) {
+                )
+            ) {
                 SimpleTooltip.Builder(requireActivity())
                     .anchorView(MainActivity.historyBtn)
                     .text(getString(R.string.history_btn_tip_text))
@@ -914,9 +938,9 @@ class ScannerFragment : Fragment() {
     private fun uploadImageOnDrive(): Boolean {
         var isUploadingSuccess = false
         val imageList = filePathView!!.text.toString()
-        if (imageList.contains(",")){
+        if (imageList.contains(",")) {
             val array = imageList.split(",")
-            for (i in array.indices){
+            for (i in array.indices) {
                 val imagePath = array[i]
 
                 val bundle = Bundle()
@@ -963,15 +987,14 @@ class ScannerFragment : Fragment() {
                     isUploadingSuccess = false
                 }
             }
-            return if (isUploadingSuccess){
+            return if (isUploadingSuccess) {
                 url = uploadedUrlList.joinToString(",")
                 uploadedUrlList.clear()
                 true
-            } else{
+            } else {
                 false
             }
-        }
-        else{
+        } else {
             val bundle = Bundle()
             bundle.putString("starts", "starts")
             mFirebaseAnalytics?.logEvent("upload image", bundle)
@@ -1075,8 +1098,9 @@ class ScannerFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
             if (result.resultCode == Activity.RESULT_OK) {
-                val accountName:String? = result.data!!.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-                if (accountName != null){
+                val accountName: String? =
+                    result.data!!.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+                if (accountName != null) {
                     MainActivity.credential!!.selectedAccountName = accountName
                     saveToDriveAppFolder()
                 }
@@ -1109,11 +1133,11 @@ class ScannerFragment : Fragment() {
             if (result.resultCode == Activity.RESULT_OK) {
 //                val path: String? = null
                 val data: Intent? = result.data
-                val clipData:ClipData? = data!!.clipData
+                val clipData: ClipData? = data!!.clipData
 
-                if (clipData != null){
-                    if (clipData.itemCount > 0){
-                        for (i in 0 until clipData.itemCount){
+                if (clipData != null) {
+                    if (clipData.itemCount > 0) {
+                        for (i in 0 until clipData.itemCount) {
                             val imageUri = clipData.getItemAt(i).uri
                             multiImagesList.add(
                                 ImageManager.getRealPathFromUri(
@@ -1126,11 +1150,15 @@ class ScannerFragment : Fragment() {
                         isFileSelected = true
                         //Log.d("TEST199",multiImagesList.toString())
                     }
-                }
-                else{
+                } else {
                     if (data.data != null) {
                         val imageUri = data.data!!
-                        multiImagesList.add(ImageManager.getRealPathFromUri(requireActivity(), imageUri)!!)
+                        multiImagesList.add(
+                            ImageManager.getRealPathFromUri(
+                                requireActivity(),
+                                imageUri
+                            )!!
+                        )
                         filePathView!!.text = multiImagesList.joinToString(",")
                         isFileSelected = true
                     }
@@ -1156,23 +1184,21 @@ class ScannerFragment : Fragment() {
         startScanner()
         getTableList()
         val flag = appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
-        if(flag){
+        if (flag) {
             tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_on_text))
-        }
-        else{
+        } else {
             tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_off_text))
         }
         tipsSwitchBtn.isChecked = flag
 
-        tipsSwitchBtn.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
+        tipsSwitchBtn.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                if(isChecked){
+                if (isChecked) {
                     tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_on_text))
-                }
-                else{
+                } else {
                     tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_off_text))
                 }
-                appSettings.putBoolean(requireActivity().getString(R.string.key_tips),isChecked)
+                appSettings.putBoolean(requireActivity().getString(R.string.key_tips), isChecked)
             }
         })
     }
@@ -1217,11 +1243,10 @@ class ScannerFragment : Fragment() {
                     }
                 }
             }
-            Constants.READ_STORAGE_REQUEST_CODE->{
+            Constants.READ_STORAGE_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getImageFromGallery()
-                }
-                else{
+                } else {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(
                             requireActivity(),
                             Constants.READ_STORAGE_PERMISSION
@@ -1276,8 +1301,7 @@ class ScannerFragment : Fragment() {
     }
 
     private fun copyToClipBoard(content: String) {
-        val isAllowCopy =
-            appSettings.getBoolean(requireContext().getString(R.string.key_clipboard))
+        val isAllowCopy = appSettings.getBoolean(requireContext().getString(R.string.key_clipboard))
         if (isAllowCopy) {
             val clipboard = requireContext()
                 .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -1286,6 +1310,7 @@ class ScannerFragment : Fragment() {
             Toast.makeText(requireContext(), "copied", Toast.LENGTH_LONG).show()
         }
     }
+
 
     private fun bindPreview(processCameraProvider: ProcessCameraProvider) {
         val preview = Preview.Builder().build()
@@ -1391,9 +1416,10 @@ class ScannerFragment : Fragment() {
     fun showTableSelectTip() {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt10")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
                     1
-                ) ) {
+                )
+            ) {
                 SimpleTooltip.Builder(requireActivity())
                     .anchorView(addNewTableBtn)
                     .text(getString(R.string.table_selector_tip_text))
