@@ -219,6 +219,14 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                 }
                 tableRow.addView(textViewImageLayout)
 
+                val textViewQuantityLayout =
+                    LayoutInflater.from(context).inflate(R.layout.table_row_cell, null)
+                textViewQuantityLayout.layoutParams = layoutParams
+                val textViewQuantity =
+                    textViewQuantityLayout.findViewById<MaterialTextView>(R.id.cell_value)
+                 textViewQuantity.text = "${data.quantity}"
+
+                tableRow.addView(textViewQuantityLayout)
 
                 if (data.dynamicColumns.size > 0) {
                     for (k in 0 until data.dynamicColumns.size) {

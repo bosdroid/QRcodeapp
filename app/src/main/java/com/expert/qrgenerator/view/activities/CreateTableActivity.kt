@@ -236,6 +236,10 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                                 columnNameView.text = getString(R.string.code_image_heading)
                                 columnNameSubTitleView.text = getString(R.string.code_image_sub_heading)
                             }
+                            "quantity"->{
+                                columnNameView.text = getString(R.string.code_quantity_heading)
+                                columnNameSubTitleView.text = getString(R.string.code_quantity_sub_heading)
+                            }
                             "notes" -> {
                                 columnNameView.text = getString(R.string.code_notes_heading)
                                 columnNameSubTitleView.text = getString(R.string.code_notes_sub_heading)

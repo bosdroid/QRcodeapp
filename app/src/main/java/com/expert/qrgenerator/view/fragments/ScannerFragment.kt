@@ -385,15 +385,32 @@ class ScannerFragment : Fragment() {
         if (appSettings.getString(getString(R.string.key_mode)) == "Seller") {
             val isFound = tableGenerator.searchItem(tableName, text)
             if (isFound) {
-                val isSuccess = tableGenerator.deleteItem(tableName, text)
-                if (isSuccess) {
-                    BaseActivity.showAlert(
-                        requireActivity(),
-                        getString(R.string.scan_item_delete_success_text)
-                    )
+                val quantity = tableGenerator.getScanQuantity(tableName,text)
+                var qty = quantity.toInt()
+                if (qty != -1){
+                    if (qty == 1){
+                        qty -= 1
+                        val isUpdate = tableGenerator.updateScanQuantity(tableName,text,qty)
+                        if (isUpdate){
+                            showAlert(
+                                requireActivity(),
+                                getString(R.string.scan_quantity_update_success_text)
+                            )
+                        }
+                    }
+                    else{
+                        val isSuccess = tableGenerator.deleteItem(tableName, text)
+                        if (isSuccess) {
+                            showAlert(
+                                requireActivity(),
+                                getString(R.string.scan_item_delete_success_text)
+                            )
+                        }
+                    }
                 }
+
             } else {
-                BaseActivity.showAlert(
+                showAlert(
                     requireActivity(),
                     getString(R.string.scan_item_not_found_text)
                 )
@@ -413,7 +430,7 @@ class ScannerFragment : Fragment() {
             if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it!!.barcodeFormat) || scanText.isNotEmpty()) {
 
                 if (tableName.isEmpty()) {
-                    BaseActivity.showAlert(requireActivity(), text)
+                    showAlert(requireActivity(), text)
                 } else {
                     val columns = tableGenerator.getTableColumns(tableName)
                     val scanResultLayout = LayoutInflater.from(requireActivity())
@@ -491,7 +508,7 @@ class ScannerFragment : Fragment() {
 
                     for (i in columns!!.indices) {
                         val value = columns[i]
-                        if (value == "id") {
+                        if (value == "id" || value == "quantity") {
                             continue
                         } else if (value == "code_data") {
                             textInputIdsList.add(Pair(value, codeDataTInputView))
@@ -1127,6 +1144,18 @@ class ScannerFragment : Fragment() {
         }
     }
 
+    // THIS FUNCTION WILL ALERT THE DIFFERENT MESSAGES
+    fun showAlert(context: Context, message: String) {
+        MaterialAlertDialogBuilder(context)
+            .setMessage(message)
+            .setCancelable(false)
+            .setPositiveButton("Ok") { dialog, which ->
+                dialog.dismiss()
+                codeScanner!!.startPreview()
+            }
+            .create().show()
+    }
+
     private fun openAddImageTooltip(addImageBox: MaterialCheckBox, submitBtn: MaterialButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt3")
@@ -1243,7 +1272,7 @@ class ScannerFragment : Fragment() {
                     val bundle = Bundle()
                     bundle.putString("GoogleJsonResponseException", "Error: " + e.message)
                     mFirebaseAnalytics?.logEvent("upload image", bundle)
-                    BaseActivity.showAlert(
+                    showAlert(
                         requireActivity(),
                         e.details.message
                     )
@@ -1295,7 +1324,7 @@ class ScannerFragment : Fragment() {
                 val bundle = Bundle()
                 bundle.putString("GoogleJsonResponseException", "Error: " + e.message)
                 mFirebaseAnalytics?.logEvent("upload image", bundle)
-                BaseActivity.showAlert(
+                showAlert(
                     requireActivity(),
                     e.details.message
                 )
@@ -1339,7 +1368,7 @@ class ScannerFragment : Fragment() {
 //            val bundle = Bundle()
 //            bundle.putString("GoogleJsonResponseException", "Error: " + e.message)
 //            mFirebaseAnalytics?.logEvent("upload image", bundle)
-//            BaseActivity.showAlert(
+//            showAlert(
 //                requireActivity(),
 //                e.details.message
 //            )

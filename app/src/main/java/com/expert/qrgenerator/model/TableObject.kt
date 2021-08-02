@@ -10,7 +10,7 @@ data class TableObject(
     var image:String
 ) :Serializable{
     var dynamicColumns = mutableListOf<Pair<String, String>>()
-
+    var quantity:Int = 0
 
     override fun toString(): String {
         val stringBuilder = StringBuilder("ID: $id\nCODE_DATA: $code_data\nDate: $date\nImageLinks: $image\n")

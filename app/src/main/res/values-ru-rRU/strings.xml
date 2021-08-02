@@ -51,4 +51,7 @@
     <string name="more_button_text">More</string>
     <string name="quick_links_item_not_found_heading_text">Item not found in the current table. Try to select another table.</string>
     <string name="select_text">Select</string>
+    <string name="code_quantity_heading">Quantity</string>
+    <string name="code_quantity_sub_heading">(Scan Quantity)</string>
+    <string name="scan_quantity_update_success_text">Scan quantity updated successfully!</string>
 </resources>

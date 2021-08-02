@@ -14,12 +14,13 @@ import java.util.*
 class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
 
     companion object {
-        private const val databaseVersion = 1
+        private const val databaseVersion = 2
         private const val databaseName = "magic_qr_database"
         private const val COLUMN_ID = "id"
         private const val COLUMN_CODE_DATA = "code_data"
         private const val COLUMN_DATE = "date"
         private const val COLUMN_IMAGE = "image"
+        private const val COLUMN_QUANTITY = "quantity"
         private const val DEFAULT_TABLE_NAME = "default_table"
 
         private const val LIST_FIELDS_TABLE_NAME = "list_fields"
@@ -41,7 +42,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
     override fun onCreate(db: SQLiteDatabase?) {
         val defaultTable = ("CREATE TABLE IF NOT EXISTS " + DEFAULT_TABLE_NAME + "("
-                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CODE_DATA + " TEXT," + COLUMN_DATE + " TEXT," + COLUMN_IMAGE + " TEXT)")
+                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CODE_DATA + " TEXT," + COLUMN_DATE + " TEXT," + COLUMN_IMAGE + " TEXT," + COLUMN_QUANTITY + " INTEGER DEFAULT 1)")
 
         val listFieldTable =
             ("CREATE TABLE IF NOT EXISTS $LIST_FIELDS_TABLE_NAME($LIST_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$LIST_COLUMN_FIELD_NAME TEXT,$LIST_COLUMN_TABLE_NAME TEXT,$LIST_COLUMN_OPTIONS TEXT, $LIST_COLUMN_TYPE TEXT)")
@@ -82,9 +83,9 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                         cursor.getString(2),
                         if (cursor.isNull(3)) "" else cursor.getString(3)
                     )
-
-                    if (columns!!.size >= 5) {
-                        for (i in 4 until columns.size) {
+                    tableObject.quantity = cursor.getInt(4)
+                    if (columns!!.size >= 6) {
+                        for (i in 5 until columns.size) {
                             val col = columns[i]
                             var pair: Pair<String, String>? = null
                             pair = Pair(col, cursor.getString(i))
@@ -111,9 +112,9 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                         cursor.getString(2),
                         if (cursor.isNull(3)) "" else cursor.getString(3)
                     )
-
-                    if (columns!!.size >= 5) {
-                        for (i in 4 until columns.size) {
+                    tableObject.quantity = cursor.getInt(4)
+                    if (columns!!.size >= 6) {
+                        for (i in 5 until columns.size) {
                             val col = columns[i]
                             var pair: Pair<String, String>? = null
                             pair = Pair(col, cursor.getString(i))
@@ -179,7 +180,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
             tableName
         }
         val createTable =
-            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,date TEXT,image TEXT)")
+            ("CREATE TABLE IF NOT EXISTS ${tName.toLowerCase(Locale.ENGLISH)} (id INTEGER PRIMARY KEY AUTOINCREMENT,code_data TEXT,date TEXT,image TEXT,quantity INTEGER DEFAULT 1)")
         db.execSQL(createTable)
     }
 
@@ -377,9 +378,9 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                     cursor.getString(2),
                     if (cursor.isNull(3)) "" else cursor.getString(3)
                 )
-
-                if (columns!!.size >= 5) {
-                    for (i in 4 until columns.size) {
+                tableObject.quantity = cursor.getInt(4)
+                if (columns!!.size >= 6) {
+                    for (i in 5 until columns.size) {
                         val col = columns[i]
                         var pair: Pair<String, String>? = null
                         pair = Pair(col, cursor.getString(i))
@@ -417,9 +418,9 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                     cursor.getString(2),
                     if (cursor.isNull(3)) "" else cursor.getString(3)
                 )
-
-                if (columns!!.size >= 5) {
-                    for (i in 4 until columns.size) {
+                tableObject.quantity = cursor.getInt(4)
+                if (columns!!.size >= 6) {
+                    for (i in 5 until columns.size) {
                         val col = columns[i]
                         var pair: Pair<String, String>? = null
                         pair = Pair(col, cursor.getString(i))
@@ -447,9 +448,9 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
                     cursor.getString(2),
                     if (cursor.isNull(3)) "" else cursor.getString(3)
                 )
-
-                if (columns!!.size >= 5) {
-                    for (i in 4 until columns.size) {
+                tableObject.quantity = cursor.getInt(4)
+                if (columns!!.size >= 6) {
+                    for (i in 5 until columns.size) {
                         val col = columns[i]
                         var pair: Pair<String, String>? = null
                         pair = Pair(col, cursor.getString(i))
@@ -462,4 +463,24 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         }
         return tableObject
     }
+
+    fun updateScanQuantity(tableName: String,code_data: String,quantity:Int):Boolean{
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(COLUMN_QUANTITY, quantity)
+        return db.update(tableName, contentValues, "code_data=$code_data", null) > 0
+    }
+
+    fun getScanQuantity(tableName: String,code_data: String):String{
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data=$code_data", null)
+        if (cursor != null){
+            cursor.moveToFirst()
+            return cursor.getString(cursor.getColumnIndex("quantity"))
+        }
+        else {
+            return "-1"
+        }
+    }
+
 }

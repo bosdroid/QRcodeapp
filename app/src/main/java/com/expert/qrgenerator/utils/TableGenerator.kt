@@ -98,4 +98,12 @@ class TableGenerator(context: Context) {
     fun getScanItem(tableName: String,code_data: String):TableObject?{
         return database.getScanItem(tableName,code_data)
     }
+
+    fun updateScanQuantity(tableName: String,code_data: String,quantity:Int):Boolean{
+        return database.updateScanQuantity(tableName,code_data,quantity)
+    }
+
+    fun getScanQuantity(tableName: String,code_data: String):String{
+        return database.getScanQuantity(tableName,code_data)
+    }
 }
