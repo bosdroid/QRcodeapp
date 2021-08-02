@@ -432,4 +432,34 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         }
         return tableObject != null
     }
+
+    fun getScanItem(tableName: String,code_data: String):TableObject?{
+        val db = this.readableDatabase
+        val columns = getTableColumns(tableName)
+        val list = mutableListOf<Pair<String, String>>()
+        var tableObject: TableObject? = null
+        val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data=$code_data", null)
+        if (cursor.moveToFirst()) {
+            do {
+                tableObject = TableObject(
+                    cursor.getString(0).toInt(),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    if (cursor.isNull(3)) "" else cursor.getString(3)
+                )
+
+                if (columns!!.size >= 5) {
+                    for (i in 4 until columns.size) {
+                        val col = columns[i]
+                        var pair: Pair<String, String>? = null
+                        pair = Pair(col, cursor.getString(i))
+
+                        list.add(pair)
+                    }
+                    tableObject.dynamicColumns.addAll(list)
+                }
+            } while (cursor.moveToNext())
+        }
+        return tableObject
+    }
 }

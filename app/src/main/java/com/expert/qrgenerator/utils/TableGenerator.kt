@@ -95,4 +95,7 @@ class TableGenerator(context: Context) {
     fun searchItem(tableName: String,code_data: String):Boolean{
         return database.searchItem(tableName,code_data)
     }
+    fun getScanItem(tableName: String,code_data: String):TableObject?{
+        return database.getScanItem(tableName,code_data)
+    }
 }

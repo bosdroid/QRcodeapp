@@ -55,6 +55,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.sheets.v4.Sheets
@@ -284,6 +285,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             credential = GoogleAccountCredential.usingOAuth2(
                 applicationContext, scopes
             )
+                .setBackOff(ExponentialBackOff())
                 .setSelectedAccount(acct.account)
 
             mService = Drive.Builder(
@@ -498,6 +500,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                 context,
                                 scopes
                             )
+                                .setBackOff(ExponentialBackOff())
                                 .setSelectedAccount(googleSignInAccount!!.account)
 //                            if (googleSignInAccount != null) {
 //                                credential.selectedAccount = googleSignInAccount.account
@@ -543,28 +546,28 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun handleSignInResult(acct: GoogleSignInAccount) {
         try {
 
-            startLoading(context)
-            val hashMap = hashMapOf<String, String>()
-            hashMap["personName"] = acct.displayName.toString()
-            hashMap["personGivenName"] = acct.givenName.toString()
-            hashMap["personFamilyName"] = acct.familyName.toString()
-            hashMap["personEmail"] = acct.email.toString()
-            hashMap["personId"] = acct.id.toString()
-            hashMap["personPhoto"] = acct.photoUrl.toString()
-
-            viewModel.signUp(context, hashMap)
-            viewModel.getSignUp().observe(this, { response ->
-                dismiss()
-                if (response != null) {
-                    if (response.has("errorMessage")) {
-
-                    } else {
+//            startLoading(context)
+//            val hashMap = hashMapOf<String, String>()
+//            hashMap["personName"] = acct.displayName.toString()
+//            hashMap["personGivenName"] = acct.givenName.toString()
+//            hashMap["personFamilyName"] = acct.familyName.toString()
+//            hashMap["personEmail"] = acct.email.toString()
+//            hashMap["personId"] = acct.id.toString()
+//            hashMap["personPhoto"] = acct.photoUrl.toString()
+//
+//            viewModel.signUp(context, hashMap)
+//            viewModel.getSignUp().observe(this, { response ->
+//                dismiss()
+//                if (response != null) {
+//                    if (response.has("errorMessage")) {
+//
+//                    } else {
                         saveUserUpdatedDetail(acct, "new")
-                    }
-                } else {
-                    showAlert(context, getString(R.string.something_wrong_error))
-                }
-            })
+//                    }
+//                } else {
+//                    showAlert(context, getString(R.string.something_wrong_error))
+//                }
+//            })
 
         } catch (e: ApiException) {
             var s = e

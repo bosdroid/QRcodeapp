@@ -46,6 +46,7 @@ class Constants {
         var finalQrImageUri: Uri? = null
         var isLogin: String = "is_login"
         var user: String = "user"
+        var email: String = "email"
         var userData: User? = null
         var mService: Drive? = null
         var sheetService: Sheets? = null

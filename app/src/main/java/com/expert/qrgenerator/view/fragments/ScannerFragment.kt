@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Context.VIBRATOR_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -23,6 +24,8 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.camera.core.*
@@ -37,6 +40,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.budiyev.android.codescanner.*
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.utils.*
@@ -54,6 +58,7 @@ import com.google.android.material.textview.MaterialTextView
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
+import com.google.api.client.util.ExponentialBackOff
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.mlkit.vision.barcode.Barcode
@@ -87,6 +92,7 @@ class ScannerFragment : Fragment() {
     private lateinit var tipsSwitchBtn: SwitchMaterial
     private var tableName: String = ""
     private lateinit var tablesSpinner: AppCompatSpinner
+    private lateinit var modesSpinner: AppCompatSpinner
     private var textInputIdsList = mutableListOf<Pair<String, TextInputEditText>>()
     private var spinnerIdsList = mutableListOf<Pair<String, AppCompatSpinner>>()
     private lateinit var addNewTableBtn: MaterialButton
@@ -176,6 +182,7 @@ class ScannerFragment : Fragment() {
     private fun initViews(view: View) {
         scannerView = view.findViewById(R.id.scanner_view)
         tablesSpinner = view.findViewById(R.id.tables_spinner)
+        modesSpinner = view.findViewById(R.id.modes_spinner)
         addNewTableBtn = view.findViewById(R.id.add_new_table_btn)
         container = view.findViewById(R.id.container)
         previewView = view.findViewById(R.id.previewview)
@@ -183,6 +190,44 @@ class ScannerFragment : Fragment() {
         flashImg = view.findViewById(R.id.flashImg)
         addNewTableBtn.setOnClickListener {
             startActivity(Intent(requireActivity(), TablesActivity::class.java))
+        }
+
+    }
+
+    private fun getModeList() {
+        val modeList = requireActivity().resources.getStringArray(R.array.mode_list)
+        val adapter = ArrayAdapter(
+            requireActivity(),
+            android.R.layout.simple_spinner_item,
+            modeList
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        modesSpinner.adapter = adapter
+
+        if (appSettings.getString(requireActivity().getString(R.string.key_mode))!!.isNotEmpty()) {
+            for (i in modeList.indices) {
+                val value = modeList[i]
+                if (value == appSettings.getString(requireActivity().getString(R.string.key_mode))) {
+                    modesSpinner.setSelection(i)
+                    break
+                }
+            }
+        }
+
+        modesSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(
+                adapterView: AdapterView<*>?,
+                view: View?,
+                i: Int,
+                l: Long
+            ) {
+                val mode = adapterView!!.getItemAtPosition(i).toString()
+                appSettings.putString(requireActivity().getString(R.string.key_mode), mode)
+            }
         }
 
     }
@@ -282,6 +327,7 @@ class ScannerFragment : Fragment() {
 //                codeScanner!!.startPreview()
 //            }
             // Parameters (default values)
+
             codeScanner!!.apply {
                 camera = CodeScanner.CAMERA_BACK // or CAMERA_FRONT or specific camera id
                 formats = CodeScanner.ALL_FORMATS // list of type BarcodeFormat,
@@ -325,6 +371,7 @@ class ScannerFragment : Fragment() {
     private lateinit var alert: AlertDialog
     private lateinit var addImageCheckBox: MaterialCheckBox
     private lateinit var tableDetailLayoutWrapper: LinearLayout
+    private lateinit var barcodeDetailParentLayout: LinearLayout
     private fun displayDataSubmitDialog(it: Result?, scanText: String) {
         var text = ""
         text = if (it == null) {
@@ -352,7 +399,15 @@ class ScannerFragment : Fragment() {
                 )
             }
         } else if (appSettings.getString(getString(R.string.key_mode)) == "Quick Links") {
-            BaseActivity.showAlert(requireActivity(), text)
+            val searchTableObject = tableGenerator.getScanItem(tableName, text)
+
+            if (searchTableObject != null) {
+                renderQuickLinksDialog(searchTableObject)
+
+            } else {
+                displayItemNotFoundDialog(text)
+            }
+
         } else {
             copyToClipBoard(text)
             if (CodeScanner.ONE_DIMENSIONAL_FORMATS.contains(it!!.barcodeFormat) || scanText.isNotEmpty()) {
@@ -640,6 +695,214 @@ class ScannerFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun renderQuickLinksDialog(searchTableObject: TableObject) {
+
+        val quickLinksLayout =
+            LayoutInflater.from(requireActivity()).inflate(R.layout.quick_links_dialog_layout, null)
+        val typeTextHeading =
+            quickLinksLayout.findViewById<MaterialTextView>(R.id.quick_links_code_detail_type_text_heading)
+        typeTextHeading.text = getString(R.string.barcode_text_data_heding)
+        val encodeDataTextView =
+            quickLinksLayout.findViewById<MaterialTextView>(R.id.quick_links_code_detail_encode_data)
+        encodeDataTextView.text = searchTableObject.code_data
+        val clipboardCopyView =
+            quickLinksLayout.findViewById<MaterialTextView>(R.id.quick_links_code_detail_clipboard_copy_view)
+        clipboardCopyView.setOnClickListener {
+            val clipboard: ClipboardManager =
+                requireActivity().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText(
+                clipboard.primaryClipDescription!!.label,
+                encodeDataTextView.text.toString()
+            )
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(
+                requireActivity(),
+                getString(R.string.text_saved_clipboard),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        barcodeDetailParentLayout =
+            quickLinksLayout.findViewById(R.id.quick_links_barcode_detail_wrapper_layout)
+        displayBarcodeDetail(searchTableObject)
+
+        val cancelButton =
+            quickLinksLayout.findViewById<AppCompatImageView>(R.id.quick_links_code_detail_cancel)
+        val moreDetailButton =
+            quickLinksLayout.findViewById<AppCompatImageButton>(R.id.quick_links_code_detail_more_button)
+        val builder = MaterialAlertDialogBuilder(requireActivity())
+        builder.setView(quickLinksLayout)
+        builder.setCancelable(false)
+        val alertdialog = builder.create()
+        alertdialog.show()
+        cancelButton.setOnClickListener {
+            alertdialog.dismiss()
+            codeScanner!!.startPreview()
+        }
+
+        moreDetailButton.setOnClickListener {
+            alertdialog.dismiss()
+            val intent = Intent(requireActivity(), CodeDetailActivity::class.java)
+            intent.putExtra("TABLE_NAME", tableName)
+            intent.putExtra("TABLE_ITEM", searchTableObject)
+            requireActivity().startActivity(intent)
+        }
+
+    }
+
+    private fun displayItemNotFoundDialog(text:String){
+        val itemNotFoundLayout = LayoutInflater.from(requireActivity())
+            .inflate(R.layout.quick_links_item_not_found_dialog, null)
+        val qcTableSpinner =
+            itemNotFoundLayout.findViewById<AppCompatSpinner>(R.id.quick_links_tables_spinner)
+        val cancelButton =
+            itemNotFoundLayout.findViewById<MaterialButton>(R.id.quick_links_dialog_cancel_btn)
+        val selectButton =
+            itemNotFoundLayout.findViewById<MaterialButton>(R.id.quick_links_dialog_select_btn)
+        val tablesList = mutableListOf<String>()
+        tablesList.addAll(tableGenerator.getAllDatabaseTables())
+        if (tablesList.isNotEmpty()) {
+            tableName = tablesList[0]
+            val adapter = ArrayAdapter(
+                requireActivity(),
+                android.R.layout.simple_spinner_item,
+                tablesList
+            )
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            qcTableSpinner.adapter = adapter
+
+            if (appSettings.getString("SCAN_SELECTED_TABLE")!!.isNotEmpty()) {
+                for (i in 0 until tablesList.size) {
+                    val value = tablesList[i]
+                    if (value == appSettings.getString("SCAN_SELECTED_TABLE")) {
+                        qcTableSpinner.setSelection(i)
+                        tableName = value
+                        break
+                    }
+                }
+            }
+        }
+
+        qcTableSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(
+                adapterView: AdapterView<*>?,
+                view: View?,
+                i: Int,
+                l: Long
+            ) {
+                tableName = adapterView!!.getItemAtPosition(i).toString()
+                appSettings.putString("SCAN_SELECTED_TABLE", tableName)
+            }
+        }
+
+        val builder1 = MaterialAlertDialogBuilder(requireActivity())
+        builder1.setView(itemNotFoundLayout)
+        val alertdialog1 = builder1.create()
+        alertdialog1.show()
+        selectButton.setOnClickListener {
+            alertdialog1.dismiss()
+            val searchObj = tableGenerator.getScanItem(tableName,text)
+            if (searchObj != null){
+                renderQuickLinksDialog(searchObj)
+            }
+            else{
+                displayItemNotFoundDialog(text)
+            }
+        }
+        cancelButton.setOnClickListener { alertdialog1.dismiss()
+        codeScanner!!.startPreview()
+        }
+    }
+
+    var barcodeEditList = mutableListOf<Triple<AppCompatImageView, String, String>>()
+    private var counter: Int = 0
+    private fun displayBarcodeDetail(tableObject: TableObject) {
+
+
+        if (barcodeDetailParentLayout.childCount > 0) {
+            barcodeDetailParentLayout.removeAllViews()
+        }
+
+        barcodeEditList.add(
+            Triple(
+                AppCompatImageView(requireActivity()),
+                tableObject.id.toString(),
+                "id"
+            )
+        )
+        val codeDataLayout = LayoutInflater.from(requireActivity())
+            .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+        val codeDataColumnValue =
+            codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+        val codeDataColumnName =
+            codeDataLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+        val codeDataColumnEditView =
+            codeDataLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+        codeDataColumnEditView.id = counter
+        barcodeEditList.add(
+            Triple(
+                codeDataColumnEditView,
+                tableObject.code_data,
+                "code_data"
+            )
+        )
+        codeDataColumnEditView.visibility = View.GONE
+        codeDataColumnValue.text = tableObject.code_data
+        codeDataColumnName.text = "code_data"
+        barcodeDetailParentLayout.addView(codeDataLayout)
+        val dateLayout = LayoutInflater.from(requireActivity())
+            .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+        val dateColumnValue =
+            dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+        val dateColumnName =
+            dateLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+        val dateColumnEditView = dateLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+        counter += 1
+        dateColumnEditView.id = counter
+        barcodeEditList.add(Triple(dateColumnEditView, tableObject.date, "date"))
+        dateColumnEditView.visibility = View.GONE
+        dateColumnValue.text = tableObject.date
+        dateColumnName.text = "date"
+        barcodeDetailParentLayout.addView(dateLayout)
+        val imageLayout = LayoutInflater.from(requireActivity())
+            .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+        val imageColumnValue =
+            imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+        val imageColumnName =
+            imageLayout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+        val imageColumnEditView =
+            imageLayout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+        counter += 1
+        imageColumnEditView.id = counter
+        barcodeEditList.add(Triple(imageColumnEditView, tableObject.image, "image"))
+        imageColumnEditView.visibility = View.GONE
+        imageColumnValue.text = tableObject.image
+        imageColumnName.text = "image"
+        barcodeDetailParentLayout.addView(imageLayout)
+
+        for (i in 0 until tableObject.dynamicColumns.size) {
+            val item = tableObject.dynamicColumns[i]
+
+            val layout = LayoutInflater.from(requireActivity())
+                .inflate(R.layout.barcode_detail_item_row, barcodeDetailParentLayout, false)
+            val columnValue = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_value)
+            val columnName = layout.findViewById<MaterialTextView>(R.id.bcd_table_column_name)
+            val columnEditView = layout.findViewById<AppCompatImageView>(R.id.bcd_edit_view)
+            counter += 1
+            columnEditView.id = counter
+            barcodeEditList.add(Triple(columnEditView, item.second, item.first))
+            columnEditView.visibility = View.GONE
+            columnValue.text = item.second
+            columnName.text = item.first
+            barcodeDetailParentLayout.addView(layout)
+
+        }
+        counter = 0
     }
 
     private fun saveToDriveAppFolder() {
@@ -1101,7 +1364,9 @@ class ScannerFragment : Fragment() {
                 val accountName: String? =
                     result.data!!.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
+                    //MainActivity.credential!!.backOff = ExponentialBackOff()
                     MainActivity.credential!!.selectedAccountName = accountName
+                    appSettings.putString("ACCOUNT_NAME", accountName)
                     saveToDriveAppFolder()
                 }
 
@@ -1183,6 +1448,7 @@ class ScannerFragment : Fragment() {
         super.onResume()
         startScanner()
         getTableList()
+        getModeList()
         val flag = appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
         if (flag) {
             tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_on_text))
