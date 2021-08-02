@@ -341,9 +341,9 @@
     <string name="more_button_text">Более</string>
     <string name="quick_links_item_not_found_heading_text">Товар не найден в текущей таблице. Попробуйте выбрать другую таблицу.</string>
 	<string name="select_text">Выбирать</string>
-    <string name="code_quantity_heading">Quantity</string>
-	<string name="code_quantity_sub_heading">(Scan Quantity)</string>
-    <string name="scan_quantity_update_success_text">Scan quantity updated successfully!</string>
+    <string name="code_quantity_heading">Количество</string>
+	<string name="code_quantity_sub_heading">(Количество сканирований)</string>
+    <string name="scan_quantity_update_success_text">Количество сканированных изображений успешно обновлено!</string>
 
     <string-array name="mode_list">
 		<item>Инвентарь</item>
