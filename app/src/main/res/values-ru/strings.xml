@@ -345,7 +345,8 @@
 	<string name="code_quantity_sub_heading">(Количество сканирований)</string>
     <string name="scan_quantity_update_success_text">Количество сканированных изображений успешно обновлено!</string>
     <string name="qr_code_not_recognizeable_error_text">Ваш QR-код не распознается, пожалуйста, измените цвета.</string>
-
+	
+	
     <string-array name="mode_list">
 		<item>Инвентарь</item>
 		<item>Продавец</item>
