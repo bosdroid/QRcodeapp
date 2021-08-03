@@ -313,11 +313,11 @@ class ImageManager {
             val reader = MultiFormatReader()
             try {
                 val result: Result = reader.decode(bitmap)
-                val contents: String = result.getText()
+//                val contents: String = result.text
 //                val rawBytes: ByteArray = result.getRawBytes()
 //                val format: BarcodeFormat = result.getBarcodeFormat()
 //                val points: Array<ResultPoint> = result.getResultPoints()
-                return contents
+                return result.text
             } catch (e: NotFoundException) {
                 e.printStackTrace()
                 return ""
