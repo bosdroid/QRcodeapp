@@ -355,8 +355,10 @@
     <string name="select_text">Select</string>
     <string name="code_quantity_heading">Quantity</string>
     <string name="code_quantity_sub_heading">(Scan Quantity)</string>
-    <string name="scan_quantity_update_success_text">Scan quantity updated successfully!</string>
+    <string name="scan_quantity_update_success_text">Scan quantity updated successfully.</string>
     <string name="qr_code_not_recognizeable_error_text">Your QR code is not recognizable please change colors.</string>
+    <string name="scan_quantity_increase_success_text">Scan Item Quantity Increase Successfully!</string>
+    <string name="scan_quantity_remaining_text">Remaining Quantity: </string>
 
     <string-array name="mode_list">
         <item>Inventory</item>

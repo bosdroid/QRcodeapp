@@ -341,7 +341,19 @@ class ScannerFragment : Fragment() {
                 decodeCallback = DecodeCallback {
 
                     requireActivity().runOnUiThread {
-                        displayDataSubmitDialog(it, "")
+                        val isFound = tableGenerator.searchItem(tableName,it.text)
+                        if (isFound && appSettings.getString(getString(R.string.key_mode)) == "Inventory"){
+                          val quantity = tableGenerator.getScanQuantity(tableName,it.text)
+                          val qty:Int = quantity.toInt()+1
+                          val isUpdate = tableGenerator.updateScanQuantity(tableName,it.text,qty)
+                          if (isUpdate){
+                              showAlert(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text))
+                          }
+                        }
+                        else{
+                            displayDataSubmitDialog(it, "")
+                        }
+
                     }
                 }
                 errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
@@ -388,13 +400,13 @@ class ScannerFragment : Fragment() {
                 val quantity = tableGenerator.getScanQuantity(tableName,text)
                 var qty = quantity.toInt()
                 if (qty != -1){
-                    if (qty == 1){
+                    if (qty > 0 ){
                         qty -= 1
                         val isUpdate = tableGenerator.updateScanQuantity(tableName,text,qty)
                         if (isUpdate){
                             showAlert(
                                 requireActivity(),
-                                getString(R.string.scan_quantity_update_success_text)
+                                "${getString(R.string.scan_quantity_update_success_text)} ${getString(R.string.scan_quantity_remaining_text)} $qty"
                             )
                         }
                     }
