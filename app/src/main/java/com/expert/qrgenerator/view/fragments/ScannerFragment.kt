@@ -347,8 +347,9 @@ class ScannerFragment : Fragment() {
                           val qty:Int = quantity.toInt()+1
                           val isUpdate = tableGenerator.updateScanQuantity(tableName,it.text,qty)
                           if (isUpdate){
-                              showAlert(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text))
-                          }
+                              //showAlert(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text))
+                              Toast.makeText(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text),Toast.LENGTH_SHORT).show()
+						  }
                         }
                         else{
                             displayDataSubmitDialog(it, "")
