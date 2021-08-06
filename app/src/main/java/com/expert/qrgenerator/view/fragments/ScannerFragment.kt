@@ -1,5 +1,6 @@
 package com.expert.qrgenerator.view.fragments
 
+import android.Manifest
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -24,7 +25,6 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
@@ -37,9 +37,14 @@ import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import com.android.volley.Response
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
 import com.budiyev.android.codescanner.*
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.Sheet
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.singleton.DriveService
@@ -58,7 +63,7 @@ import com.google.android.material.textview.MaterialTextView
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
-import com.google.api.client.util.ExponentialBackOff
+import com.google.api.services.drive.model.FileList
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.mlkit.vision.barcode.Barcode
@@ -70,8 +75,10 @@ import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -92,6 +99,7 @@ class ScannerFragment : Fragment() {
     private lateinit var tipsSwitchBtn: SwitchMaterial
     private var tableName: String = ""
     private lateinit var tablesSpinner: AppCompatSpinner
+    private lateinit var sheetsSpinner: AppCompatSpinner
     private lateinit var modesSpinner: AppCompatSpinner
     private var textInputIdsList = mutableListOf<Pair<String, TextInputEditText>>()
     private var spinnerIdsList = mutableListOf<Pair<String, AppCompatSpinner>>()
@@ -112,9 +120,15 @@ class ScannerFragment : Fragment() {
     private lateinit var previewView: PreviewView
     private lateinit var flashImg: ImageView
     private val TAG = ScannerFragment::class.java.name
+    private var sheetsList = mutableListOf<Sheet>()
+    private var userRecoverableAuthType = 0
+    private var selectedSheetId: String = ""
+    private var selectedSheetName: String = ""
+    private lateinit var connectGoogleSheetsTextView:MaterialTextView
+    private lateinit var sheetsTopLayout:LinearLayout
 
     interface ScannerInterface {
-        fun login()
+        fun login(callback:LoginCallback)
     }
 
     override fun onAttach(context: Context) {
@@ -182,14 +196,27 @@ class ScannerFragment : Fragment() {
     private fun initViews(view: View) {
         scannerView = view.findViewById(R.id.scanner_view)
         tablesSpinner = view.findViewById(R.id.tables_spinner)
+        sheetsSpinner = view.findViewById(R.id.sheets_spinner)
         modesSpinner = view.findViewById(R.id.modes_spinner)
         addNewTableBtn = view.findViewById(R.id.add_new_table_btn)
         container = view.findViewById(R.id.container)
         previewView = view.findViewById(R.id.previewview)
         tipsSwitchBtn = view.findViewById(R.id.home_tips_switch)
+        connectGoogleSheetsTextView = view.findViewById(R.id.connect_google_sheets_text_view)
+        sheetsTopLayout = view.findViewById(R.id.sheets_top_layout)
         flashImg = view.findViewById(R.id.flashImg)
         addNewTableBtn.setOnClickListener {
             startActivity(Intent(requireActivity(), TablesActivity::class.java))
+        }
+
+        connectGoogleSheetsTextView.setOnClickListener {
+            listener!!.login(object :LoginCallback{
+                override fun onSuccess() {
+                    Log.d("TEST199","success")
+                    onResume()
+                }
+
+            })
         }
 
     }
@@ -349,6 +376,10 @@ class ScannerFragment : Fragment() {
                           if (isUpdate){
                               //showAlert(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text))
                               Toast.makeText(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text),Toast.LENGTH_SHORT).show()
+                              Handler(Looper.myLooper()!!).postDelayed({
+                                  startPreview()
+                              },2000)
+
 						  }
                         }
                         else{
@@ -405,19 +436,20 @@ class ScannerFragment : Fragment() {
                         qty -= 1
                         val isUpdate = tableGenerator.updateScanQuantity(tableName,text,qty)
                         if (isUpdate){
-                            showAlert(
-                                requireActivity(),
-                                "${getString(R.string.scan_quantity_update_success_text)} ${getString(R.string.scan_quantity_remaining_text)} $qty"
-                            )
+                            Toast.makeText(requireActivity(),"${getString(R.string.scan_quantity_update_success_text)} ${getString(R.string.scan_quantity_remaining_text)} $qty",Toast.LENGTH_SHORT).show()
+                            Handler(Looper.myLooper()!!).postDelayed({
+                                codeScanner!!.startPreview()
+                            },2000)
                         }
                     }
                     else{
                         val isSuccess = tableGenerator.deleteItem(tableName, text)
                         if (isSuccess) {
-                            showAlert(
-                                requireActivity(),
-                                getString(R.string.scan_item_delete_success_text)
-                            )
+                            Toast.makeText(requireActivity(),requireActivity().getString(R.string.scan_item_delete_success_text),Toast.LENGTH_SHORT).show()
+                            Handler(Looper.myLooper()!!).postDelayed({
+                                codeScanner!!.startPreview()
+                            },2000)
+
                         }
                     }
                 }
@@ -475,7 +507,13 @@ class ScannerFragment : Fragment() {
                                     }
                                     .setPositiveButton(requireActivity().resources.getString(R.string.login_text)) { dialog, which ->
                                         dialog.dismiss()
-                                        listener!!.login()
+                                        listener!!.login(object :LoginCallback{
+                                            override fun onSuccess() {
+                                                Log.d("TEST199","success")
+                                                onResume()
+                                            }
+
+                                        })
                                     }
                                     .create().show()
                             } else {
@@ -510,12 +548,12 @@ class ScannerFragment : Fragment() {
                     }
 
                     imagesImageView.setOnClickListener {
-                        if (RuntimePermissionHelper.checkStoragePermission(
-                                requireActivity(),
-                                Constants.READ_STORAGE_PERMISSION
-                            )
-                        ) {
+                        if (ContextCompat.checkSelfPermission(requireActivity(),Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                             getImageFromGallery()
+                        }
+                        else{
+                            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                Constants.READ_STORAGE_REQUEST_CODE)
                         }
                     }
 
@@ -1013,6 +1051,13 @@ class ScannerFragment : Fragment() {
                             }
                         }
 
+                        for (i in 0 until params.size){
+                            val pair = params[i]
+                            values_JSON.put(pair.second)
+                        }
+                        if (values_JSON.length() > 0){
+                            sendRequest()
+                        }
                     }
                     // THIS ELSE PART WILL RUN WHEN ADD IMAGE CHECK BOX IS UN-CHECKED
                     else {
@@ -1276,6 +1321,7 @@ class ScannerFragment : Fragment() {
                     isUploadingSuccess = true
                 } catch (e: UserRecoverableAuthIOException) {
 //            Log.d("TEST199",e.localizedMessage!!)
+                    userRecoverableAuthType = 0
                     userAuthLauncher.launch(e.intent)
                     val bundle = Bundle()
                     bundle.putString("UserRecoverableAuthIOException", "Error: " + e.message)
@@ -1327,6 +1373,7 @@ class ScannerFragment : Fragment() {
                 return true
             } catch (e: UserRecoverableAuthIOException) {
 //            Log.d("TEST199",e.localizedMessage!!)
+                userRecoverableAuthType = 0
                 userAuthLauncher.launch(e.intent)
 
                 val bundle = Bundle()
@@ -1409,7 +1456,13 @@ class ScannerFragment : Fragment() {
                     //MainActivity.credential!!.backOff = ExponentialBackOff()
                     MainActivity.credential!!.selectedAccountName = accountName
                     appSettings.putString("ACCOUNT_NAME", accountName)
-                    saveToDriveAppFolder()
+                    if (userRecoverableAuthType == 0){
+                        saveToDriveAppFolder()
+                    }
+                    else{
+                      //getAllSheets()
+                    }
+
                 }
 
             }
@@ -1491,6 +1544,7 @@ class ScannerFragment : Fragment() {
         startScanner()
         getTableList()
         getModeList()
+        //getAllSheets()
         val flag = appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
         if (flag) {
             tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_on_text))
@@ -1510,6 +1564,7 @@ class ScannerFragment : Fragment() {
             }
         })
     }
+
 
     override fun onPause() {
         if (codeScanner != null) {
@@ -1751,6 +1806,152 @@ class ScannerFragment : Fragment() {
             DialogPrefs.setSuccessScan(requireActivity(), scans)
         }
         Log.d("TAG", "ScanCount: $scans")
+    }
+
+    private fun getAllSheets() {
+         if (Constants.userData != null) {
+             connectGoogleSheetsTextView.visibility =View.GONE
+             sheetsTopLayout.visibility = View.VISIBLE
+
+             CoroutineScope(Dispatchers.IO).launch {
+                 try {
+                     val result: FileList = DriveService.instance!!.files().list()
+                         .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
+                         .execute()
+
+                     val files = result.files
+
+                     if (files != null) {
+                         if (files.size > 0){
+                             sheetsList.clear()
+                         }
+                         for (file in files) {
+                             sheetsList.add(Sheet(file.id, file.name))
+                         }
+
+                         CoroutineScope(Dispatchers.Main).launch {
+                             if (sheetsList.isNotEmpty()) {
+                                 Constants.sheetsList.addAll(sheetsList)
+                                 Log.d("TEST199", Constants.sheetsList.toString())
+                                 displaySheetSpinner()
+                             }
+                         }
+                     }
+                 } catch (userRecoverableException: UserRecoverableAuthIOException) {
+                     Log.d("TEST199", "")
+                     userRecoverableAuthType = 1
+                     userAuthLauncher.launch(userRecoverableException.intent)
+                 }
+             }
+         }
+        else{
+//            sheetsTopLayout.visibility = View.GONE
+//            connectGoogleSheetsTextView.visibility = View.VISIBLE
+         }
+    }
+
+    private fun displaySheetSpinner(){
+        if (sheetsList.isNotEmpty()) {
+            selectedSheetId = sheetsList[0].id
+            selectedSheetId = sheetsList[0].name
+            val adapter = ArrayAdapter(
+                requireActivity(),
+                android.R.layout.simple_spinner_item,
+                sheetsList
+            )
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            sheetsSpinner.adapter = adapter
+
+            if (appSettings.getString("SELECTED_SHEET")!!.isNotEmpty()) {
+                for (i in 0 until sheetsList.size) {
+                    val value = sheetsList[i].id
+                    if (value == appSettings.getString("SELECTED_SHEET")) {
+                        sheetsSpinner.setSelection(i)
+                        selectedSheetId = value
+                        selectedSheetName = sheetsList[i].name
+                        break
+                    }
+                }
+            }
+        }
+
+        sheetsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(
+                adapterView: AdapterView<*>?,
+                view: View?,
+                i: Int,
+                l: Long
+            ) {
+                selectedSheetId = sheetsList[i].id//adapterView!!.getItemAtPosition(i).toString()
+                selectedSheetName = sheetsList[i].name
+                appSettings.putString("SELECTED_SHEET", selectedSheetId)
+            }
+        }
+    }
+
+    var values: List<String>? = null
+    var values_String = arrayOfNulls<String>(1000)
+    val values_JSON = JSONArray()
+    private fun sendRequest() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+
+                val sr: StringRequest = object : StringRequest(
+                    Method.POST,
+                    Constants.googleAppScriptUrl,
+                    object : Response.Listener<String?> {
+                        override fun onResponse(response: String?) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                if (response!!.toLowerCase(Locale.ENGLISH).contains("success")) {
+                                    Log.d("TEST199","sheet data success")
+                                } else {
+                                    val permissionDeniedLayout = LayoutInflater.from(context)
+                                        .inflate(R.layout.spreadsheet_permission_failed_dialog, null)
+                                    val builder = MaterialAlertDialogBuilder(requireActivity())
+                                    builder.setCancelable(false)
+                                    builder.setView(permissionDeniedLayout)
+                                    builder.setPositiveButton("Ok") { dialog, which ->
+                                        dialog.dismiss()
+                                    }
+                                    val alert = builder.create()
+                                    alert.show()
+                                }
+
+                            }
+                        }
+                    },
+                    object : Response.ErrorListener {
+                        override fun onErrorResponse(error: VolleyError?) {
+                            Toast.makeText(context,error!!.toString(),Toast.LENGTH_SHORT).show()
+                            BaseActivity.dismiss()
+                        }
+                    }) {
+                    override fun getParams(): Map<String, String> {
+                        val params: MutableMap<String, String> = HashMap()
+                        params["sheetName"] = selectedSheetName
+                        params["number"] = "${values_JSON.length()}"
+                        params["id"] = selectedSheetId
+                        params["value"] = "$values_JSON"
+                        return params
+                    }
+
+                }
+                VolleySingleton(requireActivity()).addToRequestQueue(sr)
+
+            } catch (e: UserRecoverableAuthIOException) {
+                e.printStackTrace()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    public fun restart(){
+        onResume()
     }
 
 }

@@ -347,6 +347,8 @@
     <string name="qr_code_not_recognizeable_error_text">Ваш QR-код не распознается, пожалуйста, измените цвета.</string>
     <string name="scan_quantity_increase_success_text">Количество сканируемых элементов успешно увеличено!</string>
     <string name="scan_quantity_remaining_text">Оставшееся количество:</string>
+    <string name="sheet_heading_text">G-Sheets</string>
+    <string name="connect_googlesheet_text">CONNECT TO GOOGLE SHEETS</string>
 
 
     <string-array name="mode_list">

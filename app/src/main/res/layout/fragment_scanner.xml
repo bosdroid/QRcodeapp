@@ -71,11 +71,88 @@
     </LinearLayout>
     </LinearLayout>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scanner_top_layout"
+        android:id="@+id/sheets_wrapper_layout"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/scanner_top_layout"
+            android:id="@+id/sheets_top_layout"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:visibility="gone"
+            >
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/largeText"
+                android:textColor="@color/black"
+                android:layout_marginStart="@dimen/defaultDpMargin"
+                android:text="@string/sheet_heading_text"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintRight_toLeftOf="@id/sheets_spinner_wrapper"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/sheets_spinner_wrapper"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="@dimen/eightDpMargin"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintLeft_toRightOf="@id/add_new_table_btn"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/eightDpMargin"
+                    android:background="@drawable/text_input_field"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/sheets_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/eightDpMargin"
+            android:textColor="@color/purple_bright_accent_color"
+            android:text="@string/connect_googlesheet_text"
+            android:id="@+id/connect_google_sheets_text_view"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+
+
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scanner_top_layout"
+        app:layout_constraintTop_toBottomOf="@+id/sheets_wrapper_layout"
         app:layout_constraintLeft_toRightOf="@id/mode_switcher_layout"
         android:layout_marginEnd="@dimen/eightDpMargin"
         android:elevation="3dp"
@@ -90,7 +167,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scanner_top_layout"
+        app:layout_constraintTop_toBottomOf="@id/sheets_wrapper_layout"
         app:layout_constraintRight_toLeftOf="@id/home_tips_switch"
         android:id="@+id/mode_switcher_layout"
         android:layout_marginTop="@dimen/eightDpMargin"
@@ -142,7 +219,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scanner_top_layout"
+        app:layout_constraintTop_toBottomOf="@id/sheets_wrapper_layout"
         app:maskColor="#77000000" />
 
     <FrameLayout

@@ -24,6 +24,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.User
@@ -92,6 +93,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var user: User? = null
     private var requestLogin: String? = null
     private var scannerFragment: ScannerFragment? = null
+    private var callback:LoginCallback?=null
 
     companion object {
         lateinit var context: Context
@@ -344,6 +346,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 )
                 appSettings.putUser(Constants.user, user)
                 Constants.userData = user
+                callback!!.onSuccess()
                 if (isLastSignUser == "new") {
                     appSettings.putBoolean(Constants.isLogin, true)
                     Toast.makeText(
@@ -355,6 +358,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 if (requestLogin!!.isNotEmpty() && requestLogin == "login") {
                     startActivity(Intent(context, TablesActivity::class.java))
                 }
+
             }
             // ELSE PART WILL WORK WHEN USER LOGGED BUT ACCOUNT DETAIL EMPTY
             // AND IN CASE ACCOUNT DETAIL IS EMPTY THEN APP FETCH THE ACCOUNT DETAIL FROM PREFERENCE FOR AVOID NULL ANC CRASH THE APP
@@ -480,6 +484,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 Constants.userData = null
                 Constants.sheetService = null
                 Constants.mService = null
+                val scannerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as ScannerFragment
+                scannerFragment.restart()
                 checkUserLoginStatus()
             }
 
@@ -708,7 +714,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    override fun login() {
+    override fun login(callback: LoginCallback) {
+        this.callback = callback
         startLogin()
     }
 
