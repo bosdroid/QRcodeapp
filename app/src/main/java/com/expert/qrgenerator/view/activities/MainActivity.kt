@@ -346,7 +346,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 )
                 appSettings.putUser(Constants.user, user)
                 Constants.userData = user
-                callback!!.onSuccess()
+                if (callback != null){
+                    callback!!.onSuccess()
+                }
                 if (isLastSignUser == "new") {
                     appSettings.putBoolean(Constants.isLogin, true)
                     Toast.makeText(
