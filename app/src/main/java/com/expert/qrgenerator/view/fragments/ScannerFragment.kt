@@ -37,6 +37,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
@@ -83,6 +84,10 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import com.android.volley.RetryPolicy
+
+
+
 
 
 class ScannerFragment : Fragment() {
@@ -128,7 +133,7 @@ class ScannerFragment : Fragment() {
     private lateinit var sheetsTopLayout:LinearLayout
 
     interface ScannerInterface {
-        fun login(callback:LoginCallback)
+        fun login(callback: LoginCallback)
     }
 
     override fun onAttach(context: Context) {
@@ -210,9 +215,9 @@ class ScannerFragment : Fragment() {
         }
 
         connectGoogleSheetsTextView.setOnClickListener {
-            listener!!.login(object :LoginCallback{
+            listener!!.login(object : LoginCallback {
                 override fun onSuccess() {
-                    Log.d("TEST199","success")
+                    Log.d("TEST199", "success")
                     onResume()
                 }
 
@@ -368,17 +373,21 @@ class ScannerFragment : Fragment() {
                 decodeCallback = DecodeCallback {
 
                     requireActivity().runOnUiThread {
-                        val isFound = tableGenerator.searchItem(tableName,it.text)
+                        val isFound = tableGenerator.searchItem(tableName, it.text)
                         if (isFound && appSettings.getString(getString(R.string.key_mode)) == "Inventory"){
-                          val quantity = tableGenerator.getScanQuantity(tableName,it.text)
+                          val quantity = tableGenerator.getScanQuantity(tableName, it.text)
                           val qty:Int = quantity.toInt()+1
-                          val isUpdate = tableGenerator.updateScanQuantity(tableName,it.text,qty)
+                          val isUpdate = tableGenerator.updateScanQuantity(tableName, it.text, qty)
                           if (isUpdate){
                               //showAlert(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text))
-                              Toast.makeText(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text),Toast.LENGTH_SHORT).show()
+                              Toast.makeText(
+                                  requireActivity(),
+                                  requireActivity().getString(R.string.scan_quantity_increase_success_text),
+                                  Toast.LENGTH_SHORT
+                              ).show()
                               Handler(Looper.myLooper()!!).postDelayed({
                                   startPreview()
-                              },2000)
+                              }, 2000)
 
 						  }
                         }
@@ -429,26 +438,38 @@ class ScannerFragment : Fragment() {
         if (appSettings.getString(getString(R.string.key_mode)) == "Seller") {
             val isFound = tableGenerator.searchItem(tableName, text)
             if (isFound) {
-                val quantity = tableGenerator.getScanQuantity(tableName,text)
+                val quantity = tableGenerator.getScanQuantity(tableName, text)
                 var qty = quantity.toInt()
                 if (qty != -1){
                     if (qty > 0 ){
                         qty -= 1
-                        val isUpdate = tableGenerator.updateScanQuantity(tableName,text,qty)
+                        val isUpdate = tableGenerator.updateScanQuantity(tableName, text, qty)
                         if (isUpdate){
-                            Toast.makeText(requireActivity(),"${getString(R.string.scan_quantity_update_success_text)} ${getString(R.string.scan_quantity_remaining_text)} $qty",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireActivity(),
+                                "${getString(R.string.scan_quantity_update_success_text)} ${
+                                    getString(
+                                        R.string.scan_quantity_remaining_text
+                                    )
+                                } $qty",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             Handler(Looper.myLooper()!!).postDelayed({
                                 codeScanner!!.startPreview()
-                            },2000)
+                            }, 2000)
                         }
                     }
                     else{
                         val isSuccess = tableGenerator.deleteItem(tableName, text)
                         if (isSuccess) {
-                            Toast.makeText(requireActivity(),requireActivity().getString(R.string.scan_item_delete_success_text),Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireActivity(),
+                                requireActivity().getString(R.string.scan_item_delete_success_text),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             Handler(Looper.myLooper()!!).postDelayed({
                                 codeScanner!!.startPreview()
-                            },2000)
+                            }, 2000)
 
                         }
                     }
@@ -460,7 +481,7 @@ class ScannerFragment : Fragment() {
                     getString(R.string.scan_item_not_found_text)
                 )
             }
-        } else if (appSettings.getString(getString(R.string.key_mode)) == "Quick Links") {
+        } else if (appSettings.getString(getString(R.string.key_mode)) == "Search") {
             val searchTableObject = tableGenerator.getScanItem(tableName, text)
 
             if (searchTableObject != null) {
@@ -507,9 +528,9 @@ class ScannerFragment : Fragment() {
                                     }
                                     .setPositiveButton(requireActivity().resources.getString(R.string.login_text)) { dialog, which ->
                                         dialog.dismiss()
-                                        listener!!.login(object :LoginCallback{
+                                        listener!!.login(object : LoginCallback {
                                             override fun onSuccess() {
-                                                Log.d("TEST199","success")
+                                                Log.d("TEST199", "success")
                                                 onResume()
                                             }
 
@@ -548,12 +569,17 @@ class ScannerFragment : Fragment() {
                     }
 
                     imagesImageView.setOnClickListener {
-                        if (ContextCompat.checkSelfPermission(requireActivity(),Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                        if (ContextCompat.checkSelfPermission(
+                                requireActivity(),
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            ) == PackageManager.PERMISSION_GRANTED) {
                             getImageFromGallery()
                         }
                         else{
-                            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                                Constants.READ_STORAGE_REQUEST_CODE)
+                            requestPermissions(
+                                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                Constants.READ_STORAGE_REQUEST_CODE
+                            )
                         }
                     }
 
@@ -819,7 +845,7 @@ class ScannerFragment : Fragment() {
 
     }
 
-    private fun displayItemNotFoundDialog(text:String){
+    private fun displayItemNotFoundDialog(text: String){
         val itemNotFoundLayout = LayoutInflater.from(requireActivity())
             .inflate(R.layout.quick_links_item_not_found_dialog, null)
         val qcTableSpinner =
@@ -874,7 +900,7 @@ class ScannerFragment : Fragment() {
         alertdialog1.show()
         selectButton.setOnClickListener {
             alertdialog1.dismiss()
-            val searchObj = tableGenerator.getScanItem(tableName,text)
+            val searchObj = tableGenerator.getScanItem(tableName, text)
             if (searchObj != null){
                 renderQuickLinksDialog(searchObj)
             }
@@ -1051,13 +1077,7 @@ class ScannerFragment : Fragment() {
                             }
                         }
 
-                        for (i in 0 until params.size){
-                            val pair = params[i]
-                            values_JSON.put(pair.second)
-                        }
-                        if (values_JSON.length() > 0){
-                            sendRequest()
-                        }
+
                     }
                     // THIS ELSE PART WILL RUN WHEN ADD IMAGE CHECK BOX IS UN-CHECKED
                     else {
@@ -1115,6 +1135,14 @@ class ScannerFragment : Fragment() {
                             }, 1000)
                         }
                     }
+
+//                    for (i in 0 until params.size){
+//                        val pair = params[i]
+//                        values_JSON.put(pair.second)
+//                    }
+//                    if (values_JSON.length() > 0){
+//                        sendRequest()
+//                    }
 
                 } catch (e: Exception) {
                     val bundle = Bundle()
@@ -1460,7 +1488,7 @@ class ScannerFragment : Fragment() {
                         saveToDriveAppFolder()
                     }
                     else{
-                      //getAllSheets()
+//                      getAllSheets()
                     }
 
                 }
@@ -1544,7 +1572,7 @@ class ScannerFragment : Fragment() {
         startScanner()
         getTableList()
         getModeList()
-        //getAllSheets()
+//        getAllSheets()
         val flag = appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
         if (flag) {
             tipsSwitchBtn.setText(requireActivity().getString(R.string.tip_switch_on_text))
@@ -1713,7 +1741,7 @@ class ScannerFragment : Fragment() {
     }
 
     inner class MyImageAnalyzer(supportFragmentManager: FragmentManager) : ImageAnalysis.Analyzer {
-        var count = 0;
+        var count = 0
         private var fragmentManager: FragmentManager? = null
         val appViewModel = ViewModelProvider(requireActivity()).get(AppViewModel::class.java)
 //        var bottomDialog: BottomDialog? = null
@@ -1766,7 +1794,7 @@ class ScannerFragment : Fragment() {
                     val rawValue = barcodes[0].rawValue
                     val valueType = barcodes[0].valueType
                     // See API reference for complete list of supported types
-                    Log.d("TAG", "readBarCodeData: $rawValue")
+                    Log.d("TEST199", "readBarCodeData: $rawValue")
                     if (barcodes[0].rawValue != null) {
                         displayDataSubmitDialog(null, rawValue!!)
                     }
@@ -1810,8 +1838,8 @@ class ScannerFragment : Fragment() {
 
     private fun getAllSheets() {
          if (Constants.userData != null) {
-             connectGoogleSheetsTextView.visibility =View.GONE
-             sheetsTopLayout.visibility = View.VISIBLE
+//             connectGoogleSheetsTextView.visibility =View.GONE
+//             sheetsTopLayout.visibility = View.VISIBLE
 
              CoroutineScope(Dispatchers.IO).launch {
                  try {
@@ -1832,13 +1860,11 @@ class ScannerFragment : Fragment() {
                          CoroutineScope(Dispatchers.Main).launch {
                              if (sheetsList.isNotEmpty()) {
                                  Constants.sheetsList.addAll(sheetsList)
-                                 Log.d("TEST199", Constants.sheetsList.toString())
                                  displaySheetSpinner()
                              }
                          }
                      }
                  } catch (userRecoverableException: UserRecoverableAuthIOException) {
-                     Log.d("TEST199", "")
                      userRecoverableAuthType = 1
                      userAuthLauncher.launch(userRecoverableException.intent)
                  }
@@ -1893,9 +1919,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    var values: List<String>? = null
-    var values_String = arrayOfNulls<String>(1000)
-    val values_JSON = JSONArray()
+    var values_JSON = JSONArray()
     private fun sendRequest() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -1907,10 +1931,13 @@ class ScannerFragment : Fragment() {
                         override fun onResponse(response: String?) {
                             CoroutineScope(Dispatchers.Main).launch {
                                 if (response!!.toLowerCase(Locale.ENGLISH).contains("success")) {
-                                    Log.d("TEST199","sheet data success")
+                                    Log.d("TEST199", "sheet data success")
                                 } else {
                                     val permissionDeniedLayout = LayoutInflater.from(context)
-                                        .inflate(R.layout.spreadsheet_permission_failed_dialog, null)
+                                        .inflate(
+                                            R.layout.spreadsheet_permission_failed_dialog,
+                                            null
+                                        )
                                     val builder = MaterialAlertDialogBuilder(requireActivity())
                                     builder.setCancelable(false)
                                     builder.setView(permissionDeniedLayout)
@@ -1920,16 +1947,22 @@ class ScannerFragment : Fragment() {
                                     val alert = builder.create()
                                     alert.show()
                                 }
+                                values_JSON = JSONArray()
 
                             }
                         }
                     },
                     object : Response.ErrorListener {
                         override fun onErrorResponse(error: VolleyError?) {
-                            Toast.makeText(context,error!!.toString(),Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, error!!.toString(), Toast.LENGTH_SHORT).show()
                             BaseActivity.dismiss()
                         }
                     }) {
+
+                    override fun getBodyContentType(): String {
+                        return "application/x-www-form-urlencoded"
+                    }
+
                     override fun getParams(): Map<String, String> {
                         val params: MutableMap<String, String> = HashMap()
                         params["sheetName"] = selectedSheetName
@@ -1940,6 +1973,11 @@ class ScannerFragment : Fragment() {
                     }
 
                 }
+                sr.setRetryPolicy(DefaultRetryPolicy(
+                    10000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+                )
                 VolleySingleton(requireActivity()).addToRequestQueue(sr)
 
             } catch (e: UserRecoverableAuthIOException) {
@@ -1950,7 +1988,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    public fun restart(){
+    fun restart(){
         onResume()
     }
 

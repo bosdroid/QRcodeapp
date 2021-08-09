@@ -349,6 +349,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 if (callback != null){
                     callback!!.onSuccess()
                 }
+                else{
+                    val scannerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as ScannerFragment
+                    scannerFragment.restart()
+                }
                 if (isLastSignUser == "new") {
                     appSettings.putBoolean(Constants.isLogin, true)
                     Toast.makeText(

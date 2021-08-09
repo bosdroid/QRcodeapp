@@ -41,7 +41,7 @@ class Constants {
         private const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
         private const val LOGO_IMAGE_PATH = "LogoImages"
         const val BASE_URL = "https://pages.qrmagicapp.com/"
-        const val googleAppScriptUrl = "https://script.google.com/macros/s/AKfycbw8aAiqlJbquiRYbiYyZOh36IC_0DEtp18qNkowZvltCJ-BEdbRYola2Dv1wLxAFF9X/exec"
+        const val googleAppScriptUrl = "https://script.google.com/macros/s/AKfycbw4-8R85cCh9C5JXD6BTl0q89NNOTFkYfZO1Sp2LRrVA-mCv06LRYu2PqCPUaKab26-/exec"
         var generatedImage: Bitmap? = null
         var tipsValue :Boolean = true
         var finalQrImageUri: Uri? = null

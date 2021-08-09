@@ -404,42 +404,48 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         return db.delete(tableName, "code_data=$code_data", null) > 0
     }
 
-    fun searchItem(tableName: String,code_data: String):Boolean{
+    fun searchItem(tableName: String,code_d: String):Boolean{
         val db = this.readableDatabase
-        val columns = getTableColumns(tableName)
-        val list = mutableListOf<Pair<String, String>>()
-        var tableObject: TableObject? = null
-        val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data=$code_data", null)
-        if (cursor.moveToFirst()) {
-            do {
-                tableObject = TableObject(
-                    cursor.getString(0).toInt(),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    if (cursor.isNull(3)) "" else cursor.getString(3)
-                )
-                tableObject.quantity = cursor.getInt(4)
-                if (columns!!.size >= 6) {
-                    for (i in 5 until columns.size) {
-                        val col = columns[i]
-                        var pair: Pair<String, String>? = null
-                        pair = Pair(col, cursor.getString(i))
-
-                        list.add(pair)
-                    }
-                    tableObject.dynamicColumns.addAll(list)
-                }
-            } while (cursor.moveToNext())
+//        val columns = getTableColumns(tableName)
+//        val list = mutableListOf<Pair<String, String>>()
+//        var tableObject: TableObject? = null
+        val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data='$code_d'", null)
+//        if (cursor.moveToFirst()) {
+//            do {
+//                tableObject = TableObject(
+//                    cursor.getString(0).toInt(),
+//                    cursor.getString(1),
+//                    cursor.getString(2),
+//                    if (cursor.isNull(3)) "" else cursor.getString(3)
+//                )
+//                tableObject.quantity = cursor.getInt(4)
+//                if (columns!!.size >= 6) {
+//                    for (i in 5 until columns.size) {
+//                        val col = columns[i]
+//                        var pair: Pair<String, String>? = null
+//                        pair = Pair(col, cursor.getString(i))
+//
+//                        list.add(pair)
+//                    }
+//                    tableObject.dynamicColumns.addAll(list)
+//                }
+//            } while (cursor.moveToNext())
+//        }
+//        return tableObject != null
+        if(cursor.count <= 0){
+            cursor.close()
+            return false
         }
-        return tableObject != null
+        cursor.close()
+        return true
     }
 
-    fun getScanItem(tableName: String,code_data: String):TableObject?{
+    fun getScanItem(tableName: String,code_d: String):TableObject?{
         val db = this.readableDatabase
         val columns = getTableColumns(tableName)
         val list = mutableListOf<Pair<String, String>>()
         var tableObject: TableObject? = null
-        val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data=$code_data", null)
+        val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data='$code_d'", null)
         if (cursor.moveToFirst()) {
             do {
                 tableObject = TableObject(
@@ -468,18 +474,17 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(COLUMN_QUANTITY, quantity)
-        return db.update(tableName, contentValues, "code_data=$code_data", null) > 0
+        return db.update(tableName, contentValues, "code_data='$code_data'", null) > 0
     }
 
-    fun getScanQuantity(tableName: String,code_data: String):String{
+    fun getScanQuantity(tableName: String,code_d: String):String{
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data=$code_data", null)
-        if (cursor != null){
+        val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data='$code_d'", null)
+        return if (cursor != null){
             cursor.moveToFirst()
-            return cursor.getString(cursor.getColumnIndex("quantity"))
-        }
-        else {
-            return "-1"
+            cursor.getString(cursor.getColumnIndex("quantity"))
+        } else {
+            "-1"
         }
     }
 

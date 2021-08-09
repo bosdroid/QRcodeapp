@@ -346,7 +346,7 @@
     <string name="mode_default_value">Inventory</string>
     <string name="inventory_text">Inventory</string>
     <string name="seller_text">Seller</string>
-    <string name="quick_links_text">Quick Links</string>
+    <string name="quick_links_text">Search</string>
     <string name="scan_item_not_found_text">Scan Item not found in selected table!</string>
     <string name="scan_item_delete_success_text">Scan item deleted successfully from selected table!</string>
     <string name="mode_text">Mode</string>
@@ -365,6 +365,6 @@
     <string-array name="mode_list">
         <item>Inventory</item>
         <item>Seller</item>
-        <item>Quick Links</item>
+        <item>Search</item>
     </string-array>
 </resources>

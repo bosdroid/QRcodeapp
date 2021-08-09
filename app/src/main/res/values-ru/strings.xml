@@ -334,7 +334,7 @@
 	<string name="mode_default_value">Инвентарь</string>
 	<string name="inventory_text">Инвентарь</string>
 	<string name="seller_text">Продавец</string>
-	<string name="quick_links_text">Быстрые ссылки</string>
+	<string name="quick_links_text">Поиск</string>
     <string name="scan_item_not_found_text">Сканируемый элемент не найден в выбранной таблице!</string>
 	<string name="scan_item_delete_success_text">Элемент сканирования успешно удален из выбранной таблицы!</string>
     <string name="mode_text">Режим</string>
@@ -347,14 +347,14 @@
     <string name="qr_code_not_recognizeable_error_text">Ваш QR-код не распознается, пожалуйста, измените цвета.</string>
     <string name="scan_quantity_increase_success_text">Количество сканируемых элементов успешно увеличено!</string>
     <string name="scan_quantity_remaining_text">Оставшееся количество:</string>
-    <string name="sheet_heading_text">G-Sheets</string>
-    <string name="connect_googlesheet_text">CONNECT TO GOOGLE SHEETS</string>
+    <string name="sheet_heading_text">G-Таблицы</string>
+    <string name="connect_googlesheet_text">ПОДКЛЮЧИТЬСЯ К GOOGLE ЛИСТАМ</string>
 
 
     <string-array name="mode_list">
 		<item>Инвентарь</item>
 		<item>Продавец</item>
-		<item>Быстрые ссылки</item>
+		<item>Поиск</item>
 	</string-array>
 
 

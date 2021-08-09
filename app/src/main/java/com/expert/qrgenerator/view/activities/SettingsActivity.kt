@@ -113,10 +113,10 @@ class SettingsActivity : BaseActivity() {
                             listPreference.summary = getString(R.string.seller_text)
                             appSettings.putString(getString(R.string.key_mode),"Seller")
                         }
-                        "Quick Links" -> {
+                        "Search" -> {
                             listPreference.value = getString(R.string.quick_links_text)
                             listPreference.summary = getString(R.string.quick_links_text)
-                            appSettings.putString(getString(R.string.key_mode),"Quick Links")
+                            appSettings.putString(getString(R.string.key_mode),"Search")
                         }
                     }
                     false
@@ -135,7 +135,7 @@ class SettingsActivity : BaseActivity() {
                     listPreference!!.value = getString(R.string.seller_text)
                     listPreference.summary = getString(R.string.seller_text)
                 }
-                "Quick Links" -> {
+                "Search" -> {
                     listPreference!!.value = getString(R.string.quick_links_text)
                     listPreference.summary = getString(R.string.quick_links_text)
                 }
