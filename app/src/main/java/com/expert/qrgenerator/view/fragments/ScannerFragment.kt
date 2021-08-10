@@ -1018,6 +1018,9 @@ class ScannerFragment : Fragment() {
                             if (multiImagesList.isNotEmpty()) {
                                 multiImagesList.clear()
                             }
+                            if (params.size > 0){
+                                params.clear()
+                            }
                             // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED EDIT TEXT
                             for (i in 0 until textInputIdsList.size) {
                                 val pair = textInputIdsList[i]

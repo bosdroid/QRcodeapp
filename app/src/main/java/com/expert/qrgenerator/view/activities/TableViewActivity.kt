@@ -123,6 +123,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
         csvExportImageView.setOnClickListener {
             exportCsv(tableName)
+//            importCsv(tableName)
         }
 
         // QUICK EDIT TABLE CHECKBOX LISTENER
@@ -286,7 +287,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                 override fun onMenuItemClick(item: MenuItem?): Boolean {
                     return when (item!!.itemId) {
                         R.id.pp_remove -> {
-                            removeItem(itemDetail.id,position)
+                            removeItem(itemDetail.id, position)
                             true
                         }
                         R.id.pp_copy -> {
@@ -329,18 +330,22 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
     }
 
-    private fun removeItem(id:Int,position: Int) {
+    private fun removeItem(id: Int, position: Int) {
         MaterialAlertDialogBuilder(context)
             .setMessage(getString(R.string.remove_item_alert_message_text))
-            .setNegativeButton(getString(R.string.cancel_text)){dialog,which->
+            .setNegativeButton(getString(R.string.cancel_text)){ dialog, which->
                 dialog.dismiss()
-            }.setPositiveButton(getString(R.string.remove_text)){dialog,which->
+            }.setPositiveButton(getString(R.string.remove_text)){ dialog, which->
                 dialog.dismiss()
-                val isSuccess = tableGenerator.removeItem(tableName,id)
+                val isSuccess = tableGenerator.removeItem(tableName, id)
                 if (isSuccess){
                     dataList.removeAt(position)
-                    Toast.makeText(context,getString(R.string.remove_item_success_text),Toast.LENGTH_SHORT).show()
-                    getTableData(tableName,"","")
+                    Toast.makeText(
+                        context,
+                        getString(R.string.remove_item_success_text),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    getTableData(tableName, "", "")
                 }
             }
             .create().show()
@@ -604,6 +609,15 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         }
     }
 
+    private fun importCsv(tableName: String) {
+          openFilePicker()
+    }
 
+
+    private fun openFilePicker(){
+//        val intent = Intent(Intent.ACTION_GET_CONTENT)
+//        intent.type = "*/*"
+//        intent.addCategory(Intent.CATEGORY_OPENABLE)
+    }
 
 }
