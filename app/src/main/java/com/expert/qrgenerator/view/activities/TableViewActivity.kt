@@ -133,6 +133,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
     }
 
+
     private fun setUpToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar!!.title = tableName
@@ -602,5 +603,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
             showAlert(context, getString(R.string.table_export_error_text))
         }
     }
+
+
 
 }
