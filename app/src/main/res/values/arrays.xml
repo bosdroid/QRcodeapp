@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="color_values">
+        <item>000000</item>
+        <item>333300</item>
+        <item>3399ff</item>
+        <item>669999</item>
+        <item>006600</item>
+        <item>cc33ff</item>
+        <item>9999ff</item>
+        <item>660066</item>
+        <item>ff0000</item>
+        <item>cc6600</item>
+        <item>cccc00</item>
+        <item>999966</item>
+        <item>333300</item>
+        <item>ff99cc</item>
+        <item>ff3399</item>
+    </string-array>
+</resources>

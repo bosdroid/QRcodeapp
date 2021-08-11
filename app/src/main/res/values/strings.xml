@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">QR Generator</string>
+    <string name="input_hint_text">Enter text</string>
+    <string name="generate_text">GENERATE</string>
+    <string name="share_text">Share</string>
+    <string name="color_text">Colors</string>
+    <string name="title_activity_maps">Map</string>
+</resources>

@@ -1,0 +1,75 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.expert.qrgenerator"
+        minSdkVersion 22
+        targetSdkVersion 30
+        versionCode 3
+        versionName "1.3"
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    testImplementation 'junit:junit:4.13.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    def app_compat = "1.3.0-beta01"
+    implementation "androidx.appcompat:appcompat:$app_compat"
+
+    def material = "1.2.1"
+    implementation "com.google.android.material:material:$material"
+
+    def constraint_layout = "2.0.4"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout"
+
+
+    //expo player
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.7.3'
+    // ZXING LIBRARY FOR GENERATOR QR IMAGE
+    implementation 'com.google.zxing:core:3.3.3'
+    //firebase
+    implementation platform('com.google.firebase:firebase-bom:28.3.0')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.android.support:multidex:1.0.3'
+    //implementation 'com.google.firebase:firebase-database'
+   // implementation 'com.github.HaarigerHarald:android-youtubeExtractor:v1.7.0'
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.23'
+
+}
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
