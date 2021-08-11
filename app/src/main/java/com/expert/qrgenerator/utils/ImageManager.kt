@@ -10,8 +10,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Base64OutputStream
@@ -20,14 +19,8 @@ import android.view.View
 import android.widget.RelativeLayout
 import androidx.core.content.FileProvider
 import com.expert.qrgenerator.view.activities.BaseActivity
-import com.google.api.client.http.FileContent
-import com.google.api.services.drive.Drive
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -92,6 +85,42 @@ class ImageManager {
             } finally {
                 cursor?.close()
             }
+        }
+
+//        fun getFileRealPathFromUri(context: Context, contentUri: Uri?): String? {
+//            var cursor: Cursor? = null
+//            return try {
+//                val proj = arrayOf(MediaStore.Files.FileColumns.DATA)
+//                cursor = context.contentResolver.query(contentUri!!, proj, null, null, null)
+//                val columnIndex = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA)
+//                cursor.moveToFirst()
+//                cursor.getString(columnIndex)
+//            } finally {
+//                cursor?.close()
+//            }
+//        }
+
+        fun getPath(context: Context, uri: Uri): String? {
+            var filePath: String? = null
+            try {
+                val wholeID = DocumentsContract.getDocumentId(uri)
+                val id = wholeID.split(":".toRegex()).toTypedArray()[1]
+                val column = arrayOf(MediaStore.Images.Media.DATA)
+                val sel = MediaStore.Images.Media._ID + "=?"
+                context.contentResolver.query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    column, sel, arrayOf(id), null
+                ).use { cursor ->
+                    if (cursor != null) {
+                        val columnIndex = cursor.getColumnIndex(column[0])
+                        if (cursor.moveToFirst()) {
+                            filePath = cursor.getString(columnIndex)
+                        }
+                    }
+                }
+            } catch (ignored: java.lang.Exception) {
+            }
+            return filePath
         }
 
         // THIS FUNCTION WILL SAVE CUSTOM SELECTED IMAGE IN LOCAL APP DIRECTORY
@@ -334,7 +363,12 @@ class ImageManager {
         fun generateBarcode(encodedText: String):Bitmap?{
             val multiFormatWriter = MultiFormatWriter()
             try {
-                val bitMatrix = multiFormatWriter.encode(encodedText, BarcodeFormat.CODE_128, 400, 200)
+                val bitMatrix = multiFormatWriter.encode(
+                    encodedText,
+                    BarcodeFormat.CODE_128,
+                    400,
+                    200
+                )
 
                 val bitmap = Bitmap.createBitmap(
                     400,
@@ -353,7 +387,7 @@ class ImageManager {
             }
         }
 
-        fun readWriteImage(context: Context,bitmap: Bitmap): File {
+        fun readWriteImage(context: Context, bitmap: Bitmap): File {
             // store in DCIM/Camera directory
             val dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)//Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
             val cameraDir = File(dir, "Camera/")

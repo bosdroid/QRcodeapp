@@ -9,10 +9,12 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatImageView
@@ -22,19 +24,22 @@ import androidx.core.content.FileProvider
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TableDetailAdapter
 import com.expert.qrgenerator.model.TableObject
-import com.expert.qrgenerator.utils.ImageManager
+import com.expert.qrgenerator.utils.FileUtil
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
+import com.opencsv.CSVReader
 import java.io.File
+import java.io.FileReader
+import java.io.IOException
 import java.util.*
 
 
 class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener,
-    View.OnClickListener{
+    View.OnClickListener {
 
     private lateinit var context: Context
     private lateinit var toolbar: Toolbar
@@ -125,8 +130,8 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         tableMainLayout.addView(tableHeaders)
 
         csvExportImageView.setOnClickListener {
-            exportCsv(tableName)
-            //importCsv(tableName)
+//            exportCsv(tableName)
+            importCsv(tableName)
         }
 
         // QUICK EDIT TABLE CHECKBOX LISTENER
@@ -229,7 +234,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                 textViewQuantityLayout.layoutParams = layoutParams
                 val textViewQuantity =
                     textViewQuantityLayout.findViewById<MaterialTextView>(R.id.cell_value)
-                 textViewQuantity.text = "${data.quantity}"
+                textViewQuantity.text = "${data.quantity}"
 
                 tableRow.addView(textViewQuantityLayout)
 
@@ -336,12 +341,12 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
     private fun removeItem(id: Int, position: Int) {
         MaterialAlertDialogBuilder(context)
             .setMessage(getString(R.string.remove_item_alert_message_text))
-            .setNegativeButton(getString(R.string.cancel_text)){ dialog, which->
+            .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
                 dialog.dismiss()
-            }.setPositiveButton(getString(R.string.remove_text)){ dialog, which->
+            }.setPositiveButton(getString(R.string.remove_text)) { dialog, which ->
                 dialog.dismiss()
                 val isSuccess = tableGenerator.removeItem(tableName, id)
-                if (isSuccess){
+                if (isSuccess) {
                     dataList.removeAt(position)
                     Toast.makeText(
                         context,
@@ -554,10 +559,10 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
     }
 
     private fun copyToClipBoard(content: String) {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("Barcode Detail", content)
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, "Copied", Toast.LENGTH_LONG).show()
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Barcode Detail", content)
+        clipboard.setPrimaryClip(clip)
+        Toast.makeText(context, "Copied", Toast.LENGTH_LONG).show()
 
     }
 
@@ -613,21 +618,53 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
     }
 
     private fun importCsv(tableName: String) {
-          openFilePicker()
+        openFilePicker()
     }
 
 
-    private fun openFilePicker(){
+    private fun openFilePicker() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "text/csv"
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "text/*"
         fileResultLauncher.launch(intent)
     }
 
-    private var fileResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private var fileResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
             if (result.resultCode == Activity.RESULT_OK) {
-               val filePath = result.data!!.data
+                val filePath = result.data!!.data
+                try {
+                    val file = FileUtil.from(context, filePath!!)
+                    val ext = MimeTypeMap.getFileExtensionFromUrl(file.absolutePath)
+                    if (ext != "csv"){
+                        showAlert(context, getString(R.string.csv_file_chooser_error_message_text))
+                    }
+                    else{
+                        try {
+                            val reader = CSVReader(FileReader(file))
+                            var nextLine: Array<String>
+                            var counter = 0
+                            while (reader.readNext().also { nextLine = it } != null) {
+                                // nextLine[] is an array of values from the line
+                                if (counter == 0){
+                                    counter +=1
+                                    continue
+                                }
+                                    for (i in nextLine.indices){
+                                    Log.d("TEST199", nextLine[i])
+                                }
+                                counter +=1
+                            }
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
+                    Log.d("TEST199", ext)
+                }
+                catch (e: Exception){
+                    e.printStackTrace()
+                }
+
             }
         }
 

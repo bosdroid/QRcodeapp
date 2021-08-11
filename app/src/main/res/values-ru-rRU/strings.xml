@@ -59,4 +59,5 @@
     <string name="scan_quantity_remaining_text">Remaining Quantity: </string>
     <string name="sheet_heading_text">G-Sheets</string>
     <string name="connect_googlesheet_text">CONNECT TO GOOGLE SHEETS</string>
+    <string name="csv_file_chooser_error_message_text">Please select the CSV file for import.</string>
 </resources>
