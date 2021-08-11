@@ -237,12 +237,22 @@ class ScannerFragment : Fragment() {
         modesSpinner.adapter = adapter
 
         if (appSettings.getString(requireActivity().getString(R.string.key_mode))!!.isNotEmpty()) {
+            var isFound = false
             for (i in modeList.indices) {
-                val value = modeList[i]
-                if (value == appSettings.getString(requireActivity().getString(R.string.key_mode))) {
+                if ("$i" == appSettings.getString(requireActivity().getString(R.string.key_mode))) {
                     modesSpinner.setSelection(i)
+                    appSettings.putString(requireActivity().getString(R.string.key_mode), "$i")
+                    isFound = true
                     break
                 }
+                else
+                {
+                    isFound = false
+                }
+            }
+
+            if (!isFound){
+            appSettings.putString(requireActivity().getString(R.string.key_mode), "0")
             }
         }
 
@@ -257,8 +267,8 @@ class ScannerFragment : Fragment() {
                 i: Int,
                 l: Long
             ) {
-                val mode = adapterView!!.getItemAtPosition(i).toString()
-                appSettings.putString(requireActivity().getString(R.string.key_mode), mode)
+                //val mode = adapterView!!.getItemAtPosition(i).toString()
+                appSettings.putString(requireActivity().getString(R.string.key_mode), "$i")
             }
         }
 
@@ -374,7 +384,7 @@ class ScannerFragment : Fragment() {
 
                     requireActivity().runOnUiThread {
                         val isFound = tableGenerator.searchItem(tableName, it.text)
-                        if (isFound && appSettings.getString(getString(R.string.key_mode)) == "Inventory"){
+                        if (isFound && appSettings.getString(getString(R.string.key_mode)) == "0"){
                           val quantity = tableGenerator.getScanQuantity(tableName, it.text)
                           val qty:Int = quantity.toInt()+1
                           val isUpdate = tableGenerator.updateScanQuantity(tableName, it.text, qty)
@@ -435,7 +445,7 @@ class ScannerFragment : Fragment() {
         playSound(true)
         generateVibrate()
 
-        if (appSettings.getString(getString(R.string.key_mode)) == "Seller") {
+        if (appSettings.getString(getString(R.string.key_mode)) == "1") {
             val isFound = tableGenerator.searchItem(tableName, text)
             if (isFound) {
                 val quantity = tableGenerator.getScanQuantity(tableName, text)
@@ -481,7 +491,7 @@ class ScannerFragment : Fragment() {
                     getString(R.string.scan_item_not_found_text)
                 )
             }
-        } else if (appSettings.getString(getString(R.string.key_mode)) == "Search") {
+        } else if (appSettings.getString(getString(R.string.key_mode)) == "2") {
             val searchTableObject = tableGenerator.getScanItem(tableName, text)
 
             if (searchTableObject != null) {

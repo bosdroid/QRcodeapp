@@ -1,5 +1,6 @@
 package com.expert.qrgenerator.view.activities
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -13,6 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -20,6 +22,7 @@ import androidx.core.content.FileProvider
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TableDetailAdapter
 import com.expert.qrgenerator.model.TableObject
+import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.TableGenerator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -123,7 +126,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
         csvExportImageView.setOnClickListener {
             exportCsv(tableName)
-//            importCsv(tableName)
+            //importCsv(tableName)
         }
 
         // QUICK EDIT TABLE CHECKBOX LISTENER
@@ -615,9 +618,17 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
 
     private fun openFilePicker(){
-//        val intent = Intent(Intent.ACTION_GET_CONTENT)
-//        intent.type = "*/*"
-//        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "text/csv"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        fileResultLauncher.launch(intent)
     }
+
+    private var fileResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+            if (result.resultCode == Activity.RESULT_OK) {
+               val filePath = result.data!!.data
+            }
+        }
 
 }
