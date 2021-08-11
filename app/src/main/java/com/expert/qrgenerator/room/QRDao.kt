@@ -1,10 +1,7 @@
 package com.expert.qrgenerator.room
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.ListValue
 
@@ -20,8 +17,8 @@ interface QRDao {
     fun update(inputUrl:String,url:String,id:Int)
 
     // THIS FUNCTION WILL DELETE THE DYNAMIC QR CODE ENTITY DATA IN DATABASE
-    @Delete
-    fun delete(qrHistory: CodeHistory)
+    @Update
+    fun updateHistory(qrHistory: CodeHistory)
 
     // THIS FUNCTION WILL GET LIST OF DYNAMIC QR CODE ENTITY DATA FROM DATABASE
     @Query("SELECT * FROM barcode_history WHERE isDynamic=1 ORDER BY qrId")

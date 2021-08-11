@@ -182,12 +182,23 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.next_step_btn -> {
-                val uri = ImageManager.shareImage(context, qrImageWrapperLayout)
-                Constants.finalQrImageUri = uri
-                qrHistory!!.localImagePath = uri.toString()
-                appViewModel.insert(qrHistory!!)
-                val intent = Intent(context, ShareActivity::class.java)
-                startActivity(intent)
+                val file = ImageManager.loadBitmapFromView(context,qrImageWrapperLayout)
+                val bitmap = ImageManager.getBitmapFromURL(context,file.absolutePath)
+                if (bitmap != null){
+                    val encodedText = ImageManager.getTextFromQRImage(context,bitmap)
+                    if (encodedText.isNotEmpty()){
+                        val uri = ImageManager.shareImage(context, qrImageWrapperLayout)
+                        Constants.finalQrImageUri = uri
+                        qrHistory!!.localImagePath = uri.toString()
+                        appViewModel.insert(qrHistory!!)
+                        val intent = Intent(context, ShareActivity::class.java)
+                        startActivity(intent)
+                    }
+                    else{
+                        showAlert(context,getString(R.string.qr_code_not_recognizeable_error_text))
+                    }
+                }
+
             }
             // COLOR BTN WILL HANDLE THE COLOR LIST
             R.id.color_btn -> {

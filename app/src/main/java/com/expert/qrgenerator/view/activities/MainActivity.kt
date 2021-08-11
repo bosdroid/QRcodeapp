@@ -24,6 +24,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.User
@@ -55,6 +56,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.sheets.v4.Sheets
@@ -91,6 +93,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var user: User? = null
     private var requestLogin: String? = null
     private var scannerFragment: ScannerFragment? = null
+    private var callback:LoginCallback?=null
 
     companion object {
         lateinit var context: Context
@@ -284,6 +287,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             credential = GoogleAccountCredential.usingOAuth2(
                 applicationContext, scopes
             )
+                .setBackOff(ExponentialBackOff())
                 .setSelectedAccount(acct.account)
 
             mService = Drive.Builder(
@@ -342,6 +346,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 )
                 appSettings.putUser(Constants.user, user)
                 Constants.userData = user
+                if (callback != null){
+                    callback!!.onSuccess()
+                }
+                else{
+                    val scannerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as ScannerFragment
+                    scannerFragment.restart()
+                }
                 if (isLastSignUser == "new") {
                     appSettings.putBoolean(Constants.isLogin, true)
                     Toast.makeText(
@@ -353,6 +364,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 if (requestLogin!!.isNotEmpty() && requestLogin == "login") {
                     startActivity(Intent(context, TablesActivity::class.java))
                 }
+
             }
             // ELSE PART WILL WORK WHEN USER LOGGED BUT ACCOUNT DETAIL EMPTY
             // AND IN CASE ACCOUNT DETAIL IS EMPTY THEN APP FETCH THE ACCOUNT DETAIL FROM PREFERENCE FOR AVOID NULL ANC CRASH THE APP
@@ -478,6 +490,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 Constants.userData = null
                 Constants.sheetService = null
                 Constants.mService = null
+                val scannerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as ScannerFragment
+                scannerFragment.restart()
                 checkUserLoginStatus()
             }
 
@@ -498,6 +512,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                 context,
                                 scopes
                             )
+                                .setBackOff(ExponentialBackOff())
                                 .setSelectedAccount(googleSignInAccount!!.account)
 //                            if (googleSignInAccount != null) {
 //                                credential.selectedAccount = googleSignInAccount.account
@@ -543,28 +558,28 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun handleSignInResult(acct: GoogleSignInAccount) {
         try {
 
-            startLoading(context)
-            val hashMap = hashMapOf<String, String>()
-            hashMap["personName"] = acct.displayName.toString()
-            hashMap["personGivenName"] = acct.givenName.toString()
-            hashMap["personFamilyName"] = acct.familyName.toString()
-            hashMap["personEmail"] = acct.email.toString()
-            hashMap["personId"] = acct.id.toString()
-            hashMap["personPhoto"] = acct.photoUrl.toString()
-
-            viewModel.signUp(context, hashMap)
-            viewModel.getSignUp().observe(this, { response ->
-                dismiss()
-                if (response != null) {
-                    if (response.has("errorMessage")) {
-
-                    } else {
+//            startLoading(context)
+//            val hashMap = hashMapOf<String, String>()
+//            hashMap["personName"] = acct.displayName.toString()
+//            hashMap["personGivenName"] = acct.givenName.toString()
+//            hashMap["personFamilyName"] = acct.familyName.toString()
+//            hashMap["personEmail"] = acct.email.toString()
+//            hashMap["personId"] = acct.id.toString()
+//            hashMap["personPhoto"] = acct.photoUrl.toString()
+//
+//            viewModel.signUp(context, hashMap)
+//            viewModel.getSignUp().observe(this, { response ->
+//                dismiss()
+//                if (response != null) {
+//                    if (response.has("errorMessage")) {
+//
+//                    } else {
                         saveUserUpdatedDetail(acct, "new")
-                    }
-                } else {
-                    showAlert(context, getString(R.string.something_wrong_error))
-                }
-            })
+//                    }
+//                } else {
+//                    showAlert(context, getString(R.string.something_wrong_error))
+//                }
+//            })
 
         } catch (e: ApiException) {
             var s = e
@@ -626,7 +641,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         "",
                         "1",
                         url,
-                        System.currentTimeMillis().toString()
+                        System.currentTimeMillis().toString(),
+                        ""
                     )
 
                     val intent = Intent(context, DesignActivity::class.java)
@@ -651,7 +667,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 "",
                 "0",
                 "",
-                System.currentTimeMillis().toString()
+                System.currentTimeMillis().toString(),
+                ""
             )
             val intent = Intent(context, DesignActivity::class.java)
             intent.putExtra("ENCODED_TEXT", encodedTextData)
@@ -703,7 +720,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    override fun login() {
+    override fun login(callback: LoginCallback) {
+        this.callback = callback
         startLogin()
     }
 

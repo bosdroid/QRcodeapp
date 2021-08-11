@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.QRTypes
+import com.expert.qrgenerator.model.Sheet
 import com.expert.qrgenerator.model.User
 import com.expert.qrgenerator.view.activities.BaseActivity
 import com.google.android.material.button.MaterialButton
@@ -22,7 +23,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import com.google.api.services.drive.Drive
 import com.google.api.services.sheets.v4.Sheets
-import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.io.File
 import java.util.regex.Pattern
 
@@ -41,15 +41,18 @@ class Constants {
         private const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
         private const val LOGO_IMAGE_PATH = "LogoImages"
         const val BASE_URL = "https://pages.qrmagicapp.com/"
+        const val googleAppScriptUrl = "https://script.google.com/macros/s/AKfycbw4-8R85cCh9C5JXD6BTl0q89NNOTFkYfZO1Sp2LRrVA-mCv06LRYu2PqCPUaKab26-/exec"
         var generatedImage: Bitmap? = null
         var tipsValue :Boolean = true
         var finalQrImageUri: Uri? = null
         var isLogin: String = "is_login"
         var user: String = "user"
+        var email: String = "email"
         var userData: User? = null
         var mService: Drive? = null
         var sheetService: Sheets? = null
         var captureImagePath: String? = null
+        var sheetsList = mutableListOf<Sheet>()
         val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
             "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                     "\\@" +

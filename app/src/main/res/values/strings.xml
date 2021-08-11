@@ -276,7 +276,7 @@
     <string name="title_tips">Tips</string>
     <string name="key_tips" translatable="false">key_tips</string>
     <string name="summary_tips">How to use app</string>
-    <string name="bottom_navigation_tip_text">CHOOSE SCANNER OR GENERATOR1</string>
+    <string name="bottom_navigation_tip_text">CHOOSE SCANNER OR GENERATOR</string>
     <string name="table_selector_tip_text">YOU CAN CHOOSE THE TABLE WHERE SCANNED ITEM WILL SAVED.</string>
     <string name="after_scan_result_tip_text">HERE YOU CAN ADD DATA BEFORE SAVE BARCODE IN THE TABLE. YOU CAN ADD YOUR OWN FIELDS IN TABLE EDITOR.</string>
     <string name="add_image_tip_text">YOU CAN ATTACH IMAGE FROM GALLERY OR MAKE A PHOTO. AND ATTACH IT TO THE BARCODE</string>
@@ -331,4 +331,40 @@
     <string name="tt20_tip_text">THIS VALUE WILL BE DEFAULT VALUE</string>
     <string name="tt21_tip_text">YOU NEED TO ATTACH LIST OF VALUES</string>
     <string name="tt22_tip_text">ADD A LIST OR CHOOSE THE EXISTING ONE</string>
+    <string name="notes_update_success_text">Notes Updated Successfully!</string>
+    <string name="quick_edit_text">Quick Edit</string>
+    <string name="database_update_failed_error">Something wrong with the database update, please try later!</string>
+    <string name="remove_text">Remove</string>
+    <string name="move_text">Move</string>
+    <string name="code_notes_heading">Notes</string>
+    <string name="code_notes_sub_heading">Barcode Notes</string>
+    <string name="remove_item_alert_message_text">Are you sure you want to remove the item?</string>
+    <string name="remove_item_success_text">Item has been removed successfully!</string>
+    <string name="mode_title_text">Mode Preference</string>
+    <string name="key_mode" translatable="false">key_mode</string>
+    <string name="mode_summary_text">Personalize your Mode</string>
+    <string name="mode_default_value">Inventory</string>
+    <string name="inventory_text">Inventory</string>
+    <string name="seller_text">Seller</string>
+    <string name="quick_links_text">Search</string>
+    <string name="scan_item_not_found_text">Scan Item not found in selected table!</string>
+    <string name="scan_item_delete_success_text">Scan item deleted successfully from selected table!</string>
+    <string name="mode_text">Mode</string>
+    <string name="more_button_text">More</string>
+    <string name="quick_links_item_not_found_heading_text">Item not found in the current table. Try to select another table.</string>
+    <string name="select_text">Select</string>
+    <string name="code_quantity_heading">Quantity</string>
+    <string name="code_quantity_sub_heading">(Scan Quantity)</string>
+    <string name="scan_quantity_update_success_text">Scan quantity updated successfully.</string>
+    <string name="qr_code_not_recognizeable_error_text">Your QR code is not recognizable please change colors.</string>
+    <string name="scan_quantity_increase_success_text">Scan Item Quantity Increase Successfully!</string>
+    <string name="scan_quantity_remaining_text">Remaining Quantity: </string>
+    <string name="sheet_heading_text">G-Sheets</string>
+    <string name="connect_googlesheet_text">CONNECT TO GOOGLE SHEETS</string>
+
+    <string-array name="mode_list">
+        <item>Inventory</item>
+        <item>Seller</item>
+        <item>Search</item>
+    </string-array>
 </resources>

@@ -16,6 +16,10 @@ class TableGenerator(context: Context) {
         database.insertData(tableName,data)
     }
 
+    fun updateData(tableName: String, data: List<Pair<String, String>>,id: Int):Boolean {
+        return database.updateData(tableName,data,id)
+    }
+
     fun generateTable(tableName: String){
         database.generateTable(tableName)
     }
@@ -78,5 +82,28 @@ class TableGenerator(context: Context) {
 
     fun getUpdateBarcodeDetail(tableName: String,id:Int):TableObject? {
         return database.getUpdateBarcodeDetail(tableName,id)
+    }
+
+    fun removeItem(tableName: String,id: Int):Boolean{
+        return database.removeItem(tableName,id)
+    }
+
+    fun deleteItem(tableName: String,code_data: String):Boolean{
+        return database.deleteItem(tableName,code_data)
+    }
+
+    fun searchItem(tableName: String,code_data: String):Boolean{
+        return database.searchItem(tableName,code_data)
+    }
+    fun getScanItem(tableName: String,code_data: String):TableObject?{
+        return database.getScanItem(tableName,code_data)
+    }
+
+    fun updateScanQuantity(tableName: String,code_data: String,quantity:Int):Boolean{
+        return database.updateScanQuantity(tableName,code_data,quantity)
+    }
+
+    fun getScanQuantity(tableName: String,code_data: String):String{
+        return database.getScanQuantity(tableName,code_data)
     }
 }

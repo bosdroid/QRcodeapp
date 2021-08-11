@@ -39,7 +39,6 @@
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ID"
             android:textSize="@dimen/mediumText"
             android:textStyle="bold"
             android:textColor="@color/white"

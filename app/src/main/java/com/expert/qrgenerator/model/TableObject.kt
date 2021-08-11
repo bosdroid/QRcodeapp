@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.model
 
 import java.io.Serializable
+import java.lang.StringBuilder
 
 data class TableObject(
     var id: Int,
@@ -9,9 +10,19 @@ data class TableObject(
     var image:String
 ) :Serializable{
     var dynamicColumns = mutableListOf<Pair<String, String>>()
-
+    var quantity:Int = 0
 
     override fun toString(): String {
-        return "$id:$code_data:$date:$image:$dynamicColumns"
+        val stringBuilder = StringBuilder("ID: $id\nCODE_DATA: $code_data\nDate: $date\nImageLinks: $image\n")
+        if (dynamicColumns.size > 0){
+            for (i in 0 until dynamicColumns.size){
+                stringBuilder.append("${dynamicColumns[i].first}: ${dynamicColumns[i].second}")
+                if (i != dynamicColumns.size-1){
+                    stringBuilder.append("\n")
+                }
+            }
+        }
+        return stringBuilder.toString()
     }
+
 }

@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import android.widget.ScrollView
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -30,9 +31,9 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
-import java.lang.reflect.Field
 import java.util.*
 import java.util.concurrent.TimeUnit
+
 
 class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
@@ -73,6 +74,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun initViews() {
         context = this
         appSettings = AppSettings(context)
+
         appViewModel = ViewModelProvider(
             this,
             ViewModelProvider.AndroidViewModelFactory(this.application)
@@ -98,7 +100,11 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 var newStr = s.toString()
                 newStr = newStr.replace("[^a-zA-Z ]*".toRegex(), "")
                 if (s.toString() != newStr) {
-                    Toast.makeText(context,getString(R.string.characters_special_error_text),Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.characters_special_error_text),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     tableNewFieldNameTInput.setText(newStr)
                     tableNewFieldNameTInput.setSelection(tableNewFieldNameTInput.text!!.length)
                 }
@@ -123,7 +129,11 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                 var newStr = s.toString()
                 newStr = newStr.replace("[^a-zA-Z0-9 ]*".toRegex(), "")
                 if (s.toString() != newStr) {
-                    Toast.makeText(context,getString(R.string.characters_special_error_text),Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.characters_special_error_text),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     defaultValueFieldTInput.setText(newStr)
                     defaultValueFieldTInput.setSelection(defaultValueFieldTInput.text!!.length)
                 }
@@ -159,19 +169,20 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     fieldType = "nonChangeable"
                     scrollCreateTable.fullScroll(ScrollView.FOCUS_UP)
                     hideSoftKeyboard(context, scrollCreateTable)
+                    openDefaultValueTipsDialog(defaultValueFieldTInput)
                 }
                 R.id.list_with_values_radio_btn -> {
                     isNonChangeableCheckBox = false
                     defaultValueFieldTInput.visibility = View.GONE
                     listWithFieldsBtn.visibility = View.VISIBLE
                     fieldType = "listWithValues"
+                    openAttachListValuesTipsDialog(listWithFieldsBtn)
                 }
                 else -> {
 
                 }
             }
         }
-
     }
 
     private fun setUpToolbar() {
@@ -179,6 +190,11 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         supportActionBar!!.title = tableName
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
+        scrollDown()
+    }
+
+    private fun scrollDown(){
+        scrollCreateTable.postDelayed({ scrollCreateTable.fullScroll(ScrollView.FOCUS_DOWN) }, 1000)
     }
 
     // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
@@ -218,7 +234,8 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                         when (columns[i]) {
                             "id" -> {
                                 columnNameView.text = getString(R.string.code_id_heading)
-                                columnNameSubTitleView.text = getString(R.string.code_id_sub_heading)
+                                columnNameSubTitleView.text =
+                                    getString(R.string.code_id_sub_heading)
                             }
                             "code_data" -> {
                                 columnNameView.text = getString(R.string.code_data_heading)
@@ -232,7 +249,18 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                             }
                             "image" -> {
                                 columnNameView.text = getString(R.string.code_image_heading)
-                                columnNameSubTitleView.text = getString(R.string.code_image_sub_heading)
+                                columnNameSubTitleView.text =
+                                    getString(R.string.code_image_sub_heading)
+                            }
+                            "quantity" -> {
+                                columnNameView.text = getString(R.string.code_quantity_heading)
+                                columnNameSubTitleView.text =
+                                    getString(R.string.code_quantity_sub_heading)
+                            }
+                            "notes" -> {
+                                columnNameView.text = getString(R.string.code_notes_heading)
+                                columnNameSubTitleView.text =
+                                    getString(R.string.code_notes_sub_heading)
                             }
                             else ->{
                                     columnNameView.text = columns[i]
@@ -251,7 +279,9 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openDefaultColumnsTipsDialog(tableColumnsDetailLayout: LinearLayout) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt13")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(tableColumnsDetailLayout)
                     .text(getString(R.string.tt13_tip_text))
@@ -259,7 +289,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt13",System.currentTimeMillis())
+                        appSettings.putLong("tt13", System.currentTimeMillis())
                         openAddNewFieldLayoutTipsDialog(addNewFieldLayoutWrapper)
                         tooltip.dismiss()
                     }
@@ -272,7 +302,9 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openAddNewFieldLayoutTipsDialog(addNewFieldLayoutWrapper: CardView) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt14")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(addNewFieldLayoutWrapper)
                     .text(getString(R.string.tt14_tip_text))
@@ -280,7 +312,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt14",System.currentTimeMillis())
+                        appSettings.putLong("tt14", System.currentTimeMillis())
                         openInputFieldRadioTipsDialog(noneRadioBtn)
                         tooltip.dismiss()
                     }
@@ -293,7 +325,9 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openInputFieldRadioTipsDialog(noneRadioBtn: MaterialRadioButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt15")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(noneRadioBtn)
                     .text(getString(R.string.tt15_tip_text))
@@ -301,7 +335,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt15",System.currentTimeMillis())
+                        appSettings.putLong("tt15", System.currentTimeMillis())
                         openPredefinedFieldRadioTipsDialog(nonChangeableCheckBoxRadioButton)
                         tooltip.dismiss()
                     }
@@ -314,7 +348,9 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openPredefinedFieldRadioTipsDialog(nonChangeableCheckBoxRadioButton: MaterialRadioButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt16")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(nonChangeableCheckBoxRadioButton)
                     .text(getString(R.string.tt16_tip_text))
@@ -322,7 +358,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt16",System.currentTimeMillis())
+                        appSettings.putLong("tt16", System.currentTimeMillis())
                         openDropDownListFieldRadioTipsDialog(listWithValuesFieldRadioButton)
                         tooltip.dismiss()
                     }
@@ -335,7 +371,9 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openDropDownListFieldRadioTipsDialog(listWithValuesFieldRadioButton: MaterialRadioButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt17")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(listWithValuesFieldRadioButton)
                     .text(getString(R.string.tt17_tip_text))
@@ -343,7 +381,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt17",System.currentTimeMillis())
+                        appSettings.putLong("tt17", System.currentTimeMillis())
                         openAddingAnotherFieldTipsDialog(submitBtnView)
                         tooltip.dismiss()
                     }
@@ -356,15 +394,17 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openAddingAnotherFieldTipsDialog(submitBtnView: MaterialButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt18")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(submitBtnView)
                     .text(getString(R.string.tt18_tip_text))
-                    .gravity(Gravity.BOTTOM)
+                    .gravity(Gravity.TOP)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt18",System.currentTimeMillis())
+                        appSettings.putLong("tt18", System.currentTimeMillis())
                         openFinishBtnTipsDialog(finishBtnView)
                         tooltip.dismiss()
                     }
@@ -377,16 +417,17 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openFinishBtnTipsDialog(finishBtnView: MaterialButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt19")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(finishBtnView)
                     .text(getString(R.string.tt19_tip_text))
-                    .gravity(Gravity.BOTTOM)
+                    .gravity(Gravity.TOP)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt19",System.currentTimeMillis())
-                        openDefaultValueTipsDialog(defaultValueFieldTInput)
+                        appSettings.putLong("tt19", System.currentTimeMillis())
                         tooltip.dismiss()
                     }
                     .build()
@@ -398,16 +439,17 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openDefaultValueTipsDialog(defaultValueFieldTInput: TextInputEditText) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt20")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(defaultValueFieldTInput)
                     .text(getString(R.string.tt20_tip_text))
-                    .gravity(Gravity.BOTTOM)
+                    .gravity(Gravity.TOP)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt20",System.currentTimeMillis())
-                        openAttachListValuesTipsDialog(listWithFieldsBtn)
+                        appSettings.putLong("tt20", System.currentTimeMillis())
                         tooltip.dismiss()
                     }
                     .build()
@@ -419,15 +461,17 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
     private fun openAttachListValuesTipsDialog(listWithFieldsBtn: MaterialButton) {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt21")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(
+                    1
+                ) ) {
                 SimpleTooltip.Builder(context)
                     .anchorView(listWithFieldsBtn)
                     .text(getString(R.string.tt21_tip_text))
-                    .gravity(Gravity.BOTTOM)
+                    .gravity(Gravity.TOP)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt21",System.currentTimeMillis())
+                        appSettings.putLong("tt21", System.currentTimeMillis())
                         tooltip.dismiss()
                     }
                     .build()
@@ -507,6 +551,7 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
                         columnNameView.text = tableNewFieldNameTInput.text.toString().trim()
                         tableColumnsDetailLayout.addView(layout)
                         dismiss()
+                        scrollDown()
 //                        addNewFieldLayoutWrapper.visibility = View.GONE
 //                        addNewFieldBtn.visibility = View.VISIBLE
                         resetViews()
@@ -576,9 +621,9 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
 
             override fun onAddItemClick(position: Int) {
                 alert.dismiss()
-                val intent = Intent(context,FieldListsActivity::class.java)
-                intent.putExtra("TABLE_NAME",tableName)
-                intent.putExtra("FLAG","yes")
+                val intent = Intent(context, FieldListsActivity::class.java)
+                intent.putExtra("TABLE_NAME", tableName)
+                intent.putExtra("FLAG", "yes")
                 startActivity(intent)
             }
         })

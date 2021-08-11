@@ -270,15 +270,15 @@
     <string name="title_tips">Подсказки</string>
 	<string name="summary_tips">Включить / выключить всплывающие подсказки</string>
     <string name="bottom_navigation_tip_text">Выберите сканер или генератор</string>
-	<string name="table_selector_tip_text">YOU CAN CHOOSE THE TABLE WHERE SCANNED ITEM WILL SAVED.</string>
-    <string name="after_scan_result_tip_text">HERE YOU CAN ADD DATA BEFORE SAVE BARCODE IN THE TABLE. YOU CAN ADD YOUR OWN FIELDS IN TABLE EDITOR.</string>
-	<string name="add_image_tip_text">YOU CAN ATTACH IMAGE FROM GALLERY OR MAKE A PHOTO. AND ATTACH IT TO THE BARCODE</string>
-	<string name="submit_btn_tip_text">WHEN YOU FINISH EDIT BARCODE INFORMATION JUST CLICK SUBMIT</string>
-    <string name="history_btn_tip_text">WHEN BARCODE BEEN SAVED. YOU CAN LOOK AT IT IN THE HISTORY SECTION</string>
-    <string name="qr_types_tip_text">CHOOSE TYPE</string>
-	<string name="insert_barcode_data_tip_text">INSERT BARCODE DATA</string>
-    <string name="next_btn_tip_text">GENERATE WHEN READY</string>
-	<string name="generate_history_btn_tip_text">YOU WILL FIND RESULT IN HISTORY</string>
+	<string name="table_selector_tip_text">ВЫ МОЖЕТЕ ВЫБРАТЬ ТАБЛИЦУ, ГДЕ БУДЕТ СОХРАНЕН ОТКАЗАННЫЙ ТОВАР.</string>
+    <string name="after_scan_result_tip_text">ЗДЕСЬ ВЫ МОЖЕТЕ ДОБАВИТЬ ДАННЫЕ ДО СОХРАНЕНИЯ ШТРИХ-КОДА В ТАБЛИЦЕ. ВЫ МОЖЕТЕ ДОБАВИТЬ СОБСТВЕННЫЕ ПОЛЯ В РЕДАКТОРЕ ТАБЛИЦ.</string>
+	<string name="add_image_tip_text">ВЫ МОЖЕТЕ ПРИКЛЮЧИТЬ ИЗОБРАЖЕНИЕ ИЗ ГАЛЕРЕИ ИЛИ СДЕЛАТЬ ФОТО. И ПРИСОЕДИНИТЬ ЕГО К ШТРИКОДУ</string>
+	<string name="submit_btn_tip_text">КОГДА ВЫ ЗАВЕРШИТЕ РЕДАКТИРОВАНИЕ ИНФОРМАЦИИ О ШТРИКОДЕ, ПРОСТО НАЖМИТЕ ОТПРАВИТЬ</string>
+    <string name="history_btn_tip_text">КОГДА СОХРАНЕН БАРКОД. ВЫ МОЖЕТЕ ПОСМОТРЕТЬ В РАЗДЕЛЕ ИСТОРИИ</string>
+    <string name="qr_types_tip_text">ВЫБЕРИТЕ ТИП</string>
+	<string name="insert_barcode_data_tip_text">ВСТАВИТЬ ДАННЫЕ ШТРИХКОДА</string>
+    <string name="next_btn_tip_text">СОЗДАТЬ, КОГДА ГОТОВ</string>
+	<string name="generate_history_btn_tip_text">ВЫ НАЙДЕТЕ РЕЗУЛЬТАТ В ИСТОРИИ</string>
 	<string name="you_can_add_custom_fields_like_brand_price_description">(Добавляйте собственные поля. Например размер / цена)</string>
 	<string name="input_data_edit_and_add_data_after_scan">Поле ввода. Вы сможете ввести данные</string>
 	<string name="non_changeable_fixed_value">Неизменяемые. Заранее готовые данные</string>
@@ -321,6 +321,41 @@
     <string name="tt20_tip_text">ЭТО ЗНАЧЕНИЕ БУДЕТ ЗНАЧЕНИЕМ ПО УМОЛЧАНИЮ</string>
 	<string name="tt21_tip_text">НЕОБХОДИМО ПРИЛОЖИТЬ СПИСОК ЦЕННОСТЕЙ</string>
     <string name="tt22_tip_text">ДОБАВИТЬ СПИСОК ИЛИ ВЫБРАТЬ СУЩЕСТВУЮЩИЙ</string>
+    <string name="notes_update_success_text">Заметки обновлены успешно!</string>
+    <string name="quick_edit_text">Быстрое редактирование</string>
+    <string name="database_update_failed_error">Что-то не так с обновлением базы данных, попробуйте позже!</string>
+    <string name="remove_text">Удалять</string>
+    <string name="code_notes_heading">Примечания</string>
+	<string name="code_notes_sub_heading">Примечания по штрих-коду</string>
+    <string name="remove_item_alert_message_text">Вы уверены, что хотите удалить элемент?</string>
+	<string name="remove_item_success_text">Предмет успешно удален!</string>
+    <string name="mode_title_text">Предпочтение режима</string>
+	<string name="mode_summary_text">Персонализируйте свой режим</string>
+	<string name="mode_default_value">Инвентарь</string>
+	<string name="inventory_text">Инвентарь</string>
+	<string name="seller_text">Продавец</string>
+	<string name="quick_links_text">Поиск</string>
+    <string name="scan_item_not_found_text">Сканируемый элемент не найден в выбранной таблице!</string>
+	<string name="scan_item_delete_success_text">Элемент сканирования успешно удален из выбранной таблицы!</string>
+    <string name="mode_text">Режим</string>
+    <string name="more_button_text">Более</string>
+    <string name="quick_links_item_not_found_heading_text">Товар не найден в текущей таблице. Попробуйте выбрать другую таблицу.</string>
+	<string name="select_text">Выбирать</string>
+    <string name="code_quantity_heading">Количество</string>
+	<string name="code_quantity_sub_heading">(Количество сканирований)</string>
+    <string name="scan_quantity_update_success_text">Количество сканированных изображений успешно обновлено.</string>
+    <string name="qr_code_not_recognizeable_error_text">Ваш QR-код не распознается, пожалуйста, измените цвета.</string>
+    <string name="scan_quantity_increase_success_text">Количество сканируемых элементов успешно увеличено!</string>
+    <string name="scan_quantity_remaining_text">Оставшееся количество:</string>
+    <string name="sheet_heading_text">G-Таблицы</string>
+    <string name="connect_googlesheet_text">ПОДКЛЮЧИТЬСЯ К GOOGLE ЛИСТАМ</string>
+
+
+    <string-array name="mode_list">
+		<item>Инвентарь</item>
+		<item>Продавец</item>
+		<item>Поиск</item>
+	</string-array>
 
 
 </resources>

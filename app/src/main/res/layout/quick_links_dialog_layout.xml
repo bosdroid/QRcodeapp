@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/quick_links_code_detail_wrapper_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/light_gray"
+            android:padding="10dp"
+            >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/quick_links_code_detail_top_framelayout"
+                >
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_close"
+                    android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+                    android:layout_marginEnd="@dimen/eightDpMargin"
+                    android:id="@+id/quick_links_code_detail_cancel"
+                    android:layout_gravity="end"
+                    android:elevation="3dp"
+                    />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/quick_links_barcode_text_detail_layout"
+                    android:padding="10dp"
+                    app:cardCornerRadius="10dp"
+                    android:layout_marginTop="@dimen/sixtyDpMargin"
+                    >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_margin="@dimen/defaultDpMargin"
+                        android:paddingTop="30dp"
+                        android:paddingBottom="30dp"
+                        android:gravity="center_horizontal"
+                        >
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/mediumText"
+                            android:id="@+id/quick_links_code_detail_type_text_heading"
+                            />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/largeText"
+                            android:layout_marginTop="@dimen/sixtyDpMargin"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:id="@+id/quick_links_code_detail_encode_data"
+                            />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="250dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/copy_text"
+                            android:textSize="@dimen/largeText"
+                            android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:textAllCaps="true"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:id="@+id/quick_links_code_detail_clipboard_copy_view"
+                            />
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/_10dp"
+                            >
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/black"
+                                android:textSize="18sp"
+                                android:text="@string/barcode_info"
+                                android:layout_gravity="center_horizontal"
+                                />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+                                android:layout_marginTop="@dimen/eightDpMargin"
+                                android:id="@+id/quick_links_barcode_detail_wrapper_layout"
+                                android:orientation="vertical"
+                                android:padding="10dp"
+                                />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    app:cardCornerRadius="50dp"
+                    android:id="@+id/top_icon_cardview"
+                    android:layout_gravity="center_horizontal"
+                    app:cardElevation="10dp"
+                    android:elevation="10dp"
+                    >
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/barcode"
+                        app:tint="@color/purple_bright_accent_color"
+                        android:layout_margin="@dimen/defaultDpMargin"
+                        android:id="@+id/code_detail_top_image_type"
+                        />
+                </androidx.cardview.widget.CardView>
+
+            </FrameLayout>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/barcode_image_detail_layout"
+                android:padding="10dp"
+                app:cardCornerRadius="10dp"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/quick_links_code_detail_top_framelayout"
+                android:layout_marginBottom="@dimen/eightDpMargin"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_margin="@dimen/defaultDpMargin"
+                    android:gravity="center_horizontal"
+                    android:padding="10dp"
+                    >
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/mediumText"
+                        android:id="@+id/quick_links_code_detail_type_image_heading"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        >
+                        <androidx.appcompat.widget.AppCompatImageButton
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_more_white"
+                            android:background="@drawable/button_background_design"
+                            android:id="@+id/quick_links_code_detail_more_button"
+                            />
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/more_button_text"
+                            android:textSize="@dimen/largeText"
+                            android:textColor="@color/black"
+                            />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</ScrollView>

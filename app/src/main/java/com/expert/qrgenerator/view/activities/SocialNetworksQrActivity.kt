@@ -300,7 +300,8 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                                 "",
                                 "0",
                                 "",
-                                System.currentTimeMillis().toString()
+                                System.currentTimeMillis().toString(),
+                                ""
                             )
 //                            appViewModel.insert(qrHistory)
 //                            val intent = Intent(context, MainActivity::class.java)
