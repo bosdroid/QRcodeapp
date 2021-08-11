@@ -15,8 +15,8 @@ android {
         applicationId "com.expert.qrgenerator"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 107
-        versionName "tooltips been added. login system off"
+        versionCode 109
+        versionName "multi images been added"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
