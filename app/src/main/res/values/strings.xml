@@ -362,6 +362,10 @@
     <string name="sheet_heading_text">G-Sheets</string>
     <string name="connect_googlesheet_text">CONNECT TO GOOGLE SHEETS</string>
     <string name="csv_file_chooser_error_message_text">Please select the CSV file for import.</string>
+    <string name="table_created_success_message">Table created successfully.</string>
+    <string name="table_created_failed_message">Table not created, may be file structure not correct.</string>
+    <string name="table_already_exist_message">Table already exist in database.</string>
+    <string name="table_csv_import_error_message">Something wrong with CSV data structure.</string>
 
     <string-array name="mode_list">
         <item>Inventory</item>

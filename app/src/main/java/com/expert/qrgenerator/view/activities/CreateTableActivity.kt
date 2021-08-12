@@ -120,30 +120,30 @@ class CreateTableActivity : BaseActivity(), View.OnClickListener {
         listWithValuesFieldRadioButton = findViewById(R.id.list_with_values_radio_btn)
         fieldValueTypesRadioGroup = findViewById(R.id.value_types_radio_group)
         defaultValueFieldTInput = findViewById(R.id.table_non_changeable_default_text_input)
-        defaultValueFieldTInput.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                var newStr = s.toString()
-                newStr = newStr.replace("[^a-zA-Z0-9 ]*".toRegex(), "")
-                if (s.toString() != newStr) {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.characters_special_error_text),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    defaultValueFieldTInput.setText(newStr)
-                    defaultValueFieldTInput.setSelection(defaultValueFieldTInput.text!!.length)
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-        })
+//        defaultValueFieldTInput.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//
+//            }
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                var newStr = s.toString()
+//                newStr = newStr.replace("[^a-zA-Z0-9 ]*".toRegex(), "")
+//                if (s.toString() != newStr) {
+//                    Toast.makeText(
+//                        context,
+//                        getString(R.string.characters_special_error_text),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                    defaultValueFieldTInput.setText(newStr)
+//                    defaultValueFieldTInput.setSelection(defaultValueFieldTInput.text!!.length)
+//                }
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {
+//
+//            }
+//
+//        })
         submitBtnView = findViewById(R.id.field_submit_btn)
         submitBtnView.setOnClickListener(this)
         finishBtnView = findViewById(R.id.field_finish_btn)

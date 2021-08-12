@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -130,8 +132,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
         tableMainLayout.addView(tableHeaders)
 
         csvExportImageView.setOnClickListener {
-//            exportCsv(tableName)
-            importCsv(tableName)
+            exportCsv(tableName)
         }
 
         // QUICK EDIT TABLE CHECKBOX LISTENER
@@ -458,6 +459,32 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
 
         })
         quickEditWrapperLayout.addView(imageLayout)
+        val quantityLayout = LayoutInflater.from(context)
+            .inflate(R.layout.quick_edit_single_layout, quickEditWrapperLayout, false)
+        val quantityValue =
+            quantityLayout.findViewById<TextInputEditText>(R.id.quick_edit_barcode_detail_text_input_field)
+        val quantityClearBrushView =
+            quantityLayout.findViewById<AppCompatImageView>(R.id.quick_edit_barcode_detail_cleaning_text_view)
+        counter += 1
+        quantityClearBrushView.id = counter
+        quantityClearBrushView.tag = "qe"
+
+        barcodeEditList.add(Triple(quantityValue, quantityClearBrushView, "quantity"))
+        quantityClearBrushView.setOnClickListener(this)
+        quantityValue.setText("${item.quantity}")
+        quantityValue.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateDialogBtn.isEnabled = true
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+        quickEditWrapperLayout.addView(quantityLayout)
 
         for (i in 0 until item.dynamicColumns.size) {
             val item1 = item.dynamicColumns[i]
@@ -582,7 +609,7 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
                 } else {
                     image = data.image
                 }
-                builder.append("\n${data.id},${data.code_data},${data.date},$image")
+                builder.append("\n${data.id},${data.code_data},${data.date},$image,${data.quantity}")
                 if (data.dynamicColumns.size > 0) {
                     for (k in 0 until data.dynamicColumns.size) {
                         val item = data.dynamicColumns[k]
@@ -616,56 +643,5 @@ class TableViewActivity : BaseActivity(), TableDetailAdapter.OnItemClickListener
             showAlert(context, getString(R.string.table_export_error_text))
         }
     }
-
-    private fun importCsv(tableName: String) {
-        openFilePicker()
-    }
-
-
-    private fun openFilePicker() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "text/*"
-        fileResultLauncher.launch(intent)
-    }
-
-    private var fileResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
-            if (result.resultCode == Activity.RESULT_OK) {
-                val filePath = result.data!!.data
-                try {
-                    val file = FileUtil.from(context, filePath!!)
-                    val ext = MimeTypeMap.getFileExtensionFromUrl(file.absolutePath)
-                    if (ext != "csv"){
-                        showAlert(context, getString(R.string.csv_file_chooser_error_message_text))
-                    }
-                    else{
-                        try {
-                            val reader = CSVReader(FileReader(file))
-                            var nextLine: Array<String>
-                            var counter = 0
-                            while (reader.readNext().also { nextLine = it } != null) {
-                                // nextLine[] is an array of values from the line
-                                if (counter == 0){
-                                    counter +=1
-                                    continue
-                                }
-                                    for (i in nextLine.indices){
-                                    Log.d("TEST199", nextLine[i])
-                                }
-                                counter +=1
-                            }
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-                    }
-                    Log.d("TEST199", ext)
-                }
-                catch (e: Exception){
-                    e.printStackTrace()
-                }
-
-            }
-        }
 
 }

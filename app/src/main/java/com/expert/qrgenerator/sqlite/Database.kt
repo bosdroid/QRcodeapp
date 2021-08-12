@@ -11,7 +11,7 @@ import com.expert.qrgenerator.model.TableObject
 import java.util.*
 
 
-class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
+class Database(private val context: Context) : SQLiteOpenHelper(context, databaseName, null, databaseVersion) {
 
     companion object {
         private const val databaseVersion = 2
@@ -57,6 +57,26 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         db.execSQL(listTable)
         db.execSQL(listMetaDataTable)
         db.execSQL(defaultTable)
+    }
+
+    fun createTable(tableName: String,fieldsList:ArrayList<String>){
+        val db = this.writableDatabase
+        val queryBuilder = StringBuilder()
+        queryBuilder.append("CREATE TABLE IF NOT EXISTS $tableName(id INTEGER PRIMARY KEY AUTOINCREMENT,")
+        for (i in 0 until fieldsList.size){
+            if (fieldsList[i].toLowerCase(Locale.ENGLISH) == "quantity"){
+                queryBuilder.append(" ${fieldsList[i].toLowerCase(Locale.ENGLISH)} INTEGER")
+            }
+            else{
+                queryBuilder.append(" ${fieldsList[i].toLowerCase(Locale.ENGLISH)} TEXT")
+            }
+
+            if (i != fieldsList.size-1){
+                queryBuilder.append(",")
+            }
+        }
+        queryBuilder.append(")")
+        db.execSQL(queryBuilder.toString())
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -148,7 +168,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         val values = ContentValues()
         for (i in data.indices) {
             if (data[i].second.isEmpty()) {
-                continue
+                values.put(data[i].first, "")
             } else {
                 values.put(data[i].first, data[i].second)
             }

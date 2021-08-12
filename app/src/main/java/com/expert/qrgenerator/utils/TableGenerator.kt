@@ -7,6 +7,7 @@ import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.model.Table
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.sqlite.Database
+import java.util.ArrayList
 
 class TableGenerator(context: Context) {
 
@@ -105,5 +106,9 @@ class TableGenerator(context: Context) {
 
     fun getScanQuantity(tableName: String,code_data: String):String{
         return database.getScanQuantity(tableName,code_data)
+    }
+
+    fun createTable(tableName: String,fieldsList: ArrayList<String>){
+        database.createTable(tableName,fieldsList)
     }
 }
