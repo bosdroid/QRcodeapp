@@ -497,7 +497,7 @@ class Database(private val context: Context) : SQLiteOpenHelper(context, databas
         return db.update(tableName, contentValues, "code_data='$code_data'", null) > 0
     }
 
-    fun getScanQuantity(tableName: String,code_d: String):String{
+    fun getScanQuantity(tableName: String,code_d: String):String?{
         val db = this.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data='$code_d'", null)
         return if (cursor != null){

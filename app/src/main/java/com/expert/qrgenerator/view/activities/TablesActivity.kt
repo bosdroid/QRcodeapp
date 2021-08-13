@@ -250,6 +250,7 @@ class TablesActivity : BaseActivity(), TablesAdapter.OnItemClickListener, View.O
                             val listRecord = mutableListOf<List<Pair<String,String>>>()
                             val tableName =
                                 fileName.replace(" ", "_").replace("[-+.^:,]", "").trim()
+                            startLoading(context)
                             while (reader.readNext().also { nextLine = it } != null) {
                                 // nextLine[] is an array of values from the line
                                 if (counter == 0) {
@@ -277,6 +278,7 @@ class TablesActivity : BaseActivity(), TablesAdapter.OnItemClickListener, View.O
                             if (tableName.isNotEmpty() && listRecord.isNotEmpty()) {
                                 val isFound = tableGenerator.tableExists(tableName)
                                 if (isFound) {
+                                    dismiss()
                                     showAlert(
                                         context,
                                         getString(R.string.table_already_exist_message)
@@ -293,16 +295,16 @@ class TablesActivity : BaseActivity(), TablesAdapter.OnItemClickListener, View.O
                                         val isExist = tableGenerator.tableExists(tableName)
                                         if (isExist) {
                                             displayTableList()
-                                            startLoading(context)
                                             for (j in 0 until listRecord.size){
                                                 tableGenerator.insertData(tableName, listRecord[j])
                                             }
-                                             dismiss()
+                                            dismiss()
                                             showAlert(
                                                 context,
                                                 getString(R.string.table_created_success_message)
                                             )
                                         } else {
+                                            dismiss()
                                             showAlert(
                                                 context,
                                                 getString(R.string.table_created_failed_message)
@@ -311,11 +313,13 @@ class TablesActivity : BaseActivity(), TablesAdapter.OnItemClickListener, View.O
                                     }, 5000)
                                 }
                             } else {
+                                dismiss()
                                 showAlert(
                                     context,
                                     getString(R.string.table_csv_import_error_message)
                                 )
                             }
+
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }

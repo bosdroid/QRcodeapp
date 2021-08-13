@@ -87,9 +87,6 @@ import java.util.concurrent.TimeUnit
 import com.android.volley.RetryPolicy
 
 
-
-
-
 class ScannerFragment : Fragment() {
 
     private var mFirebaseAnalytics: FirebaseAnalytics? = null
@@ -129,8 +126,8 @@ class ScannerFragment : Fragment() {
     private var userRecoverableAuthType = 0
     private var selectedSheetId: String = ""
     private var selectedSheetName: String = ""
-    private lateinit var connectGoogleSheetsTextView:MaterialTextView
-    private lateinit var sheetsTopLayout:LinearLayout
+    private lateinit var connectGoogleSheetsTextView: MaterialTextView
+    private lateinit var sheetsTopLayout: LinearLayout
 
     interface ScannerInterface {
         fun login(callback: LoginCallback)
@@ -244,15 +241,13 @@ class ScannerFragment : Fragment() {
                     appSettings.putString(requireActivity().getString(R.string.key_mode), "$i")
                     isFound = true
                     break
-                }
-                else
-                {
+                } else {
                     isFound = false
                 }
             }
 
-            if (!isFound){
-            appSettings.putString(requireActivity().getString(R.string.key_mode), "0")
+            if (!isFound) {
+                appSettings.putString(requireActivity().getString(R.string.key_mode), "0")
             }
         }
 
@@ -384,24 +379,30 @@ class ScannerFragment : Fragment() {
 
                     requireActivity().runOnUiThread {
                         val isFound = tableGenerator.searchItem(tableName, it.text)
-                        if (isFound && appSettings.getString(getString(R.string.key_mode)) == "0"){
-                          val quantity = tableGenerator.getScanQuantity(tableName, it.text)
-                          val qty:Int = quantity.toInt()+1
-                          val isUpdate = tableGenerator.updateScanQuantity(tableName, it.text, qty)
-                          if (isUpdate){
-                              //showAlert(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text))
-                              Toast.makeText(
-                                  requireActivity(),
-                                  requireActivity().getString(R.string.scan_quantity_increase_success_text),
-                                  Toast.LENGTH_SHORT
-                              ).show()
-                              Handler(Looper.myLooper()!!).postDelayed({
-                                  startPreview()
-                              }, 2000)
+                        if (isFound && appSettings.getString(getString(R.string.key_mode)) == "0") {
+                            val quantity = tableGenerator.getScanQuantity(tableName, it.text)
+                            var qty = 0
+                            qty = if (quantity != null) {
+                                quantity.toInt()+1
+                            } else {
+                                1
+                            }
 
-						  }
-                        }
-                        else{
+                            val isUpdate =
+                                tableGenerator.updateScanQuantity(tableName, it.text, qty)
+                            if (isUpdate) {
+                                //showAlert(requireActivity(),requireActivity().getString(R.string.scan_quantity_increase_success_text))
+                                Toast.makeText(
+                                    requireActivity(),
+                                    requireActivity().getString(R.string.scan_quantity_increase_success_text),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                Handler(Looper.myLooper()!!).postDelayed({
+                                    startPreview()
+                                }, 2000)
+
+                            }
+                        } else {
                             displayDataSubmitDialog(it, "")
                         }
 
@@ -449,12 +450,15 @@ class ScannerFragment : Fragment() {
             val isFound = tableGenerator.searchItem(tableName, text)
             if (isFound) {
                 val quantity = tableGenerator.getScanQuantity(tableName, text)
-                var qty = quantity.toInt()
-                if (qty != -1){
-                    if (qty > 0 ){
+                var qty = 0
+                if (quantity!= null){
+                    qty = quantity.toInt()+1
+
+                if (qty != -1) {
+                    if (qty > 0) {
                         qty -= 1
                         val isUpdate = tableGenerator.updateScanQuantity(tableName, text, qty)
-                        if (isUpdate){
+                        if (isUpdate) {
                             Toast.makeText(
                                 requireActivity(),
                                 "${getString(R.string.scan_quantity_update_success_text)} ${
@@ -468,8 +472,7 @@ class ScannerFragment : Fragment() {
                                 codeScanner!!.startPreview()
                             }, 2000)
                         }
-                    }
-                    else{
+                    } else {
                         val isSuccess = tableGenerator.deleteItem(tableName, text)
                         if (isSuccess) {
                             Toast.makeText(
@@ -484,7 +487,7 @@ class ScannerFragment : Fragment() {
                         }
                     }
                 }
-
+                }
             } else {
                 showAlert(
                     requireActivity(),
@@ -582,10 +585,10 @@ class ScannerFragment : Fragment() {
                         if (ContextCompat.checkSelfPermission(
                                 requireActivity(),
                                 Manifest.permission.READ_EXTERNAL_STORAGE
-                            ) == PackageManager.PERMISSION_GRANTED) {
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
                             getImageFromGallery()
-                        }
-                        else{
+                        } else {
                             requestPermissions(
                                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                                 Constants.READ_STORAGE_REQUEST_CODE
@@ -855,7 +858,7 @@ class ScannerFragment : Fragment() {
 
     }
 
-    private fun displayItemNotFoundDialog(text: String){
+    private fun displayItemNotFoundDialog(text: String) {
         val itemNotFoundLayout = LayoutInflater.from(requireActivity())
             .inflate(R.layout.quick_links_item_not_found_dialog, null)
         val qcTableSpinner =
@@ -911,15 +914,15 @@ class ScannerFragment : Fragment() {
         selectButton.setOnClickListener {
             alertdialog1.dismiss()
             val searchObj = tableGenerator.getScanItem(tableName, text)
-            if (searchObj != null){
+            if (searchObj != null) {
                 renderQuickLinksDialog(searchObj)
-            }
-            else{
+            } else {
                 displayItemNotFoundDialog(text)
             }
         }
-        cancelButton.setOnClickListener { alertdialog1.dismiss()
-        codeScanner!!.startPreview()
+        cancelButton.setOnClickListener {
+            alertdialog1.dismiss()
+            codeScanner!!.startPreview()
         }
     }
 
@@ -1028,7 +1031,7 @@ class ScannerFragment : Fragment() {
                             if (multiImagesList.isNotEmpty()) {
                                 multiImagesList.clear()
                             }
-                            if (params.size > 0){
+                            if (params.size > 0) {
                                 params.clear()
                             }
                             // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED EDIT TEXT
@@ -1497,10 +1500,9 @@ class ScannerFragment : Fragment() {
                     //MainActivity.credential!!.backOff = ExponentialBackOff()
                     MainActivity.credential!!.selectedAccountName = accountName
                     appSettings.putString("ACCOUNT_NAME", accountName)
-                    if (userRecoverableAuthType == 0){
+                    if (userRecoverableAuthType == 0) {
                         saveToDriveAppFolder()
-                    }
-                    else{
+                    } else {
 //                      getAllSheets()
                     }
 
@@ -1850,46 +1852,45 @@ class ScannerFragment : Fragment() {
     }
 
     private fun getAllSheets() {
-         if (Constants.userData != null) {
+        if (Constants.userData != null) {
 //             connectGoogleSheetsTextView.visibility =View.GONE
 //             sheetsTopLayout.visibility = View.VISIBLE
 
-             CoroutineScope(Dispatchers.IO).launch {
-                 try {
-                     val result: FileList = DriveService.instance!!.files().list()
-                         .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
-                         .execute()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val result: FileList = DriveService.instance!!.files().list()
+                        .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
+                        .execute()
 
-                     val files = result.files
+                    val files = result.files
 
-                     if (files != null) {
-                         if (files.size > 0){
-                             sheetsList.clear()
-                         }
-                         for (file in files) {
-                             sheetsList.add(Sheet(file.id, file.name))
-                         }
+                    if (files != null) {
+                        if (files.size > 0) {
+                            sheetsList.clear()
+                        }
+                        for (file in files) {
+                            sheetsList.add(Sheet(file.id, file.name))
+                        }
 
-                         CoroutineScope(Dispatchers.Main).launch {
-                             if (sheetsList.isNotEmpty()) {
-                                 Constants.sheetsList.addAll(sheetsList)
-                                 displaySheetSpinner()
-                             }
-                         }
-                     }
-                 } catch (userRecoverableException: UserRecoverableAuthIOException) {
-                     userRecoverableAuthType = 1
-                     userAuthLauncher.launch(userRecoverableException.intent)
-                 }
-             }
-         }
-        else{
+                        CoroutineScope(Dispatchers.Main).launch {
+                            if (sheetsList.isNotEmpty()) {
+                                Constants.sheetsList.addAll(sheetsList)
+                                displaySheetSpinner()
+                            }
+                        }
+                    }
+                } catch (userRecoverableException: UserRecoverableAuthIOException) {
+                    userRecoverableAuthType = 1
+                    userAuthLauncher.launch(userRecoverableException.intent)
+                }
+            }
+        } else {
 //            sheetsTopLayout.visibility = View.GONE
 //            connectGoogleSheetsTextView.visibility = View.VISIBLE
-         }
+        }
     }
 
-    private fun displaySheetSpinner(){
+    private fun displaySheetSpinner() {
         if (sheetsList.isNotEmpty()) {
             selectedSheetId = sheetsList[0].id
             selectedSheetId = sheetsList[0].name
@@ -1986,10 +1987,12 @@ class ScannerFragment : Fragment() {
                     }
 
                 }
-                sr.setRetryPolicy(DefaultRetryPolicy(
-                    10000,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+                sr.setRetryPolicy(
+                    DefaultRetryPolicy(
+                        10000,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                    )
                 )
                 VolleySingleton(requireActivity()).addToRequestQueue(sr)
 
@@ -2001,7 +2004,7 @@ class ScannerFragment : Fragment() {
         }
     }
 
-    fun restart(){
+    fun restart() {
         onResume()
     }
 
