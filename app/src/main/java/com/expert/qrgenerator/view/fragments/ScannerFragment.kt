@@ -65,6 +65,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.model.FileList
+import com.google.api.services.drive.model.Permission
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.mlkit.vision.barcode.Barcode
@@ -84,7 +85,6 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import com.android.volley.RetryPolicy
 
 
 class ScannerFragment : Fragment() {
@@ -1344,6 +1344,7 @@ class ScannerFragment : Fragment() {
 
                     val fileMetadata =
                         com.google.api.services.drive.model.File()
+                    fileMetadata.copyRequiresWriterPermission = true
                     fileMetadata.name =
                         "Image_${System.currentTimeMillis()}.jpg"
                     val filePath: File =
@@ -1357,7 +1358,9 @@ class ScannerFragment : Fragment() {
                             .execute()
                     // WHEN EXECUTE FUNCTION RUN SUCCESSFULLY THEN IT RETURN FILE OBJECT HAVING ID
                     // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
+                    insertPermission(file.id)
                     url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
+
                     uploadedUrlList.add(url)
                     val bundle = Bundle()
                     bundle.putString("success", "success")
@@ -1397,6 +1400,7 @@ class ScannerFragment : Fragment() {
 
                 val fileMetadata =
                     com.google.api.services.drive.model.File()
+                fileMetadata.copyRequiresWriterPermission = true
                 fileMetadata.name =
                     "Image_${System.currentTimeMillis()}.jpg"
                 val filePath: File =
@@ -1410,6 +1414,7 @@ class ScannerFragment : Fragment() {
                         .execute()
                 // WHEN EXECUTE FUNCTION RUN SUCCESSFULLY THEN IT RETURN FILE OBJECT HAVING ID
                 // SO, WE MAKE THE DYNAMIC PATH OF IMAGE USING FILE ID LIKE BELOW
+                insertPermission(file.id)
                 url = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
                 val bundle = Bundle()
                 bundle.putString("success", "success")
@@ -1478,6 +1483,14 @@ class ScannerFragment : Fragment() {
 //            )
 //            return false
 //        }
+    }
+
+    @Throws(java.lang.Exception::class)
+    private fun insertPermission(fileId: String) {
+        val newPermission = Permission()
+        newPermission.type = "anyone"
+        newPermission.role = "reader"
+        DriveService.instance!!.permissions().create(fileId, newPermission).execute()
     }
 
     // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
