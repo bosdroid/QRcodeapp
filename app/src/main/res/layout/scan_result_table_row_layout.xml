@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingTop="@dimen/eightDpMargin"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:textSize="@dimen/mediumText"
+        android:textColor="@color/black"
+        android:id="@+id/table_column_name"
+        android:gravity="end"
+        />
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/input_text_field_design"
+        android:padding="5dp"
+        android:textSize="@dimen/mediumText"
+        android:layout_marginStart="@dimen/eightDpMargin"
+        android:id="@+id/table_column_value"
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:background="@drawable/input_text_field_design"
+        android:padding="5dp"
+        android:layout_marginStart="@dimen/eightDpMargin"
+        android:id="@+id/table_column_dropdown_layout"
+        android:visibility="gone"
+        >
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/table_column_dropdown"
+            />
+    </LinearLayout>
+
+</LinearLayout>

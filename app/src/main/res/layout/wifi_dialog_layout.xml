@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        android:text="@string/generator_type_description_wifi"
+        android:id="@+id/dialog_heading"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_heading"
+        android:layout_marginTop="8dp"
+        android:id="@+id/wifi_layout_wrapper"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_goneMarginTop="8dp"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/wifi_name_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:nextFocusForward="@id/wifi_password_input_field"
+            android:padding="5dp"
+            android:inputType="text"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:hint="@string/network_name_hint_text"
+            android:gravity="start"
+            />
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/wifi_password_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:layout_marginTop="10dp"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:padding="5dp"
+            android:imeOptions="actionDone"
+            android:hint="@string/password"
+            android:gravity="start"
+            />
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/securityGroup"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            >
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wpa_security_heading"
+                android:id="@+id/wpa"
+                android:layout_gravity="center_horizontal"
+                android:padding="5dp"
+                android:checked="true"
+                />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wep_security_heading"
+                android:id="@+id/wep"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:padding="5dp"
+                 />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/none_security_heading"
+                android:id="@+id/none"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:padding="5dp"
+                />
+        </RadioGroup>
+
+<!--        <com.google.android.material.textview.MaterialTextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            android:layout_margin="@dimen/eightDpMargin"-->
+<!--            android:text="@string/generate"-->
+<!--            android:textSize="@dimen/xlargeText"-->
+<!--            android:textColor="@color/purple_700"-->
+<!--            android:id="@+id/next_step_btn"-->
+<!--            android:textAllCaps="true"-->
+<!--            />-->
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

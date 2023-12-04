@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/sixtyDpMargin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/text_with_color_top_layout"
+        android:gravity="center"
+        >
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="#455A64"
+                android:id="@+id/text_with_color_color_tf"
+                android:background="@drawable/input_text_field_design"
+                android:layout_marginLeft="@dimen/defaultDpMargin"
+                android:layout_marginStart="@dimen/defaultDpMargin"
+                />
+            <LinearLayout
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:orientation="vertical"
+                android:background="@drawable/input_text_field_design"
+                >
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#455A64"
+                    android:layout_margin="5dp"
+                    android:id="@+id/text_with_color_color_btn"
+                    />
+            </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/sixtyDpMargin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_with_color_top_layout"
+        app:layout_constraintBottom_toTopOf="@id/text_with_color_bottom_layout"
+        android:id="@+id/text_with_color_sale_badge_wrapper"
+        android:visibility="gone"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/sale_badge_heading_text"
+                android:textSize="@dimen/mediumText"
+                android:textColor="@color/black"
+                android:gravity="center"
+                />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/input_text_field_design"
+
+                android:padding="5dp"
+                >
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/sale_badge_options"
+                    android:id="@+id/text_with_color_sale_badge_selector"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_text_field_design"
+            android:layout_marginTop="@dimen/eightDpMargin"
+            android:padding="10dp"
+            android:hint="@string/custom_sale_badge_hint_text"
+            android:id="@+id/text_with_color_custom_sale_badge"
+            android:textSize="@dimen/mediumText"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/text_with_color_text_input_field"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_with_color_top_layout"
+        app:layout_constraintBottom_toTopOf="@id/text_with_color_bottom_layout"
+        android:background="@drawable/input_text_field_design"
+        android:padding="5dp"
+        android:layout_marginLeft="@dimen/sixtyDpMargin"
+        android:layout_marginStart="@dimen/sixtyDpMargin"
+        android:layout_marginRight="@dimen/sixtyDpMargin"
+        android:layout_marginEnd="@dimen/sixtyDpMargin"
+        android:layout_marginTop="@dimen/eightDpMargin"
+        android:hint="@string/text_hint_text"
+        android:gravity="start"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="@dimen/eightDpMargin"
+        android:layout_marginLeft="@dimen/eightDpMargin"
+        android:layout_marginRight="@dimen/eightDpMargin"
+        android:layout_marginEnd="@dimen/eightDpMargin"
+        android:id="@+id/text_with_color_bottom_layout"
+        >
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/cancel_text"
+        android:id="@+id/text_with_color_dialog_cancel_btn"
+        android:layout_margin="@dimen/eightDpMargin"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/update_text"
+        android:id="@+id/text_with_color_dialog_update_btn"
+        android:layout_margin="@dimen/eightDpMargin"
+        />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

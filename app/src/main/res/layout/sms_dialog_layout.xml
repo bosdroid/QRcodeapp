@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/black"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        android:text="@string/generator_type_description_sms"
+        android:id="@+id/dialog_heading"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_heading"
+        android:layout_marginTop="8dp"
+        android:id="@+id/sms_layout_wrapper"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_goneMarginTop="8dp"
+        android:padding="5dp"
+        >
+
+<!--        <com.google.android.material.textfield.TextInputEditText-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/sms_recipient_input_field"-->
+<!--            android:background="@drawable/input_text_field_design"-->
+<!--            android:padding="5dp"-->
+<!--            android:hint="@string/sms_recipient_hint_text"-->
+<!--            android:inputType="number"-->
+<!--            android:gravity="start"-->
+<!--            />-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            >
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/phone"
+                android:textSize="@dimen/largeText"
+                />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sms_phone_cc_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/sms_phone_start_number_input_field"
+                android:padding="5dp"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:singleLine="true"
+                android:gravity="center"
+                android:maxLength="3"
+                android:layout_marginStart="@dimen/eightDpMargin"
+                />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sms_phone_start_number_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/sms_phone_number_input_field"
+                android:padding="5dp"
+                android:inputType="number"
+                android:singleLine="true"
+                android:imeOptions="actionNext"
+                android:gravity="center"
+                android:maxLength="3"
+                android:layout_marginStart="@dimen/eightDpMargin"
+                />
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/sms_phone_number_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:nextFocusForward="@id/sms_message_input_field"
+                android:padding="5dp"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:singleLine="true"
+                android:gravity="center"
+                android:maxLength="7"
+                android:layout_marginStart="@dimen/eightDpMargin"
+                />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/sms_message_input_field"
+            android:background="@drawable/input_text_field_design"
+            android:layout_marginTop="10dp"
+            android:padding="5dp"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:hint="@string/sms_message_hint_text"
+            android:gravity="start"
+            />
+
+<!--        <com.google.android.material.textview.MaterialTextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            android:layout_margin="@dimen/eightDpMargin"-->
+<!--            android:text="@string/generate"-->
+<!--            android:textSize="@dimen/xlargeText"-->
+<!--            android:textColor="@color/purple_700"-->
+<!--            android:id="@+id/next_step_btn"-->
+<!--            android:textAllCaps="true"-->
+<!--            />-->
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_margin="@dimen/eightDpMargin"
+            android:padding="10dp"
+            >
+
+           <com.google.android.material.textview.MaterialTextView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center_horizontal"
+               android:gravity="center"
+               android:text="Provide your company or shop name and describe your offer in few words"
+               android:textColor="@color/black"
+               android:textSize="@dimen/mediumText"
+               />
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:layout_marginTop="@dimen/sixtyDpMargin"
+              android:gravity="center_vertical"
+              >
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="Company:"
+                android:textSize="@dimen/mediumText"
+                android:textColor="@color/black"
+                android:gravity="end"
+                />
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/input_text_field_design"
+                android:padding="5dp"
+                android:textSize="@dimen/mediumText"
+                android:layout_marginLeft="@dimen/eightDpMargin"
+                android:layout_marginStart="@dimen/eightDpMargin"
+                android:hint="Name of company or shop"
+                android:id="@+id/cbi_company_name"
+                />
+          </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:gravity="center_vertical"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="Headline: "
+                    android:textSize="@dimen/mediumText"
+                    android:textColor="@color/black"
+                    android:gravity="end"
+                    />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/input_text_field_design"
+                    android:padding="5dp"
+                    android:textSize="@dimen/mediumText"
+                    android:layout_marginLeft="@dimen/eightDpMargin"
+                    android:layout_marginStart="@dimen/eightDpMargin"
+                    android:hint="e.g Get 10% off your next order"
+                    android:id="@+id/cbi_headline"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:gravity="center_vertical"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="Description: "
+                    android:textSize="@dimen/mediumText"
+                    android:textColor="@color/black"
+                    android:gravity="end"
+                    />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/input_text_field_design"
+                    android:padding="5dp"
+                    android:textSize="@dimen/mediumText"
+                    android:layout_marginLeft="@dimen/eightDpMargin"
+                    android:layout_marginStart="@dimen/eightDpMargin"
+                    android:hint="Provide some more info about your offer"
+                    android:gravity="start"
+                    android:id="@+id/cbi_description"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:gravity="center_vertical"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="Sale badge: "
+                    android:textSize="@dimen/mediumText"
+                    android:textColor="@color/black"
+                    android:gravity="end"
+                    />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/input_text_field_design"
+                    android:layout_marginLeft="@dimen/eightDpMargin"
+                    android:layout_marginStart="@dimen/eightDpMargin"
+                    android:padding="5dp"
+                    >
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/sale_badge_options"
+                        android:id="@+id/cbi_sale_badge_selector"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_text_field_design"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:padding="10dp"
+                android:hint="Enter the custom sale badge"
+                android:visibility="gone"
+                android:id="@+id/cbi_custom_sale_badge"
+                android:textSize="@dimen/mediumText"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/sixtyDpMargin"
+                >
+              <com.google.android.material.button.MaterialButton
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:text="Cancel"
+                  android:layout_margin="@dimen/eightDpMargin"
+                  android:id="@+id/cbi_cancel_btn"
+                  />
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Save"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:id="@+id/cbi_save_btn"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
