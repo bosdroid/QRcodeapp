@@ -3,7 +3,9 @@ package com.expert.qrgenerator
 import android.app.Application
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class App : Application() {
 
     private lateinit var appSettings: AppSettings
@@ -11,11 +13,7 @@ class App : Application() {
         super.onCreate()
         appSettings = AppSettings(applicationContext)
         getUserDetail()
-
-
-
     }
-
 
     private fun getUserDetail(){
         if (appSettings.getBoolean(Constants.isLogin)){

@@ -6,10 +6,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer"
     tools:openDrawer="start"
-    tools:context=".view.activities.MainActivity">
+    tools:context=".ui.activities.MainActivity">
 
 
-    <include layout="@layout/content_main"/>
+    <include layout="@layout/content_main" android:id="@+id/includedLayout"/>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation"

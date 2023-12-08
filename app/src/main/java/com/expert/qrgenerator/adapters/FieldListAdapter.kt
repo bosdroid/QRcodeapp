@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.AddListValueItemLayoutBinding
+import com.expert.qrgenerator.databinding.TableItemRowBinding
 import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.model.ListValue
 import com.google.android.material.textview.MaterialTextView
@@ -25,32 +27,36 @@ class FieldListAdapter(val context: Context, val listValues: ArrayList<ListItem>
         this.mListener = listener
     }
 
-    class ItemViewHolder(itemView: View, Listener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val listValueView: MaterialTextView = itemView.findViewById(R.id.table_item_name)
+    class ItemViewHolder(private val binding:TableItemRowBinding, private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
+            fun bindData(listItem: ListItem,position: Int){
+                binding.tableItemName.text = listItem.value
+                itemView.setOnClickListener {
+                    mListener.onItemClick(position)
+                }
+            }
+
     }
 
-    class AddItemViewHolder(itemView: View, mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val addCardViewBtn: CardView = itemView.findViewById(R.id.add_card_view)
+    class AddItemViewHolder(private val binding:AddListValueItemLayoutBinding, private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
+            fun bindData(position: Int){
+                binding.addCardView.setOnClickListener {
+                    mListener.onAddItemClick(position)
+                }
+            }
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == 0) {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.add_list_value_item_layout,
-                parent,
-                false
-            )
-            AddItemViewHolder(view, mListener!!)
+            val addListValueItemLayoutBinding = AddListValueItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+            AddItemViewHolder(addListValueItemLayoutBinding, mListener!!)
         } else {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.table_item_row,
-                parent,
-                false
-            )
-            ItemViewHolder(view, mListener!!)
+            val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+            ItemViewHolder(tableItemRowBinding, mListener!!)
         }
     }
 
@@ -65,17 +71,14 @@ class FieldListAdapter(val context: Context, val listValues: ArrayList<ListItem>
         when (holder.itemViewType) {
             0 -> {
                 val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.addCardViewBtn.setOnClickListener {
-                    mListener!!.onAddItemClick(position)
-                }
+                addViewHolder.bindData(position)
+
             }
             else -> {
                 val listValue = listValues[position]
                 val viewHolder = holder as ItemViewHolder
-                viewHolder.listValueView.text = listValue.value
-                viewHolder.itemView.setOnClickListener {
-                    mListener!!.onItemClick(position)
-                }
+                viewHolder.bindData(listValue,position)
+
             }
         }
     }

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="20dp"
     android:orientation="vertical"
-    tools:context=".view.activities.PostSheetDataActivity">
+    tools:context=".ui.activities.PostSheetDataActivity">
 
     <TextView
         android:layout_width="wrap_content"

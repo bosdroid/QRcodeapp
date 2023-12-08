@@ -6,24 +6,27 @@ import androidx.lifecycle.ViewModel
 import com.expert.qrgenerator.model.FeedbackResponse
 import com.expert.qrgenerator.retrofit.ApiRepository
 import com.google.gson.JsonObject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.json.JSONArray
 import org.json.JSONObject
+import javax.inject.Inject
 
-class CodeDetailViewModel : ViewModel() {
+@HiltViewModel
+class CodeDetailViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
     var feedbackResponse = MutableLiveData<FeedbackResponse>()
     private var dynamicQrCodeResponse = MutableLiveData<JsonObject>()
 
-    fun createDynamicQrCode(context: Context, body:HashMap<String,String>){
-        dynamicQrCodeResponse = ApiRepository.getInstance(context).createDynamicQrCode(body)
+    fun createDynamicQrCode(body:HashMap<String,String>){
+        dynamicQrCodeResponse = apiRepository.createDynamicQrCode(body)
     }
 
     fun getDynamicQrCode():MutableLiveData<JsonObject>{
         return dynamicQrCodeResponse
     }
 
-    fun callFeedbacks(context: Context,id:String){
-        feedbackResponse = ApiRepository.getInstance(context).getAllFeedbacks(id)
+    fun callFeedbacks(id:String){
+        feedbackResponse = apiRepository.getAllFeedbacks(id)
     }
 
     fun getAllFeedbacks():MutableLiveData<FeedbackResponse>{

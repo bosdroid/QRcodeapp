@@ -10,8 +10,11 @@ import com.expert.qrgenerator.model.Fonts
 import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.retrofit.ApiRepository
 import com.google.gson.JsonObject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MainActivityViewModel : ViewModel() {
+@HiltViewModel
+class MainActivityViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
     private var colorList = MutableLiveData<List<String>>()
     private var backgroundImageList = MutableLiveData<List<String>>()
@@ -37,8 +40,8 @@ class MainActivityViewModel : ViewModel() {
     }
 
     // THIS FUNCTION WILL CALL THE BACKGROUND IMAGE LIST FROM DATA REPOSITORY
-    fun callBackgroundImages(context: Context){
-         backgroundImageList = DataRepository.getInstance(context).getBackgroundImages()
+    fun callBackgroundImages(){
+         backgroundImageList = DataRepository.getBackgroundImages()
     }
 
     // THIS FUNCTION WILL RETURN THE IMAGE LIST
@@ -47,8 +50,8 @@ class MainActivityViewModel : ViewModel() {
     }
 
     // THIS FUNCTION WILL CALL THE LOGO IMAGE LIST FROM DATA REPOSITORY
-    fun callLogoImages(context: Context){
-        logoImageList = DataRepository.getInstance(context).getLogoImages()
+    fun callLogoImages(){
+        logoImageList = DataRepository.getLogoImages()
     }
 
     // THIS FUNCTION WILL RETURN THE LOGO LIST
@@ -57,8 +60,8 @@ class MainActivityViewModel : ViewModel() {
     }
 
     // THIS FUNCTION WILL CALL THE FONT LIST FROM DATA REPOSITORY
-    fun callFontList(context: Context){
-       fontList = DataRepository.getInstance(context).getFontList()
+    fun callFontList(){
+       fontList = DataRepository.getFontList()
     }
 
     // THIS FUNCTION WILL RETURN THE FONT LIST
@@ -66,24 +69,24 @@ class MainActivityViewModel : ViewModel() {
         return fontList
     }
 
-    fun createDynamicQrCode(context:Context,body:HashMap<String,String>){
-        dynamicQrCodeResponse = ApiRepository.getInstance(context).createDynamicQrCode(body)
+    fun createDynamicQrCode(body:HashMap<String,String>){
+        dynamicQrCodeResponse = apiRepository.createDynamicQrCode(body)
     }
 
     fun getDynamicQrCode():MutableLiveData<JsonObject>{
         return dynamicQrCodeResponse
     }
 
-    fun signUp(context:Context,body:HashMap<String,String>){
-        signUpResponse = ApiRepository.getInstance(context).signUp(body)
+    fun signUp(body:HashMap<String,String>){
+        signUpResponse = apiRepository.signUp(body)
     }
 
     fun getSignUp():MutableLiveData<JsonObject>{
         return signUpResponse
     }
 
-    fun signIn(context:Context,email:String){
-        signInResponse = ApiRepository.getInstance(context).signIn(email)
+    fun signIn(email:String){
+        signInResponse = apiRepository.signIn(email)
     }
 
     fun getSignIn():MutableLiveData<JsonObject>{

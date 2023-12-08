@@ -49,49 +49,50 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name=".view.activities.PostSheetDataActivity" />
-        <activity android:name=".view.activities.SocialNetworksQrActivity" />
-        <activity android:name=".view.activities.FieldListValuesActivity" />
-        <activity android:name=".view.activities.SheetsActivity" />
-        <activity android:name=".view.activities.FieldListsActivity" />
-        <activity android:name=".view.activities.TableViewActivity" />
+        <activity android:name=".ui.activities.PostSheetDataActivity" />
+        <activity android:name=".ui.activities.SocialNetworksQrActivity" />
+        <activity android:name=".ui.activities.FieldListValuesActivity" />
+        <activity android:name=".ui.activities.SheetsActivity" />
+        <activity android:name=".ui.activities.FieldListsActivity" />
+        <activity android:name=".ui.activities.TableViewActivity" />
         <activity
-            android:name=".view.activities.SettingsActivity"
+            android:name=".ui.activities.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".view.activities.TablesDataActivity" />
-        <activity android:name=".view.activities.CreateTableActivity" />
-        <activity android:name=".view.activities.TablesActivity" />
-        <activity android:name=".view.activities.ProfileActivity" />
-        <activity android:name=".view.activities.CodeDetailActivity" />
-        <activity android:name=".view.activities.FeedbackQrActivity" />
-        <activity android:name=".view.activities.ShareActivity" />
-        <activity android:name=".view.activities.DesignActivity" />
+        <activity android:name=".ui.activities.TablesDataActivity" />
+        <activity android:name=".ui.activities.CreateTableActivity" />
+        <activity android:name=".ui.activities.TablesActivity" />
+        <activity android:name=".ui.activities.ProfileActivity" />
+        <activity android:name=".ui.activities.CodeDetailActivity" />
+        <activity android:name=".ui.activities.FeedbackQrActivity" />
+        <activity android:name=".ui.activities.ShareActivity" />
+        <activity android:name=".ui.activities.DesignActivity" />
         <activity
-            android:name=".view.activities.CouponQrActivity"
+            android:name=".ui.activities.CouponQrActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activities.MainActivity" />
+                android:value=".ui.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".view.activities.DynamicQrActivity"
+            android:name=".ui.activities.DynamicQrActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activities.MainActivity" />
+                android:value=".ui.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".view.activities.BarcodeHistoryActivity"
+            android:name=".ui.activities.BarcodeHistoryActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activities.MainActivity" />
+                android:value=".ui.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".view.activities.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:configChanges="orientation|screenSize|screenLayout"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustPan">
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

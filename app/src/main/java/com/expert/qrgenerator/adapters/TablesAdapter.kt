@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.AddTableItemLayoutBinding
+import com.expert.qrgenerator.databinding.TableItemRowBinding
 import com.expert.qrgenerator.model.Table
 import com.expert.qrgenerator.utils.AppSettings
 import com.google.android.material.button.MaterialButton
@@ -31,31 +33,37 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
         this.mListener = listener
     }
 
-    class ItemViewHolder(itemView: View, Listener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val tableNameView: MaterialTextView = itemView.findViewById(R.id.table_item_name)
+    class ItemViewHolder(private val binding: TableItemRowBinding,private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
+
+         fun bindData(table:String){
+
+                binding.tableItemName.text = table
+                itemView.setOnClickListener {
+                    mListener.onItemClick(layoutPosition)
+                }
+         }
     }
 
-    class AddItemViewHolder(itemView: View, mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val addNewTableButton = itemView.findViewById<MaterialButton>(R.id.add_new_table_btn)
+    class AddItemViewHolder(private val binding:AddTableItemLayoutBinding,private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bindData(){
+          binding.addNewTableBtn.setOnClickListener {
+              mListener.onAddItemClick(layoutPosition)
+          }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == 0) {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.add_table_item_layout,
-                parent,
-                false
-            )
-            AddItemViewHolder(view, mListener!!)
+        if (viewType == 0) {
+            val addTableItemLayoutBinding = AddTableItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+            return AddItemViewHolder(addTableItemLayoutBinding, mListener!!)
         } else {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.table_item_row,
-                parent,
-                false
-            )
-            ItemViewHolder(view, mListener!!)
+            val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+           return ItemViewHolder(tableItemRowBinding, mListener!!)
         }
     }
 
@@ -70,20 +78,19 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
         when (holder.itemViewType) {
             0 -> {
                 addViewHolder = holder as AddItemViewHolder
-                addViewHolder!!.addNewTableButton.setOnClickListener {
-                    mListener!!.onAddItemClick(position)
-                }
+                addViewHolder!!.bindData()
+
             }
             else -> {
                 val table = tableList[position]
+
                 val viewHolder = holder as ItemViewHolder
+
                 if (position == tableList.size-1){
                     tableZeroIndexView(viewHolder)
                 }
-                viewHolder.tableNameView.text = table
-                viewHolder.itemView.setOnClickListener {
-                    mListener!!.onItemClick(position)
-                }
+                viewHolder.bindData(table)
+
             }
         }
     }
@@ -92,7 +99,7 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
             return tableList.size+1
     }
 
-    fun tableZeroIndexView(holder: RecyclerView.ViewHolder){
+    private fun tableZeroIndexView(holder: RecyclerView.ViewHolder){
         if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt11")
             if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
@@ -116,7 +123,7 @@ class TablesAdapter(val context: Context, val tableList: ArrayList<String>) :
         }
     }
 
-    private fun openAddTableView(holder: RecyclerView.ViewHolder) {
+   private fun openAddTableView(holder: RecyclerView.ViewHolder) {
         if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt12")
             if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {

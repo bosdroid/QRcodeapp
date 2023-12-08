@@ -11,40 +11,75 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.AddItemLayoutBinding
+import com.expert.qrgenerator.databinding.ImageItemRowBinding
 
-class ImageAdapter(var context: Context, private var imageList:List<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ImageAdapter(var context: Context, private var imageList: List<String>) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
-    interface OnItemClickListener{
+    interface OnItemClickListener {
         fun onItemClick(position: Int)
         fun onAddItemClick(position: Int)
     }
-    private var mListener: OnItemClickListener?=null
 
-    companion object{
+    private var mListener: OnItemClickListener? = null
+
+    companion object {
         var selected_position = -1
     }
 
-    fun setOnItemClickListener(listener: OnItemClickListener){
+    fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
     }
 
-    class ItemViewHolder(itemView: View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(
-        itemView
-    )
-    {
-        val image: AppCompatImageView = itemView.findViewById(R.id.image_item)
-        val icon : AppCompatImageView = itemView.findViewById(R.id.image_selected_icon)
+    class ItemViewHolder(
+        private val binding: ImageItemRowBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(
+        binding.root
+    ) {
+
+        fun bindData(image: String, position: Int, context: Context, adapter: ImageAdapter) {
+            if (image.contains("http") || image.contains("https")) {
+                Glide.with(context).load(image).into(binding.imageItem)
+            } else {
+                val uri: Uri = Uri.parse(image)
+                binding.imageItem.setImageURI(uri)
+            }
+            if (selected_position == position) {
+                binding.imageSelectedIcon.visibility = View.VISIBLE
+            } else {
+                binding.imageSelectedIcon.visibility = View.INVISIBLE
+            }
+
+            binding.imageItem.setOnClickListener {
+                val previousItem: Int = selected_position
+
+                selected_position = position
+                adapter.notifyItemChanged(previousItem)
+                adapter.notifyItemChanged(position)
+
+                mListener.onItemClick(position - 1)
+            }
+        }
 
     }
 
-    class AddItemViewHolder(itemView: View, mListener: OnItemClickListener):RecyclerView.ViewHolder(itemView){
-        val addCardViewBtn: CardView = itemView.findViewById(R.id.add_card_view)
+    class AddItemViewHolder(
+        private val binding: AddItemLayoutBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
 
+        fun bindData(position: Int) {
+            binding.addCardView.setOnClickListener {
+                mListener.onAddItemClick(position)
+            }
+        }
     }
 
-    fun updateAdapter(position: Int){
-        selected_position +=1
+    fun updateAdapter(position: Int) {
+        selected_position += 1
         notifyItemInserted(position)
         notifyDataSetChanged()
     }
@@ -56,71 +91,38 @@ class ImageAdapter(var context: Context, private var imageList:List<String>) : R
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == 0)
-        {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.add_item_layout,
-                parent,
-                false
-            )
-            return AddItemViewHolder(view, mListener!!)
-        }else
-        {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.image_item_row,
-                parent,
-                false
-            )
-            return ItemViewHolder(view, mListener!!)
+        if (viewType == 0) {
+            val addItemLayoutBinding =
+                AddItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+            return AddItemViewHolder(addItemLayoutBinding, mListener!!)
+        } else {
+            val imageItemRowBinding =
+                ImageItemRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+            return ItemViewHolder(imageItemRowBinding, mListener!!)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder.itemViewType)
-        {
-            0->{
+        when (holder.itemViewType) {
+            0 -> {
                 val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.addCardViewBtn.setOnClickListener {
-                    mListener!!.onAddItemClick(position)
-                }
-            }
-            else->{
+                addViewHolder.bindData(position)
 
-                   val image = imageList[position-1]
+            }
+            else -> {
+
+                val image = imageList[position - 1]
 
                 val viewHolder = holder as ItemViewHolder
-                if (image.contains("http") || image.contains("https"))
-                {
-                    Glide.with(context).load(image).into(viewHolder.image)
-                }
-                else
-                {
-                    val uri:Uri =  Uri.parse(image)
-                    viewHolder.image.setImageURI(uri)
-                }
-                if (selected_position == position)
-                {
-                    viewHolder.icon.visibility = View.VISIBLE
-                }
-                else
-                {
-                    viewHolder.icon.visibility = View.INVISIBLE
-                }
-
-                viewHolder.image.setOnClickListener {
-                    val previousItem: Int = selected_position
-                    selected_position = position
-
-                    notifyItemChanged(previousItem)
-                    notifyItemChanged(position)
-
-                    mListener!!.onItemClick(position-1)
-                }
+                viewHolder.bindData(image, position, context, this)
 
             }
         }
 
     }
+
 
     override fun getItemCount(): Int {
         return imageList.size

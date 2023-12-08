@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.SocialNetworksListItemDesignBinding
 import com.expert.qrgenerator.model.SocialNetwork
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textview.MaterialTextView
@@ -27,56 +28,49 @@ class SocialNetworkAdapter(val context: Context, var socialNetworkList:ArrayList
         this.mListener = listener
     }
 
-    open class ItemViewHolder(itemView:View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView){
-        val iconImageView:AppCompatImageView
-        val titleTextView:MaterialTextView
-        val descriptionTextView:MaterialTextView
-        val checkBox:MaterialCheckBox
-        val editIconLayout:LinearLayout
+    open class ItemViewHolder(private val binding: SocialNetworksListItemDesignBinding,private val mListener: OnItemClickListener) : RecyclerView.ViewHolder(binding.root){
 
-        init {
-            iconImageView = itemView.findViewById(R.id.sn_item_logo)
-            titleTextView = itemView.findViewById(R.id.sn_item_heading)
-            descriptionTextView = itemView.findViewById(R.id.sn_item_tagline)
-            checkBox = itemView.findViewById(R.id.sn_item_checkbox)
-            editIconLayout = itemView.findViewById(R.id.sn_item_edit_icon)
+        fun bindData(item:SocialNetwork){
+            if (item.isActive == 0){
+                itemView.alpha = 0.2f
+                binding.snItemCheckbox.isChecked = false
+            }
+            else{
+                itemView.alpha = 0.7f
+                binding.snItemCheckbox.isChecked = true
+            }
+
+            binding.snItemLogo.setImageResource(item.icon)
+            binding.snItemHeading.text = item.title
+            binding.snItemTagline.text = item.url
 
             itemView.setOnClickListener {
                 //mListener.onItemClick(layoutPosition)
             }
-            checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            binding.snItemCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
                 mListener.onItemCheckClick(layoutPosition,isChecked)
             }
 
-            editIconLayout.setOnClickListener {
-                //mListener.onItemEditIconClick(layoutPosition,checkBox)
+            binding.snItemEditIcon.setOnClickListener {
+
                 mListener.onItemClick(layoutPosition)
             }
-
         }
+
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.social_networks_list_item_design,parent,false)
-        return ItemViewHolder(v,mListener!!)
+        val socialNetworksListItemDesignBinding = SocialNetworksListItemDesignBinding.inflate(
+            LayoutInflater.from(parent.context),parent,false)
+
+        return ItemViewHolder(socialNetworksListItemDesignBinding,mListener!!)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = socialNetworkList[position]
+         holder.bindData(item)
 
-        if (item.isActive == 0){
-            holder.itemView.alpha = 0.2f
-            holder.checkBox.isChecked = false
-        }
-        else{
-            holder.itemView.alpha = 0.7f
-            holder.checkBox.isChecked = true
-        }
-
-        holder.iconImageView.setImageResource(item.icon)
-        holder.titleTextView.text = item.title
-        holder.descriptionTextView.text = item.url
 
     }
 
