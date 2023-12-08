@@ -7,9 +7,13 @@ import androidx.lifecycle.ViewModel
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.Fonts
 import com.expert.qrgenerator.repository.DataRepository
+import com.expert.qrgenerator.retrofit.ApiRepository
 import com.google.gson.JsonObject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class DesignActivityViewModel : ViewModel() {
+@HiltViewModel
+class DesignActivityViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
     private var colorList = MutableLiveData<List<String>>()
     private var backgroundImageList = MutableLiveData<List<String>>()
@@ -33,8 +37,8 @@ class DesignActivityViewModel : ViewModel() {
     }
 
     // THIS FUNCTION WILL CALL THE BACKGROUND IMAGE LIST FROM DATA REPOSITORY
-    fun callBackgroundImages(context: Context){
-        backgroundImageList = DataRepository.getInstance(context).getBackgroundImages()
+    fun callBackgroundImages(){
+        backgroundImageList = DataRepository.getBackgroundImages()
     }
 
     // THIS FUNCTION WILL RETURN THE IMAGE LIST
@@ -43,8 +47,8 @@ class DesignActivityViewModel : ViewModel() {
     }
 
     // THIS FUNCTION WILL CALL THE LOGO IMAGE LIST FROM DATA REPOSITORY
-    fun callLogoImages(context: Context){
-        logoImageList = DataRepository.getInstance(context).getLogoImages()
+    fun callLogoImages(){
+        logoImageList = DataRepository.getLogoImages()
     }
 
     // THIS FUNCTION WILL RETURN THE LOGO LIST
@@ -53,8 +57,8 @@ class DesignActivityViewModel : ViewModel() {
     }
 
     // THIS FUNCTION WILL CALL THE FONT LIST FROM DATA REPOSITORY
-    fun callFontList(context: Context){
-        fontList = DataRepository.getInstance(context).getFontList()
+    fun callFontList(){
+        fontList = DataRepository.getFontList()
     }
 
     // THIS FUNCTION WILL RETURN THE FONT LIST

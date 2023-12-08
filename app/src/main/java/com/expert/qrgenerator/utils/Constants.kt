@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
@@ -16,7 +15,7 @@ import com.expert.qrgenerator.interfaces.OnCompleteAction
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.model.Sheet
 import com.expert.qrgenerator.model.User
-import com.expert.qrgenerator.view.activities.BaseActivity
+import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText

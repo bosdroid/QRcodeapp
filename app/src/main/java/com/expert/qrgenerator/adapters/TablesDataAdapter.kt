@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.TableItemRowBinding
 import com.expert.qrgenerator.model.Table
 import com.google.android.material.textview.MaterialTextView
 
@@ -23,32 +24,25 @@ class TablesDataAdapter(val context: Context, val tableList: ArrayList<String>) 
         this.mListener = listener
     }
 
-    class ItemViewHolder(itemView: View, Listener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val tableNameView: MaterialTextView
-        init {
-            tableNameView = itemView.findViewById(R.id.table_item_name)
-            tableNameView.setOnClickListener{
-                Listener.onItemClick(layoutPosition)
+    class ItemViewHolder(private val binding:TableItemRowBinding,private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
+            fun bindData(table:String){
+                binding.tableItemName.text = table
             }
-        }
+
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.table_item_row,
-            parent,
-            false
-        )
-        return ItemViewHolder(view, mListener!!)
+        val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+        return ItemViewHolder(tableItemRowBinding, mListener!!)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
 
         val table = tableList[position]
-        holder.tableNameView.text = table
-
+        holder.bindData(table)
 
     }
 

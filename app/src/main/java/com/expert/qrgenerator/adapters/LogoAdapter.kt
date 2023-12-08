@@ -11,6 +11,8 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.AddItemLayoutBinding
+import com.expert.qrgenerator.databinding.ImageItemRowBinding
 
 class LogoAdapter(var context: Context, private var logoList: List<String>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -32,35 +34,58 @@ class LogoAdapter(var context: Context, private var logoList: List<String>) :
         this.mListener = listener
     }
 
-    class ItemViewHolder(itemView: View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(
-        itemView
+    class ItemViewHolder(private val binding: ImageItemRowBinding,private val mListener: OnItemClickListener) : RecyclerView.ViewHolder(
+        binding.root
     ) {
-        val image: AppCompatImageView = itemView.findViewById(R.id.image_item)
-        val icon: AppCompatImageView = itemView.findViewById(R.id.image_selected_icon)
 
+          fun bindData(image:String,position: Int,context: Context,isIconUpdate:Boolean,adapter: LogoAdapter){
+    if (image.contains("http") || image.contains("https"))
+    {
+        Glide.with(context).load(image).into(binding.imageItem)
+    }
+    else
+    {
+        val uri: Uri =  Uri.parse(image)
+        binding.imageItem.setImageURI(uri)
+    }
+    if (selected_position == position && isIconUpdate) {
+        binding.imageSelectedIcon.visibility = View.VISIBLE
+    } else {
+        binding.imageSelectedIcon.visibility = View.INVISIBLE
     }
 
-    class AddItemViewHolder(itemView: View, mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val addCardViewBtn: CardView = itemView.findViewById(R.id.add_card_view)
+    binding.imageItem.setOnClickListener {
+        val previousItem: Int = selected_position
 
+        selected_position = position
+        adapter.notifyItemChanged(previousItem)
+        adapter.notifyItemChanged(position)
+
+        mListener.onItemClick(position-1)
+    }
+          }
+    }
+
+    class AddItemViewHolder(private val binding: AddItemLayoutBinding,private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
+
+         fun bindData(position: Int)
+         {
+             binding.addCardView.setOnClickListener {
+                 mListener.onAddItemClick(position)
+             }
+         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == 0) {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.add_item_layout,
-                parent,
-                false
-            )
-            AddItemViewHolder(view, mListener!!)
+            val addItemLayoutBinding = AddItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+            AddItemViewHolder(addItemLayoutBinding, mListener!!)
         } else {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.image_item_row,
-                parent,
-                false
-            )
-            ItemViewHolder(view, mListener!!)
+            val imageItemRowBinding = ImageItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+            ItemViewHolder(imageItemRowBinding, mListener!!)
         }
     }
 
@@ -86,42 +111,19 @@ class LogoAdapter(var context: Context, private var logoList: List<String>) :
         when (holder.itemViewType) {
             0 -> {
                 val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.addCardViewBtn.setOnClickListener {
-                    mListener!!.onAddItemClick(position)
-                }
+
+                addViewHolder.bindData(position)
             }
             else -> {
 
                 val image = logoList[position-1]
                 val viewHolder = holder as ItemViewHolder
+                viewHolder.bindData(image,position,context,isIconUpdate,this)
 
-                if (image.contains("http") || image.contains("https"))
-                {
-                    Glide.with(context).load(image).into(viewHolder.image)
-                }
-                else
-                {
-                    val uri: Uri =  Uri.parse(image)
-                    viewHolder.image.setImageURI(uri)
-                }
-                if (selected_position == position && isIconUpdate) {
-                    viewHolder.icon.visibility = View.VISIBLE
-                } else {
-                    viewHolder.icon.visibility = View.INVISIBLE
-                }
-
-                viewHolder.image.setOnClickListener {
-                    val previousItem: Int = selected_position
-                    selected_position = position
-
-                    notifyItemChanged(previousItem)
-                    notifyItemChanged(position)
-
-                    mListener!!.onItemClick(position-1)
-                }
             }
         }
     }
+
 
     override fun getItemCount(): Int {
         return logoList.size

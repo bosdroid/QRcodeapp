@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.FontFamilyItemRowBinding
 import com.expert.qrgenerator.model.Fonts
 
 class FontAdapter(var context: Context, private var fontList:List<Fonts>):RecyclerView.Adapter<FontAdapter.ItemViewHolder>() {
@@ -32,45 +33,45 @@ class FontAdapter(var context: Context, private var fontList:List<Fonts>):Recycl
         isIconUpdate = flag
     }
 
-    class ItemViewHolder(itemView: View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView)
+    class ItemViewHolder(private val binding: FontFamilyItemRowBinding,private val mListener: OnItemClickListener) : RecyclerView.ViewHolder(binding.root)
     {
-        val image: AppCompatImageView = itemView.findViewById(R.id.font_item)
-        val icon : AppCompatImageView = itemView.findViewById(R.id.selected_icon)
+
+          fun bindData(position: Int,font: Fonts,context: Context,isIconUpdate:Boolean,adapter: FontAdapter){
+                Glide.with(context).load(font.fontImage).into(binding.fontItem)
+                if (Companion.selected_position == position && isIconUpdate)
+                {
+                    binding.selectedIcon.visibility = View.VISIBLE
+                }
+                else
+                {
+                    binding.selectedIcon.visibility = View.INVISIBLE
+                }
+
+                binding.fontItem.setOnClickListener {
+                    val previousItem: Int = selected_position
+                    selected_position = position
+//                     adapter.updateSelectedPosition(position)
+                    adapter.notifyItemChanged(previousItem)
+                    adapter.notifyItemChanged(position)
+
+                    mListener.onItemClick(position)
+                }
+          }
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.font_family_item_row,
-            parent,
-            false
-        )
-        return ItemViewHolder(view, mListener!!)
+        val fontFamilyItemRowBinding = FontFamilyItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+        return ItemViewHolder(fontFamilyItemRowBinding, mListener!!)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val font = fontList[position]
+        holder.bindData(position,font,context,isIconUpdate,this)
 
-        Glide.with(context).load(font.fontImage).into(holder.image)
-        if (selected_position == position && isIconUpdate)
-        {
-            holder.icon.visibility = View.VISIBLE
-        }
-        else
-        {
-            holder.icon.visibility = View.INVISIBLE
-        }
-
-        holder.image.setOnClickListener {
-            val previousItem: Int = selected_position
-            selected_position = position
-
-            notifyItemChanged(previousItem)
-            notifyItemChanged(position)
-
-            mListener!!.onItemClick(position)
-        }
     }
+
 
     override fun getItemCount(): Int {
         return fontList.size

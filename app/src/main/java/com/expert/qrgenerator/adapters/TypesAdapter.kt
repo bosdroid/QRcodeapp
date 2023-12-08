@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.TypesItemRowBinding
 import com.expert.qrgenerator.model.QRTypes
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
@@ -32,13 +33,44 @@ class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>)
         this.mListener = listener
     }
 
-    class ItemViewHolder(itemView: View, mListener: OnItemClickListener) : RecyclerView.ViewHolder(
-        itemView
+    class ItemViewHolder(private val binding: TypesItemRowBinding,private val mListener: OnItemClickListener) : RecyclerView.ViewHolder(
+        binding.root
     ) {
 
-        val parentLayout: MaterialCardView = itemView.findViewById(R.id.types_parent_layout)
-        val typeImage: AppCompatImageView = itemView.findViewById(R.id.type_image)
-        val typeText: MaterialTextView = itemView.findViewById(R.id.type_text)
+        fun bindData(position: Int, type: QRTypes,context: Context,selected_position:Int,isEnableDisable:Boolean,adapter: TypesAdapter){
+    binding.typeImage.setImageResource(type.image)
+    binding.typeText.text = type.name
+
+    if (isEnableDisable && position != 1)
+    {
+        binding.typesParentLayout.isEnabled = false
+        binding.typesParentLayout.alpha = 0.8f
+    }
+    else
+    {
+        binding.typesParentLayout.isEnabled = true
+        binding.typesParentLayout.alpha = 1.0f
+    }
+
+    if (selected_position == position) {
+        binding.typesParentLayout.strokeColor = ContextCompat.getColor(context, R.color.black)
+        binding.typesParentLayout.strokeWidth = 2
+    } else {
+        binding.typesParentLayout.strokeColor = ContextCompat.getColor(context, R.color.white)
+        binding.typesParentLayout.strokeWidth = 0
+    }
+
+    binding.typesParentLayout.setOnClickListener {
+
+        val previousItem: Int = selected_position
+        adapter.updateSelectedPosition(position)
+
+        adapter.notifyItemChanged(previousItem)
+        adapter.notifyItemChanged(position)
+        mListener.onItemClick(position)
+    }
+
+        }
 
     }
 
@@ -50,13 +82,9 @@ class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>)
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+         val typesItemRowBinding = TypesItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.types_item_row,
-            parent,
-            false
-        )
-        return ItemViewHolder(view, mListener!!)
+        return ItemViewHolder(typesItemRowBinding, mListener!!)
 
     }
 
@@ -68,37 +96,11 @@ class TypesAdapter(val context: Context, private var qrTypesList: List<QRTypes>)
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
 
         val type = qrTypesList[position]
-        holder.typeImage.setImageResource(type.image)
-        holder.typeText.text = type.name
+        holder.bindData(position,type,context, selected_position,isEnableDisable,this)
 
-        if (isEnableDisable && position != 1)
-        {
-            holder.parentLayout.isEnabled = false
-            holder.parentLayout.alpha = 0.8f
-        }
-        else
-        {
-            holder.parentLayout.isEnabled = true
-            holder.parentLayout.alpha = 1.0f
-        }
+    }
 
-        if (selected_position == position) {
-            holder.parentLayout.strokeColor = ContextCompat.getColor(context, R.color.black)
-            holder.parentLayout.strokeWidth = 2
-        } else {
-            holder.parentLayout.strokeColor = ContextCompat.getColor(context, R.color.white)
-            holder.parentLayout.strokeWidth = 0
-        }
-
-        holder.parentLayout.setOnClickListener {
-
-            val previousItem: Int = selected_position
-            selected_position = position
-
-            notifyItemChanged(previousItem)
-            notifyItemChanged(position)
-            mListener!!.onItemClick(position)
-        }
-
+    fun updateSelectedPosition(value:Int){
+        selected_position = value
     }
 }

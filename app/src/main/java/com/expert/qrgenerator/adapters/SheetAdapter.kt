@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.SheetItemRowBinding
 import com.expert.qrgenerator.model.Sheet
 import com.google.android.material.textview.MaterialTextView
 
@@ -22,29 +23,28 @@ class SheetAdapter(val context: Context, val sheetItems: ArrayList<Sheet>) :
         this.mListener = listener
     }
 
-    class ItemViewHolder(itemView: View, Listener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val sheetNameView: MaterialTextView = itemView.findViewById(R.id.sheet_item_name)
+    class ItemViewHolder(private val binding:SheetItemRowBinding,private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
+
+          fun bindData(sheet: Sheet){
+                    binding.sheetItemName.text = sheet.name
+                    itemView.setOnClickListener {
+                        mListener.onItemClick(layoutPosition)
+                    }
+          }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+       val sheetItemRowBinding = SheetItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.sheet_item_row,
-            parent,
-            false
-        )
-        return ItemViewHolder(view, mListener!!)
+        return ItemViewHolder(sheetItemRowBinding, mListener!!)
     }
 
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
 
         val item = sheetItems[position]
-        holder.sheetNameView.text = item.name
-        holder.itemView.setOnClickListener {
-            mListener!!.onItemClick(position)
-        }
+        holder.bindData(item)
     }
 
     override fun getItemCount(): Int {

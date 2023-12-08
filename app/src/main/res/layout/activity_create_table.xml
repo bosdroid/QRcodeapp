@@ -7,7 +7,7 @@
     android:fillViewport="true"
     android:id="@+id/scroll_create_table"
     android:background="@color/light_gray"
-    tools:context=".view.activities.CreateTableActivity">
+    tools:context=".ui.activities.CreateTableActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

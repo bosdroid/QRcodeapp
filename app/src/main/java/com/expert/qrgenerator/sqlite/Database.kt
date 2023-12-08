@@ -406,32 +406,8 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
     fun searchItem(tableName: String,code_d: String):Boolean{
         val db = this.readableDatabase
-//        val columns = getTableColumns(tableName)
-//        val list = mutableListOf<Pair<String, String>>()
-//        var tableObject: TableObject? = null
+
         val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data='$code_d'", null)
-//        if (cursor.moveToFirst()) {
-//            do {
-//                tableObject = TableObject(
-//                    cursor.getString(0).toInt(),
-//                    cursor.getString(1),
-//                    cursor.getString(2),
-//                    if (cursor.isNull(3)) "" else cursor.getString(3)
-//                )
-//                tableObject.quantity = cursor.getInt(4)
-//                if (columns!!.size >= 6) {
-//                    for (i in 5 until columns.size) {
-//                        val col = columns[i]
-//                        var pair: Pair<String, String>? = null
-//                        pair = Pair(col, cursor.getString(i))
-//
-//                        list.add(pair)
-//                    }
-//                    tableObject.dynamicColumns.addAll(list)
-//                }
-//            } while (cursor.moveToNext())
-//        }
-//        return tableObject != null
         if(cursor.count <= 0){
             cursor.close()
             return false

@@ -8,32 +8,9 @@ import com.expert.qrgenerator.model.QREntity
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.ListValue
 
-@Database(entities = [CodeHistory::class,ListValue::class], version = 4,exportSchema = false)
+@Database(entities = [CodeHistory::class, ListValue::class], version = 4, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun qrDao() : QRDao
-
-    companion object{
-        private var instance:AppDatabase?=null
-
-        @Synchronized
-        fun getInstance(context: Context): AppDatabase {
-
-            if (instance == null)
-            {
-                instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "magic_qr_generator_database"
-                )
-                    .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries()
-//                .addCallback(roomCallback)
-                    .build()
-            }
-
-            return instance!!
-        }
-    }
+    abstract fun qrDao(): QRDao
 
 }

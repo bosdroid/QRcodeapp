@@ -7,24 +7,9 @@ import com.expert.qrgenerator.model.Fonts
 import com.expert.qrgenerator.utils.Constants
 import com.google.firebase.database.*
 
-class DataRepository {
+object DataRepository {
 
     private var databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
-
-    companion object {
-        lateinit var context: Context
-
-        private var dataRepository: DataRepository? = null
-
-        fun getInstance(mContext: Context): DataRepository {
-            context = mContext
-            if (dataRepository == null) {
-                dataRepository = DataRepository()
-            }
-            return dataRepository!!
-        }
-    }
-
 
     // THIS FUNCTION WILL FETCH THE FIREBASE BACKGROUND IMAGES
     fun getBackgroundImages(): MutableLiveData<List<String>> {

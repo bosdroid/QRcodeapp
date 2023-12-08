@@ -5,13 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.expert.qrgenerator.retrofit.ApiRepository
 import com.google.gson.JsonObject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class FeedbackQrViewModel : ViewModel() {
+@HiltViewModel
+class FeedbackQrViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
     private var feedbackQrCodeResponse = MutableLiveData<JsonObject>()
 
-    fun createFeedbackQrCode(context: Context, body:HashMap<String,String>){
-        feedbackQrCodeResponse = ApiRepository.getInstance(context).createFeedbackQrCode(body)
+    fun createFeedbackQrCode(body:HashMap<String,String>){
+        feedbackQrCodeResponse = apiRepository.createFeedbackQrCode(body)
     }
 
     fun getFeedbackQrCode(): MutableLiveData<JsonObject> {

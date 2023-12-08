@@ -5,13 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.expert.qrgenerator.retrofit.ApiRepository
 import com.google.gson.JsonObject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class CouponQrViewModel : ViewModel() {
+@HiltViewModel
+class CouponQrViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
     private var couponQrCodeResponse = MutableLiveData<JsonObject>()
 
-    fun createCouponQrCode(context: Context, body:HashMap<String,String>){
-        couponQrCodeResponse = ApiRepository.getInstance(context).createCouponQrCode(body)
+    fun createCouponQrCode(body:HashMap<String,String>){
+        couponQrCodeResponse = apiRepository.createCouponQrCode(body)
     }
 
     fun getCouponQrCode(): MutableLiveData<JsonObject> {

@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.databinding.AddListValueItemLayoutBinding
+import com.expert.qrgenerator.databinding.TableItemRowBinding
 import com.expert.qrgenerator.model.ListItem
 import com.expert.qrgenerator.model.ListValue
 import com.expert.qrgenerator.utils.AppSettings
@@ -31,32 +33,57 @@ class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>
         this.mListener = listener
     }
 
-    class ItemViewHolder(itemView: View, Listener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val listValueView: MaterialTextView = itemView.findViewById(R.id.table_item_name)
+    class ItemViewHolder(private val binding: TableItemRowBinding,private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
+
+            fun bindData(listItem: ListItem, position: Int){
+                        binding.tableItemName.text = listItem.value
+                        itemView.setOnClickListener {
+                            mListener.onItemClick(position)
+                        }
+            }
     }
 
-    class AddItemViewHolder(itemView: View, mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(itemView) {
-        val addCardViewBtn: CardView = itemView.findViewById(R.id.add_card_view)
+    class AddItemViewHolder(private val binding:AddListValueItemLayoutBinding,private val mListener: OnItemClickListener) :
+        RecyclerView.ViewHolder(binding.root) {
 
+          fun bindData(position: Int,appSettings: AppSettings,context: Context){
+                binding.addCardView.setOnClickListener {
+                    mListener.onAddItemClick(position)
+                }
+                openAddListTipsDialog(itemView,appSettings,context)
+          }
+
+        private fun openAddListTipsDialog(itemView: View,appSettings: AppSettings,context: Context) {
+            if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
+                val duration = appSettings.getLong("tt22")
+                if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                    SimpleTooltip.Builder(context)
+                        .anchorView(itemView)
+                        .text(context.resources.getString(R.string.tt22_tip_text))
+                        .gravity(Gravity.BOTTOM)
+                        .animated(true)
+                        .transparentOverlay(false)
+                        .onDismissListener { tooltip ->
+                            appSettings.putLong("tt22",System.currentTimeMillis())
+                            tooltip.dismiss()
+                        }
+                        .build()
+                        .show()
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == 0) {
-            val view = LayoutInflater.from(parent.context).inflate(
-                R.layout.add_list_value_item_layout,
-                parent,
-                false
-            )
-            AddItemViewHolder(view, mListener!!)
+            val addListValueItemLayoutBinding = AddListValueItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+            AddItemViewHolder(addListValueItemLayoutBinding, mListener!!)
         } else {
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.table_item_row,
-            parent,
-            false
-        )
-        return ItemViewHolder(view, mListener!!)
+        val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+
+        return ItemViewHolder(tableItemRowBinding, mListener!!)
         }
     }
 
@@ -71,18 +98,14 @@ class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>
         when (holder.itemViewType) {
             0 -> {
                 val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.addCardViewBtn.setOnClickListener {
-                    mListener!!.onAddItemClick(position)
-                }
-                openAddListTipsDialog(addViewHolder.itemView)
+                addViewHolder.bindData(position,appSettings,context)
+
             }
             else -> {
-        val listValue = listItems[position]
+               val listValue = listItems[position]
                 val viewHolder = holder as ItemViewHolder
-                viewHolder.listValueView.text = listValue.value
-                viewHolder.itemView.setOnClickListener {
-            mListener!!.onItemClick(position)
-        }
+                viewHolder.bindData(listValue,position)
+
             }
         }
     }
@@ -91,24 +114,6 @@ class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>
         return listItems.size+1
     }
 
-    private fun openAddListTipsDialog(itemView: View) {
-        if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
-            val duration = appSettings.getLong("tt22")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
-                SimpleTooltip.Builder(context)
-                    .anchorView(itemView)
-                    .text(context.resources.getString(R.string.tt22_tip_text))
-                    .gravity(Gravity.BOTTOM)
-                    .animated(true)
-                    .transparentOverlay(false)
-                    .onDismissListener { tooltip ->
-                        appSettings.putLong("tt22",System.currentTimeMillis())
-                        tooltip.dismiss()
-                    }
-                    .build()
-                    .show()
-            }
-        }
-    }
+
 
 }
