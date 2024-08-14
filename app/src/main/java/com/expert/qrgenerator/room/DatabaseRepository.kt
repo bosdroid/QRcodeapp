@@ -9,15 +9,21 @@ import javax.inject.Inject
 
 class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
 
-    private var dynamicQrList: LiveData<List<CodeHistory>> = qrDao.getAllDynamicQrCodes()
-    private var allQRCodeHistory: LiveData<List<CodeHistory>> = qrDao.getAllQRCodeHistory()
-    private var allScanQRCodeHistory: LiveData<List<CodeHistory>> = qrDao.getAllScanQRCodeHistory()
-    private var allCreateQRCodeHistory: LiveData<List<CodeHistory>> =
-        qrDao.getAllCreateQRCodeHistory()
-    private var allListValues: LiveData<List<ListValue>> = qrDao.getAllListValues()
+    private val dynamicQrList = mutableListOf<CodeHistory>()
+    private val allQRCodeHistory = mutableListOf<CodeHistory>()
+    private val allScanQRCodeHistory = mutableListOf<CodeHistory>()
+    private val allCreateQRCodeHistory = mutableListOf<CodeHistory>()
+    private val allListValues = mutableListOf<ListValue>()
 
+    init {
+        dynamicQrList.addAll(qrDao.getAllDynamicQrCodes())
+        allQRCodeHistory.addAll(qrDao.getAllQRCodeHistory())
+        allScanQRCodeHistory.addAll(qrDao.getAllScanQRCodeHistory())
+        allCreateQRCodeHistory.addAll(qrDao.getAllCreateQRCodeHistory())
+        allListValues.addAll(qrDao.getAllListValues())
+    }
 
-    suspend fun insert(qrHistory: CodeHistory) = withContext(Dispatchers.IO) {
+     fun insert(qrHistory: CodeHistory) {
         qrDao.insert(qrHistory)
     }
 
@@ -26,35 +32,35 @@ class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
 
     }
 
-    suspend fun update(inputUrl: String, url: String, id: Int) = withContext(Dispatchers.IO) {
+    fun update(inputUrl: String, url: String, id: Int) {
 
         qrDao.update(inputUrl, url, id)
 
     }
 
-    suspend fun updateHistory(qrHistory: CodeHistory) = withContext(Dispatchers.IO) {
+    fun updateHistory(qrHistory: CodeHistory) {
 
         qrDao.updateHistory(qrHistory)
 
     }
 
-    fun getAllDynamicQrCodes(): LiveData<List<CodeHistory>> {
+    fun getAllDynamicQrCodes(): List<CodeHistory> {
         return dynamicQrList
     }
 
-    fun getAllQRCodeHistory(): LiveData<List<CodeHistory>> {
+    fun getAllQRCodeHistory(): List<CodeHistory> {
         return allQRCodeHistory
     }
 
-    fun getAllScanQRCodeHistory(): LiveData<List<CodeHistory>> {
+    fun getAllScanQRCodeHistory(): List<CodeHistory> {
         return allScanQRCodeHistory
     }
 
-    fun getAllCreateQRCodeHistory(): LiveData<List<CodeHistory>> {
+    fun getAllCreateQRCodeHistory(): List<CodeHistory> {
         return allCreateQRCodeHistory
     }
 
-    fun getAllListValues(): LiveData<List<ListValue>> {
+    fun getAllListValues(): List<ListValue> {
         return allListValues
     }
 }

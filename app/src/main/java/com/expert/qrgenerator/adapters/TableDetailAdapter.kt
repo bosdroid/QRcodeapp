@@ -10,7 +10,7 @@ import com.expert.qrgenerator.databinding.TableDetailRowDesignBinding
 import com.expert.qrgenerator.model.TableObject
 import com.google.android.material.textview.MaterialTextView
 
-class TableDetailAdapter(val context: Context, var tableDetailList: ArrayList<TableObject>) :
+class TableDetailAdapter(private val tableDetailList: ArrayList<TableObject>) :
     RecyclerView.Adapter<TableDetailAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener {
@@ -41,7 +41,7 @@ class TableDetailAdapter(val context: Context, var tableDetailList: ArrayList<Ta
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val tableDetailRowDesignBinding = TableDetailRowDesignBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        return ItemViewHolder(tableDetailRowDesignBinding, mListener!!)
+        return ItemViewHolder(tableDetailRowDesignBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -50,8 +50,6 @@ class TableDetailAdapter(val context: Context, var tableDetailList: ArrayList<Ta
 
     }
 
-    override fun getItemCount(): Int {
-        return tableDetailList.size
-    }
+    override fun getItemCount(): Int = tableDetailList.size
 
 }

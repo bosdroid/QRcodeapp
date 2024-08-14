@@ -11,10 +11,10 @@ import com.expert.qrgenerator.ui.fragments.ScanFragment
 class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) : FragmentStateAdapter(fragmentManager,lifecycle){
 
     override fun createFragment(position: Int): Fragment {
-        when (position) {
-            1 -> return CreateFragment()
+        return when (position) {
+            1 -> CreateFragment()
+            else -> ScanFragment()
         }
-        return ScanFragment()
     }
 
     override fun getItemCount(): Int {

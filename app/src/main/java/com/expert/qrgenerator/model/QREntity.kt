@@ -14,7 +14,6 @@ data class QREntity (
     @ColumnInfo(name = "userType") var userType:String,
     @ColumnInfo(name = "generatedUrl") var generatedUrl:String = ""
         ):Serializable{
-    @NonNull
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int=0

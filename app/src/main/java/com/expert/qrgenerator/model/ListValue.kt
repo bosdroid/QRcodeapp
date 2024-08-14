@@ -9,7 +9,6 @@ import androidx.room.PrimaryKey
 data class ListValue (
         @ColumnInfo(name = "value") val value:String
         ){
-    @NonNull
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int=0

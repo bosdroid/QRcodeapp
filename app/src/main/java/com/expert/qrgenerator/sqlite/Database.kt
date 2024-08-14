@@ -227,7 +227,10 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
 
         if (c.moveToFirst()) {
             while (!c.isAfterLast) {
-                list.add(c.getString(c.getColumnIndex("name")))
+                val columnIndex = c.getColumnIndex("name")
+                if(columnIndex != -1){
+                    list.add(c.getString(columnIndex))
+                }
                 c.moveToNext()
             }
         }
@@ -458,7 +461,14 @@ class Database(context: Context) : SQLiteOpenHelper(context, databaseName, null,
         val cursor = db.rawQuery("SELECT * FROM $tableName WHERE code_data='$code_d'", null)
         return if (cursor != null){
             cursor.moveToFirst()
-            cursor.getString(cursor.getColumnIndex("quantity"))
+            val columnIndex = cursor.getColumnIndex("quantity")
+            if(columnIndex != -1){
+                cursor.getString(columnIndex)
+            }
+            else{
+                "-1"
+            }
+
         } else {
             "-1"
         }

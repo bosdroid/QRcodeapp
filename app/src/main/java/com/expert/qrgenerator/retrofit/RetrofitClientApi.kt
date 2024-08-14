@@ -9,7 +9,6 @@ object RetrofitClientApi {
 
     private val client = OkHttpClient.Builder().build()
 
-
     fun getInstance(): Retrofit {
         return Retrofit.Builder().baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())

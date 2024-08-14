@@ -1,13 +1,8 @@
 package com.expert.qrgenerator.viewmodel
 
-import JSONResponse
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.expert.qrgenerator.R
-import com.expert.qrgenerator.model.Fonts
-import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.retrofit.ApiRepository
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,81 +11,27 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
-    private var colorList = MutableLiveData<List<String>>()
-    private var backgroundImageList = MutableLiveData<List<String>>()
-    private var logoImageList = MutableLiveData<List<String>>()
-    private var fontList = MutableLiveData<List<Fonts>>()
-    private var dynamicQrCodeResponse = MutableLiveData<JsonObject>()
-    private var signUpResponse = MutableLiveData<JsonObject>()
-    private var signInResponse = MutableLiveData<JsonObject>()
+    private var _dynamicQrCodeResponse = MutableLiveData<JsonObject>()
+    private var _signUpResponse = MutableLiveData<JsonObject>()
+    private var _signInResponse = MutableLiveData<JsonObject>()
 
-    // THIS FUNCTION WILL CREATE AND SAVE THE COLOR LIST
-    fun callColorList(context: Context) {
-        val colorArray = context.resources.getStringArray(R.array.color_values)
-        val tempList = mutableListOf<String>()
-        for (value in colorArray) {
-            tempList.add(value)
-        }
-        colorList.postValue(tempList)
+    val dynamicQrCodeResponse:LiveData<JsonObject> get() = _dynamicQrCodeResponse
+    val signUpResponse :LiveData<JsonObject> get() = _signUpResponse
+    val signInResponse : LiveData<JsonObject> get() = _signInResponse
+
+
+    suspend fun createDynamicQrCode(body:HashMap<String,String>){
+        _dynamicQrCodeResponse.postValue(apiRepository.createDynamicQrCode(body))
     }
 
-    // THIS FUNCTION WILL RETURN THE COLOR LIST
-    fun getColorList(): LiveData<List<String>> {
-        return colorList
+    suspend fun signUp(body:HashMap<String,String>){
+        _signUpResponse.postValue(apiRepository.signUp(body))
     }
 
-    // THIS FUNCTION WILL CALL THE BACKGROUND IMAGE LIST FROM DATA REPOSITORY
-    fun callBackgroundImages(){
-         backgroundImageList = DataRepository.getBackgroundImages()
+
+    suspend fun signIn(email:String){
+        _signInResponse.postValue(apiRepository.signIn(email))
     }
 
-    // THIS FUNCTION WILL RETURN THE IMAGE LIST
-    fun getBackgroundImages():LiveData<List<String>>{
-        return backgroundImageList
-    }
-
-    // THIS FUNCTION WILL CALL THE LOGO IMAGE LIST FROM DATA REPOSITORY
-    fun callLogoImages(){
-        logoImageList = DataRepository.getLogoImages()
-    }
-
-    // THIS FUNCTION WILL RETURN THE LOGO LIST
-    fun getLogoImages():LiveData<List<String>>{
-        return logoImageList
-    }
-
-    // THIS FUNCTION WILL CALL THE FONT LIST FROM DATA REPOSITORY
-    fun callFontList(){
-       fontList = DataRepository.getFontList()
-    }
-
-    // THIS FUNCTION WILL RETURN THE FONT LIST
-    fun getFontList():LiveData<List<Fonts>>{
-        return fontList
-    }
-
-    fun createDynamicQrCode(body:HashMap<String,String>){
-        dynamicQrCodeResponse = apiRepository.createDynamicQrCode(body)
-    }
-
-    fun getDynamicQrCode():MutableLiveData<JsonObject>{
-        return dynamicQrCodeResponse
-    }
-
-    fun signUp(body:HashMap<String,String>){
-        signUpResponse = apiRepository.signUp(body)
-    }
-
-    fun getSignUp():MutableLiveData<JsonObject>{
-        return signUpResponse
-    }
-
-    fun signIn(email:String){
-        signInResponse = apiRepository.signIn(email)
-    }
-
-    fun getSignIn():MutableLiveData<JsonObject>{
-        return signInResponse
-    }
 
 }

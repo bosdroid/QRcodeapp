@@ -5,16 +5,13 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.AddItemLayoutBinding
 import com.expert.qrgenerator.databinding.ImageItemRowBinding
 
-class ImageAdapter(var context: Context, private var imageList: List<String>) :
+class ImageAdapter(private val context: Context, private val imageList: List<String>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
@@ -24,10 +21,7 @@ class ImageAdapter(var context: Context, private var imageList: List<String>) :
     }
 
     private var mListener: OnItemClickListener? = null
-
-    companion object {
-        var selected_position = -1
-    }
+    private var selected_position = -1
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
@@ -40,8 +34,8 @@ class ImageAdapter(var context: Context, private var imageList: List<String>) :
         binding.root
     ) {
 
-        fun bindData(image: String, position: Int, context: Context, adapter: ImageAdapter) {
-            if (image.contains("http") || image.contains("https")) {
+        fun bindData(image: String, position: Int, context: Context, adapter: ImageAdapter,selected_position:Int) {
+            if (image.contains(context.getString(R.string.http)) || image.contains(context.getString(R.string.https))) {
                 Glide.with(context).load(image).into(binding.imageItem)
             } else {
                 val uri: Uri = Uri.parse(image)
@@ -56,7 +50,7 @@ class ImageAdapter(var context: Context, private var imageList: List<String>) :
             binding.imageItem.setOnClickListener {
                 val previousItem: Int = selected_position
 
-                selected_position = position
+                adapter.updateSelectedPosition(position)
                 adapter.notifyItemChanged(previousItem)
                 adapter.notifyItemChanged(position)
 
@@ -84,23 +78,25 @@ class ImageAdapter(var context: Context, private var imageList: List<String>) :
         notifyDataSetChanged()
     }
 
+    private fun updateSelectedPosition(position: Int){
+        selected_position = position
+    }
+
     override fun getItemViewType(position: Int): Int {
-        var viewType = 1 //Default Layout is 1
-        if (position == 0) viewType = 0 //if zero, it will be a header view
-        return viewType
+        return if (position == 0) 0 else 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == 0) {
+        return if (viewType == 0) {
             val addItemLayoutBinding =
                 AddItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-            return AddItemViewHolder(addItemLayoutBinding, mListener!!)
+            AddItemViewHolder(addItemLayoutBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         } else {
             val imageItemRowBinding =
                 ImageItemRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-            return ItemViewHolder(imageItemRowBinding, mListener!!)
+            ItemViewHolder(imageItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         }
     }
 
@@ -116,7 +112,7 @@ class ImageAdapter(var context: Context, private var imageList: List<String>) :
                 val image = imageList[position - 1]
 
                 val viewHolder = holder as ItemViewHolder
-                viewHolder.bindData(image, position, context, this)
+                viewHolder.bindData(image, position, context, this,selected_position)
 
             }
         }
@@ -124,9 +120,7 @@ class ImageAdapter(var context: Context, private var imageList: List<String>) :
     }
 
 
-    override fun getItemCount(): Int {
-        return imageList.size
-    }
+    override fun getItemCount(): Int = imageList.size
 
 
 }

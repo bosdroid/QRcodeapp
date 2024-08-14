@@ -1,15 +1,11 @@
 package com.expert.qrgenerator.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.SnIconItemRowDesignBinding
 
-class SNIconsAdapter(var context: Context,var iconsList:ArrayList<Pair<String,Int>>):RecyclerView.Adapter<SNIconsAdapter.ItemViewHolder>() {
+class SNIconsAdapter(private val iconsList:ArrayList<Pair<String,Int>>):RecyclerView.Adapter<SNIconsAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(pos: Int)
@@ -34,7 +30,7 @@ class SNIconsAdapter(var context: Context,var iconsList:ArrayList<Pair<String,In
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val snIconItemRowDesignBinding = SnIconItemRowDesignBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        return ItemViewHolder(snIconItemRowDesignBinding,mListener!!)
+        return ItemViewHolder(snIconItemRowDesignBinding,mListener?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -42,8 +38,6 @@ class SNIconsAdapter(var context: Context,var iconsList:ArrayList<Pair<String,In
         holder.bindData(pair)
     }
 
-    override fun getItemCount(): Int {
-        return iconsList.size
-    }
+    override fun getItemCount(): Int = iconsList.size
 
 }

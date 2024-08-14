@@ -1,65 +1,58 @@
 package com.expert.qrgenerator.room
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.ListValue
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class AppViewModel @Inject constructor(private val repository: DatabaseRepository) : ViewModel() {
 
-    private var dynamicQrCodes : LiveData<List<CodeHistory>> = repository.getAllDynamicQrCodes()
-    private var allQRCodeHistory: LiveData<List<CodeHistory>> = repository.getAllQRCodeHistory()
-    private var allScanQRCodeHistory: LiveData<List<CodeHistory>> = repository.getAllScanQRCodeHistory()
-    private var allCreateQRCodeHistory: LiveData<List<CodeHistory>> = repository.getAllCreateQRCodeHistory()
-    private var allListValues:LiveData<List<ListValue>> = repository.getAllListValues()
+    private val _dynamicQrCodes = MutableLiveData<List<CodeHistory>>()
+    val dynamicQrCodes: LiveData<List<CodeHistory>>
+        get() = _dynamicQrCodes
 
-    fun insert(qrHistory: CodeHistory){
-        viewModelScope.launch {
+    private val _allQRCodeHistory = MutableLiveData<List<CodeHistory>>()
+    val allQRCodeHistory: LiveData<List<CodeHistory>>
+        get() = _allQRCodeHistory
+
+    private val _allScanQRCodeHistory = MutableLiveData<List<CodeHistory>>()
+    val allScanQRCodeHistory: LiveData<List<CodeHistory>>
+        get() = _allScanQRCodeHistory
+
+    private val _allCreateQRCodeHistory = MutableLiveData<List<CodeHistory>>()
+    val allCreateQRCodeHistory: LiveData<List<CodeHistory>>
+        get() = _allCreateQRCodeHistory
+
+    private val _allListValues = MutableLiveData<List<ListValue>>()
+    val allListValues: LiveData<List<ListValue>>
+        get() = _allListValues
+
+    init {
+        _dynamicQrCodes.postValue(repository.getAllDynamicQrCodes())
+        _allQRCodeHistory.postValue(repository.getAllQRCodeHistory())
+        _allScanQRCodeHistory.postValue(repository.getAllScanQRCodeHistory())
+        _allCreateQRCodeHistory.postValue(repository.getAllCreateQRCodeHistory())
+        _allListValues.postValue(repository.getAllListValues())
+    }
+
+     fun insert(qrHistory: CodeHistory){
             repository.insert(qrHistory)
-        }
-
     }
 
-    fun insertListValue(listValue: ListValue){
-        viewModelScope.launch {
+    suspend fun insertListValue(listValue: ListValue){
             repository.insertListValue(listValue)
-        }
     }
 
-    fun update(inputUrl:String,url:String,id:Int){
-        viewModelScope.launch {
+     fun update(inputUrl:String, url:String, id:Int){
             repository.update(inputUrl,url,id)
-        }
     }
 
-    fun updateHistory(qrHistory: CodeHistory){
-        viewModelScope.launch {
+     fun updateHistory(qrHistory: CodeHistory){
             repository.updateHistory(qrHistory)
-        }
-    }
-
-    fun getAllDynamicQrCodes():LiveData<List<CodeHistory>>{
-        return dynamicQrCodes
-    }
-
-    fun getAllQRCodeHistory():LiveData<List<CodeHistory>>{
-        return allQRCodeHistory
-    }
-
-    fun getAllScanQRCodeHistory():LiveData<List<CodeHistory>>{
-        return allScanQRCodeHistory
-    }
-
-    fun getAllCreateQRCodeHistory():LiveData<List<CodeHistory>>{
-        return allCreateQRCodeHistory
-    }
-    fun getAllListValues():LiveData<List<ListValue>>{
-        return allListValues
     }
 }

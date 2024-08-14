@@ -1,19 +1,13 @@
 package com.expert.qrgenerator.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.AddListValueItemLayoutBinding
 import com.expert.qrgenerator.databinding.TableItemRowBinding
 import com.expert.qrgenerator.model.ListItem
-import com.expert.qrgenerator.model.ListValue
-import com.google.android.material.textview.MaterialTextView
 
-class FieldListAdapter(val context: Context, val listValues: ArrayList<ListItem>) :
+class FieldListAdapter(private val listValues: ArrayList<ListItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface OnItemClickListener {
@@ -52,18 +46,22 @@ class FieldListAdapter(val context: Context, val listValues: ArrayList<ListItem>
         return if (viewType == 0) {
             val addListValueItemLayoutBinding = AddListValueItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-            AddItemViewHolder(addListValueItemLayoutBinding, mListener!!)
+            AddItemViewHolder(addListValueItemLayoutBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         } else {
             val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-            ItemViewHolder(tableItemRowBinding, mListener!!)
+            ItemViewHolder(tableItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         }
     }
 
 
     override fun getItemViewType(position: Int): Int {
-        var viewType = 1 //Default Layout is 1
-        if (position == listValues.size) viewType = 0 //if zero, it will be a header view
+        var viewType = 1
+        // If the position is equal to the size of the list, set view type to 0 (Header)
+        if (position == listValues.size) {
+            viewType = 0
+        }
+
         return viewType
     }
 
@@ -83,8 +81,6 @@ class FieldListAdapter(val context: Context, val listValues: ArrayList<ListItem>
         }
     }
 
-    override fun getItemCount(): Int {
-        return listValues.size+1
-    }
+    override fun getItemCount(): Int = listValues.size+1
 
 }

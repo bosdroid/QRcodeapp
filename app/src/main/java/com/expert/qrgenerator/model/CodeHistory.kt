@@ -21,7 +21,6 @@ data class CodeHistory (
         @ColumnInfo(name = "createdAt") var createdAt:String,
         @ColumnInfo(name = "notes") var notes:String,
         ): Serializable {
-    @NonNull
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int=0

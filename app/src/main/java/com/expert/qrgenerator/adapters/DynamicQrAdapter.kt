@@ -1,13 +1,12 @@
 package com.expert.qrgenerator.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.databinding.DynamicQrSingleItemRowBinding
 import com.expert.qrgenerator.model.CodeHistory
 
-class DynamicQrAdapter(val context: Context,var dynamicQrList:ArrayList<CodeHistory>): RecyclerView.Adapter<DynamicQrAdapter.ItemViewHolder>() {
+class DynamicQrAdapter(private val dynamicQrList:ArrayList<CodeHistory>): RecyclerView.Adapter<DynamicQrAdapter.ItemViewHolder>() {
 
     private var listener: OnItemClickListener? = null
 
@@ -16,7 +15,7 @@ class DynamicQrAdapter(val context: Context,var dynamicQrList:ArrayList<CodeHist
         fun onItemClick(position: Int)
     }
 
-    public fun setOnClickListener(mListener: OnItemClickListener) {
+    fun setOnClickListener(mListener: OnItemClickListener) {
         listener = mListener
     }
 
@@ -35,8 +34,8 @@ class DynamicQrAdapter(val context: Context,var dynamicQrList:ArrayList<CodeHist
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val dynamicQrSingleItemRowBinding = DynamicQrSingleItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)//LayoutInflater.from(parent.context).inflate(R.layout.dynamic_qr_single_item_row,parent,false)
-        return ItemViewHolder(dynamicQrSingleItemRowBinding,listener!!)
+        val dynamicQrSingleItemRowBinding = DynamicQrSingleItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return ItemViewHolder(dynamicQrSingleItemRowBinding,listener?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -44,9 +43,8 @@ class DynamicQrAdapter(val context: Context,var dynamicQrList:ArrayList<CodeHist
         holder.bindData(dynamicQr)
     }
 
-    override fun getItemCount(): Int {
-        return dynamicQrList.size
-    }
+    override fun getItemCount(): Int = dynamicQrList.size
+
 
 
 }

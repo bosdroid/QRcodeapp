@@ -349,9 +349,23 @@
     <string name="scan_quantity_remaining_text">Оставшееся количество:</string>
     <string name="sheet_heading_text">G-Таблицы</string>
     <string name="connect_googlesheet_text">ПОДКЛЮЧИТЬСЯ К GOOGLE ЛИСТАМ</string>
+    <string name="http">http</string>
+	<string name="https">https</string>
+    <string name="text">text</string>
+	<string name="link">link</string>
+	<string name="contact">contact</string>
+	<string name="wifi">wifi</string>
+	<string name="phonee">phone</string>
+	<string name="code">code</string>
+	<string name="sms">sms</string>
+	<string name="instagram">instagram</string>
+	<string name="whatsapp">whatsapp</string>
+	<string name="coupon">coupon</string>
+	<string name="feedback">feedback</string>
+	<string name="sn">sn</string>
 
 
-    <string-array name="mode_list">
+	<string-array name="mode_list">
 		<item>Инвентарь</item>
 		<item>Продавец</item>
 		<item>Поиск</item>

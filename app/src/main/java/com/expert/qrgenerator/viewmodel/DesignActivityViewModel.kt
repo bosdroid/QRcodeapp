@@ -1,25 +1,33 @@
 package com.expert.qrgenerator.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.interfaces.BackgroundImagesCallback
+import com.expert.qrgenerator.interfaces.FontsCallback
+import com.expert.qrgenerator.interfaces.LogoImagesCallback
 import com.expert.qrgenerator.model.Fonts
 import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.retrofit.ApiRepository
-import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class DesignActivityViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
-    private var colorList = MutableLiveData<List<String>>()
-    private var backgroundImageList = MutableLiveData<List<String>>()
-    private var logoImageList = MutableLiveData<List<String>>()
-    private var fontList = MutableLiveData<List<Fonts>>()
-//    private var dynamicQrCodeResponse = MutableLiveData<JsonObject>()
+    private var _colorList = MutableLiveData<List<String>>()
+    val colorList: MutableLiveData<List<String>>
+        get() = _colorList
+    private var _backgroundImageList = MutableLiveData<List<String>>()
+    val backgroundImageList: MutableLiveData<List<String>>
+        get() = _backgroundImageList
+    private var _logoImageList = MutableLiveData<List<String>>()
+    val logoImageList: MutableLiveData<List<String>>
+        get() = _logoImageList
+    private var _fontList = MutableLiveData<List<Fonts>>()
+    val fontList: MutableLiveData<List<Fonts>>
+        get() = _fontList
 
     // THIS FUNCTION WILL CREATE AND SAVE THE COLOR LIST
     fun callColorList(context: Context) {
@@ -28,41 +36,46 @@ class DesignActivityViewModel @Inject constructor(private val apiRepository: Api
         for (value in colorArray) {
             tempList.add(value)
         }
-        colorList.postValue(tempList)
-    }
-
-    // THIS FUNCTION WILL RETURN THE COLOR LIST
-    fun getColorList(): LiveData<List<String>> {
-        return colorList
+        _colorList.postValue(tempList)
     }
 
     // THIS FUNCTION WILL CALL THE BACKGROUND IMAGE LIST FROM DATA REPOSITORY
     fun callBackgroundImages(){
-        backgroundImageList = DataRepository.getBackgroundImages()
-    }
+        DataRepository.getBackgroundImages(object :BackgroundImagesCallback{
+            override fun onBackgroundImagesLoaded(images: List<String>) {
+                _backgroundImageList.postValue(images)
+            }
 
-    // THIS FUNCTION WILL RETURN THE IMAGE LIST
-    fun getBackgroundImages(): LiveData<List<String>> {
-        return backgroundImageList
+            override fun onBackgroundImagesError() {
+                _backgroundImageList.postValue(null)
+            }
+        })
     }
 
     // THIS FUNCTION WILL CALL THE LOGO IMAGE LIST FROM DATA REPOSITORY
     fun callLogoImages(){
-        logoImageList = DataRepository.getLogoImages()
-    }
+        DataRepository.getLogoImages(object :LogoImagesCallback{
+            override fun onLogoImagesLoaded(images: List<String>) {
+                _logoImageList.postValue(images)
+            }
 
-    // THIS FUNCTION WILL RETURN THE LOGO LIST
-    fun getLogoImages(): LiveData<List<String>> {
-        return logoImageList
+            override fun onLogoImagesError() {
+                _logoImageList.postValue(null)
+            }
+        })
     }
 
     // THIS FUNCTION WILL CALL THE FONT LIST FROM DATA REPOSITORY
     fun callFontList(){
-        fontList = DataRepository.getFontList()
+        DataRepository.getFontList(object :FontsCallback{
+            override fun onFontsLoaded(fonts: List<Fonts>) {
+                _fontList.postValue(fonts)
+            }
+
+            override fun onFontsError() {
+                _fontList.postValue(null)
+            }
+        })
     }
 
-    // THIS FUNCTION WILL RETURN THE FONT LIST
-    fun getFontList(): LiveData<List<Fonts>> {
-        return fontList
-    }
 }

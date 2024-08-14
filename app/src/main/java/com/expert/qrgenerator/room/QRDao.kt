@@ -1,6 +1,5 @@
 package com.expert.qrgenerator.room
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.ListValue
@@ -22,24 +21,24 @@ interface QRDao {
 
     // THIS FUNCTION WILL GET LIST OF DYNAMIC QR CODE ENTITY DATA FROM DATABASE
     @Query("SELECT * FROM barcode_history WHERE isDynamic=1 ORDER BY qrId")
-    fun getAllDynamicQrCodes(): LiveData<List<CodeHistory>>
+    fun getAllDynamicQrCodes(): List<CodeHistory>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
     @Query("SELECT * FROM barcode_history ORDER BY qrId")
-    fun getAllQRCodeHistory(): LiveData<List<CodeHistory>>
+    fun getAllQRCodeHistory(): List<CodeHistory>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
     @Query("SELECT * FROM barcode_history ORDER BY qrId")
-    fun getAllScanQRCodeHistory(): LiveData<List<CodeHistory>>
+    fun getAllScanQRCodeHistory(): List<CodeHistory>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
     @Query("SELECT * FROM barcode_history ORDER BY qrId")
-    fun getAllCreateQRCodeHistory(): LiveData<List<CodeHistory>>
+    fun getAllCreateQRCodeHistory(): List<CodeHistory>
 
     @Insert
     fun insertListValue(listValue: ListValue)
 
     @Query("SELECT * FROM list_values ORDER BY id DESC")
-    fun getAllListValues(): LiveData<List<ListValue>>
+    fun getAllListValues(): List<ListValue>
 
 }

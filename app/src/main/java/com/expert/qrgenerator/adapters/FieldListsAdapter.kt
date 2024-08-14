@@ -18,7 +18,7 @@ import com.google.android.material.textview.MaterialTextView
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.util.concurrent.TimeUnit
 
-class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>) :
+class FieldListsAdapter(private val context: Context,private val listItems: ArrayList<ListItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface OnItemClickListener {
@@ -47,59 +47,38 @@ class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>
     class AddItemViewHolder(private val binding:AddListValueItemLayoutBinding,private val mListener: OnItemClickListener) :
         RecyclerView.ViewHolder(binding.root) {
 
-          fun bindData(position: Int,appSettings: AppSettings,context: Context){
+          fun bindData(position: Int,adapter: FieldListsAdapter){
                 binding.addCardView.setOnClickListener {
                     mListener.onAddItemClick(position)
                 }
-                openAddListTipsDialog(itemView,appSettings,context)
+                adapter.openAddListTipsDialog(itemView)
           }
 
-        private fun openAddListTipsDialog(itemView: View,appSettings: AppSettings,context: Context) {
-            if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
-                val duration = appSettings.getLong("tt22")
-                if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
-                    SimpleTooltip.Builder(context)
-                        .anchorView(itemView)
-                        .text(context.resources.getString(R.string.tt22_tip_text))
-                        .gravity(Gravity.BOTTOM)
-                        .animated(true)
-                        .transparentOverlay(false)
-                        .onDismissListener { tooltip ->
-                            appSettings.putLong("tt22",System.currentTimeMillis())
-                            tooltip.dismiss()
-                        }
-                        .build()
-                        .show()
-                }
-            }
-        }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == 0) {
             val addListValueItemLayoutBinding = AddListValueItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-            AddItemViewHolder(addListValueItemLayoutBinding, mListener!!)
+            AddItemViewHolder(addListValueItemLayoutBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         } else {
         val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        return ItemViewHolder(tableItemRowBinding, mListener!!)
+        return ItemViewHolder(tableItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         }
     }
 
 
     override fun getItemViewType(position: Int): Int {
-        var viewType = 1 //Default Layout is 1
-        if (position == listItems.size) viewType = 0 //if zero, it will be a header view
-        return viewType
+        return if (position == listItems.size) 0 else 1
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             0 -> {
                 val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.bindData(position,appSettings,context)
-
+                addViewHolder.bindData(position,this)
             }
             else -> {
                val listValue = listItems[position]
@@ -110,10 +89,26 @@ class FieldListsAdapter(val context: Context, val listItems: ArrayList<ListItem>
         }
     }
 
-    override fun getItemCount(): Int {
-        return listItems.size+1
+    override fun getItemCount(): Int = listItems.size+1
+
+    private fun openAddListTipsDialog(itemView: View) {
+        if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt22")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+                SimpleTooltip.Builder(context)
+                    .anchorView(itemView)
+                    .text(context.resources.getString(R.string.tt22_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt22",System.currentTimeMillis())
+                        tooltip.dismiss()
+                    }
+                    .build()
+                    .show()
+            }
+        }
     }
-
-
 
 }

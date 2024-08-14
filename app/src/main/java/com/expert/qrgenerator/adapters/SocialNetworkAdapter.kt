@@ -1,20 +1,13 @@
 package com.expert.qrgenerator.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
-import android.widget.LinearLayout
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.SocialNetworksListItemDesignBinding
 import com.expert.qrgenerator.model.SocialNetwork
 import com.google.android.material.checkbox.MaterialCheckBox
-import com.google.android.material.textview.MaterialTextView
 
-class SocialNetworkAdapter(val context: Context, var socialNetworkList:ArrayList<SocialNetwork>) : RecyclerView.Adapter<SocialNetworkAdapter.ItemViewHolder>() {
+class SocialNetworkAdapter(private val socialNetworkList:ArrayList<SocialNetwork>) : RecyclerView.Adapter<SocialNetworkAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener{
         fun onItemClick(position: Int)
@@ -44,9 +37,6 @@ class SocialNetworkAdapter(val context: Context, var socialNetworkList:ArrayList
             binding.snItemHeading.text = item.title
             binding.snItemTagline.text = item.url
 
-            itemView.setOnClickListener {
-                //mListener.onItemClick(layoutPosition)
-            }
             binding.snItemCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
                 mListener.onItemCheckClick(layoutPosition,isChecked)
             }
@@ -64,7 +54,7 @@ class SocialNetworkAdapter(val context: Context, var socialNetworkList:ArrayList
         val socialNetworksListItemDesignBinding = SocialNetworksListItemDesignBinding.inflate(
             LayoutInflater.from(parent.context),parent,false)
 
-        return ItemViewHolder(socialNetworksListItemDesignBinding,mListener!!)
+        return ItemViewHolder(socialNetworksListItemDesignBinding,mListener?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -74,8 +64,6 @@ class SocialNetworkAdapter(val context: Context, var socialNetworkList:ArrayList
 
     }
 
-    override fun getItemCount(): Int {
-        return socialNetworkList.size
-    }
+    override fun getItemCount(): Int = socialNetworkList.size
 
 }

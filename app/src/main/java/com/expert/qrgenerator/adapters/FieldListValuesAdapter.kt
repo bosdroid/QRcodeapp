@@ -56,19 +56,17 @@ class FieldListValuesAdapter(val context: Context, val listValues: ArrayList<Str
         return if (viewType == 0) {
             val addListValueItemLayoutBinding = AddListValueItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-            AddItemViewHolder(addListValueItemLayoutBinding, mListener!!)
+            AddItemViewHolder(addListValueItemLayoutBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         } else {
         val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        return ItemViewHolder(tableItemRowBinding, mListener!!)
+        return ItemViewHolder(tableItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         }
     }
 
 
     override fun getItemViewType(position: Int): Int {
-        var viewType = 1 //Default Layout is 1
-        if (position == listValues.size) viewType = 0 //if zero, it will be a header view
-        return viewType
+        return if (position == listValues.size) 0 else 1
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -87,8 +85,6 @@ class FieldListValuesAdapter(val context: Context, val listValues: ArrayList<Str
         }
     }
 
-    override fun getItemCount(): Int {
-        return listValues.size+1
-    }
+    override fun getItemCount(): Int = listValues.size+1
 
 }

@@ -1,16 +1,12 @@
 package com.expert.qrgenerator.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.SheetItemRowBinding
 import com.expert.qrgenerator.model.Sheet
-import com.google.android.material.textview.MaterialTextView
 
-class SheetAdapter(val context: Context, val sheetItems: ArrayList<Sheet>) :
+class SheetAdapter(private val sheetItems: ArrayList<Sheet>) :
     RecyclerView.Adapter<SheetAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener {
@@ -37,7 +33,7 @@ class SheetAdapter(val context: Context, val sheetItems: ArrayList<Sheet>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
        val sheetItemRowBinding = SheetItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        return ItemViewHolder(sheetItemRowBinding, mListener!!)
+        return ItemViewHolder(sheetItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
 
@@ -47,8 +43,6 @@ class SheetAdapter(val context: Context, val sheetItems: ArrayList<Sheet>) :
         holder.bindData(item)
     }
 
-    override fun getItemCount(): Int {
-        return sheetItems.size
-    }
+    override fun getItemCount(): Int = sheetItems.size
 
 }

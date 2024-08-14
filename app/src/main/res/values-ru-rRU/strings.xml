@@ -40,7 +40,7 @@
     <string name="remove_item_alert_message_text">Вы хотите удалить этот товар?</string>
     <string name="remove_item_success_text">Товар был удален!</string>
     <string name="title_seller_mode">Seller Mode</string>
-    <string name="summary_seller_mode" />
+<!--    <string name="summary_seller_mode" />-->
     <string name="mode_title_text">Mode Preference</string>
     <string name="mode_summary_text">Personalize your Mode</string>
     <string name="mode_default_value">Inventory</string>
@@ -61,4 +61,18 @@
     <string name="scan_quantity_remaining_text">Остаток: </string>
     <string name="sheet_heading_text">G-Таблицы</string>
     <string name="connect_googlesheet_text">CONNECT TO GOOGLE SHEETS</string>
+    <string name="http">http</string>
+    <string name="https">https</string>
+    <string name="text">text</string>
+    <string name="link">link</string>
+    <string name="contact">contact</string>
+    <string name="wifi">wifi</string>
+    <string name="phonee">phone</string>
+    <string name="code">code</string>
+    <string name="sms">sms</string>
+    <string name="instagram">instagram</string>
+    <string name="whatsapp">whatsapp</string>
+    <string name="coupon">coupon</string>
+    <string name="feedback">feedback</string>
+    <string name="sn">sn</string>
 </resources>

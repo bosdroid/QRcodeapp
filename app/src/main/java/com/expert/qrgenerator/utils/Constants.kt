@@ -90,22 +90,40 @@ class Constants {
             val list = mutableListOf<QRTypes>()
             list.add(QRTypes(R.drawable.ic_text, context.getString(R.string.text_text), 0))
             list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.static_link_text), 1))
-            list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.dynamic_link_text), 2))
-            list.add(QRTypes(R.drawable.ic_person, context.getString(R.string.contact_text), 3))
-            list.add(QRTypes(R.drawable.ic_wifi, context.getString(R.string.wifi_text), 4))
-            list.add(QRTypes(R.drawable.ic_phone, context.getString(R.string.phone_text), 5))
-            list.add(QRTypes(R.drawable.ic_sms, context.getString(R.string.sms_text), 6))
-            list.add(QRTypes(R.drawable.instagram, context.getString(R.string.instagram_text), 7))
-            list.add(QRTypes(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 8))
-            list.add(QRTypes(R.drawable.ic_coupon, context.getString(R.string.coupon_text), 9))
-            list.add(QRTypes(R.drawable.ic_feedback, context.getString(R.string.feedback_text), 10))
-            list.add(
-                QRTypes(
-                    R.drawable.ic_social_networks,
-                    context.getString(R.string.social_networks_text),
-                    11
-                )
-            )
+//            list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.dynamic_link_text), 2))
+            list.add(QRTypes(R.drawable.ic_person, context.getString(R.string.contact_text), 2))
+            list.add(QRTypes(R.drawable.ic_wifi, context.getString(R.string.wifi_text), 3))
+            list.add(QRTypes(R.drawable.ic_phone, context.getString(R.string.phone_text), 4))
+            list.add(QRTypes(R.drawable.ic_sms, context.getString(R.string.sms_text), 5))
+            list.add(QRTypes(R.drawable.instagram, context.getString(R.string.instagram_text), 6))
+            list.add(QRTypes(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 7))
+//            list.add(QRTypes(R.drawable.ic_coupon, context.getString(R.string.coupon_text), 9))
+//            list.add(QRTypes(R.drawable.ic_feedback, context.getString(R.string.feedback_text), 10))
+//            list.add(
+//                QRTypes(
+//                    R.drawable.ic_social_networks,
+//                    context.getString(R.string.social_networks_text),
+//                    11
+//                )
+//            )
+//            list.add(QRTypes(R.drawable.ic_text, context.getString(R.string.text_text), 0))
+//            list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.static_link_text), 1))
+//            list.add(QRTypes(R.drawable.ic_link, context.getString(R.string.dynamic_link_text), 2))
+//            list.add(QRTypes(R.drawable.ic_person, context.getString(R.string.contact_text), 3))
+//            list.add(QRTypes(R.drawable.ic_wifi, context.getString(R.string.wifi_text), 4))
+//            list.add(QRTypes(R.drawable.ic_phone, context.getString(R.string.phone_text), 5))
+//            list.add(QRTypes(R.drawable.ic_sms, context.getString(R.string.sms_text), 6))
+//            list.add(QRTypes(R.drawable.instagram, context.getString(R.string.instagram_text), 7))
+//            list.add(QRTypes(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 8))
+//            list.add(QRTypes(R.drawable.ic_coupon, context.getString(R.string.coupon_text), 9))
+//            list.add(QRTypes(R.drawable.ic_feedback, context.getString(R.string.feedback_text), 10))
+//            list.add(
+//                QRTypes(
+//                    R.drawable.ic_social_networks,
+//                    context.getString(R.string.social_networks_text),
+//                    11
+//                )
+//            )
             return list
         }
 
@@ -226,76 +244,76 @@ class Constants {
                     websiteInputBox.requestFocus()
                     openKeyboar(context)
                 }
+//                2 -> {
+//                    var selectedProtocol = ""
+//                    val websiteView =
+//                        LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
+//                    val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
+//                    heading.text = context.getString(R.string.generator_type_description_dynamic_link)
+//                    val websiteInputBox =
+//                        websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
+////                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
+//                    val protocolGroup =
+//                        websiteView.findViewById<RadioGroup>(R.id.http_protocol_group)
+//                    protocolGroup.setOnCheckedChangeListener { group, checkedId ->
+//                        when (checkedId) {
+//                            R.id.http_protocol_rb -> {
+//                                selectedProtocol = "http://"
+//                            }
+//                            R.id.https_protocol_rb -> {
+//                                selectedProtocol = "https://"
+//                            }
+//                            else -> {
+//
+//                            }
+//                        }
+//                    }
+//
+//                    if (layoutContainer.childCount > 0) {
+//                        layoutContainer.removeAllViews()
+//                        layoutContainer.addView(websiteView)
+//                    } else {
+//                        layoutContainer.addView(websiteView)
+//                    }
+//                    generateBtn.setOnClickListener {
+//
+//                        val value = websiteInputBox.text.toString().trim()
+//                        if (selectedProtocol.isEmpty()) {
+//                            BaseActivity.showAlert(
+//                                context,
+//                                context.resources.getString(R.string.protocol_error)
+//                            )
+//                        } else if (value.isEmpty()) {
+//
+//                            BaseActivity.showAlert(
+//                                context,
+//                                context.resources.getString(R.string.required_data_input_error)
+//                            )
+//
+//                        } else if (value.contains("http://") || value.contains("https://")
+//                        ) {
+//                            BaseActivity.showAlert(
+//                                context,
+//                                context.resources.getString(R.string.without_protocol_error)
+//                            )
+//                        }
+//                        else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
+//                            BaseActivity.showAlert(
+//                                context,
+//                                context.resources.getString(R.string.valid_website_error)
+//                            )
+//                        }
+//                        else {
+//                            BaseActivity.hideSoftKeyboard(context, websiteView)
+//                            encodedData = "$selectedProtocol$value"
+//                            completeListener!!.onTypeSelected(encodedData, 2, "link")
+//
+//                        }
+//                    }
+//                    websiteInputBox.requestFocus()
+//                    openKeyboar(context)
+//                }
                 2 -> {
-                    var selectedProtocol = ""
-                    val websiteView =
-                        LayoutInflater.from(context).inflate(R.layout.website_dialog_layout, null)
-                    val heading = websiteView!!.findViewById<MaterialTextView>(R.id.dialog_heading)
-                    heading.text = context.getString(R.string.generator_type_description_dynamic_link)
-                    val websiteInputBox =
-                        websiteView.findViewById<TextInputEditText>(R.id.website_input_field)
-//                    val generateBtn = websiteView.findViewById<MaterialTextView>(R.id.next_step_btn)
-                    val protocolGroup =
-                        websiteView.findViewById<RadioGroup>(R.id.http_protocol_group)
-                    protocolGroup.setOnCheckedChangeListener { group, checkedId ->
-                        when (checkedId) {
-                            R.id.http_protocol_rb -> {
-                                selectedProtocol = "http://"
-                            }
-                            R.id.https_protocol_rb -> {
-                                selectedProtocol = "https://"
-                            }
-                            else -> {
-
-                            }
-                        }
-                    }
-
-                    if (layoutContainer.childCount > 0) {
-                        layoutContainer.removeAllViews()
-                        layoutContainer.addView(websiteView)
-                    } else {
-                        layoutContainer.addView(websiteView)
-                    }
-                    generateBtn.setOnClickListener {
-
-                        val value = websiteInputBox.text.toString().trim()
-                        if (selectedProtocol.isEmpty()) {
-                            BaseActivity.showAlert(
-                                context,
-                                context.resources.getString(R.string.protocol_error)
-                            )
-                        } else if (value.isEmpty()) {
-
-                            BaseActivity.showAlert(
-                                context,
-                                context.resources.getString(R.string.required_data_input_error)
-                            )
-
-                        } else if (value.contains("http://") || value.contains("https://")
-                        ) {
-                            BaseActivity.showAlert(
-                                context,
-                                context.resources.getString(R.string.without_protocol_error)
-                            )
-                        }
-                        else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
-                            BaseActivity.showAlert(
-                                context,
-                                context.resources.getString(R.string.valid_website_error)
-                            )
-                        }
-                        else {
-                            BaseActivity.hideSoftKeyboard(context, websiteView)
-                            encodedData = "$selectedProtocol$value"
-                            completeListener!!.onTypeSelected(encodedData, 2, "link")
-
-                        }
-                    }
-                    websiteInputBox.requestFocus()
-                    openKeyboar(context)
-                }
-                3 -> {
                     val contactView =
                         LayoutInflater.from(context).inflate(R.layout.contact_dialog_layout, null)
                     val contactNameInputBox =
@@ -361,7 +379,7 @@ class Constants {
                     contactNameInputBox.requestFocus()
                     openKeyboar(context)
                 }
-                4 -> {
+                3 -> {
                     val wifiView =
                         LayoutInflater.from(context).inflate(R.layout.wifi_dialog_layout, null)
                     val wifiNetWorkName =
@@ -416,7 +434,7 @@ class Constants {
                     wifiNetWorkName.requestFocus()
                     openKeyboar(context)
                 }
-                5 -> {
+                4 -> {
                     val phoneView =
                         LayoutInflater.from(context).inflate(R.layout.phone_dialog_layout, null)
                     val phoneCcInputBox =
@@ -454,7 +472,7 @@ class Constants {
                     phoneCcInputBox.requestFocus()
                     openKeyboar(context)
                 }
-                6 -> {
+                5 -> {
                     val smsView =
                         LayoutInflater.from(context).inflate(R.layout.sms_dialog_layout, null)
                     val smsCcInputBox =
@@ -497,7 +515,7 @@ class Constants {
                     smsCcInputBox.requestFocus()
                     openKeyboar(context)
                 }
-                7 -> {
+                6 -> {
                     val instagramView =
                         LayoutInflater.from(context).inflate(R.layout.instagram_dialog_layout, null)
                     val instagramInputBox =
@@ -529,7 +547,7 @@ class Constants {
                     instagramInputBox.requestFocus()
                     openKeyboar(context)
                 }
-                8 -> {
+                7 -> {
                     val whatsappView =
                         LayoutInflater.from(context).inflate(R.layout.whatsapp_dialog_layout, null)
                     val whatsappCcInputBox =

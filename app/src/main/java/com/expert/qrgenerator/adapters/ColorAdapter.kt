@@ -1,19 +1,14 @@
 package com.expert.qrgenerator.adapters
 
-import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.AddColorItemRowBinding
 import com.expert.qrgenerator.databinding.ColorItemRowBinding
 
-class ColorAdapter(var context: Context, private var colorList: List<String>) :
+class ColorAdapter(private val colorList: List<String>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface OnItemClickListener {
@@ -23,10 +18,7 @@ class ColorAdapter(var context: Context, private var colorList: List<String>) :
 
     private var mListener: OnItemClickListener? = null
     private var isIconUpdate: Boolean = false
-
-    companion object {
-        var selected_position = -1
-    }
+    private var selected_position = -1
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
@@ -38,9 +30,7 @@ class ColorAdapter(var context: Context, private var colorList: List<String>) :
     ) : RecyclerView.ViewHolder(
         binding.root
     ) {
-        //        val colorBtn:AppCompatButton = itemView.findViewById(R.id.color_item)
-//        val icon :AppCompatImageView = itemView.findViewById(R.id.selected_icon)
-        fun bindData(color:String,position: Int,isIconUpdate:Boolean,adapter: ColorAdapter) {
+        fun bindData(color:String,position: Int,isIconUpdate:Boolean,adapter: ColorAdapter,selected_position:Int) {
             binding.colorItem.setBackgroundColor(Color.parseColor("#$color"))
             if (selected_position == position && isIconUpdate) {
                 binding.selectedIcon.visibility = View.VISIBLE
@@ -51,8 +41,8 @@ class ColorAdapter(var context: Context, private var colorList: List<String>) :
             binding.colorItem.setOnClickListener {
 
                 val previousItem: Int = selected_position
-                selected_position = position
 
+                adapter.updateSelectedPosition(position)
                 adapter.notifyItemChanged(previousItem)
                 adapter.notifyItemChanged(position)
 
@@ -75,39 +65,42 @@ class ColorAdapter(var context: Context, private var colorList: List<String>) :
 
     }
 
+    private fun updateSelectedPosition(position: Int){
+        selected_position = position
+    }
+
+
+    // this function update the position of selected color box
     fun updateAdapter(position: Int) {
         selected_position += 1
         notifyItemInserted(position)
         notifyDataSetChanged()
     }
 
+    // this function is public because it is used in activity for showing select tick icon
     fun updateIcon(flag: Boolean) {
         isIconUpdate = flag
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (viewType == 0) {
+        return if (viewType == 0) {
             val addColorItemRowBinding =
                 AddColorItemRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-            return AddItemViewHolder(addColorItemRowBinding, mListener!!)
+             AddItemViewHolder(addColorItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         } else {
             val colorItemRowBinding =
                 ColorItemRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return ItemViewHolder(colorItemRowBinding, mListener!!)
+             ItemViewHolder(colorItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         }
 
     }
 
     override fun getItemViewType(position: Int): Int {
-        var viewType = 1 //Default Layout is 1
-        if (position == 0) viewType = 0 //if zero, it will be a header view
-        return viewType
+        return if (position == 0) 0 else 1
     }
 
-    override fun getItemCount(): Int {
-        return colorList.size
-    }
+    override fun getItemCount(): Int = colorList.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
@@ -118,7 +111,7 @@ class ColorAdapter(var context: Context, private var colorList: List<String>) :
             else -> {
                 val color = colorList[position - 1]
                 val viewHolder = holder as ItemViewHolder
-                viewHolder.bindData(color,position,isIconUpdate,this)
+                viewHolder.bindData(color,position,isIconUpdate,this,selected_position)
 
             }
         }

@@ -12,7 +12,7 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.FontFamilyItemRowBinding
 import com.expert.qrgenerator.model.Fonts
 
-class FontAdapter(var context: Context, private var fontList:List<Fonts>):RecyclerView.Adapter<FontAdapter.ItemViewHolder>() {
+class FontAdapter(private val context: Context, private val fontList:List<Fonts>):RecyclerView.Adapter<FontAdapter.ItemViewHolder>() {
 
 
     interface OnItemClickListener{
@@ -20,9 +20,7 @@ class FontAdapter(var context: Context, private var fontList:List<Fonts>):Recycl
     }
     private var mListener: OnItemClickListener?=null
     private var isIconUpdate:Boolean = false
-    companion object{
-        var selected_position = -1
-    }
+    private var selected_position = -1
 
     fun setOnItemClickListener(listener: OnItemClickListener){
         this.mListener = listener
@@ -36,9 +34,9 @@ class FontAdapter(var context: Context, private var fontList:List<Fonts>):Recycl
     class ItemViewHolder(private val binding: FontFamilyItemRowBinding,private val mListener: OnItemClickListener) : RecyclerView.ViewHolder(binding.root)
     {
 
-          fun bindData(position: Int,font: Fonts,context: Context,isIconUpdate:Boolean,adapter: FontAdapter){
+          fun bindData(position: Int,font: Fonts,context: Context,isIconUpdate:Boolean,adapter: FontAdapter,selected_position:Int){
                 Glide.with(context).load(font.fontImage).into(binding.fontItem)
-                if (Companion.selected_position == position && isIconUpdate)
+                if (selected_position == position && isIconUpdate)
                 {
                     binding.selectedIcon.visibility = View.VISIBLE
                 }
@@ -49,8 +47,8 @@ class FontAdapter(var context: Context, private var fontList:List<Fonts>):Recycl
 
                 binding.fontItem.setOnClickListener {
                     val previousItem: Int = selected_position
-                    selected_position = position
-//                     adapter.updateSelectedPosition(position)
+
+                     adapter.updateSelectedPosition(position)
                     adapter.notifyItemChanged(previousItem)
                     adapter.notifyItemChanged(position)
 
@@ -63,18 +61,19 @@ class FontAdapter(var context: Context, private var fontList:List<Fonts>):Recycl
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val fontFamilyItemRowBinding = FontFamilyItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        return ItemViewHolder(fontFamilyItemRowBinding, mListener!!)
+        return ItemViewHolder(fontFamilyItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val font = fontList[position]
-        holder.bindData(position,font,context,isIconUpdate,this)
+        holder.bindData(position,font,context,isIconUpdate,this,selected_position)
 
     }
 
-
-    override fun getItemCount(): Int {
-        return fontList.size
+    private fun updateSelectedPosition(position: Int){
+        selected_position = position
     }
+
+    override fun getItemCount(): Int = fontList.size
 
 }

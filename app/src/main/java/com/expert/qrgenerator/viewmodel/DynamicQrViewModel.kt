@@ -1,7 +1,6 @@
 package com.expert.qrgenerator.viewmodel
 
-import JSONResponse
-import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.expert.qrgenerator.retrofit.ApiRepository
@@ -12,14 +11,11 @@ import javax.inject.Inject
 @HiltViewModel
 class DynamicQrViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
 
-    private var dynamicQrCodeResponse = MutableLiveData<JsonObject>()
+    private val _dynamicQrCodeResponse = MutableLiveData<JsonObject>()
+    val dynamicQrCodeResponse:LiveData<JsonObject> get() = _dynamicQrCodeResponse
 
-    fun createDynamicQrCode(body:HashMap<String,String>){
-        dynamicQrCodeResponse = apiRepository.createDynamicQrCode(body)
-    }
-
-    fun getDynamicQrCode():MutableLiveData<JsonObject>{
-        return dynamicQrCodeResponse
+    suspend fun createDynamicQrCode(body:HashMap<String,String>){
+        _dynamicQrCodeResponse.postValue(apiRepository.createDynamicQrCode(body))
     }
 
 }

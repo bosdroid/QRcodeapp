@@ -11,7 +11,7 @@ import com.expert.qrgenerator.databinding.FeedbackItemRowBinding
 import com.expert.qrgenerator.model.Feedback
 import com.google.android.material.textview.MaterialTextView
 
-class FeedbackAdapter(val context: Context, val feedbackList: ArrayList<Feedback>):RecyclerView.Adapter<FeedbackAdapter.ItemViewHolder>() {
+class FeedbackAdapter(private val feedbackList: ArrayList<Feedback>):RecyclerView.Adapter<FeedbackAdapter.ItemViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(position: Int)
@@ -24,7 +24,7 @@ class FeedbackAdapter(val context: Context, val feedbackList: ArrayList<Feedback
     }
 
     inner class ItemViewHolder(private val binding:FeedbackItemRowBinding,private val mListener: OnItemClickListener):RecyclerView.ViewHolder(binding.root){
-        fun bindData(feedback: Feedback,position: Int){
+        fun bindData(feedback: Feedback){
             binding.feedbackItemComment.text = feedback.comment
             binding.feedbackItemStars.rating = feedback.rating.toFloat()
             itemView.setOnClickListener {
@@ -37,19 +37,17 @@ class FeedbackAdapter(val context: Context, val feedbackList: ArrayList<Feedback
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val feedbackItemRowBinding = FeedbackItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
 
-        return ItemViewHolder(feedbackItemRowBinding,mListener!!)
+        return ItemViewHolder(feedbackItemRowBinding,mListener?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = feedbackList[position]
-        holder.bindData(item,position)
+        holder.bindData(item)
 
     }
 
 
 
-    override fun getItemCount(): Int {
-        return feedbackList.size
-    }
+    override fun getItemCount(): Int = feedbackList.size
 
 }
