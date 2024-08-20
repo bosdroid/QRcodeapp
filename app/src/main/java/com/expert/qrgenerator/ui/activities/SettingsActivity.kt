@@ -52,7 +52,8 @@ class SettingsActivity : BaseActivity() {
                 appSettings.getBoolean(requireActivity().getString(R.string.key_sound))
             soundSwitch.setOnPreferenceChangeListener(object :
                 Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+
+                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
                     appSettings.putBoolean(
                         requireActivity().getString(R.string.key_sound),
                         newValue as Boolean
@@ -66,7 +67,7 @@ class SettingsActivity : BaseActivity() {
                 appSettings.getBoolean(requireActivity().getString(R.string.key_vibration))
             vibrateSwitch.setOnPreferenceChangeListener(object :
                 Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
                     appSettings.putBoolean(
                         requireActivity().getString(R.string.key_vibration),
                         newValue as Boolean
@@ -83,7 +84,7 @@ class SettingsActivity : BaseActivity() {
                 appSettings.getBoolean(requireActivity().getString(R.string.key_clipboard))
             clipboardSwitch.setOnPreferenceChangeListener(object :
                 Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
                     appSettings.putBoolean(
                         requireActivity().getString(R.string.key_clipboard),
                         newValue as Boolean
@@ -99,7 +100,7 @@ class SettingsActivity : BaseActivity() {
                 appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
             tipsSwitch.setOnPreferenceChangeListener(object :
                 Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
                     appSettings.putBoolean(
                         requireActivity().getString(R.string.key_tips),
                         newValue as Boolean

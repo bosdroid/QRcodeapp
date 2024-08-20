@@ -70,8 +70,9 @@ class FontAdapter(private val context: Context, private val fontList:List<Fonts>
 
     }
 
-    private fun updateSelectedPosition(position: Int){
-        selected_position = position
+    private fun updateSelectedPosition(newPosition: Int){
+        selected_position = newPosition
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = fontList.size

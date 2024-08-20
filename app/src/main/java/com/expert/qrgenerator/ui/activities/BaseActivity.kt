@@ -18,15 +18,17 @@ import androidx.appcompat.widget.AppCompatRatingBar
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import com.downloader.Error
-import com.downloader.OnDownloadListener
-import com.downloader.PRDownloader
-import com.downloader.request.DownloadRequest
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.utils.Constants.Companion.EMAIL_ADDRESS_PATTERN
 import com.expert.qrgenerator.utils.DialogPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
+import com.liulishuo.okdownload.DownloadTask
+import com.liulishuo.okdownload.DownloadTask.*
+import com.liulishuo.okdownload.core.cause.EndCause
+import com.liulishuo.okdownload.core.cause.ResumeFailedCause
+import com.liulishuo.okdownload.core.listener.DownloadListener1
+import com.liulishuo.okdownload.core.listener.assist.Listener1Assist
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,7 +37,7 @@ import java.util.*
 open class BaseActivity : AppCompatActivity() {
 
     companion object {
-        private var prDownloader: DownloadRequest? = null
+        private var task : DownloadTask? = null
         var alert: AlertDialog? = null
 
         // THIS FUNCTION WILL CHECK THE INTERNET CONNECTION AVAILABLE OR NOT
@@ -87,20 +89,50 @@ open class BaseActivity : AppCompatActivity() {
                     downloadFile.delete()
                 }
 
-                prDownloader = PRDownloader.download(path, filePath, fileName)
+                task = Builder(path, File(filePath))
+                    .setFilename(fileName)
+                    .setMinIntervalMillisCallbackProcess(100) // Update every 100ms
+                    .setPassIfAlreadyCompleted(false)
                     .build()
-                    .setOnStartOrResumeListener {
+                task!!.enqueue(object : DownloadListener1(){
+                    override fun taskStart(
+                        task: DownloadTask,
+                        model: Listener1Assist.Listener1Model
+                    ) {
 
                     }
-                prDownloader!!.start(object : OnDownloadListener {
-                    override fun onDownloadComplete() {
+
+                    override fun taskEnd(
+                        task: DownloadTask,
+                        cause: EndCause,
+                        realCause: java.lang.Exception?,
+                        model: Listener1Assist.Listener1Model
+                    ) {
                         val face = Typeface.createFromFile(downloadFile)
                         view.typeface = face
                     }
 
-                    override fun onError(error: Error?) {
-                        Log.d("TEST199", error.toString())
+                    override fun retry(task: DownloadTask, cause: ResumeFailedCause) {
+
                     }
+
+                    override fun connected(
+                        task: DownloadTask,
+                        blockCount: Int,
+                        currentOffset: Long,
+                        totalLength: Long
+                    ) {
+
+                    }
+
+                    override fun progress(
+                        task: DownloadTask,
+                        currentOffset: Long,
+                        totalLength: Long
+                    ) {
+
+                    }
+
                 })
             } else {
                 MaterialAlertDialogBuilder(context)

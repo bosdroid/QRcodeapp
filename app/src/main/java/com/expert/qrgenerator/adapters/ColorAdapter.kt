@@ -65,8 +65,9 @@ class ColorAdapter(private val colorList: List<String>) :
 
     }
 
-    private fun updateSelectedPosition(position: Int){
-        selected_position = position
+    private fun updateSelectedPosition(newPosition: Int){
+        selected_position = newPosition
+        notifyDataSetChanged()
     }
 
 

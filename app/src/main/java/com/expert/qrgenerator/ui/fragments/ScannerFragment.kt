@@ -97,13 +97,13 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 class ScannerFragment : Fragment() {
 
-    private lateinit var binding:FragmentScannerBinding
+    private lateinit var binding: FragmentScannerBinding
     private var mFirebaseAnalytics: FirebaseAnalytics? = null
 
     private var arrayList = mutableListOf<String>()
     var currentPhotoPath: String? = null
     private var codeScanner: CodeScanner? = null
-private val appViewModel: AppViewModel by viewModels()
+    private val appViewModel: AppViewModel by viewModels()
     private lateinit var tableGenerator: TableGenerator
 
     private var tableName: String = ""
@@ -229,15 +229,13 @@ private val appViewModel: AppViewModel by viewModels()
                     appSettings.putString(requireActivity().getString(R.string.key_mode), "$i")
                     isFound = true
                     break
-                }
-                else
-                {
+                } else {
                     isFound = false
                 }
             }
 
-            if (!isFound){
-            appSettings.putString(requireActivity().getString(R.string.key_mode), "0")
+            if (!isFound) {
+                appSettings.putString(requireActivity().getString(R.string.key_mode), "0")
             }
         }
 
@@ -366,23 +364,23 @@ private val appViewModel: AppViewModel by viewModels()
 
                     requireActivity().runOnUiThread {
                         val isFound = tableGenerator.searchItem(tableName, it.text)
-                        if (isFound && appSettings.getString(getString(R.string.key_mode)) == "0"){
-                          val quantity = tableGenerator.getScanQuantity(tableName, it.text)
-                          val qty:Int = quantity.toInt()+1
-                          val isUpdate = tableGenerator.updateScanQuantity(tableName, it.text, qty)
-                          if (isUpdate){
-                              Toast.makeText(
-                                  requireActivity(),
-                                  requireActivity().getString(R.string.scan_quantity_increase_success_text),
-                                  Toast.LENGTH_SHORT
-                              ).show()
-                              Handler(Looper.myLooper()!!).postDelayed({
-                                  startPreview()
-                              }, 2000)
+                        if (isFound && appSettings.getString(getString(R.string.key_mode)) == "0") {
+                            val quantity = tableGenerator.getScanQuantity(tableName, it.text)
+                            val qty: Int = quantity.toInt() + 1
+                            val isUpdate =
+                                tableGenerator.updateScanQuantity(tableName, it.text, qty)
+                            if (isUpdate) {
+                                Toast.makeText(
+                                    requireActivity(),
+                                    requireActivity().getString(R.string.scan_quantity_increase_success_text),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                Handler(Looper.myLooper()!!).postDelayed({
+                                    startPreview()
+                                }, 2000)
 
-						  }
-                        }
-                        else{
+                            }
+                        } else {
                             displayDataSubmitDialog(it, "")
                         }
 
@@ -410,7 +408,7 @@ private val appViewModel: AppViewModel by viewModels()
     }
 
     private lateinit var alert: AlertDialog
-    private lateinit var scanResultDialogBinding:ScanResultDialogBinding
+    private lateinit var scanResultDialogBinding: ScanResultDialogBinding
 
     private fun displayDataSubmitDialog(it: Result?, scanText: String) {
         var text = ""
@@ -427,11 +425,11 @@ private val appViewModel: AppViewModel by viewModels()
             if (isFound) {
                 val quantity = tableGenerator.getScanQuantity(tableName, text)
                 var qty = quantity.toInt()
-                if (qty != -1){
-                    if (qty > 0 ){
+                if (qty != -1) {
+                    if (qty > 0) {
                         qty -= 1
                         val isUpdate = tableGenerator.updateScanQuantity(tableName, text, qty)
-                        if (isUpdate){
+                        if (isUpdate) {
                             Toast.makeText(
                                 requireActivity(),
                                 "${getString(R.string.scan_quantity_update_success_text)} ${
@@ -445,8 +443,7 @@ private val appViewModel: AppViewModel by viewModels()
                                 codeScanner!!.startPreview()
                             }, 2000)
                         }
-                    }
-                    else{
+                    } else {
                         val isSuccess = tableGenerator.deleteItem(tableName, text)
                         if (isSuccess) {
                             Toast.makeText(
@@ -486,7 +483,11 @@ private val appViewModel: AppViewModel by viewModels()
                     showAlert(requireActivity(), text)
                 } else {
                     val columns = tableGenerator.getTableColumns(tableName)
-                    scanResultDialogBinding = ScanResultDialogBinding.inflate(LayoutInflater.from(requireActivity()),binding.root.parent as ViewGroup,false)
+                    scanResultDialogBinding = ScanResultDialogBinding.inflate(
+                        LayoutInflater.from(requireActivity()),
+                        binding.root.parent as ViewGroup,
+                        false
+                    )
 
 
                     scanResultDialogBinding.addImageCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -511,7 +512,8 @@ private val appViewModel: AppViewModel by viewModels()
                                     }
                                     .create().show()
                             } else {
-                                scanResultDialogBinding.severalImagesHintView.visibility = View.VISIBLE
+                                scanResultDialogBinding.severalImagesHintView.visibility =
+                                    View.VISIBLE
                                 scanResultDialogBinding.imageSourcesLayout.visibility = View.VISIBLE
                                 scanResultDialogBinding.filePath.visibility = View.VISIBLE
                             }
@@ -540,10 +542,10 @@ private val appViewModel: AppViewModel by viewModels()
                         if (ContextCompat.checkSelfPermission(
                                 requireActivity(),
                                 Manifest.permission.READ_EXTERNAL_STORAGE
-                            ) == PackageManager.PERMISSION_GRANTED) {
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
                             getImageFromGallery()
-                        }
-                        else{
+                        } else {
                             requestPermissions(
                                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                                 Constants.READ_STORAGE_REQUEST_CODE
@@ -556,10 +558,19 @@ private val appViewModel: AppViewModel by viewModels()
                         if (value == "id" || value == "quantity") {
                             continue
                         } else if (value == "code_data") {
-                            textInputIdsList.add(Pair(value, scanResultDialogBinding.scanResultDialogCodeData))
+                            textInputIdsList.add(
+                                Pair(
+                                    value,
+                                    scanResultDialogBinding.scanResultDialogCodeData
+                                )
+                            )
                             scanResultDialogBinding.scanResultDialogCodeData.setText(text)
                         } else {
-                            val tableRowBinding =ScanResultTableRowLayoutBinding.inflate(LayoutInflater.from(requireContext()),binding.root.parent as ViewGroup,false)
+                            val tableRowBinding = ScanResultTableRowLayoutBinding.inflate(
+                                LayoutInflater.from(requireContext()),
+                                binding.root.parent as ViewGroup,
+                                false
+                            )
 
                             tableRowBinding.tableColumnName.text = value
                             val pair = tableGenerator.getFieldList(value, tableName)
@@ -570,7 +581,8 @@ private val appViewModel: AppViewModel by viewModels()
                                     arrayList.add(pair.first)
 
                                     tableRowBinding.tableColumnValue.visibility = View.GONE
-                                    tableRowBinding.tableColumnDropdownLayout.visibility = View.VISIBLE
+                                    tableRowBinding.tableColumnDropdownLayout.visibility =
+                                        View.VISIBLE
                                     val adapter = ArrayAdapter(
                                         requireContext(),
                                         android.R.layout.simple_spinner_item,
@@ -578,13 +590,19 @@ private val appViewModel: AppViewModel by viewModels()
                                     )
                                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                                     tableRowBinding.tableColumnDropdown.adapter = adapter
-                                    spinnerIdsList.add(Pair(value, tableRowBinding.tableColumnDropdown))
+                                    spinnerIdsList.add(
+                                        Pair(
+                                            value,
+                                            tableRowBinding.tableColumnDropdown
+                                        )
+                                    )
                                 } else if (pair.first.contains(",") && pair.second == "listWithValues") {
 
                                     arrayList.addAll(pair.first.split(","))
 
                                     tableRowBinding.tableColumnValue.visibility = View.GONE
-                                    tableRowBinding.tableColumnDropdownLayout.visibility = View.VISIBLE
+                                    tableRowBinding.tableColumnDropdownLayout.visibility =
+                                        View.VISIBLE
                                     val adapter = ArrayAdapter(
                                         requireContext(),
                                         android.R.layout.simple_spinner_item,
@@ -592,7 +610,12 @@ private val appViewModel: AppViewModel by viewModels()
                                     )
                                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                                     tableRowBinding.tableColumnDropdown.adapter = adapter
-                                    spinnerIdsList.add(Pair(value, tableRowBinding.tableColumnDropdown))
+                                    spinnerIdsList.add(
+                                        Pair(
+                                            value,
+                                            tableRowBinding.tableColumnDropdown
+                                        )
+                                    )
                                 } else {
                                     tableRowBinding.tableColumnDropdownLayout.visibility = View.GONE
                                     tableRowBinding.tableColumnValue.visibility = View.VISIBLE
@@ -606,7 +629,12 @@ private val appViewModel: AppViewModel by viewModels()
 
                             } else {
                                 if (value == "image") {
-                                    textInputIdsList.add(Pair(value, tableRowBinding.tableColumnValue))
+                                    textInputIdsList.add(
+                                        Pair(
+                                            value,
+                                            tableRowBinding.tableColumnValue
+                                        )
+                                    )
                                     continue
                                 }
 
@@ -654,7 +682,10 @@ private val appViewModel: AppViewModel by viewModels()
                                 .onDismissListener { tooltip ->
                                     tooltip.dismiss()
                                     appSettings.putLong("tt2", System.currentTimeMillis())
-                                    openAddImageTooltip(scanResultDialogBinding.addImageCheckbox, scanResultDialogBinding.scanResultDialogSubmitBtn)
+                                    openAddImageTooltip(
+                                        scanResultDialogBinding.addImageCheckbox,
+                                        scanResultDialogBinding.scanResultDialogSubmitBtn
+                                    )
                                 }
                                 .build()
                                 .show()
@@ -749,7 +780,11 @@ private val appViewModel: AppViewModel by viewModels()
 
     private lateinit var quickLinksDialogLayoutBinding: QuickLinksDialogLayoutBinding
     private fun renderQuickLinksDialog(searchTableObject: TableObject) {
-          quickLinksDialogLayoutBinding = QuickLinksDialogLayoutBinding.inflate(LayoutInflater.from(requireActivity()),binding.root.parent as ViewGroup, false)
+        quickLinksDialogLayoutBinding = QuickLinksDialogLayoutBinding.inflate(
+            LayoutInflater.from(requireActivity()),
+            binding.root.parent as ViewGroup,
+            false
+        )
 
         quickLinksDialogLayoutBinding.quickLinksCodeDetailClipboardCopyView.setOnClickListener {
             val clipboard: ClipboardManager =
@@ -790,9 +825,10 @@ private val appViewModel: AppViewModel by viewModels()
     }
 
     private lateinit var quickLinksItemNotFoundDialogBinding: QuickLinksItemNotFoundDialogBinding
-    private fun displayItemNotFoundDialog(text: String){
+    private fun displayItemNotFoundDialog(text: String) {
         quickLinksItemNotFoundDialogBinding = QuickLinksItemNotFoundDialogBinding.inflate(
-            LayoutInflater.from(requireActivity()),binding.root.parent as ViewGroup, false)
+            LayoutInflater.from(requireActivity()), binding.root.parent as ViewGroup, false
+        )
 
         val tablesList = mutableListOf<String>()
         tablesList.addAll(tableGenerator.getAllDatabaseTables())
@@ -818,21 +854,22 @@ private val appViewModel: AppViewModel by viewModels()
             }
         }
 
-        quickLinksItemNotFoundDialogBinding.quickLinksTablesSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+        quickLinksItemNotFoundDialogBinding.quickLinksTablesSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(adapterView: AdapterView<*>?) {
 
-            }
+                }
 
-            override fun onItemSelected(
-                adapterView: AdapterView<*>?,
-                view: View?,
-                i: Int,
-                l: Long
-            ) {
-                tableName = adapterView!!.getItemAtPosition(i).toString()
-                appSettings.putString("SCAN_SELECTED_TABLE", tableName)
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    i: Int,
+                    l: Long
+                ) {
+                    tableName = adapterView!!.getItemAtPosition(i).toString()
+                    appSettings.putString("SCAN_SELECTED_TABLE", tableName)
+                }
             }
-        }
 
         val builder1 = MaterialAlertDialogBuilder(requireActivity())
         builder1.setView(quickLinksItemNotFoundDialogBinding.root)
@@ -841,15 +878,15 @@ private val appViewModel: AppViewModel by viewModels()
         quickLinksItemNotFoundDialogBinding.quickLinksDialogSelectBtn.setOnClickListener {
             alertdialog1.dismiss()
             val searchObj = tableGenerator.getScanItem(tableName, text)
-            if (searchObj != null){
+            if (searchObj != null) {
                 renderQuickLinksDialog(searchObj)
-            }
-            else{
+            } else {
                 displayItemNotFoundDialog(text)
             }
         }
-        quickLinksItemNotFoundDialogBinding.quickLinksDialogCancelBtn.setOnClickListener { alertdialog1.dismiss()
-        codeScanner!!.startPreview()
+        quickLinksItemNotFoundDialogBinding.quickLinksDialogCancelBtn.setOnClickListener {
+            alertdialog1.dismiss()
+            codeScanner!!.startPreview()
         }
     }
 
@@ -870,7 +907,11 @@ private val appViewModel: AppViewModel by viewModels()
                 "id"
             )
         )
-        barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(LayoutInflater.from(requireActivity()),quickLinksDialogLayoutBinding.root.parent as ViewGroup,false)
+        barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(
+            LayoutInflater.from(requireActivity()),
+            quickLinksDialogLayoutBinding.root.parent as ViewGroup,
+            false
+        )
 
         barcodeDetailItemRowBinding.bcdEditView.id = counter
         barcodeEditList.add(
@@ -884,20 +925,40 @@ private val appViewModel: AppViewModel by viewModels()
         barcodeDetailItemRowBinding.bcdTableColumnValue.text = tableObject.code_data
         barcodeDetailItemRowBinding.bcdTableColumnName.text = "code_data"
         quickLinksDialogLayoutBinding.root.addView(barcodeDetailItemRowBinding.root)
-       barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(LayoutInflater.from(requireActivity()),quickLinksDialogLayoutBinding.root.parent as ViewGroup, false)
+        barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(
+            LayoutInflater.from(requireActivity()),
+            quickLinksDialogLayoutBinding.root.parent as ViewGroup,
+            false
+        )
 
         counter += 1
         barcodeDetailItemRowBinding.bcdEditView.id = counter
-        barcodeEditList.add(Triple(barcodeDetailItemRowBinding.bcdEditView, tableObject.date, "date"))
+        barcodeEditList.add(
+            Triple(
+                barcodeDetailItemRowBinding.bcdEditView,
+                tableObject.date,
+                "date"
+            )
+        )
         barcodeDetailItemRowBinding.bcdEditView.visibility = View.GONE
         barcodeDetailItemRowBinding.bcdTableColumnValue.text = tableObject.date
         barcodeDetailItemRowBinding.bcdTableColumnName.text = "date"
         quickLinksDialogLayoutBinding.root.addView(barcodeDetailItemRowBinding.root)
-        barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(LayoutInflater.from(requireActivity()),quickLinksDialogLayoutBinding.root.parent as ViewGroup, false)
+        barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(
+            LayoutInflater.from(requireActivity()),
+            quickLinksDialogLayoutBinding.root.parent as ViewGroup,
+            false
+        )
 
         counter += 1
         barcodeDetailItemRowBinding.bcdEditView.id = counter
-        barcodeEditList.add(Triple(barcodeDetailItemRowBinding.bcdEditView, tableObject.image, "image"))
+        barcodeEditList.add(
+            Triple(
+                barcodeDetailItemRowBinding.bcdEditView,
+                tableObject.image,
+                "image"
+            )
+        )
         barcodeDetailItemRowBinding.bcdEditView.visibility = View.GONE
         barcodeDetailItemRowBinding.bcdTableColumnValue.text = tableObject.image
         barcodeDetailItemRowBinding.bcdTableColumnName.text = "image"
@@ -905,11 +966,21 @@ private val appViewModel: AppViewModel by viewModels()
 
         for (i in 0 until tableObject.dynamicColumns.size) {
             val item = tableObject.dynamicColumns[i]
-           val barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(LayoutInflater.from(requireActivity()),quickLinksDialogLayoutBinding.root.parent as ViewGroup, false)
+            val barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(
+                LayoutInflater.from(requireActivity()),
+                quickLinksDialogLayoutBinding.root.parent as ViewGroup,
+                false
+            )
 
             counter += 1
             barcodeDetailItemRowBinding.bcdEditView.id = counter
-            barcodeEditList.add(Triple(barcodeDetailItemRowBinding.bcdEditView, item.second, item.first))
+            barcodeEditList.add(
+                Triple(
+                    barcodeDetailItemRowBinding.bcdEditView,
+                    item.second,
+                    item.first
+                )
+            )
             barcodeDetailItemRowBinding.bcdEditView.visibility = View.GONE
             barcodeDetailItemRowBinding.bcdTableColumnValue.text = item.second
             barcodeDetailItemRowBinding.bcdTableColumnName.text = item.first
@@ -938,7 +1009,7 @@ private val appViewModel: AppViewModel by viewModels()
                             if (multiImagesList.isNotEmpty()) {
                                 multiImagesList.clear()
                             }
-                            if (params.size > 0){
+                            if (params.size > 0) {
                                 params.clear()
                             }
                             // THIS LOOP WILL GET ALL THE DATA FROM DYNAMICALLY GENERATED EDIT TEXT
@@ -1356,12 +1427,12 @@ private val appViewModel: AppViewModel by viewModels()
                     result.data!!.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
                     //MainActivity.credential!!.backOff = ExponentialBackOff()
-                    (requireActivity() as MainActivity).credential!!.selectedAccountName = accountName
+                    (requireActivity() as MainActivity).credential!!.selectedAccountName =
+                        accountName
                     appSettings.putString("ACCOUNT_NAME", accountName)
-                    if (userRecoverableAuthType == 0){
+                    if (userRecoverableAuthType == 0) {
                         saveToDriveAppFolder()
-                    }
-                    else{
+                    } else {
 //                      getAllSheets()
                     }
 
@@ -1455,7 +1526,8 @@ private val appViewModel: AppViewModel by viewModels()
         }
         binding.homeTipsSwitch.isChecked = flag
 
-        binding.homeTipsSwitch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+        binding.homeTipsSwitch.setOnCheckedChangeListener(object :
+            CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
                 if (isChecked) {
                     binding.homeTipsSwitch.setText(requireActivity().getString(R.string.tip_switch_on_text))
@@ -1508,6 +1580,7 @@ private val appViewModel: AppViewModel by viewModels()
                     }
                 }
             }
+
             Constants.READ_STORAGE_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getImageFromGallery()
@@ -1532,6 +1605,7 @@ private val appViewModel: AppViewModel by viewModels()
                     }
                 }
             }
+
             else -> {
 
             }
@@ -1711,43 +1785,42 @@ private val appViewModel: AppViewModel by viewModels()
     }
 
     private fun getAllSheets() {
-         if (Constants.userData != null) {
+        if (Constants.userData != null) {
 
-             CoroutineScope(Dispatchers.IO).launch {
-                 try {
-                     val result: FileList = DriveService.instance!!.files().list()
-                         .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
-                         .execute()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val result: FileList = DriveService.instance!!.files().list()
+                        .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
+                        .execute()
 
-                     val files = result.files
+                    val files = result.files
 
-                     if (files != null) {
-                         if (files.size > 0){
-                             sheetsList.clear()
-                         }
-                         for (file in files) {
-                             sheetsList.add(Sheet(file.id, file.name))
-                         }
+                    if (files != null) {
+                        if (files.size > 0) {
+                            sheetsList.clear()
+                        }
+                        for (file in files) {
+                            sheetsList.add(Sheet(file.id, file.name))
+                        }
 
-                         CoroutineScope(Dispatchers.Main).launch {
-                             if (sheetsList.isNotEmpty()) {
-                                 Constants.sheetsList.addAll(sheetsList)
-                                 displaySheetSpinner()
-                             }
-                         }
-                     }
-                 } catch (userRecoverableException: UserRecoverableAuthIOException) {
-                     userRecoverableAuthType = 1
-                     userAuthLauncher.launch(userRecoverableException.intent)
-                 }
-             }
-         }
-        else{
+                        CoroutineScope(Dispatchers.Main).launch {
+                            if (sheetsList.isNotEmpty()) {
+                                Constants.sheetsList.addAll(sheetsList)
+                                displaySheetSpinner()
+                            }
+                        }
+                    }
+                } catch (userRecoverableException: UserRecoverableAuthIOException) {
+                    userRecoverableAuthType = 1
+                    userAuthLauncher.launch(userRecoverableException.intent)
+                }
+            }
+        } else {
 
-         }
+        }
     }
 
-    private fun displaySheetSpinner(){
+    private fun displaySheetSpinner() {
         if (sheetsList.isNotEmpty()) {
             selectedSheetId = sheetsList[0].id
             selectedSheetId = sheetsList[0].name
@@ -1844,10 +1917,12 @@ private val appViewModel: AppViewModel by viewModels()
                     }
 
                 }
-                sr.setRetryPolicy(DefaultRetryPolicy(
-                    10000,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
+                sr.setRetryPolicy(
+                    DefaultRetryPolicy(
+                        10000,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                    )
                 )
                 VolleySingleton(requireActivity()).addToRequestQueue(sr)
 
@@ -1859,7 +1934,7 @@ private val appViewModel: AppViewModel by viewModels()
         }
     }
 
-    fun restart(){
+    fun restart() {
         onResume()
     }
 

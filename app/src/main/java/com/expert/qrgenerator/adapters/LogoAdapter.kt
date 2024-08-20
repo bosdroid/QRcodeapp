@@ -111,8 +111,9 @@ class LogoAdapter(private val context: Context, private val logoList: List<Strin
             notifyDataSetChanged()
         }
 
-        private fun updateSelectedPosition(position: Int) {
-            selected_position = position
+        private fun updateSelectedPosition(newPosition: Int) {
+            selected_position = newPosition
+            notifyDataSetChanged()
         }
 
         override fun getItemViewType(position: Int): Int {
