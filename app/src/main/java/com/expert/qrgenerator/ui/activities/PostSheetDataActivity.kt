@@ -6,11 +6,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.*
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.android.volley.Response
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.ActivityPostSheetDataBinding
@@ -30,133 +30,189 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import java.io.*
-import java.util.*
 
 
 @AndroidEntryPoint
 class PostSheetDataActivity : BaseActivity() {
 
-    private lateinit var binding:ActivityPostSheetDataBinding
-    private lateinit var context: Context
+    // Declare the binding object for ActivityPostSheetDataBinding
+    private lateinit var binding: ActivityPostSheetDataBinding
+
+    // Context of the activity, initialized using lazy delegation
+    private val context: Context by lazy { this }
+
+    // Declare a list to hold values of any type
     var values: List<Any>? = null
-    var values_String = arrayOfNulls<String>(1000)
-    var allEds = mutableListOf<EditText>()
+
+    // Initialize an array to hold string values with a default size of 1000
+// Consider using a more dynamic collection like ArrayList if you need to adjust the size
+    var valuesString = Array<String?>(1000) { null }
+
+    // Use a mutable list to keep track of EditText views
+    var allEditTexts = mutableListOf<EditText>()
+
+    // Optional variable to hold an ID as a string
     var id: String? = null
+
+    // Variable to store the name of the sheet
     var sheetName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Initialize ViewBinding
         binding = ActivityPostSheetDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        context = this
 
+        // Set up click listener for choosing a file
         binding.chooseFile.setOnClickListener { getImageFromLocalStorage() }
 
+        // Set up click listener for submitting the file
         binding.submit.setOnClickListener {
-            if (binding.filePath.text.toString().isNotEmpty()) {
+            // Check if the file path field is not empty before sending the request
+            val filePath = binding.filePath.text.toString()
+            if (filePath.isNotEmpty()) {
                 sendRequest()
             } else {
+                // Show a toast message if no file is attached
                 Toast.makeText(applicationContext, "Attach a file", Toast.LENGTH_LONG).show()
             }
         }
 
+        // Retrieve the ID from the intent extras
         id = intent.getStringExtra("id")
 
-        getSheetName(id!!)
-        fetchSheetColumns()
+        // Ensure ID is not null before making requests
+        id?.let {
+            getSheetName(it)
+            fetchSheetColumns()
+        } ?: run {
+            // Handle the case where ID is null (optional, add specific logic as needed)
+            Toast.makeText(this, "Invalid ID", Toast.LENGTH_SHORT).show()
+        }
     }
 
+
     private fun sendRequest() {
-        for (j in values!!.indices) {
-            values_String[j] = allEds[j].text.toString()
-        }
+        // Convert EditText values to a list of strings
+        val valuesString = Array(values!!.size) { index -> allEditTexts[index].text.toString() }
+
+        // Start loading indicator
         startLoading(context)
+
+        // Launch a coroutine to handle background operations
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val fileMetadata = File()
-                fileMetadata.name = "Image_${System.currentTimeMillis()}.jpg"
+                // Prepare file metadata and content
+                val fileMetadata = File().apply {
+                    name = "Image_${System.currentTimeMillis()}.jpg"
+                }
                 val filePath = File(binding.filePath.text.toString())
                 val mediaContent = FileContent("image/jpeg", filePath)
-                val file: File = DriveService.instance!!.files().create(fileMetadata, mediaContent)
+
+                // Upload file to Google Drive
+                val file = DriveService.getDriveInstance()!!
+                    .files().create(fileMetadata, mediaContent)
                     .setFields("id")
                     .execute()
-                Log.e("File ID: ", file.id)
-                val url = "https://script.google.com/macros/s/AKfycbw8aAiqlJbquiRYbiYyZOh36IC_0DEtp18qNkowZvltCJ-BEdbRYola2Dv1wLxAFF9X/exec"//URL("https://script.google.com/macros/s/AKfycbzTa84_2VmwTN2usH6MqzfiD7b4aNSYHAKy6k_vniR-uy5a_W9N/exec")
-                val values_JSON = JSONArray()
-                for (j in values!!.indices) values_JSON.put(values_String[j])
 
-                val sr: StringRequest = object : StringRequest(
+                // Log the file ID
+                Log.e("File ID: ", file.id)
+
+                // Prepare data to be sent in the request
+                val url = "https://script.google.com/macros/s/AKfycbw8aAiqlJbquiRYbiYyZOh36IC_0DEtp18qNkowZvltCJ-BEdbRYola2Dv1wLxAFF9X/exec"
+                val values_JSON = JSONArray().apply {
+                    valuesString.forEach { put(it) }
+                }
+
+                // Create and send a Volley request
+                val stringRequest = object : StringRequest(
                     Method.POST,
                     url,
-                    object : Response.Listener<String?> {
-                        override fun onResponse(response: String?) {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                dismiss()
-                                if (response!!.toLowerCase(Locale.ENGLISH).contains("success")) {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Data has been inserted successfully",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } else {
-                                    val permissionDeniedLayout = LayoutInflater.from(context)
-                                        .inflate(R.layout.spreadsheet_permission_failed_dialog, null)
-                                    val builder = MaterialAlertDialogBuilder(context)
-                                    builder.setCancelable(false)
-                                    builder.setView(permissionDeniedLayout)
-                                    builder.setPositiveButton("Ok") { dialog, which ->
-                                        dialog.dismiss()
-                                    }
-                                    val alert = builder.create()
-                                    alert.show()
-                                }
+                    Response.Listener<String?> { response ->
+                        CoroutineScope(Dispatchers.Main).launch {
+                            // Dismiss loading indicator
+                            dismiss()
 
+                            // Handle response
+                            if (response!!.contains("success", ignoreCase = true)) {
+                                Toast.makeText(applicationContext, "Data has been inserted successfully", Toast.LENGTH_LONG).show()
+                            } else {
+                                showPermissionDeniedDialog()
                             }
                         }
                     },
-                    object : Response.ErrorListener {
-                        override fun onErrorResponse(error: VolleyError?) {
-                            Toast.makeText(context,error!!.toString(),Toast.LENGTH_SHORT).show()
+                    Response.ErrorListener { error ->
+                        CoroutineScope(Dispatchers.Main).launch {
+                            Toast.makeText(context, error!!.toString(), Toast.LENGTH_SHORT).show()
                             dismiss()
                         }
-                    }) {
-                    override fun getParams(): Map<String, String> {
-                        val params: MutableMap<String, String> = HashMap()
-                        params["sheetName"] = sheetName
-                        params["number"] = "${values!!.size}"
-                        params["id"] = "$id"
-                        params["value"] = "${values_JSON}"
-                        params["drive"] = "https://drive.google.com/file/d/" + file.id + "/view?usp=sharing"
-                        return params
                     }
-
+                ) {
+                    override fun getParams(): Map<String, String> {
+                        return mapOf(
+                            "sheetName" to sheetName,
+                            "number" to "${values!!.size}",
+                            "id" to "$id",
+                            "value" to values_JSON.toString(),
+                            "drive" to "https://drive.google.com/file/d/${file.id}/view?usp=sharing"
+                        )
+                    }
                 }
-                VolleySingleton(context).addToRequestQueue(sr)
+
+                // Add request to Volley request queue
+                VolleySingleton.getInstance(context).addToRequestQueue(stringRequest)
 
             } catch (e: UserRecoverableAuthIOException) {
                 e.printStackTrace()
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    private fun getSheetName(id: String){
-        CoroutineScope(Dispatchers.IO).launch {
-            val response1: Spreadsheet =
-                SheetService.instance!!.spreadsheets().get(id).setIncludeGridData(false)
-                    .execute()
-            sheetName = response1.sheets[0].properties.title
+    // Helper function to show permission denied dialog
+    private fun showPermissionDeniedDialog() {
+        val permissionDeniedLayout = LayoutInflater.from(context)
+            .inflate(R.layout.spreadsheet_permission_failed_dialog, null)
+        val builder = MaterialAlertDialogBuilder(context).apply {
+            setCancelable(false)
+            setView(permissionDeniedLayout)
+            setPositiveButton("Ok") { dialog, _ -> dialog.dismiss() }
+        }
+        builder.create().show()
+    }
+
+
+    private fun getSheetName(id: String): String? {
+        return try {
+            // Execute the network request to get the spreadsheet details.
+            val response: Spreadsheet = SheetService.getInstance()?.spreadsheets()
+                ?.get(id)
+                ?.setIncludeGridData(false)
+                ?.execute() ?: return null
+
+            // Extract and return the name of the first sheet.
+            response.sheets.firstOrNull()?.properties?.title
+        } catch (e: IOException) {
+            // Handle any exceptions that occur during the network request.
+            e.printStackTrace() // Log the exception for debugging.
+            null // Return null if an exception occurs.
         }
     }
 
     // THIS FUNCTION WILL CALL THE IMAGE INTENT
     private fun getImageFromLocalStorage() {
-        val fileIntent = Intent(Intent.ACTION_PICK)
-        fileIntent.type = "image/*"
+        // Create an intent to pick an image from the device's local storage
+        val fileIntent = Intent(Intent.ACTION_PICK).apply {
+            // Set the type of file to be picked as an image
+            type = "image/*"
+        }
+
+        // Launch the intent using resultLauncher to handle the result
         resultLauncher.launch(fileIntent)
     }
 
@@ -164,77 +220,131 @@ class PostSheetDataActivity : BaseActivity() {
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-            // THIS LINE OF CODE WILL CHECK THE IMAGE HAS BEEN SELECTED OR NOT
+            // Check if the result code indicates a successful result
             if (result.resultCode == Activity.RESULT_OK) {
 
+                // Retrieve the data from the result intent
                 val data: Intent? = result.data
-                val paths = ImageManager.getRealPathFromUri(this, data!!.data!!)
-                binding.filePath.text = paths
+
+                // Ensure that data and its Uri are not null
+                data?.data?.let { uri ->
+
+                    // Get the real file path from the Uri
+                    val paths = ImageManager.getRealPathFromUri(this, uri)
+
+                    // Update the UI with the obtained file path
+                    binding.filePath.text = paths
+                }
             }
         }
 
+
+    /**
+     * Fetches column data from a Google Sheets spreadsheet and updates the UI.
+     * This function runs on a background thread and updates the UI on the main thread.
+     */
     private fun fetchSheetColumns() {
+        // Launch a coroutine on the IO dispatcher for network operations
         CoroutineScope(Dispatchers.IO).launch {
+            // Define the range of columns to fetch from the spreadsheet
             val range = "A:Z"
             var response: ValueRange? = null
+
             try {
-                val request = SheetService.instance!!.spreadsheets().values().get(id, range)
-                response = request.execute()
+                // Create a request to fetch the values from the specified range
+                val request = SheetService.getInstance()?.spreadsheets()?.values()?.get(id, range)
+                // Execute the request and store the response
+                response = request?.execute()
             } catch (e: UserRecoverableAuthIOException) {
+                // Handle the case where user authorization is required
                 googleLauncher.launch(e.intent)
             } catch (e: IOException) {
+                // Print stack trace for general IO errors
                 e.printStackTrace()
             }
 
+            // If the response is not null, proceed to update the UI
             if (response != null) {
-                values = response.getValues()[0]
-                CoroutineScope(Dispatchers.Main).launch {
-                    dynamicallyGenerateEditext()
+                // Extract column values from the response
+                values = response.getValues().firstOrNull() ?: emptyList()
+
+                // Switch to the main dispatcher to update the UI
+                withContext(Dispatchers.Main) {
+                    dynamicallyGenerateEdittext()
                 }
             }
         }
     }
 
+
     // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
+    // Register an activity result launcher for Google Sign-In
     private var googleLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
+            // Check if the result code indicates a successful sign-in
             if (result.resultCode == Activity.RESULT_OK) {
-                    fetchSheetColumns()
+                // Fetch sheet columns after successful sign-in
+                fetchSheetColumns()
+
+                // Get the Google Sign-In account information from the result intent
                 val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+
                 try {
-                    // Google Sign In was successful, authenticate with Firebase
+                    // Google Sign-In was successful, authenticate with Firebase
                     val account = task.getResult(ApiException::class.java)!!
-                    //firebaseAuthWithGoogle(account)
+                    // Uncomment the line below to authenticate with Firebase
+                    // firebaseAuthWithGoogle(account)
+
                 } catch (e: ApiException) {
-                    // Google Sign In failed, update UI appropriately
-                    Log.w("TAG", "Google sign in failed", e)
+                    // Google Sign-In failed, log the error for debugging
+                    Log.w("TAG", "Google sign-in failed", e)
                 }
             }
         }
 
-
-    private fun dynamicallyGenerateEditext() {
+    private fun dynamicallyGenerateEdittext() {
+        // Try-catch block to handle any exceptions that may occur
         try {
-            val parentLinear = findViewById<View>(R.id.parentLinear) as LinearLayout
-            val l = LinearLayout(this)
-            l.orientation = LinearLayout.VERTICAL
-            for (j in values!!.indices) {
-                val et = EditText(this)
-                val lp = LinearLayout.LayoutParams(800, 140)
-                lp.setMargins(10, 10, 10, 10)
-                et.id = j
-                allEds.add(et)
-                et.setBackgroundResource(R.drawable.editext_back)
-                et.setPadding(20, 0, 0, 0)
-                et.hint = values!![j].toString()
-                et.setTextColor(resources.getColor(R.color.white))
-                l.addView(et, lp)
+            // Access the parent LinearLayout from the binding
+            val parentLinear = binding.parentLinear as LinearLayout
+
+            // Create a new LinearLayout to hold the EditText views, with vertical orientation
+            val verticalLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
             }
-            parentLinear.addView(l)
+
+            // Iterate through the values to create EditText views dynamically
+            values?.forEachIndexed { index, value ->
+                // Create a new EditText view
+                val editText = EditText(this).apply {
+                    id = index  // Set unique ID for each EditText
+                    setBackgroundResource(R.drawable.editext_back)  // Set background drawable
+                    setPadding(20, 0, 0, 0)  // Set padding
+                    hint = value.toString()  // Set hint text
+                    setTextColor(resources.getColor(R.color.white))  // Set text color
+                }
+
+                // Define layout parameters for the EditText
+                val layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,  // Match parent width
+                    140  // Fixed height
+                ).apply {
+                    setMargins(10, 10, 10, 10)  // Set margins
+                }
+
+                // Add the EditText view to the vertical LinearLayout
+                verticalLayout.addView(editText, layoutParams)
+            }
+
+            // Add the vertical LinearLayout to the parent LinearLayout
+            parentLinear.addView(verticalLayout)
+
         } catch (e: Exception) {
-            Log.e("Sheet Mismatch", e.message!!)
+            // Log the error and show a toast message if an exception occurs
+            Log.e("Sheet Mismatch", e.message.orEmpty())
             Toast.makeText(this, "Sheet Format Mismatch", Toast.LENGTH_LONG).show()
         }
     }
+
 }

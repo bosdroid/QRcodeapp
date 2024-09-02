@@ -3,35 +3,73 @@ package com.expert.qrgenerator.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.expert.qrgenerator.retrofit.ApiRepository
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
+class MainActivityViewModel @Inject constructor(
+    private val apiRepository: ApiRepository
+) : ViewModel() {
 
-    private var _dynamicQrCodeResponse = MutableLiveData<JsonObject>()
-    private var _signUpResponse = MutableLiveData<JsonObject>()
-    private var _signInResponse = MutableLiveData<JsonObject>()
+    // LiveData objects to observe API responses
+    private val _dynamicQrCodeResponse = MutableLiveData<JsonObject?>()
+    private val _signUpResponse = MutableLiveData<JsonObject?>()
+    private val _signInResponse = MutableLiveData<JsonObject?>()
 
-    val dynamicQrCodeResponse:LiveData<JsonObject> get() = _dynamicQrCodeResponse
-    val signUpResponse :LiveData<JsonObject> get() = _signUpResponse
-    val signInResponse : LiveData<JsonObject> get() = _signInResponse
+    // Publicly exposed LiveData for observing API responses
+    val dynamicQrCodeResponse: LiveData<JsonObject?> get() = _dynamicQrCodeResponse
+    val signUpResponse: LiveData<JsonObject?> get() = _signUpResponse
+    val signInResponse: LiveData<JsonObject?> get() = _signInResponse
 
-
-    suspend fun createDynamicQrCode(body:HashMap<String,String>){
-        _dynamicQrCodeResponse.postValue(apiRepository.createDynamicQrCode(body))
+    /**
+     * Creates a dynamic QR code by calling the repository's API method.
+     *
+     * @param body A map containing the parameters required for creating a dynamic QR code.
+     */
+    fun createDynamicQrCode(body: HashMap<String, String>) {
+        viewModelScope.launch {
+            try {
+                val response = apiRepository.createDynamicQrCode(body)
+                _dynamicQrCodeResponse.postValue(response!!)
+            } catch (e: Exception) {
+                // Handle error if needed
+            }
+        }
     }
 
-    suspend fun signUp(body:HashMap<String,String>){
-        _signUpResponse.postValue(apiRepository.signUp(body))
+    /**
+     * Signs up a user by calling the repository's API method.
+     *
+     * @param body A map containing the parameters required for signing up.
+     */
+    fun signUp(body: HashMap<String, String>) {
+        viewModelScope.launch {
+            try {
+                val response = apiRepository.signUp(body)
+                _signUpResponse.postValue(response!!)
+            } catch (e: Exception) {
+                // Handle error if needed
+            }
+        }
     }
 
-
-    suspend fun signIn(email:String){
-        _signInResponse.postValue(apiRepository.signIn(email))
+    /**
+     * Signs in a user by calling the repository's API method.
+     *
+     * @param email The email of the user signing in.
+     */
+    fun signIn(email: String) {
+        viewModelScope.launch {
+            try {
+                val response = apiRepository.signIn(email)
+                _signInResponse.postValue(response!!)
+            } catch (e: Exception) {
+                // Handle error if needed
+            }
+        }
     }
-
-
 }

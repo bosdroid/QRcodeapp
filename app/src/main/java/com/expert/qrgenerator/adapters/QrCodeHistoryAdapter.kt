@@ -10,101 +10,89 @@ import com.expert.qrgenerator.databinding.QrCodeHistoryItemDesignBinding
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.ui.activities.BaseActivity
 
-class QrCodeHistoryAdapter(private val context: Context, private val qrCodeHistoryList: ArrayList<CodeHistory>) :
-    RecyclerView.Adapter<QrCodeHistoryAdapter.ItemViewHolder>() {
+class QrCodeHistoryAdapter(
+    private val context: Context,
+    private val qrCodeHistoryList: ArrayList<CodeHistory>
+) : RecyclerView.Adapter<QrCodeHistoryAdapter.ItemViewHolder>() {
 
     private var listener: OnItemClickListener? = null
 
+    // Interface to handle item click events
     interface OnItemClickListener {
         fun onItemClick(position: Int)
     }
 
-    public fun setOnClickListener(mListener: OnItemClickListener) {
+    // Function to set the OnItemClickListener
+    fun setOnClickListener(mListener: OnItemClickListener) {
         listener = mListener
     }
 
-    class ItemViewHolder(private val binding:QrCodeHistoryItemDesignBinding,private val mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(binding.root) {
+    // ViewHolder class to represent each item in the RecyclerView
+    class ItemViewHolder(
+        private val binding: QrCodeHistoryItemDesignBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bindData(qrHistory: CodeHistory, context: Context){
-            when (qrHistory.type) {
-                context.getString(R.string.text) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_text)
+        // Function to bind data to the views
+        fun bindData(qrHistory: CodeHistory, context: Context) {
+            // Set the appropriate icon based on the QR code type
+            binding.qrCodeHistoryItemTypeIcon.setImageResource(
+                when (qrHistory.type) {
+                    context.getString(R.string.text) -> R.drawable.ic_text
+                    context.getString(R.string.link) -> R.drawable.ic_link
+                    context.getString(R.string.contact) -> R.drawable.ic_person
+                    context.getString(R.string.wifi) -> R.drawable.ic_wifi
+                    context.getString(R.string.phonee) -> R.drawable.ic_phone
+                    context.getString(R.string.code) -> R.drawable.ic_code
+                    context.getString(R.string.sms) -> R.drawable.ic_sms
+                    context.getString(R.string.instagram) -> R.drawable.instagram
+                    context.getString(R.string.whatsapp) -> R.drawable.whatsapp
+                    context.getString(R.string.coupon) -> R.drawable.ic_coupon
+                    context.getString(R.string.feedback) -> R.drawable.ic_feedback
+                    context.getString(R.string.sn) -> R.drawable.ic_social_networks
+                    else -> R.mipmap.ic_launcher // Fallback icon
                 }
-                context.getString(R.string.link) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_link)
-                }
-                context.getString(R.string.contact) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_person)
-                }
-                context.getString(R.string.wifi) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_wifi)
-                }
-                context.getString(R.string.phonee) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_phone)
-                }
-                context.getString(R.string.code) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_code)
-                }
-                context.getString(R.string.sms) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_sms)
-                }
-                context.getString(R.string.instagram) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.instagram)
-                }
-                context.getString(R.string.whatsapp) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.whatsapp)
-                }
-                context.getString(R.string.coupon) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_coupon)
-                }
-                context.getString(R.string.feedback) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_feedback)
-                }
-                context.getString(R.string.sn) -> {
-                    binding.qrCodeHistoryItemTypeIcon.setImageResource(R.drawable.ic_social_networks)
-                }
-                else -> {
+            )
 
-                }
-            }
-
+            // Set QR code data and formatted date
             binding.qrCodeHistoryItemText.text = qrHistory.data
             binding.qrCodeHistoryItemCreatedDate.text =
                 BaseActivity.getFormattedDate(context, qrHistory.createdAt.toLong())
 
-            // this condition check if qr code history have any detail like Notes then it display
-            // otherwise hide it
+            // Display notes if available, otherwise hide the notes section
             if (qrHistory.notes.isNotEmpty()) {
                 binding.qrCodeHistoryItemNotesText.visibility = View.VISIBLE
-                val notesText = qrHistory.notes
-                if (notesText.length >= 110) {
-                    binding.qrCodeHistoryItemNotesText.text = "${notesText.substring(0, 107)}..."
+                binding.qrCodeHistoryItemNotesText.text = if (qrHistory.notes.length >= 110) {
+                    "${qrHistory.notes.substring(0, 107)}..."
                 } else {
-                    binding.qrCodeHistoryItemNotesText.text = notesText
+                    qrHistory.notes
                 }
             } else {
                 binding.qrCodeHistoryItemNotesText.visibility = View.GONE
             }
+
+            // Handle item click event
             itemView.setOnClickListener {
                 mListener.onItemClick(layoutPosition)
             }
         }
-
     }
 
+    // Inflates the item layout and returns the ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val qrCodeHistoryItemDesignBinding = QrCodeHistoryItemDesignBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        val binding = QrCodeHistoryItemDesignBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
 
-        return ItemViewHolder(qrCodeHistoryItemDesignBinding, listener?: throw IllegalStateException("OnItemClickListener not set"))
+        // Ensure the listener is set before returning the ViewHolder
+        return ItemViewHolder(binding, listener ?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
+    // Binds data to the ViewHolder at the given position
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val qrHistory = qrCodeHistoryList[position]
-        holder.bindData(qrHistory,context)
+        holder.bindData(qrCodeHistoryList[position], context)
     }
 
+    // Returns the total number of items in the list
     override fun getItemCount(): Int = qrCodeHistoryList.size
-
-
 }

@@ -1,18 +1,14 @@
 package com.expert.qrgenerator.ui.activities
 
-import android.accounts.Account
 import android.accounts.AccountManager
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.SheetAdapter
 import com.expert.qrgenerator.databinding.ActivitySheetsBinding
@@ -36,20 +32,22 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class SheetsActivity : BaseActivity(), SheetAdapter.OnItemClickListener {
 
-    private lateinit var binding:ActivitySheetsBinding
+    private lateinit var binding: ActivitySheetsBinding
     private var account: GoogleSignInAccount? = null
     private var signInOptions: GoogleSignInOptions? = null
-    private lateinit var context: Context
+    // Context of the activity, initialized using lazy delegation
+    private val context: Context by lazy { this }
     private var sheetsList = mutableListOf<Sheet>()
-    var credential: GoogleAccountCredential? = null
-    var client: GoogleSignInClient? = null
-    var mService: Drive? = null
+    private var credential: GoogleAccountCredential? = null
+    private var client: GoogleSignInClient? = null
+    private var mService: Drive? = null
     private val scopes = mutableListOf<String>()
-    private val transport: HttpTransport? = AndroidHttp.newCompatibleTransport()
+    private val transport: HttpTransport = AndroidHttp.newCompatibleTransport()
     private val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
     private lateinit var adapter: SheetAdapter
 
@@ -62,26 +60,28 @@ class SheetsActivity : BaseActivity(), SheetAdapter.OnItemClickListener {
         setUpToolbar()
         requestSignIn()
 
+        // Handle exceptions related to Google Play Services and authentication
         try {
             getAllSheets()
         } catch (availabilityException: GooglePlayServicesAvailabilityIOException) {
-            Log.e("Play Services", "GPS unavailable")
+            Log.e("Play Services", "Google Play Services unavailable", availabilityException)
         } catch (userRecoverableException: UserRecoverableAuthIOException) {
-            Log.e("Recoverable Auth", "user recoverable")
+            Log.e("Recoverable Auth", "User recoverable exception", userRecoverableException)
             googleLauncher.launch(userRecoverableException.intent)
         } catch (e: Exception) {
-            Log.e("gd", e.message + "----")
+            Log.e("Exception", "An error occurred", e)
         }
     }
 
     private fun setUpToolbar() {
         setSupportActionBar(binding.toolbar)
-        supportActionBar!!.title = getString(R.string.sheets)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.apply {
+            title = getString(R.string.sheets)
+            setDisplayHomeAsUpEnabled(true)
+        }
         binding.toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
     }
 
-    // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -93,110 +93,91 @@ class SheetsActivity : BaseActivity(), SheetAdapter.OnItemClickListener {
 
     private fun requestSignIn() {
         scopes.add(DriveScopes.DRIVE_METADATA_READONLY)
-       try {
-           signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-               .requestIdToken(getString(R.string.default_web_client_id))
-               .requestEmail()
-               .build()
-           client = GoogleSignIn.getClient(this, signInOptions!!)
+        try {
+            signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+            client = GoogleSignIn.getClient(this, signInOptions!!)
 
-           account = GoogleSignIn.getLastSignedInAccount(this)
+            account = GoogleSignIn.getLastSignedInAccount(this)
 
-           if (account != null){
-               credential = GoogleAccountCredential.usingOAuth2(
-                   applicationContext, scopes
-               )
-                   .setBackOff(ExponentialBackOff())
-                   .setSelectedAccount(Account(account!!.email, context.packageName))
-               mService = Drive.Builder(
-                   transport, jsonFactory, credential
-               )
-                   .setApplicationName(getString(R.string.app_name))
-                   .build()
-           }
-           else{
-               val signInIntent = client!!.signInIntent
-               googleLauncher.launch(signInIntent)
-           }
-
-       }catch (ex: Exception){
-           Log.e("Signing In", ex.localizedMessage!!)
-       }
-
+            if (account != null) {
+                credential = GoogleAccountCredential.usingOAuth2(
+                    applicationContext, scopes
+                ).setBackOff(ExponentialBackOff())
+                    .setSelectedAccountName(account!!.email)
+                mService = Drive.Builder(
+                    transport, jsonFactory, credential
+                ).setApplicationName(getString(R.string.app_name)).build()
+            } else {
+                val signInIntent = client!!.signInIntent
+                googleLauncher.launch(signInIntent)
+            }
+        } catch (ex: Exception) {
+            Log.e("Signing In", "Sign-in error", ex)
+        }
     }
 
-    // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
-    private var googleLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                chooseAccount()
-        }
+    private val googleLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        chooseAccount()
+    }
 
     private fun chooseAccount() {
-        chooseAccount.launch(credential!!.newChooseAccountIntent())
+        chooseAccountLauncher.launch(credential!!.newChooseAccountIntent())
     }
 
-    private var chooseAccount =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK && result.data != null && result.data!!.extras != null) {
-                val accountName: String? = result.data!!.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)!!
-                if (accountName != null) {
-                    credential!!.selectedAccountName = accountName
-                    dismiss()
-                    getAllSheets()
-                }
-
-            } else if (result.resultCode == RESULT_CANCELED) {
-                Log.e("gd", "in cancelled")
-                dismiss()
+    private val chooseAccountLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK && result.data?.extras != null) {
+            val accountName: String? = result.data!!.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+            if (accountName != null) {
+                credential!!.selectedAccountName = accountName
+                getAllSheets()
             }
+        } else if (result.resultCode == RESULT_CANCELED) {
+            Log.e("Choose Account", "Account selection cancelled")
         }
+    }
 
     private fun initViews() {
-        context = this
 
         binding.sheetsRecyclerview.layoutManager = LinearLayoutManager(context)
-        binding.sheetsRecyclerview.hasFixedSize()
+        binding.sheetsRecyclerview.setHasFixedSize(true)
         adapter = SheetAdapter(sheetsList as ArrayList<Sheet>)
         binding.sheetsRecyclerview.adapter = adapter
         adapter.setOnItemClickListener(this)
-
     }
-
 
     private fun getAllSheets() {
         startLoading(context)
 
         CoroutineScope(Dispatchers.IO).launch {
-              try {
-                  val result: FileList = mService!!.files().list()
-                      .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
-                      .execute()
+            try {
+                val result: FileList = mService!!.files().list()
+                    .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
+                    .execute()
 
-                  val files = result.files
+                val files = result.files
+                files?.let {
+                    sheetsList.addAll(it.map { file -> Sheet(file.id, file.name) })
 
-                  if (files != null) {
-                      for (file in files) {
-                          sheetsList.add(Sheet(file.id, file.name))
-                      }
-
-                      CoroutineScope(Dispatchers.Main).launch {
-                          if (sheetsList.isNotEmpty()) {
-                              adapter.notifyDataSetChanged()
-                          }
-                          dismiss()
-                      }
-                  }
-              }
-              catch (userRecoverableException:UserRecoverableAuthIOException){
-                  googleLauncher.launch(userRecoverableException.intent)
-              }
+                    withContext(Dispatchers.Main) {
+                        adapter.notifyDataSetChanged()
+                        dismiss()
+                    }
+                }
+            } catch (userRecoverableException: UserRecoverableAuthIOException) {
+                googleLauncher.launch(userRecoverableException.intent)
+            } catch (e: Exception) {
+                Log.e("Get Sheets", "Error fetching sheets", e)
+            }
         }
     }
 
     override fun onItemClick(position: Int) {
         val sheet = sheetsList[position]
-        val intent = Intent(context,PostSheetDataActivity::class.java)
-        intent.putExtra("id",sheet.id)
+        val intent = Intent(context, PostSheetDataActivity::class.java)
+        intent.putExtra("id", sheet.id)
         startActivity(intent)
     }
 }

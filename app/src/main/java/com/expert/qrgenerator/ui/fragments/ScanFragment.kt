@@ -17,75 +17,61 @@ import com.expert.qrgenerator.ui.activities.TableViewActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ScanFragment : Fragment(),TablesDataAdapter.OnItemClickListener {
+class ScanFragment : Fragment(), TablesDataAdapter.OnItemClickListener {
 
     private lateinit var binding: FragmentScanBinding
-
     private lateinit var tableGenerator: TableGenerator
-    private var tableList = mutableListOf<String>()
+    private val tableList = mutableListOf<String>()
     private lateinit var adapter: TablesDataAdapter
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentScanBinding.inflate(layoutInflater, container, false)
-
+        // Inflate the layout for this fragment and initialize views
+        binding = FragmentScanBinding.inflate(inflater, container, false)
         initViews()
-//        getDisplayScanHistory()
         displayTableList()
         return binding.root
     }
 
-    private fun initViews(){
+    /**
+     * Initialize the views and set up the RecyclerView with its adapter.
+     */
+    private fun initViews() {
         tableGenerator = TableGenerator(requireActivity())
-        binding.tablesDataRecyclerview.layoutManager = LinearLayoutManager(context)
-        binding.tablesDataRecyclerview.hasFixedSize()
+
+        // Set up RecyclerView
+        binding.tablesDataRecyclerview.apply {
+            layoutManager = LinearLayoutManager(context)
+            hasFixedSize() // Improve performance if RecyclerView size is fixed
+        }
+
         adapter = TablesDataAdapter(tableList as ArrayList<String>)
         binding.tablesDataRecyclerview.adapter = adapter
-
+        adapter.setOnItemClickListener(this)
     }
 
+    /**
+     * Fetch the list of tables from the TableGenerator and update the adapter.
+     */
     private fun displayTableList() {
         val list = tableGenerator.getAllDatabaseTables()
         if (list.isNotEmpty()) {
             tableList.clear()
+            tableList.addAll(list)
+            adapter.notifyDataSetChanged()
         }
-        tableList.addAll(list)
-        adapter.notifyDataSetChanged()
-        adapter.setOnItemClickListener(this)
     }
 
-//    private fun getDisplayScanHistory(){
-//        BaseActivity.startLoading(requireActivity())
-//        appViewModel.getAllScanQRCodeHistory().observe(this, Observer { list ->
-//            BaseActivity.dismiss()
-//            if (list.isNotEmpty()){
-//                qrCodeHistoryList.clear()
-//                emptyView.visibility = View.GONE
-//                qrCodeHistoryRecyclerView.visibility = View.VISIBLE
-//                qrCodeHistoryList.addAll(list)
-//                adapter.notifyDataSetChanged()
-//            }
-//            else
-//            {
-//                qrCodeHistoryRecyclerView.visibility = View.GONE
-//                emptyView.visibility = View.VISIBLE
-//            }
-//        })
-//    }
-
+    /**
+     * Handle item clicks in the RecyclerView.
+     */
     override fun onItemClick(position: Int) {
         val table = tableList[position]
-        val intent = Intent(requireActivity(), TableViewActivity::class.java)
-        intent.putExtra("TABLE_NAME",table)
-        requireActivity().startActivity(intent)
+        val intent = Intent(requireActivity(), TableViewActivity::class.java).apply {
+            putExtra("TABLE_NAME", table)
+        }
+        startActivity(intent)
     }
-
 }

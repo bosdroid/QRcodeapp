@@ -12,9 +12,12 @@ import com.expert.qrgenerator.utils.AppSettings
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.util.concurrent.TimeUnit
 
-class TablesAdapter(private val context: Context,private val tableList: ArrayList<String>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TablesAdapter(
+    private val context: Context,
+    private val tableList: ArrayList<String>
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    // Interface for item click events
     interface OnItemClickListener {
         fun onItemClick(position: Int)
         fun onAddItemClick(position: Int)
@@ -22,90 +25,91 @@ class TablesAdapter(private val context: Context,private val tableList: ArrayLis
 
     private var mListener: OnItemClickListener? = null
     private var appSettings = AppSettings(context)
-    private var addViewHolder:AddItemViewHolder?=null
+    private var addViewHolder: AddItemViewHolder? = null
 
+    // Set listener for item click events
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
     }
 
-    class ItemViewHolder(private val binding: TableItemRowBinding,private val mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(binding.root) {
+    // ViewHolder for normal table items
+    class ItemViewHolder(
+        private val binding: TableItemRowBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-         fun bindData(table:String){
-
-                binding.tableItemName.text = table
-                itemView.setOnClickListener {
-                    mListener.onItemClick(layoutPosition)
-                }
-         }
-    }
-
-    class AddItemViewHolder(private val binding:AddTableItemLayoutBinding,private val mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bindData(){
-          binding.addNewTableBtn.setOnClickListener {
-              mListener.onAddItemClick(layoutPosition)
-          }
+        fun bindData(table: String) {
+            binding.tableItemName.text = table
+            itemView.setOnClickListener {
+                mListener.onItemClick(adapterPosition)
+            }
         }
     }
 
+    // ViewHolder for the 'Add Item' button
+    class AddItemViewHolder(
+        private val binding: AddTableItemLayoutBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bindData() {
+            binding.addNewTableBtn.setOnClickListener {
+                mListener.onAddItemClick(adapterPosition)
+            }
+        }
+    }
+
+    // Create ViewHolder based on view type
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == 0) {
-            val addTableItemLayoutBinding = AddTableItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-
-            AddItemViewHolder(addTableItemLayoutBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
+        return if (viewType == VIEW_TYPE_ADD_ITEM) {
+            val binding = AddTableItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            AddItemViewHolder(binding, mListener ?: throw IllegalStateException("OnItemClickListener not set"))
         } else {
-            val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-
-            ItemViewHolder(tableItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
+            val binding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemViewHolder(binding, mListener ?: throw IllegalStateException("OnItemClickListener not set"))
         }
     }
 
-
+    // Determine view type for each item
     override fun getItemViewType(position: Int): Int {
-        return if (position == tableList.size) 0 else 1
+        return if (position == tableList.size) VIEW_TYPE_ADD_ITEM else VIEW_TYPE_TABLE_ITEM
     }
 
+    // Bind data to ViewHolder
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            0 -> {
+            VIEW_TYPE_ADD_ITEM -> {
                 addViewHolder = holder as AddItemViewHolder
-                addViewHolder!!.bindData()
-
+                addViewHolder?.bindData()
             }
             else -> {
                 val table = tableList[position]
-
                 val viewHolder = holder as ItemViewHolder
-
-                if (position == tableList.size-1){
-                    tableZeroIndexView(viewHolder)
+                // Show tooltip for the last item
+                if (position == tableList.size - 1) {
+                    showTooltipForLastItem(viewHolder)
                 }
                 viewHolder.bindData(table)
-
             }
         }
     }
 
-    override fun getItemCount(): Int = tableList.size+1
+    override fun getItemCount(): Int = tableList.size + 1
 
-    private fun tableZeroIndexView(holder: RecyclerView.ViewHolder){
-        if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
-            val duration = appSettings.getLong("tt11")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
-
+    // Show tooltip for the last table item
+    private fun showTooltipForLastItem(holder: RecyclerView.ViewHolder) {
+        if (appSettings.getBoolean(context.getString(R.string.key_tips))) {
+            val lastShownTooltip = appSettings.getLong("tt11")
+            if (lastShownTooltip == 0L || System.currentTimeMillis() - lastShownTooltip > TimeUnit.DAYS.toMillis(1)) {
                 SimpleTooltip.Builder(context)
                     .anchorView(holder.itemView)
-                    .text(context.resources.getString(R.string.tt11_tip_text))
+                    .text(context.getString(R.string.tt11_tip_text))
                     .gravity(Gravity.BOTTOM)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt11",System.currentTimeMillis())
-                        if (addViewHolder != null){
-                            openAddTableView(addViewHolder!!)
-                        }
+                        appSettings.putLong("tt11", System.currentTimeMillis())
+                        addViewHolder?.let { showTooltipForAddItem(it) }
                         tooltip.dismiss()
                     }
                     .build()
@@ -114,18 +118,19 @@ class TablesAdapter(private val context: Context,private val tableList: ArrayLis
         }
     }
 
-   private fun openAddTableView(holder: RecyclerView.ViewHolder) {
-        if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
-            val duration = appSettings.getLong("tt12")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+    // Show tooltip for the add item view
+    private fun showTooltipForAddItem(holder: RecyclerView.ViewHolder) {
+        if (appSettings.getBoolean(context.getString(R.string.key_tips))) {
+            val lastShownTooltip = appSettings.getLong("tt12")
+            if (lastShownTooltip == 0L || System.currentTimeMillis() - lastShownTooltip > TimeUnit.DAYS.toMillis(1)) {
                 SimpleTooltip.Builder(context)
                     .anchorView(holder.itemView)
-                    .text(context.resources.getString(R.string.tt12_tip_text))
+                    .text(context.getString(R.string.tt12_tip_text))
                     .gravity(Gravity.BOTTOM)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt12",System.currentTimeMillis())
+                        appSettings.putLong("tt12", System.currentTimeMillis())
                         tooltip.dismiss()
                     }
                     .build()
@@ -134,4 +139,8 @@ class TablesAdapter(private val context: Context,private val tableList: ArrayLis
         }
     }
 
+    companion object {
+        private const val VIEW_TYPE_TABLE_ITEM = 1
+        private const val VIEW_TYPE_ADD_ITEM = 0
+    }
 }

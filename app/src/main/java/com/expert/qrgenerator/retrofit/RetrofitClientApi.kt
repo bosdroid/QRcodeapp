@@ -7,14 +7,23 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClientApi {
 
-    private val client = OkHttpClient.Builder().build()
-
-    fun getInstance(): Retrofit {
-        return Retrofit.Builder().baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
+    // Single instance of OkHttpClient to be used across multiple Retrofit instances
+    private val client: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            // You can add additional configurations here if needed
             .build()
     }
 
-
+    /**
+     * Provides a singleton instance of Retrofit.
+     *
+     * @return A Retrofit instance configured with the base URL and Gson converter.
+     */
+    fun getInstance(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL) // Set the base URL for API requests
+            .addConverterFactory(GsonConverterFactory.create()) // Add Gson converter for JSON serialization/deserialization
+            .client(client) // Set the OkHttpClient instance
+            .build()
+    }
 }

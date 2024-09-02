@@ -376,6 +376,10 @@
     <string name="coupon">coupon</string>
     <string name="feedback">feedback</string>
     <string name="sn">sn</string>
+    <string name="choose_barcode_type">Choose barcode type</string>
+    <string name="navigation_drawer_open">open</string>
+    <string name="navigation_drawer_close">close</string>
+    <string name="logout_failure_text">Logout Failed, please try later!</string>
 
     <string-array name="mode_list">
         <item>Inventory</item>

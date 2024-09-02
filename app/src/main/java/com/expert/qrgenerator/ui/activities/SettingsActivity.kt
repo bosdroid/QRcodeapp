@@ -14,22 +14,23 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SettingsActivity : BaseActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
         val toolBar = findViewById<Toolbar>(R.id.toolbar)
+        setUpToolbar(this, toolBar, getString(R.string.settings))
+
         if (savedInstanceState == null) {
-            supportFragmentManager
-                .beginTransaction()
+            // Initialize SettingsFragment if not restored
+            supportFragmentManager.beginTransaction()
                 .replace(R.id.settings, SettingsFragment())
                 .commit()
         }
-        setUpToolbar(this, toolBar, this.getString(R.string.settings))
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle toolbar navigation
         return if (item.itemId == android.R.id.home) {
             onBackPressed()
             true
@@ -43,117 +44,81 @@ class SettingsActivity : BaseActivity() {
         private lateinit var appSettings: AppSettings
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            // Load preferences from XML resource
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
             appSettings = AppSettings(requireActivity())
 
-            val soundSwitch =
-                findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_sound))
-            soundSwitch!!.isChecked =
-                appSettings.getBoolean(requireActivity().getString(R.string.key_sound))
-            soundSwitch.setOnPreferenceChangeListener(object :
-                Preference.OnPreferenceChangeListener {
+            // Initialize switches and their listeners
+            initializeSwitchPreference(R.string.key_sound)
+            initializeSwitchPreference(R.string.key_vibration)
+            initializeSwitchPreference(R.string.key_clipboard)
+            initializeSwitchPreference(R.string.key_tips)
 
-                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
-                    appSettings.putBoolean(
-                        requireActivity().getString(R.string.key_sound),
-                        newValue as Boolean
-                    )
-                    return true
-                }
-            })
-            val vibrateSwitch =
-                findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_vibration))
-            vibrateSwitch!!.isChecked =
-                appSettings.getBoolean(requireActivity().getString(R.string.key_vibration))
-            vibrateSwitch.setOnPreferenceChangeListener(object :
-                Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
-                    appSettings.putBoolean(
-                        requireActivity().getString(R.string.key_vibration),
-                        newValue as Boolean
-                    )
-                    return true
-                }
-            })
-            val clipboardSwitch = findPreference<SwitchPreferenceCompat>(
-                requireActivity().getString(
-                    R.string.key_clipboard
-                )
-            )
-            clipboardSwitch!!.isChecked =
-                appSettings.getBoolean(requireActivity().getString(R.string.key_clipboard))
-            clipboardSwitch.setOnPreferenceChangeListener(object :
-                Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
-                    appSettings.putBoolean(
-                        requireActivity().getString(R.string.key_clipboard),
-                        newValue as Boolean
-                    )
-                    return true
-                }
-            })
-
-
-            val tipsSwitch =
-                findPreference<SwitchPreferenceCompat>(requireActivity().getString(R.string.key_tips))
-            tipsSwitch!!.isChecked =
-                appSettings.getBoolean(requireActivity().getString(R.string.key_tips))
-            tipsSwitch.setOnPreferenceChangeListener(object :
-                Preference.OnPreferenceChangeListener {
-                override fun onPreferenceChange(preference: Preference, newValue: Any?): Boolean {
-                    appSettings.putBoolean(
-                        requireActivity().getString(R.string.key_tips),
-                        newValue as Boolean
-                    )
-                    return true
-                }
-            })
-
+            // Initialize list preference and its listener
             val listPreference = findPreference<ListPreference>(getString(R.string.key_mode))
-            getModePreference(listPreference)
-            listPreference!!.onPreferenceChangeListener =
-                Preference.OnPreferenceChangeListener { preference, newValue ->
-                    val type = newValue.toString()
-                    when (type) {
-                        getString(R.string.inventory_text) -> {
-                            listPreference.value = getString(R.string.inventory_text)
-                            listPreference.summary = getString(R.string.inventory_text)
-                            appSettings.putString(getString(R.string.key_mode), "0")
-                        }
-                        getString(R.string.seller_text) -> {
-                            listPreference.value = getString(R.string.seller_text)
-                            listPreference.summary = getString(R.string.seller_text)
-                            appSettings.putString(getString(R.string.key_mode), "1")
-                        }
-                        getString(R.string.quick_links_text) -> {
-                            listPreference.value = getString(R.string.quick_links_text)
-                            listPreference.summary = getString(R.string.quick_links_text)
-                            appSettings.putString(getString(R.string.key_mode), "2")
-                        }
-                    }
-                    false
+            listPreference?.let {
+                setModePreference(it)
+                it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    updateModePreference(it, newValue)
+                    true
                 }
-
+            }
         }
 
-        private fun getModePreference(listPreference: ListPreference?) {
-            when (appSettings.getString(getString(R.string.key_mode))) {
-                "0" -> {
-                    listPreference!!.value = getString(R.string.inventory_text)
-                    listPreference.summary = getString(R.string.inventory_text)
+        // Initializes a switch preference with its saved value and change listener
+        private fun initializeSwitchPreference(keyResId: Int) {
+            val key = getString(keyResId)
+            findPreference<SwitchPreferenceCompat>(key)?.apply {
+                isChecked = appSettings.getBoolean(key)
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    appSettings.putBoolean(key, newValue as Boolean)
+                    true
+                }
+            }
+        }
 
+        // Updates list preference based on new value
+        private fun updateModePreference(listPreference: ListPreference, newValue: Any) {
+            val type = newValue.toString()
+            when (type) {
+                getString(R.string.inventory_text) -> {
+                    listPreference.value = getString(R.string.inventory_text)
+                    listPreference.summary = getString(R.string.inventory_text)
+                    appSettings.putString(getString(R.string.key_mode), "0")
+                }
+                getString(R.string.seller_text) -> {
+                    listPreference.value = getString(R.string.seller_text)
+                    listPreference.summary = getString(R.string.seller_text)
+                    appSettings.putString(getString(R.string.key_mode), "1")
+                }
+                getString(R.string.quick_links_text) -> {
+                    listPreference.value = getString(R.string.quick_links_text)
+                    listPreference.summary = getString(R.string.quick_links_text)
+                    appSettings.putString(getString(R.string.key_mode), "2")
+                }
+            }
+        }
+
+        // Sets the mode preference summary and value based on saved settings
+        private fun setModePreference(listPreference: ListPreference) {
+            val mode = appSettings.getString(getString(R.string.key_mode))
+            when (mode) {
+                "0" -> {
+                    listPreference.value = getString(R.string.inventory_text)
+                    listPreference.summary = getString(R.string.inventory_text)
                 }
                 "1" -> {
-                    listPreference!!.value = getString(R.string.seller_text)
+                    listPreference.value = getString(R.string.seller_text)
                     listPreference.summary = getString(R.string.seller_text)
                 }
                 "2" -> {
-                    listPreference!!.value = getString(R.string.quick_links_text)
+                    listPreference.value = getString(R.string.quick_links_text)
                     listPreference.summary = getString(R.string.quick_links_text)
                 }
                 else -> {
+                    // Default to inventory text if mode is invalid
                     appSettings.putString(getString(R.string.key_mode), "0")
-                    listPreference!!.value = getString(R.string.inventory_text)
+                    listPreference.value = getString(R.string.inventory_text)
                     listPreference.summary = getString(R.string.inventory_text)
                 }
             }

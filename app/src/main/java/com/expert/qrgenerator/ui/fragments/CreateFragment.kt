@@ -26,60 +26,77 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CreateFragment : Fragment() {
 
+    // View Binding for the Fragment
     private lateinit var binding: FragmentCreateBinding
+
+    // List to hold QR Code history items
     private var qrCodeHistoryList = mutableListOf<CodeHistory>()
+
+    // Adapter for displaying QR Code history
     private lateinit var adapter: QrCodeHistoryAdapter
+
+    // ViewModel for handling data operations
     private val appViewModel: AppViewModel by viewModels()
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentCreateBinding.inflate(layoutInflater, container, false)
+        // Inflate the layout for this fragment and initialize views
+        binding = FragmentCreateBinding.inflate(inflater, container, false)
         initViews()
         getDisplayCreateHistory()
         return binding.root
     }
 
-    private fun initViews(){
-
+    /**
+     * Initializes the views and sets up the RecyclerView with its adapter.
+     */
+    private fun initViews() {
+        // Set up the RecyclerView with LinearLayoutManager and adapter
         binding.qrCodeHistoryRecyclerview.layoutManager = LinearLayoutManager(context)
-        binding.qrCodeHistoryRecyclerview.hasFixedSize()
+        binding.qrCodeHistoryRecyclerview.setHasFixedSize(true) // Improve performance with fixed-size
         adapter = QrCodeHistoryAdapter(requireActivity(), qrCodeHistoryList as ArrayList<CodeHistory>)
         binding.qrCodeHistoryRecyclerview.adapter = adapter
-        adapter.setOnClickListener(object : QrCodeHistoryAdapter.OnItemClickListener{
+
+        // Set up the click listener for RecyclerView items
+        adapter.setOnClickListener(object : QrCodeHistoryAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
+                // Handle item click event
                 val historyItem = qrCodeHistoryList[position]
                 val intent = Intent(context, CodeDetailActivity::class.java)
-                intent.putExtra("HISTORY_ITEM",historyItem)
+                intent.putExtra("HISTORY_ITEM", historyItem)
                 requireActivity().startActivity(intent)
             }
         })
     }
 
-    private fun getDisplayCreateHistory(){
+    /**
+     * Fetches and displays QR Code history data.
+     */
+    private fun getDisplayCreateHistory() {
+        // Show loading indicator
         BaseActivity.startLoading(requireActivity())
-        appViewModel.allCreateQRCodeHistory.observe(requireActivity(), Observer { list ->
+
+        // Observe the ViewModel's LiveData for QR Code history
+        appViewModel.allCreateQRCodeHistory.observe(viewLifecycleOwner, Observer { list ->
+            // Dismiss loading indicator
             BaseActivity.dismiss()
-            if (list.isNotEmpty()){
+
+            // Update the UI based on the data received
+            if (list.isNotEmpty()) {
                 qrCodeHistoryList.clear()
-                binding.emptyView.visibility = View.GONE
-                binding.qrCodeHistoryRecyclerview.visibility = View.VISIBLE
                 qrCodeHistoryList.addAll(list)
                 adapter.notifyDataSetChanged()
-            }
-            else
-            {
+
+                // Show RecyclerView and hide empty view
+                binding.qrCodeHistoryRecyclerview.visibility = View.VISIBLE
+                binding.emptyView.visibility = View.GONE
+            } else {
+                // Show empty view and hide RecyclerView
                 binding.qrCodeHistoryRecyclerview.visibility = View.GONE
                 binding.emptyView.visibility = View.VISIBLE
             }
         })
     }
-
 }

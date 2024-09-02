@@ -18,92 +18,106 @@ import com.google.android.material.textview.MaterialTextView
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.util.concurrent.TimeUnit
 
-class FieldListsAdapter(private val context: Context,private val listItems: ArrayList<ListItem>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class FieldListsAdapter(
+    private val context: Context,
+    private val listItems: ArrayList<ListItem>
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    // Interface for item click callbacks
     interface OnItemClickListener {
         fun onItemClick(position: Int)
         fun onAddItemClick(position: Int)
     }
 
+    // Listener for handling item clicks
     private var mListener: OnItemClickListener? = null
-    private var appSettings = AppSettings(context)
 
+    // Application settings instance
+    private val appSettings = AppSettings(context)
+
+    // Setter for the click listener
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
     }
 
-    class ItemViewHolder(private val binding: TableItemRowBinding,private val mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(binding.root) {
+    // ViewHolder for regular list items
+    class ItemViewHolder(
+        private val binding: TableItemRowBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-            fun bindData(listItem: ListItem, position: Int){
-                        binding.tableItemName.text = listItem.value
-                        itemView.setOnClickListener {
-                            mListener.onItemClick(position)
-                        }
+        // Bind data to the views
+        fun bindData(listItem: ListItem, position: Int) {
+            binding.tableItemName.text = listItem.value
+            itemView.setOnClickListener {
+                mListener.onItemClick(position)
             }
-    }
-
-    class AddItemViewHolder(private val binding:AddListValueItemLayoutBinding,private val mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(binding.root) {
-
-          fun bindData(position: Int,adapter: FieldListsAdapter){
-                binding.addCardView.setOnClickListener {
-                    mListener.onAddItemClick(position)
-                }
-                adapter.openAddListTipsDialog(itemView)
-          }
-
-
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == 0) {
-            val addListValueItemLayoutBinding = AddListValueItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-
-            AddItemViewHolder(addListValueItemLayoutBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
-        } else {
-        val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-
-        return ItemViewHolder(tableItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
         }
     }
 
+    // ViewHolder for the "Add Item" row
+    class AddItemViewHolder(
+        private val binding: AddListValueItemLayoutBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-    override fun getItemViewType(position: Int): Int {
-        return if (position == listItems.size) 0 else 1
+        // Bind data and set click listeners
+        fun bindData(position: Int, adapter: FieldListsAdapter) {
+            binding.addCardView.setOnClickListener {
+                mListener.onAddItemClick(position)
+            }
+            adapter.openAddListTipsDialog(itemView)
+        }
     }
 
+    // Inflate the appropriate layout based on the view type
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == VIEW_TYPE_ADD_ITEM) {
+            val binding = AddListValueItemLayoutBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            AddItemViewHolder(binding, mListener ?: throw IllegalStateException("OnItemClickListener not set"))
+        } else {
+            val binding = TableItemRowBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            ItemViewHolder(binding, mListener ?: throw IllegalStateException("OnItemClickListener not set"))
+        }
+    }
+
+    // Determine the view type based on the position
+    override fun getItemViewType(position: Int): Int {
+        return if (position == listItems.size) VIEW_TYPE_ADD_ITEM else VIEW_TYPE_LIST_ITEM
+    }
+
+    // Bind data to the appropriate ViewHolder
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            0 -> {
-                val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.bindData(position,this)
-            }
-            else -> {
-               val listValue = listItems[position]
-                val viewHolder = holder as ItemViewHolder
-                viewHolder.bindData(listValue,position)
-
-            }
+            VIEW_TYPE_ADD_ITEM -> (holder as AddItemViewHolder).bindData(position, this)
+            VIEW_TYPE_LIST_ITEM -> (holder as ItemViewHolder).bindData(listItems[position], position)
         }
     }
 
-    override fun getItemCount(): Int = listItems.size+1
+    // Return the total item count, including the "Add Item" row
+    override fun getItemCount(): Int = listItems.size + 1
 
+    // Show a tooltip if conditions are met
     private fun openAddListTipsDialog(itemView: View) {
-        if (appSettings.getBoolean(context.resources.getString(R.string.key_tips))) {
-            val duration = appSettings.getLong("tt22")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+        if (appSettings.getBoolean(context.getString(R.string.key_tips))) {
+            val lastShownTime = appSettings.getLong("tt22")
+            if (lastShownTime == 0L || System.currentTimeMillis() - lastShownTime > TimeUnit.DAYS.toMillis(1)) {
                 SimpleTooltip.Builder(context)
                     .anchorView(itemView)
-                    .text(context.resources.getString(R.string.tt22_tip_text))
+                    .text(context.getString(R.string.tt22_tip_text))
                     .gravity(Gravity.BOTTOM)
                     .animated(true)
                     .transparentOverlay(false)
-                    .onDismissListener { tooltip ->
-                        appSettings.putLong("tt22",System.currentTimeMillis())
-                        tooltip.dismiss()
+                    .onDismissListener {
+                        appSettings.putLong("tt22", System.currentTimeMillis())
                     }
                     .build()
                     .show()
@@ -111,4 +125,8 @@ class FieldListsAdapter(private val context: Context,private val listItems: Arra
         }
     }
 
+    companion object {
+        private const val VIEW_TYPE_ADD_ITEM = 0
+        private const val VIEW_TYPE_LIST_ITEM = 1
+    }
 }

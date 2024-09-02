@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.viewmodel
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.expert.qrgenerator.R
@@ -14,68 +15,79 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class DesignActivityViewModel @Inject constructor(private val apiRepository: ApiRepository) : ViewModel() {
+class DesignActivityViewModel @Inject constructor(
+    private val apiRepository: ApiRepository // Injected API repository
+) : ViewModel() {
 
-    private var _colorList = MutableLiveData<List<String>>()
-    val colorList: MutableLiveData<List<String>>
-        get() = _colorList
-    private var _backgroundImageList = MutableLiveData<List<String>>()
-    val backgroundImageList: MutableLiveData<List<String>>
-        get() = _backgroundImageList
-    private var _logoImageList = MutableLiveData<List<String>>()
-    val logoImageList: MutableLiveData<List<String>>
-        get() = _logoImageList
-    private var _fontList = MutableLiveData<List<Fonts>>()
-    val fontList: MutableLiveData<List<Fonts>>
-        get() = _fontList
+    // LiveData to hold the list of colors
+    private val _colorList = MutableLiveData<List<String>>()
+    val colorList: LiveData<List<String>> get() = _colorList
 
-    // THIS FUNCTION WILL CREATE AND SAVE THE COLOR LIST
+    // LiveData to hold the list of background images
+    private val _backgroundImageList = MutableLiveData<List<String>>()
+    val backgroundImageList: LiveData<List<String>> get() = _backgroundImageList
+
+    // LiveData to hold the list of logo images
+    private val _logoImageList = MutableLiveData<List<String>>()
+    val logoImageList: LiveData<List<String>> get() = _logoImageList
+
+    // LiveData to hold the list of fonts
+    private val _fontList = MutableLiveData<List<Fonts>>()
+    val fontList: LiveData<List<Fonts>> get() = _fontList
+
+    /**
+     * Creates and saves the color list from string array resources.
+     *
+     * @param context Context to access resources.
+     */
     fun callColorList(context: Context) {
         val colorArray = context.resources.getStringArray(R.array.color_values)
-        val tempList = mutableListOf<String>()
-        for (value in colorArray) {
-            tempList.add(value)
-        }
+        val tempList = colorArray.toList() // Convert array to list
         _colorList.postValue(tempList)
     }
 
-    // THIS FUNCTION WILL CALL THE BACKGROUND IMAGE LIST FROM DATA REPOSITORY
-    fun callBackgroundImages(){
-        DataRepository.getBackgroundImages(object :BackgroundImagesCallback{
+    /**
+     * Fetches the background images from the data repository.
+     */
+    fun callBackgroundImages() {
+        DataRepository.getBackgroundImages(object : BackgroundImagesCallback {
             override fun onBackgroundImagesLoaded(images: List<String>) {
                 _backgroundImageList.postValue(images)
             }
 
             override fun onBackgroundImagesError() {
-                _backgroundImageList.postValue(null)
+                _backgroundImageList.postValue(emptyList()) // Use empty list instead of null
             }
         })
     }
 
-    // THIS FUNCTION WILL CALL THE LOGO IMAGE LIST FROM DATA REPOSITORY
-    fun callLogoImages(){
-        DataRepository.getLogoImages(object :LogoImagesCallback{
+    /**
+     * Fetches the logo images from the data repository.
+     */
+    fun callLogoImages() {
+        DataRepository.getLogoImages(object : LogoImagesCallback {
             override fun onLogoImagesLoaded(images: List<String>) {
                 _logoImageList.postValue(images)
             }
 
             override fun onLogoImagesError() {
-                _logoImageList.postValue(null)
+                _logoImageList.postValue(emptyList()) // Use empty list instead of null
             }
         })
     }
 
-    // THIS FUNCTION WILL CALL THE FONT LIST FROM DATA REPOSITORY
-    fun callFontList(){
-        DataRepository.getFontList(object :FontsCallback{
+    /**
+     * Fetches the font list from the data repository.
+     */
+    fun callFontList() {
+        DataRepository.getFontList(object : FontsCallback {
             override fun onFontsLoaded(fonts: List<Fonts>) {
                 _fontList.postValue(fonts)
             }
 
             override fun onFontsError() {
-                _fontList.postValue(null)
+                _fontList.postValue(emptyList()) // Use empty list instead of null
             }
         })
     }
-
 }

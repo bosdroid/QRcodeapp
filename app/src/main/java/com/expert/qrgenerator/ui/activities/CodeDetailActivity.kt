@@ -1,6 +1,5 @@
 package com.expert.qrgenerator.ui.activities
 
-import android.app.Activity
 import android.app.SearchManager
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -19,26 +18,18 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.Toolbar
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.FeedbackAdapter
 import com.expert.qrgenerator.databinding.ActivityCodeDetailBinding
 import com.expert.qrgenerator.databinding.BarcodeDetailItemRowBinding
+import com.expert.qrgenerator.databinding.UpdateBarcodeDetailDialogBinding
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.Feedback
 import com.expert.qrgenerator.model.TableObject
@@ -47,56 +38,88 @@ import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URLEncoder
-import java.util.*
+import java.util.Locale
 import java.util.regex.Pattern
 
 @AndroidEntryPoint
 class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
+    // Binding for Activity Code Detail layout
     private lateinit var binding: ActivityCodeDetailBinding
-    private lateinit var context: Context
+
+    // Context of the activity, initialized using lazy delegation
+    private val context: Context by lazy { this }
+
+    // Holds code history data
     private var codeHistory: CodeHistory? = null
+
+    // Holds table object information
     private var tableObject: TableObject? = null
+
+    // Generator for creating tables
     private lateinit var tableGenerator: TableGenerator
 
+    // ViewModels for the activity
     private val appViewModel: AppViewModel by viewModels()
-    private lateinit var tableName: String
     private val viewModel: CodeDetailViewModel by viewModels()
+
+    // Table name used for various operations
+    private lateinit var tableName: String
+
+    // Variables related to PDF generation
     var bitmap: Bitmap? = null
-    private val pageWidth = 500
-    private val pageHeight = 500
+    private val pageWidth = 500 // Width of the PDF page
+    private val pageHeight = 500 // Height of the PDF page
     private var pdfFile: File? = null
-    private var isShareAfterCreated: Boolean = false
-    var selectedProtocol = ""
+    private var isShareAfterCreated: Boolean =
+        false // Flag to check if the PDF should be shared after creation
+
+    // Protocol selection and barcode edit list
+    var selectedProtocol: String = ""
     var barcodeEditList = mutableListOf<Triple<AppCompatImageView, String, String>>()
+
+    // Counter for various operations
     private var counter: Int = 0
+
+    // A mutable list to hold feedback items. This list starts empty and will be populated later.
+    var feedbacksList: MutableList<Feedback> = mutableListOf()
+
+    // Adapter for displaying feedback items in a RecyclerView or similar UI component.
+// Initialized later when the data is ready to be bound to the UI.
+    lateinit var feedbackAdapter: FeedbackAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Inflate the layout and set the content view
         binding = ActivityCodeDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initViews()
-        setUpToolbar()
-        displayCodeDetails()
 
+        // Initialize views
+        initViews()
+
+        // Set up the toolbar
+        setUpToolbar()
+
+        // Display code details
+        displayCodeDetails()
     }
 
-    // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
+
+    // This function initializes all views and references to objects
     private fun initViews() {
-        context = this
+
         tableGenerator = TableGenerator(context)
 
+        // Retrieve data from the intent if available
         if (intent != null && intent.hasExtra("HISTORY_ITEM")) {
             codeHistory = intent.getSerializableExtra("HISTORY_ITEM") as CodeHistory
         }
@@ -108,196 +131,284 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             tableName = intent.getStringExtra("TABLE_NAME") as String
         }
 
-        binding.codeDetailClipboardCopyView.setOnClickListener(this)
 
-        binding.codeDetailTextSearchButton.setOnClickListener(this)
+        // Set up onClick listeners for various buttons
+        binding.apply {
+            codeDetailClipboardCopyView.setOnClickListener(this@CodeDetailActivity)
+            codeDetailTextSearchButton.setOnClickListener(this@CodeDetailActivity)
+            codeDetailTextShareButton.setOnClickListener(this@CodeDetailActivity)
+            codeDetailPdfSaveButton.setOnClickListener(this@CodeDetailActivity)
+            codeDetailPdfShareButton.setOnClickListener(this@CodeDetailActivity)
+            dynamicLinkUpdateBtn.setOnClickListener(this@CodeDetailActivity)
+            updateNotesBtn.setOnClickListener(this@CodeDetailActivity)
+        }
 
-        binding.codeDetailTextShareButton.setOnClickListener(this)
-
-        binding.codeDetailPdfSaveButton.setOnClickListener(this)
-
-        binding.codeDetailPdfShareButton.setOnClickListener(this)
-
-        binding.dynamicLinkUpdateBtn.setOnClickListener(this)
-
-        binding.httpProtocolGroup.setOnCheckedChangeListener { group, checkedId ->
-            when (checkedId) {
-                R.id.http_protocol_rb -> {
-                    selectedProtocol = "http://"
-                }
-                R.id.https_protocol_rb -> {
-                    selectedProtocol = "https://"
-                }
-                else -> {
-
-                }
+        // Set up the HTTP protocol radio buttons
+        binding.httpProtocolGroup.setOnCheckedChangeListener { _, checkedId ->
+            selectedProtocol = when (checkedId) {
+                R.id.http_protocol_rb -> "http://"
+                R.id.https_protocol_rb -> "https://"
+                else -> ""
             }
         }
-        binding.updateNotesBtn.setOnClickListener(this)
     }
 
-    // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
+
+    // Sets up the ActionBar/Toolbar for the activity
     private fun setUpToolbar() {
+        // Set the toolbar as the ActionBar
         setSupportActionBar(binding.toolbar)
-        supportActionBar!!.title = getString(R.string.code_detail_text)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        // Check if the ActionBar is not null
+        supportActionBar?.let { actionBar ->
+            // Set the title for the ActionBar
+            actionBar.title = getString(R.string.code_detail_text)
+
+            // Enable the Up button to navigate back
+            actionBar.setDisplayHomeAsUpEnabled(true)
+        }
+
+        // Set the title text color of the Toolbar
         binding.toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
     }
 
-    // THIS FUNCTION WILL BIND THE HISTORY CODE DETAIL
+
+    /**
+     * Binds and displays details of the code history.
+     * Depending on the code type, it updates the UI components with appropriate data and visibility settings.
+     */
     private fun displayCodeDetails() {
+        // Check if codeHistory is not null
         if (codeHistory != null) {
+            // Make the notes section visible
             binding.codeDetailNotes.visibility = View.VISIBLE
-            if (codeHistory!!.codeType == "barcode") {
-                binding.codeDetailTopImageType.setImageResource(R.drawable.barcode)
-                binding.codeDetailTypeTextHeading.text =
-                    getString(R.string.barcode_text_data_heding)
-                binding.codeDetailTypeImageHeading.text = getString(R.string.barcode_image_heading)
-                binding.codeDetailImageType.setImageResource(R.drawable.barcode)
-            } else {
-                binding.codeDetailTopImageType.setImageResource(R.drawable.ic_qr_code)
-                binding.codeDetailTypeTextHeading.text = getString(R.string.qr_text_data_heading)
-                binding.codeDetailTypeImageHeading.text = getString(R.string.qr_image_heading)
-                binding.codeDetailImageType.setImageResource(R.drawable.qrcode)
+
+            // Update UI based on the code type
+            when (codeHistory!!.codeType) {
+                "barcode" -> {
+                    updateUIForBarcode()
+                }
+
+                else -> {
+                    updateUIForQRCode()
+                }
             }
+
+            // Set data to UI components
             binding.codeDetailEncodeData.text = codeHistory!!.data
             binding.codeDetailCodeSequenceView.text =
                 "${getString(R.string.code_text)} ${codeHistory!!.id}"
             binding.codeDetailDateTimeView.text =
                 getFormattedDate(context, codeHistory!!.createdAt.toLong())
-            if (codeHistory!!.notes.isEmpty()) {
-                binding.qrCodeHistoryNotesInputField.hint = getString(R.string.notes)
-            } else {
-                binding.qrCodeHistoryNotesInputField.setText(codeHistory!!.notes)
 
+            // Display notes or set hint if notes are empty
+            binding.qrCodeHistoryNotesInputField.apply {
+                if (codeHistory!!.notes.isEmpty()) {
+                    hint = getString(R.string.notes)
+                } else {
+                    setText(codeHistory!!.notes)
+                }
             }
 
+            // Handle dynamic links and feedbacks
+            handleDynamicLinks()
             if (codeHistory!!.type == "feedback") {
                 displayFeedbacksDetail(codeHistory!!.qrId)
-            } else {
-
-                if (codeHistory!!.isDynamic.toInt() == 1) {
-                    binding.dynamicLinkUpdateBtn.visibility = View.VISIBLE
-                    binding.dialogSubHeading.text =
-                        "${getString(R.string.current_link_text)} ${codeHistory!!.data}"
-                } else {
-                    binding.codeDetailDynamicLinkUpdateLayout.visibility = View.GONE
-
-                }
-
             }
-
         } else {
+            // If codeHistory is null, check for tableObject and display barcode detail
             if (tableObject != null) {
                 binding.codeDetailNotes.visibility = View.GONE
                 displayBarcodeDetail()
             }
         }
-
     }
 
-    var feedbacksList = mutableListOf<Feedback>()
-    lateinit var feedbackAdapter: FeedbackAdapter
-    private fun displayFeedbacksDetail(qrId: String) {
+    /**
+     * Updates UI components for barcode type.
+     */
+    private fun updateUIForBarcode() {
+        binding.codeDetailTopImageType.setImageResource(R.drawable.barcode)
+        binding.codeDetailTypeTextHeading.text = getString(R.string.barcode_text_data_heding)
+        binding.codeDetailTypeImageHeading.text = getString(R.string.barcode_image_heading)
+        binding.codeDetailImageType.setImageResource(R.drawable.barcode)
+    }
 
-        binding.codeDetailFeedbackRecyclerview.layoutManager = LinearLayoutManager(context)
-        binding.codeDetailFeedbackRecyclerview.hasFixedSize()
-        feedbackAdapter = FeedbackAdapter(feedbacksList as ArrayList<Feedback>)
-        binding.codeDetailFeedbackRecyclerview.adapter = feedbackAdapter
-        binding.codeDetailFeedbackCsvExportImage.setOnClickListener {
-            exportCsv()
+    /**
+     * Updates UI components for QR code type.
+     */
+    private fun updateUIForQRCode() {
+        binding.codeDetailTopImageType.setImageResource(R.drawable.ic_qr_code)
+        binding.codeDetailTypeTextHeading.text = getString(R.string.qr_text_data_heading)
+        binding.codeDetailTypeImageHeading.text = getString(R.string.qr_image_heading)
+        binding.codeDetailImageType.setImageResource(R.drawable.qrcode)
+    }
+
+    /**
+     * Handles the visibility and content for dynamic links.
+     */
+    private fun handleDynamicLinks() {
+        if (codeHistory!!.isDynamic.toInt() == 1) {
+            binding.dynamicLinkUpdateBtn.visibility = View.VISIBLE
+            binding.dialogSubHeading.text =
+                "${getString(R.string.current_link_text)} ${codeHistory!!.data}"
+        } else {
+            binding.codeDetailDynamicLinkUpdateLayout.visibility = View.GONE
         }
+    }
+
+    private fun displayFeedbacksDetail(qrId: String) {
+        // Set up RecyclerView
+        binding.codeDetailFeedbackRecyclerview.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true) // Use setHasFixedSize for better performance if layout size is fixed
+            adapter = feedbackAdapter // Set adapter after initializing
+        }
+
+        // Set up CSV export button click listener
+        binding.codeDetailFeedbackCsvExportImage.setOnClickListener {
+            exportCsv() // Export feedbacks to CSV
+        }
+
+        // Show loading indicator
         startLoading(context)
+
+        // Fetch feedbacks asynchronously
         lifecycleScope.launch {
             viewModel.callFeedbacks(qrId)
         }
-        viewModel.feedbackResponse.observe(this, { response ->
-            dismiss()
-            if (response != null) {
-                feedbacksList.addAll(response.feedbacks)
-                if (feedbacksList.size > 0) {
+
+        // Observe feedbacks response from the ViewModel
+        viewModel.feedbackResponse.observe(this@CodeDetailActivity) { response ->
+            dismiss() // Hide loading indicator
+
+            response?.let {
+                // Add new feedbacks to the list
+                feedbacksList.addAll(it.feedbacks)
+
+                // Update UI based on feedbacks availability
+                if (feedbacksList.isNotEmpty()) {
                     binding.codeDetailFeedbackLayout.visibility = View.VISIBLE
-                    feedbackAdapter.notifyItemRangeChanged(0, feedbacksList.size)
+                    feedbackAdapter.notifyItemRangeChanged(
+                        0,
+                        feedbacksList.size
+                    ) // Notify adapter of new items
+
+                    // Set item click listener for feedbacks
                     feedbackAdapter.setOnItemClickListener(object :
                         FeedbackAdapter.OnItemClickListener {
                         override fun onItemClick(position: Int) {
                             val item = feedbacksList[position]
                             val sharingText =
                                 "Feedback: ${item.comment}\nEmail: ${item.email}\nPhone: ${item.phone}\nStars: ${item.rating}\n ${
-                                    getString(
-                                        R.string.qr_sign
-                                    )
+                                    getString(R.string.qr_sign)
                                 }"
                             MaterialAlertDialogBuilder(context)
                                 .setMessage(sharingText)
-                                .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
-                                    dialog.dismiss()
+                                .setNegativeButton(getString(R.string.cancel_text)) { dialog, _ ->
+                                    dialog.dismiss() // Dismiss dialog on cancel
                                 }
-                                .setPositiveButton(getString(R.string.share_text)) { dialog, which ->
-                                    dialog.dismiss()
-                                    shareFeedback(sharingText)
+                                .setPositiveButton(getString(R.string.share_text)) { dialog, _ ->
+                                    dialog.dismiss() // Dismiss dialog on share
+                                    shareFeedback(sharingText) // Share feedback
                                 }
-                                .create().show()
+                                .create()
+                                .show() // Show the dialog
                         }
-
                     })
                 } else {
-                    binding.codeDetailFeedbackLayout.visibility = View.GONE
+                    binding.codeDetailFeedbackLayout.visibility =
+                        View.GONE // Hide layout if no feedbacks
                 }
             }
-        })
-
+        }
     }
 
+    /**
+     * Exports the feedbacks list to a CSV file and shares it via an Intent.
+     */
     private fun exportCsv() {
+        // Check if the feedbacks list is not empty
         if (feedbacksList.isNotEmpty()) {
+            // Start loading indication (e.g., progress bar)
             startLoading(context)
+
+            // Create a StringBuilder to build the CSV content
             val builder = StringBuilder()
+
+            // Append CSV header
             builder.append("id,qrId,comment,email,phone,rating")
 
-            for (j in 0 until feedbacksList.size) {
-
-                val data = feedbacksList[j]
-
+            // Iterate through feedbacks list and append each item to the CSV content
+            for (data in feedbacksList) {
                 builder.append("\n${data.id},${data.qrId},${data.comment},${data.email},${data.phone},${data.rating}")
             }
 
             try {
+                // Define the file name and create the file
                 val fileName = "feedbacks_${feedbacksList[0].qrId}.csv"
                 val out = openFileOutput(fileName, Context.MODE_PRIVATE)
-                out.write((builder.toString()).toByteArray())
+                out.write(builder.toString().toByteArray())
                 out.close()
 
+                // Create a File object and get its URI
                 val file = File(filesDir, fileName)
-                val path =
-                    FileProvider.getUriForFile(context, "com.expert.qrgenerator.fileprovider", file)
+                val path = FileProvider.getUriForFile(context, "com.expert.qrgenerator.fileprovider", file)
+
+                // Dismiss loading indication
                 dismiss()
-                val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "text/csv"
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                intent.putExtra(Intent.EXTRA_STREAM, path)
+
+                // Create an Intent to share the CSV file
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/csv"
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    putExtra(Intent.EXTRA_STREAM, path)
+                }
+
+                // Start the share activity
                 startActivity(Intent.createChooser(intent, getString(R.string.share_using)))
             } catch (e: Exception) {
+                // Print stack trace for debugging
                 e.printStackTrace()
             }
         } else {
+            // Show an alert if the feedbacks list is empty
             showAlert(context, getString(R.string.table_export_error_text))
         }
     }
 
+    /**
+     * Launches an intent to share feedback text using available sharing options.
+     *
+     * @param sharingText The text to be shared.
+     */
     private fun shareFeedback(sharingText: String) {
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_TEXT, sharingText)
+        // Create an intent with the ACTION_SEND action to share text content
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            // Set the MIME type to "text/plain" to specify the type of data being shared
+            type = "text/plain"
+            // Add the text to be shared as an extra in the intent
+            putExtra(Intent.EXTRA_TEXT, sharingText)
+        }
+
+        // Start an activity with a chooser to allow the user to select their preferred sharing method
         startActivity(Intent.createChooser(intent, getString(R.string.share_using)))
     }
 
-    // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
+    /**
+     * Handles the item selection in the options menu.
+     *
+     * @param item The menu item that was selected.
+     * @return True if the event was handled, false otherwise.
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Check if the selected item is the home (back arrow) button
         return if (item.itemId == android.R.id.home) {
+            // Handle the back arrow click event
             onBackPressed()
             true
         } else {
+            // Pass the event to the superclass for handling other items
             super.onOptionsItemSelected(item)
         }
     }
@@ -318,6 +429,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             R.id.code_detail_text_search_button -> {
                 val escapedQuery: String = URLEncoder.encode(
                     binding.codeDetailEncodeData.text.toString().trim(), "UTF-8"
@@ -326,9 +438,11 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 intent.putExtra(SearchManager.QUERY, escapedQuery)
                 startActivity(intent)
             }
+
             R.id.code_detail_text_share_button -> {
                 textShare()
             }
+
             R.id.code_detail_pdf_save_button -> {
                 if (RuntimePermissionHelper.checkStoragePermission(
                         context,
@@ -338,6 +452,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     createPdf(false)
                 }
             }
+
             R.id.code_detail_pdf_share_button -> {
                 isShareAfterCreated = true
                 if (RuntimePermissionHelper.checkStoragePermission(
@@ -353,6 +468,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 }
 
             }
+
             R.id.dynamic_link_update_btn -> {
                 val value = binding.qrCodeHistoryDynamicLinkInputField.text.toString().trim()
                 if (selectedProtocol.isEmpty()) {
@@ -391,7 +507,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     lifecycleScope.launch {
                         viewModel.createDynamicQrCode(hashMap)
                     }
-                    viewModel.dynamicQrCodeResponse.observe(this, { response ->
+                    viewModel.dynamicQrCodeResponse.observe(this) { response ->
                         var url = ""
                         dismiss()
                         if (response != null) {
@@ -409,9 +525,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                         } else {
                             showAlert(context, getString(R.string.something_wrong_error))
                         }
-                    })
+                    }
                 }
             }
+
             R.id.update_notes_btn -> {
                 val notesText = binding.qrCodeHistoryNotesInputField.text.toString().trim()
                 if (notesText.isNotEmpty()) {
@@ -430,6 +547,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     showAlert(context, getString(R.string.empty_text_error))
                 }
             }
+
             else -> {
                 val position = v.id
                 val id = barcodeEditList[0].second.toInt()
@@ -441,259 +559,220 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun updateBarcodeDetail(id: Int, triple: Triple<AppCompatImageView, String, String>) {
-        val updateBarcodeLayout =
-            LayoutInflater.from(context).inflate(R.layout.update_barcode_detail_dialog, null)
-        val updateInputBox =
-            updateBarcodeLayout.findViewById<TextInputEditText>(R.id.update_barcode_detail_text_input_field)
+        // Inflate the dialog layout using View Binding
+        val updateBarcodeLayoutBinding = UpdateBarcodeDetailDialogBinding.inflate(LayoutInflater.from(context))
 
-        val cleanBrushView =
-            updateBarcodeLayout.findViewById<AppCompatImageView>(R.id.update_barcode_detail_cleaning_text_view)
-        val cancelBtn =
-            updateBarcodeLayout.findViewById<MaterialButton>(R.id.update_barcode_detail_dialog_cancel_btn)
-        val updateBtn =
-            updateBarcodeLayout.findViewById<MaterialButton>(R.id.update_barcode_detail_dialog_update_btn)
+        // Access views directly through the binding
+        val updateInputBox = updateBarcodeLayoutBinding.updateBarcodeDetailTextInputField
+        val cleanBrushView = updateBarcodeLayoutBinding.updateBarcodeDetailCleaningTextView
+        val cancelBtn = updateBarcodeLayoutBinding.updateBarcodeDetailDialogCancelBtn
+        val updateBtn = updateBarcodeLayoutBinding.updateBarcodeDetailDialogUpdateBtn
 
+        // Build and show the dialog
         val builder = MaterialAlertDialogBuilder(context)
-        builder.setView(updateBarcodeLayout)
-        builder.setCancelable(false)
+            .setView(updateBarcodeLayoutBinding.root)
+            .setCancelable(false)
+
         val alert = builder.create()
         alert.show()
+
+        // Set up click listeners
         cancelBtn.setOnClickListener {
             hideSoftKeyboard(context, cancelBtn)
             alert.dismiss()
         }
 
-        cleanBrushView.setOnClickListener { updateInputBox.setText("") }
+        cleanBrushView.setOnClickListener {
+            updateInputBox.setText("")
+        }
 
         updateBtn.setOnClickListener {
-
             val value = updateInputBox.text.toString().trim()
             if (value.isNotEmpty()) {
                 hideSoftKeyboard(context, updateBtn)
                 alert.dismiss()
-                val isUpdate = tableGenerator.updateBarcodeDetail(
-                    tableName,
-                    triple.third,
-                    value,
-                    id
-                )
+                // Update the barcode detail
+                val isUpdate = tableGenerator.updateBarcodeDetail(tableName, triple.third, value, id)
                 if (isUpdate) {
+                    // Refresh the barcode details
                     tableObject = tableGenerator.getUpdateBarcodeDetail(tableName, id)
                     displayBarcodeDetail()
                 }
             } else {
-                Toast.makeText(context, getString(R.string.empty_text_error), Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(context, getString(R.string.empty_text_error), Toast.LENGTH_SHORT).show()
             }
         }
 
+        // Set initial text and open keyboard
         updateInputBox.setText(triple.second)
         updateInputBox.setSelection(updateInputBox.text!!.length)
         updateInputBox.requestFocus()
-        Constants.openKeyboar(context)
-
+        Constants.openKeyboard(context)
     }
 
+
     private fun displayBarcodeDetail() {
-        if (tableObject != null) {
-
+        // Check if tableObject is not null
+        tableObject?.let { tableObj ->
+            // Make the barcode detail layout visible
             binding.barcodeDetailWrapperLayout.visibility = View.VISIBLE
-            binding.codeDetailEncodeData.text = tableObject!!.code_data
-            binding.codeDetailCodeSequenceView.text =
-                "${getString(R.string.code_text)} ${tableObject!!.id}"
-            binding.codeDetailDateTimeView.text = tableObject!!.date
 
-            if (binding.barcodeDetailWrapperLayout.childCount > 0) {
-                binding.barcodeDetailWrapperLayout.removeAllViews()
+            // Set static details in the views
+            binding.codeDetailEncodeData.text = tableObj.code_data
+            binding.codeDetailCodeSequenceView.text = "${getString(R.string.code_text)} ${tableObj.id}"
+            binding.codeDetailDateTimeView.text = tableObj.date
+
+            // Clear previous child views if any
+            binding.barcodeDetailWrapperLayout.removeAllViews()
+
+            // Initialize counter for dynamic view IDs
+            var counter = 0
+
+            // Add static details to the layout
+            addDetailView("id", tableObj.id.toString(), counter++)
+            addDetailView("code_data", tableObj.code_data, counter++)
+            addDetailView("date", tableObj.date, counter++)
+            addDetailView("image", tableObj.image, counter++)
+
+            // Add dynamic columns to the layout
+            tableObj.dynamicColumns.forEach { item ->
+                addDetailView(item.first, item.second, counter++)
             }
-
-            barcodeEditList.add(
-                Triple(
-                    AppCompatImageView(context),
-                    tableObject!!.id.toString(),
-                    "id"
-                )
-            )
-            var barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(
-                LayoutInflater.from(context),
-                binding.barcodeDetailWrapperLayout as ViewGroup,
-                false
-            )
-
-            barcodeDetailItemRowBinding.bcdEditView.id = counter
-            barcodeEditList.add(
-                Triple(
-                    barcodeDetailItemRowBinding.bcdEditView,
-                    tableObject!!.code_data,
-                    "code_data"
-                )
-            )
-            barcodeDetailItemRowBinding.bcdEditView.setOnClickListener(this)
-            barcodeDetailItemRowBinding.bcdTableColumnValue.text = tableObject!!.code_data
-            barcodeDetailItemRowBinding.bcdTableColumnName.text = "code_data"
-            binding.barcodeDetailWrapperLayout.addView(barcodeDetailItemRowBinding.root)
-            barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(
-                LayoutInflater.from(context),
-                binding.barcodeDetailWrapperLayout as ViewGroup,
-                false
-            )
-
-            counter += 1
-            barcodeDetailItemRowBinding.bcdEditView.id = counter
-            barcodeEditList.add(
-                Triple(
-                    barcodeDetailItemRowBinding.bcdEditView,
-                    tableObject!!.date,
-                    "date"
-                )
-            )
-            barcodeDetailItemRowBinding.bcdEditView.setOnClickListener(this)
-            barcodeDetailItemRowBinding.bcdTableColumnValue.text = tableObject!!.date
-            barcodeDetailItemRowBinding.bcdTableColumnName.text = "date"
-            binding.barcodeDetailWrapperLayout.addView(barcodeDetailItemRowBinding.root)
-            barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(
-                LayoutInflater.from(context),
-                binding.barcodeDetailWrapperLayout as ViewGroup,
-                false
-            )
-
-
-            counter += 1
-            barcodeDetailItemRowBinding.bcdEditView.id = counter
-            barcodeEditList.add(
-                Triple(
-                    barcodeDetailItemRowBinding.bcdEditView,
-                    tableObject!!.image,
-                    "image"
-                )
-            )
-            barcodeDetailItemRowBinding.bcdEditView.setOnClickListener(this)
-            barcodeDetailItemRowBinding.bcdTableColumnValue.text = tableObject!!.image
-            barcodeDetailItemRowBinding.bcdTableColumnName.text = "image"
-            binding.barcodeDetailWrapperLayout.addView(barcodeDetailItemRowBinding.root)
-
-            for (i in 0 until tableObject!!.dynamicColumns.size) {
-                val item = tableObject!!.dynamicColumns[i]
-                val barcodeDetailItemRowBinding = BarcodeDetailItemRowBinding.inflate(
-                    LayoutInflater.from(context),
-                    binding.barcodeDetailWrapperLayout as ViewGroup,
-                    false
-                )
-
-
-                counter += 1
-                barcodeDetailItemRowBinding.bcdEditView.id = counter
-                barcodeEditList.add(
-                    Triple(
-                        barcodeDetailItemRowBinding.bcdEditView,
-                        item.second,
-                        item.first
-                    )
-                )
-                barcodeDetailItemRowBinding.bcdEditView.setOnClickListener(this)
-                barcodeDetailItemRowBinding.bcdTableColumnValue.text = item.second
-                barcodeDetailItemRowBinding.bcdTableColumnName.text = item.first
-                binding.barcodeDetailWrapperLayout.addView(barcodeDetailItemRowBinding.root)
-
-            }
-            counter = 0
         }
     }
 
-    // THIS FUNCTION WILL SHARE THE CODE TEXT TO OTHERS
+    // Helper function to add a detail view to the layout
+    private fun addDetailView(columnName: String, columnValue: String, viewId: Int) {
+        val itemRowBinding = BarcodeDetailItemRowBinding.inflate(
+            LayoutInflater.from(context),
+            binding.barcodeDetailWrapperLayout as ViewGroup,
+            false
+        )
+
+        // Set view ID and data
+        itemRowBinding.bcdEditView.id = viewId
+        itemRowBinding.bcdEditView.setOnClickListener(this)
+        itemRowBinding.bcdTableColumnName.text = columnName
+        itemRowBinding.bcdTableColumnValue.text = columnValue
+
+        // Add the view to the layout
+        binding.barcodeDetailWrapperLayout.addView(itemRowBinding.root)
+    }
+
+    // Function to share code text with others
     private fun textShare() {
-        val intent = Intent(Intent.ACTION_SEND)
-        val shareBody =
-            "${getString(R.string.app_name)} \n ${
-                binding.codeDetailEncodeData.text.toString().trim()
-            }"
-        intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_TEXT, shareBody)
+        // Create an intent for sharing text
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            // Set the MIME type for text sharing
+            type = "text/plain"
+
+            // Construct the body of the message
+            val shareBody = "${getString(R.string.app_name)} \n ${binding.codeDetailEncodeData.text.toString().trim()}"
+
+            // Add the message body to the intent
+            putExtra(Intent.EXTRA_TEXT, shareBody)
+        }
+
+        // Start the share activity, allowing the user to choose an app to share with
         startActivity(Intent.createChooser(intent, getString(R.string.share_using)))
     }
 
-    // THIS FUNCTION WILL CREATE THE PDF FILE FROM CODE DETAIL
+    // Function to create a PDF file from code detail and optionally share it
     private fun createPdf(isShareAfterCreated: Boolean) {
-        bitmap = if (codeHistory!!.codeType == "qr") {
-            BitmapFactory.decodeResource(resources, R.drawable.qrcode)
-        } else {
-            BitmapFactory.decodeResource(resources, R.drawable.barcode)
-        }
-        var codeWidth: Int? = null
-        var codeHeight: Int? = null
-        if (codeHistory!!.codeType == "qr") {
-            codeWidth = 200
-            codeHeight = 200
-        } else {
-            codeWidth = 400
-            codeHeight = 200
-        }
-        bitmap = Bitmap.createScaledBitmap(bitmap!!, codeWidth, codeHeight, false)
+        // Determine the appropriate bitmap based on the code type
+        val bitmapResId = if (codeHistory!!.codeType == "qr") R.drawable.qrcode else R.drawable.barcode
+        val bitmap = BitmapFactory.decodeResource(resources, bitmapResId)
 
+        // Define dimensions based on code type
+        val (codeWidth, codeHeight) = if (codeHistory!!.codeType == "qr") {
+            Pair(200, 200)
+        } else {
+            Pair(400, 200)
+        }
+
+        // Scale the bitmap to the desired dimensions
+        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, codeWidth, codeHeight, false)
 
         try {
-            val path = "${applicationContext.getExternalFilesDir("")}/PDF"
-            val dir = File(path)
-            if (!dir.exists()) dir.mkdirs()
-            val fileName = "pdf_${codeHistory!!.createdAt}.pdf"
-            val file = File(dir, fileName)
-            pdfFile = file
-            val fOut = FileOutputStream(file)
+            // Define the PDF file path and ensure the directory exists
+            val pdfDir = File("${applicationContext.getExternalFilesDir("")}/PDF")
+            if (!pdfDir.exists()) pdfDir.mkdirs()
+            val pdfFile = File(pdfDir, "pdf_${codeHistory!!.createdAt}.pdf")
 
-            val document = PdfDocument()
-            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
-            val page = document.startPage(pageInfo)
-            val canvas = page.canvas
-            val paint = Paint()
-            val titlePaint = Paint()
-            val dataPaint = Paint()
-            titlePaint.textSize = 50.toFloat()
-            titlePaint.textAlign = Paint.Align.CENTER
-            titlePaint.color = Color.RED
-            val appName = getString(R.string.app_name)
-            val xPos = (canvas.width / 2) - (appName.length) / 2
-            val yPos =
-                (canvas.height / 2 - (titlePaint.descent() + titlePaint.ascent()) / 2).toInt()
-            canvas.drawText(appName, xPos.toFloat(), 40.toFloat(), titlePaint)
-            paint.textAlign = Paint.Align.CENTER
-            val xCodePos = (canvas.width / 2) - (bitmap!!.width) / 2
-            canvas.drawBitmap(bitmap!!, xCodePos.toFloat(), 50.toFloat(), paint)
-            canvas.drawText(
-                binding.codeDetailEncodeData.text.toString(),
-                30.toFloat(),
-                280.toFloat(),
-                dataPaint
-            )
-            val typePaint = Paint()
-            typePaint.textAlign = Paint.Align.RIGHT
-            typePaint.color = Color.BLUE
-            typePaint.textAlign = Paint.Align.RIGHT
-            val codeType = codeHistory!!.codeType.toUpperCase(Locale.ENGLISH)
-            canvas.drawText(codeType, canvas.width / 2.toFloat(), 260.toFloat(), typePaint)
-            val datePaint = Paint()
-            datePaint.textSize = 16.toFloat()
-            canvas.drawText(
-                getFormattedDate(context, codeHistory!!.createdAt.toLong()),
-                30.toFloat(),
-                300.toFloat(),
-                datePaint
-            )
+            // Initialize PDF document and output stream
+            FileOutputStream(pdfFile).use { fOut ->
+                val document = PdfDocument()
+                val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
+                val page = document.startPage(pageInfo)
+                val canvas = page.canvas
 
-            document.finishPage(page)
-            document.writeTo(fOut)
-            document.close()
-            Toast.makeText(this, getString(R.string.pdf_saved_success_text), Toast.LENGTH_SHORT)
-                .show()
-            if (isShareAfterCreated) {
-                sharePdfFile()
+                // Paint objects for different text and drawing styles
+                val titlePaint = Paint().apply {
+                    textSize = 50f
+                    textAlign = Paint.Align.CENTER
+                    color = Color.RED
+                }
+                val dataPaint = Paint().apply {
+                    textAlign = Paint.Align.CENTER
+                }
+                val typePaint = Paint().apply {
+                    textAlign = Paint.Align.RIGHT
+                    color = Color.BLUE
+                }
+                val datePaint = Paint().apply {
+                    textSize = 16f
+                }
+
+                // Draw app name at the top
+                val appName = getString(R.string.app_name)
+                val xTitlePos = (canvas.width / 2).toFloat()
+                val yTitlePos = 40f
+                canvas.drawText(appName, xTitlePos, yTitlePos, titlePaint)
+
+                // Draw the bitmap (QR or Barcode)
+                val xBitmapPos = (canvas.width / 2 - scaledBitmap.width / 2).toFloat()
+                val yBitmapPos = 50f
+                canvas.drawBitmap(scaledBitmap, xBitmapPos, yBitmapPos, Paint())
+
+                // Draw encoded data
+                canvas.drawText(
+                    binding.codeDetailEncodeData.text.toString(),
+                    30f,
+                    280f,
+                    dataPaint
+                )
+
+                // Draw code type
+                val codeType = codeHistory!!.codeType.toUpperCase(Locale.ENGLISH)
+                canvas.drawText(codeType, canvas.width - 30f, 260f, typePaint)
+
+                // Draw creation date
+                canvas.drawText(
+                    getFormattedDate(context, codeHistory!!.createdAt.toLong()),
+                    30f,
+                    300f,
+                    datePaint
+                )
+
+                // Finish the page and write to output
+                document.finishPage(page)
+                document.writeTo(fOut)
+                document.close()
+
+                // Notify the user
+                Toast.makeText(this, getString(R.string.pdf_saved_success_text), Toast.LENGTH_SHORT).show()
+
+                // Optionally share the PDF file
+                if (isShareAfterCreated) {
+                    sharePdfFile()
+                }
             }
         } catch (e: IOException) {
             e.printStackTrace()
-//            Toast.makeText(this, "Something wrong: $e", Toast.LENGTH_SHORT).show()
+            // Handle the error, e.g., notify the user
+            Toast.makeText(this, "Failed to create PDF: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -701,58 +780,69 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         when (requestCode) {
             Constants.READ_STORAGE_REQUEST_CODE -> {
+                // Check if the permission request was granted
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (isShareAfterCreated) {
-                        createPdf(true)
-                        isShareAfterCreated = false
-                    } else {
-                        createPdf(false)
-                    }
+                    // Create PDF based on whether it should be shared immediately
+                    createPdf(isShareAfterCreated)
+                    isShareAfterCreated = false // Reset the flag after processing
                 } else {
+                    // Show an error dialog if the permission was denied
                     MaterialAlertDialogBuilder(context)
                         .setMessage(getString(R.string.external_storage_permission_error))
                         .setCancelable(false)
-                        .setPositiveButton(getString(R.string.ok_text)) { dialog, which ->
-                            dialog.dismiss()
+                        .setPositiveButton(getString(R.string.ok_text)) { dialog, _ ->
+                            dialog.dismiss() // Dismiss the dialog on button click
                         }
                         .create().show()
                 }
             }
             else -> {
-
+                // Handle other request codes if needed
             }
         }
     }
 
-
-    // FUNCTION WILL SHARE THE PDF FILE
+    /**
+     * Shares a PDF file using an implicit intent.
+     * If the file exists, it creates a URI for the file and starts an activity
+     * to share it. If the file does not exist, it shows an alert message.
+     */
     private fun sharePdfFile() {
-        if (pdfFile != null) {
-            if (pdfFile!!.exists()) {
-                val fileUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    FileProvider.getUriForFile(
-                        context,
-                        context.applicationContext.packageName + ".fileprovider", pdfFile!!
-                    )
-
-                } else {
-                    Uri.fromFile(pdfFile)
-                }
-                val fileShareIntent = Intent(Intent.ACTION_SEND)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileShareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                if (fileUri != null) {
-
-                    fileShareIntent.type = "application/pdf"
-                    fileShareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
-                    startActivity(Intent.createChooser(fileShareIntent, "Share File"))
-                }
+        // Check if the PDF file is not null and exists
+        pdfFile?.takeIf { it.exists() }?.let { file ->
+            // Create URI for the file based on Android version
+            val fileUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // Use FileProvider for devices running Android Nougat and above
+                FileProvider.getUriForFile(
+                    context,
+                    "${context.applicationContext.packageName}.fileprovider",
+                    file
+                )
             } else {
-                showAlert(context, getString(R.string.pdf_create_failed_error))
+                // Use Uri.fromFile for devices below Android Nougat
+                Uri.fromFile(file)
             }
+
+            // Create an intent to share the file
+            Intent(Intent.ACTION_SEND).apply {
+                // Set MIME type for PDF
+                type = "application/pdf"
+                // Attach the file URI to the intent
+                putExtra(Intent.EXTRA_STREAM, fileUri)
+                // Grant read permissions to the recipient app
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                // Start the share intent
+                startActivity(Intent.createChooser(this, "Share File"))
+            }
+        } ?: run {
+            // If the file is null or does not exist, show an alert
+            showAlert(context, getString(R.string.pdf_create_failed_error))
         }
     }
+
 }

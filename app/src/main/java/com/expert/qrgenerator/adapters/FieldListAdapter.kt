@@ -10,6 +10,7 @@ import com.expert.qrgenerator.model.ListItem
 class FieldListAdapter(private val listValues: ArrayList<ListItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    // Interface for handling item click events
     interface OnItemClickListener {
         fun onItemClick(position: Int)
         fun onAddItemClick(position: Int)
@@ -17,70 +18,85 @@ class FieldListAdapter(private val listValues: ArrayList<ListItem>) :
 
     private var mListener: OnItemClickListener? = null
 
+    // Method to set the click listener
     fun setOnItemClickListener(listener: OnItemClickListener) {
         this.mListener = listener
     }
 
-    class ItemViewHolder(private val binding:TableItemRowBinding, private val mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(binding.root) {
-            fun bindData(listItem: ListItem,position: Int){
-                binding.tableItemName.text = listItem.value
-                itemView.setOnClickListener {
-                    mListener.onItemClick(position)
-                }
-            }
+    // ViewHolder for regular list items
+    class ItemViewHolder(
+        private val binding: TableItemRowBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
 
+        // Bind data to the ViewHolder
+        fun bindData(listItem: ListItem, position: Int) {
+            binding.tableItemName.text = listItem.value
+            itemView.setOnClickListener {
+                mListener.onItemClick(position)
+            }
+        }
     }
 
-    class AddItemViewHolder(private val binding:AddListValueItemLayoutBinding, private val mListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(binding.root) {
-            fun bindData(position: Int){
-                binding.addCardView.setOnClickListener {
-                    mListener.onAddItemClick(position)
-                }
-            }
+    // ViewHolder for the "Add Item" button
+    class AddItemViewHolder(
+        private val binding: AddListValueItemLayoutBinding,
+        private val mListener: OnItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
 
+        // Bind data to the "Add Item" ViewHolder
+        fun bindData(position: Int) {
+            binding.addCardView.setOnClickListener {
+                mListener.onAddItemClick(position)
+            }
+        }
     }
 
+    // Inflates the appropriate ViewHolder based on the viewType
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == 0) {
-            val addListValueItemLayoutBinding = AddListValueItemLayoutBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-
-            AddItemViewHolder(addListValueItemLayoutBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
+        return if (viewType == VIEW_TYPE_ADD_ITEM) {
+            val binding = AddListValueItemLayoutBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            AddItemViewHolder(binding, mListener ?: throw IllegalStateException("OnItemClickListener not set"))
         } else {
-            val tableItemRowBinding = TableItemRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
-
-            ItemViewHolder(tableItemRowBinding, mListener?: throw IllegalStateException("OnItemClickListener not set"))
+            val binding = TableItemRowBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+            ItemViewHolder(binding, mListener ?: throw IllegalStateException("OnItemClickListener not set"))
         }
     }
 
-
+    // Determines the view type based on the position
     override fun getItemViewType(position: Int): Int {
-        var viewType = 1
-        // If the position is equal to the size of the list, set view type to 0 (Header)
-        if (position == listValues.size) {
-            viewType = 0
+        return if (position == listValues.size) {
+            VIEW_TYPE_ADD_ITEM
+        } else {
+            VIEW_TYPE_ITEM
         }
-
-        return viewType
     }
 
+    // Binds data to the appropriate ViewHolder
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            0 -> {
-                val addViewHolder = holder as AddItemViewHolder
-                addViewHolder.bindData(position)
-
+            VIEW_TYPE_ADD_ITEM -> {
+                (holder as AddItemViewHolder).bindData(position)
             }
-            else -> {
-                val listValue = listValues[position]
-                val viewHolder = holder as ItemViewHolder
-                viewHolder.bindData(listValue,position)
-
+            VIEW_TYPE_ITEM -> {
+                (holder as ItemViewHolder).bindData(listValues[position], position)
             }
         }
     }
 
-    override fun getItemCount(): Int = listValues.size+1
+    // Returns the total number of items in the list including the "Add Item" button
+    override fun getItemCount(): Int = listValues.size + 1
 
+    companion object {
+        private const val VIEW_TYPE_ITEM = 1
+        private const val VIEW_TYPE_ADD_ITEM = 0
+    }
 }

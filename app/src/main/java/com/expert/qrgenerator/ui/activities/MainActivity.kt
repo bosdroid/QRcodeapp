@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
-import android.os.StrictMode
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.Gravity
@@ -20,14 +19,10 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.ActivityMainBinding
 import com.expert.qrgenerator.databinding.ContentMainBinding
 import com.expert.qrgenerator.interfaces.LoginCallback
-import com.expert.qrgenerator.interfaces.OnCompleteAction
-import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.User
 import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.singleton.SheetService
@@ -42,12 +37,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
-import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -64,58 +55,93 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-    OnCompleteAction, ScannerFragment.ScannerInterface {
+     ScannerFragment.ScannerInterface {
 
-    private lateinit var binding:ActivityMainBinding
+    // Binding for ActivityMain layout
+    private lateinit var binding: ActivityMainBinding
+
+    // Encoded text data for internal use
     private var encodedTextData: String = " "
-    private val viewModel: MainActivityViewModel by viewModels()
-    private lateinit var appSettings: AppSettings
-    private lateinit var mGoogleSignInClient: GoogleSignInClient
-    var mService: Drive? = null
-    var sheetService: Sheets? = null
-    private lateinit var auth: FirebaseAuth
-    private val scopes = mutableListOf<String>()
-    private val transport: HttpTransport? = AndroidHttp.newCompatibleTransport()
-    private val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
-    private val httpTransport = NetHttpTransport()
-    private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
-    private var user: User? = null
-    private var requestLogin: String? = null
-    private var scannerFragment: ScannerFragment? = null
-    private var callback:LoginCallback?=null
-    private lateinit var context: Context
-    var credential: GoogleAccountCredential? = null
-    lateinit var contentBinding:ContentMainBinding
-//    companion object {
-//        lateinit var context: Context
-////        lateinit var historyBtn: MaterialButton
-//        var credential: GoogleAccountCredential? = null
-//        lateinit var contentBinding:ContentMainBinding
-//    }
 
+    // ViewModel for MainActivity
+    private val viewModel: MainActivityViewModel by viewModels()
+
+    // AppSettings instance for application settings
+    private lateinit var appSettings: AppSettings
+
+    // Google Sign-In client for authentication
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+
+    // Drive and Sheets service instances for Google API access
+    private var mService: Drive? = null
+    private var sheetService: Sheets? = null
+
+    // Firebase Auth instance for authentication
+    private lateinit var auth: FirebaseAuth
+
+    // Scopes for Google API access
+    private val scopes = mutableListOf<String>()
+
+    // HttpTransport and JsonFactory instances for network communication
+    private val httpTransport: HttpTransport = NetHttpTransport()
+    private val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
+    private val jacksonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
+
+    // User instance to hold current user data
+    private var user: User? = null
+
+    // Request login string for authentication
+    private var requestLogin: String? = null
+
+    // Fragment for scanning functionality
+    private var scannerFragment: ScannerFragment? = null
+
+    // Callback for login results
+    private var callback: LoginCallback? = null
+
+    // Context of the activity, initialized using lazy delegation
+    private val context: Context by lazy { this }
+
+    // Google Account Credential for accessing Google APIs
+    var credential: GoogleAccountCredential? = null
+
+    // Binding for ContentMain layout
+    lateinit var contentBinding: ContentMainBinding
+
+    private val REQUEST_CODE_GET_ACCOUNTS = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Inflate the main activity layout and bind it to the ActivityMainBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        contentBinding = ContentMainBinding.bind(binding.includedLayout.root)
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
 
+        // Bind the content layout inside the main layout
+        contentBinding = ContentMainBinding.bind(binding.includedLayout.root)
+
+        // Configure StrictMode to permit all thread operations (not recommended for production)
+//        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+//        StrictMode.setThreadPolicy(policy)
+
+        // Initialize views, set up toolbar, and configure Google login parameters
         initViews()
         setUpToolbar()
         getAccountsPermission()
         initializeGoogleLoginParameters()
 
+        // Check if tips are enabled in app settings
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
-            val duration = appSettings.getLong("tt1")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            // Retrieve the last shown tip timestamp
+            val lastTipTimestamp = appSettings.getLong("tt1")
 
+            // Check if the tip needs to be shown (if it hasn't been shown for over a day)
+            if (lastTipTimestamp == 0L || System.currentTimeMillis() - lastTipTimestamp > TimeUnit.DAYS.toMillis(1)) {
+                // Build and show the tooltip
                 SimpleTooltip.Builder(this)
                     .anchorView(contentBinding.bottomNavigation)
                     .text(getString(R.string.bottom_navigation_tip_text))
@@ -123,11 +149,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        tooltip.dismiss()
-                        appSettings.putLong("tt1",System.currentTimeMillis())
-                        val fragment =
-                            supportFragmentManager.findFragmentByTag("scanner") as ScannerFragment
-                        fragment.showTableSelectTip()
+                        // Update the timestamp when the tooltip is dismissed
+                        appSettings.putLong("tt1", System.currentTimeMillis())
+
+                        // Show table select tip in the ScannerFragment
+                        val fragment = supportFragmentManager.findFragmentByTag("scanner") as? ScannerFragment
+                        fragment?.showTableSelectTip()
                     }
                     .build()
                     .show()
@@ -135,93 +162,92 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
-        context = this
+
         appSettings = AppSettings(context)
-        scannerFragment = ScannerFragment()
         auth = Firebase.auth
 
+        // Initialize fragments
+        val scannerFragment = ScannerFragment()
+        val generatorFragment = GeneratorFragment()
+
+        // Set up history button click listener
         contentBinding.historyBtn.setOnClickListener {
             startActivity(Intent(context, BarcodeHistoryActivity::class.java))
         }
 
-        binding.privacyPolicyView.movementMethod = LinkMovementMethod.getInstance()
-        binding.privacyPolicyView.paintFlags = binding.privacyPolicyView.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        binding.privacyPolicyView.setOnClickListener {
-            binding.drawer.closeDrawer(GravityCompat.START)
-            val browserIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("http://qrmagicapp.com/privacy-policy-2/")
-            )
-            startActivity(browserIntent)
+        // Set up privacy policy view with clickable link
+        binding.privacyPolicyView.apply {
+            movementMethod = LinkMovementMethod.getInstance()
+            paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
+            setOnClickListener {
+                binding.drawer.closeDrawer(GravityCompat.START)
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://qrmagicapp.com/privacy-policy-2/"))
+                startActivity(browserIntent)
+            }
         }
 
+        // Set up bottom navigation item selection listener
         contentBinding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.bottom_scanner -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, ScannerFragment(), "scanner")
+                        .replace(R.id.fragment_container, scannerFragment, "scanner")
                         .addToBackStack("scanner")
                         .commit()
-
                 }
                 R.id.bottom_generator -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, GeneratorFragment(), "generator")
+                        .replace(R.id.fragment_container, generatorFragment, "generator")
                         .addToBackStack("generator")
                         .commit()
-
                 }
-                else -> {
-
-                }
+                else -> false
             }
-
             true
         }
 
-        if (intent != null && intent.hasExtra("KEY") && intent.getStringExtra("KEY") == "generator") {
-            contentBinding.bottomNavigation.selectedItemId = R.id.bottom_generator
+        // Handle initial fragment setup based on intent extras
+        if (intent?.getStringExtra("KEY") == "generator") {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, GeneratorFragment(), "generator")
                 .addToBackStack("generator")
                 .commit()
-
         } else {
-
-            supportFragmentManager.beginTransaction().add(
-                R.id.fragment_container,
-                ScannerFragment(),
-                "scanner"
-            )
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ScannerFragment(), "scanner")
                 .addToBackStack("scanner")
                 .commit()
         }
 
+
     }
 
+
     private fun getAccountsPermission() {
+        // Check if the GET_ACCOUNTS permission is already granted
         if (ContextCompat.checkSelfPermission(
                 this@MainActivity,
                 Manifest.permission.GET_ACCOUNTS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-
-            // Should we show an explanation?
+            // If permission is not granted, check if we need to show an explanation
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this@MainActivity,
                     Manifest.permission.GET_ACCOUNTS
                 )
             ) {
-                Log.e("Accounts", "Permission Granted")
+                // Permission was denied previously, show rationale and initialize Google login parameters
+                Log.e("Accounts", "Permission rationale needed")
                 initializeGoogleLoginParameters()
             } else {
-                // No explanation needed, we can request the permission.
+                // No rationale needed or this is the first time the permission is being requested
                 ActivityCompat.requestPermissions(
                     this@MainActivity,
                     arrayOf(Manifest.permission.GET_ACCOUNTS),
-                    0
+                    REQUEST_CODE_GET_ACCOUNTS
                 )
             }
         }
@@ -229,18 +255,35 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
     private fun setUpToolbar() {
+        // Set the toolbar as the app's action bar
         setSupportActionBar(contentBinding.toolbar)
-        supportActionBar!!.title = getString(R.string.app_name)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        contentBinding.toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
 
-        val toggle = ActionBarDrawerToggle(this, binding.drawer, contentBinding.toolbar, 0, 0)
+        // Configure the action bar with the app name as the title and enable the home button
+        supportActionBar?.apply {
+            title = getString(R.string.app_name)
+            setDisplayHomeAsUpEnabled(true)
+        }
+
+        // Set the title text color of the toolbar
+        contentBinding.toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
+
+        // Initialize and set up the ActionBarDrawerToggle for the navigation drawer
+        val toggle = ActionBarDrawerToggle(
+            this,
+            binding.drawer,
+            contentBinding.toolbar,
+            R.string.navigation_drawer_open, // Use string resource for accessibility
+            R.string.navigation_drawer_close // Use string resource for accessibility
+        )
         binding.drawer.addDrawerListener(toggle)
-        toggle.syncState()
+        toggle.syncState() // Synchronize the state of the drawer toggle
+
+        // Set up the navigation item selected listener
         binding.navigation.setNavigationItemSelectedListener(this)
 
+        // Handle toolbar navigation click to open/close the navigation drawer
         contentBinding.toolbar.setNavigationOnClickListener {
-            hideSoftKeyboard(context, binding.drawer)
+            hideSoftKeyboard(this, binding.drawer)
             if (binding.drawer.isDrawerOpen(GravityCompat.START)) {
                 binding.drawer.closeDrawer(GravityCompat.START)
             } else {
@@ -249,15 +292,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+
     // THIS FUNCTION WILL INITIALIZE THE GOOGLE LOGIN PARAMETERS
     private fun initializeGoogleLoginParameters() {
-        scopes.add(DriveScopes.DRIVE_METADATA_READONLY)
-        scopes.add(SheetsScopes.SPREADSHEETS_READONLY)
-        scopes.add(SheetsScopes.DRIVE)
-        scopes.add(SheetsScopes.SPREADSHEETS)
-        scopes.add(DriveScopes.DRIVE)
-        scopes.add(DriveScopes.DRIVE_APPDATA)
+        // Define the required scopes for Google Drive and Sheets API access
+        val scopes = mutableListOf(
+            DriveScopes.DRIVE_METADATA_READONLY,
+            SheetsScopes.SPREADSHEETS_READONLY,
+            SheetsScopes.DRIVE,
+            SheetsScopes.SPREADSHEETS,
+            DriveScopes.DRIVE,
+            DriveScopes.DRIVE_APPDATA
+        )
 
+        // Build GoogleSignInOptions for authentication with the specified scopes
         val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -265,80 +313,79 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .requestScopes(Scope(SheetsScopes.SPREADSHEETS))
             .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
             .build()
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, signInOptions)
 
-        val acct: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(context)
+        // Get the last signed-in Google account
+        val acct: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
         if (acct != null) {
-
-            credential = GoogleAccountCredential.usingOAuth2(
-                applicationContext, scopes
-            )
+            // Initialize GoogleAccountCredential with the required scopes
+            credential = GoogleAccountCredential.usingOAuth2(applicationContext, scopes)
                 .setBackOff(ExponentialBackOff())
                 .setSelectedAccount(acct.account)
 
-            mService = Drive.Builder(
-                transport, jsonFactory, credential
-            ).setHttpRequestInitializer { request ->
-                credential!!.initialize(request)
-                request!!.connectTimeout = 300 * 60000  // 300 minutes connect timeout
-                request.readTimeout = 300 * 60000  // 300 minutes read timeout
-            }
+            // Build the Drive service with the configured credentials
+            mService = Drive.Builder(httpTransport, jsonFactory, credential)
+                .setHttpRequestInitializer { request ->
+                    credential!!.initialize(request)
+                    request.connectTimeout = 300 * 60000  // Set connect timeout to 300 minutes
+                    request.readTimeout = 300 * 60000     // Set read timeout to 300 minutes
+                }
                 .setApplicationName(getString(R.string.app_name))
                 .build()
 
+            // Build the Sheets service with the configured credentials
             try {
-                sheetService = Sheets.Builder(
-                    httpTransport,
-                    jacksonFactory,
-                    credential
-                )
+                sheetService = Sheets.Builder(httpTransport, jacksonFactory, credential)
                     .setApplicationName(getString(R.string.app_name))
                     .build()
             } catch (e: Exception) {
-                e.printStackTrace()
+                e.printStackTrace() // Log any exceptions encountered during Sheets service creation
             }
+
+            // Save instances of Drive and Sheets services for later use
             DriveService.saveDriveInstance(mService!!)
             SheetService.saveGoogleSheetInstance(sheetService!!)
             saveUserUpdatedDetail(acct, "last")
         }
 
-        if (intent != null && intent.hasExtra("REQUEST") && intent.getStringExtra("REQUEST") == "login") {
+        // Check if the intent contains a request to login and start the login process if needed
+        if (intent?.hasExtra("REQUEST") == true && intent.getStringExtra("REQUEST") == "login") {
             requestLogin = "login"
             startLogin()
         }
     }
 
-
     private fun saveUserUpdatedDetail(acct: GoogleSignInAccount?, isLastSignUser: String) {
         try {
+            // Check if the account is not null and the display name is empty
+            if (acct == null) {
+                // Handle case where account is null, if needed
+                return
+            }
 
-            // IF PART WILL RUN IF USER LOGGED AND ACCOUNT DETAIL NOT EMPTY
-            if (acct != null && acct.displayName.isNullOrEmpty()) {
+            // Proceed if displayName is not empty
+            if (acct.displayName.isNullOrEmpty()) {
                 startLogin()
-            } else if (acct != null) {
-                val personName = acct.displayName
-                val personGivenName = acct.givenName
-                val personFamilyName = acct.familyName
-                val personEmail = acct.email
-                val personId = acct.id
-                val personPhoto: Uri? = acct.photoUrl
+            } else {
+                // Extract user details from the account
                 val user = User(
-                    personName!!,
-                    personGivenName!!,
-                    personFamilyName!!,
-                    personEmail!!,
-                    personId!!,
-                    personPhoto!!.toString()
+                    acct.displayName ?: "",
+                    acct.givenName ?: "",
+                    acct.familyName ?: "",
+                    acct.email ?: "",
+                    acct.id ?: "",
+                    acct.photoUrl?.toString() ?: ""
                 )
+
+                // Save user details in app settings
                 appSettings.putUser(Constants.user, user)
                 Constants.userData = user
-                if (callback != null){
-                    callback!!.onSuccess()
-                }
-                else{
-                    val scannerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as ScannerFragment
-                    scannerFragment.restart()
-                }
+
+                // Notify the callback or restart the fragment
+                callback?.onSuccess() ?: (supportFragmentManager.findFragmentById(R.id.fragment_container) as? ScannerFragment)?.restart()
+
+                // Handle new user sign-in
                 if (isLastSignUser == "new") {
                     appSettings.putBoolean(Constants.isLogin, true)
                     Toast.makeText(
@@ -347,73 +394,75 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                if (requestLogin!!.isNotEmpty() && requestLogin == "login") {
+
+                // Start TablesActivity if requestLogin is "login"
+                if (requestLogin == "login") {
                     startActivity(Intent(context, TablesActivity::class.java))
                 }
-
             }
         } catch (e: Exception) {
-
+            // Handle exceptions appropriately (e.g., log error)
+            e.printStackTrace()
         }
-        checkUserLoginStatus()
 
+        // Check user login status
+        checkUserLoginStatus()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // Helper function to start activities
+        fun startActivity(activityClass: Class<*>) {
+            startActivity(Intent(context, activityClass))
+        }
 
         when (item.itemId) {
-            R.id.dynamic_links -> {
-                startActivity(Intent(context, DynamicQrActivity::class.java))
-            }
+            R.id.dynamic_links -> startActivity(DynamicQrActivity::class.java)
+
             R.id.sheets -> {
                 if (appSettings.getBoolean(Constants.isLogin)) {
-                    startActivity(Intent(context, SheetsActivity::class.java))
+                    startActivity(SheetsActivity::class.java)
                 } else {
                     startLogin()
                 }
+            }
 
-            }
-            R.id.nav_setting -> {
-                startActivity(Intent(context, SettingsActivity::class.java))
-            }
-            R.id.tables -> {
-                startActivity(Intent(context, TablesActivity::class.java))
-            }
-            R.id.tables_data -> {
-                startActivity(Intent(context, TablesDataActivity::class.java))
-            }
-            R.id.nav_rateUs -> {
-                rateUs(this)
-            }
-            R.id.nav_recommend -> {
-                shareApp()
-            }
-            R.id.nav_contact_support -> {
-                contactSupport(this)
-            }
-            R.id.login -> {
-                startLogin()
-            }
-            R.id.field_list -> {
-                startActivity(Intent(context, FieldListsActivity::class.java))
-            }
-            R.id.profile -> {
-                startActivity(Intent(context, ProfileActivity::class.java))
-            }
+            R.id.nav_setting -> startActivity(SettingsActivity::class.java)
+
+            R.id.tables -> startActivity(TablesActivity::class.java)
+
+            R.id.tables_data -> startActivity(TablesDataActivity::class.java)
+
+            R.id.nav_rateUs -> rateUs(this)
+
+            R.id.nav_recommend -> shareApp()
+
+            R.id.nav_contact_support -> contactSupport(this)
+
+            R.id.login -> startLogin()
+
+            R.id.field_list -> startActivity(FieldListsActivity::class.java)
+
+            R.id.profile -> startActivity(ProfileActivity::class.java)
+
             R.id.logout -> {
                 MaterialAlertDialogBuilder(context)
                     .setTitle(getString(R.string.logout))
                     .setMessage(getString(R.string.logout_warning_text))
-                    .setNegativeButton(getString(R.string.cancel_text)) { dialog, which -> dialog.dismiss() }
-                    .setPositiveButton(getString(R.string.logout)) { dialog, which ->
+                    .setNegativeButton(getString(R.string.cancel_text)) { dialog, _ -> dialog.dismiss() }
+                    .setPositiveButton(getString(R.string.logout)) { dialog, _ ->
                         startLoading(context)
                         signOut()
                     }
                     .create().show()
             }
+
+            // Handle any other menu items
             else -> {
+                // Optionally, log or handle unknown items here
             }
         }
+
+        // Close the navigation drawer
         binding.drawer.closeDrawer(GravityCompat.START)
         return true
     }
@@ -421,82 +470,117 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                //hideSoftKeyboard(context, mDrawer)
-                return true
+                // Handle the home button press
+                // Optionally, hide the soft keyboard if needed
+                // hideSoftKeyboard(context, mDrawer)
+                true
             }
             else -> {
+                // Pass the event to the superclass to handle other menu items
                 super.onOptionsItemSelected(item)
             }
         }
-
     }
 
     private fun startLogin() {
+        // Obtain the sign-in intent from the GoogleSignInClient
         val signInIntent = mGoogleSignInClient.signInIntent
+
+        // Launch the sign-in activity
         googleLauncher.launch(signInIntent)
     }
 
+    /**
+     * Launches an intent to share the app with a predefined message and the app's Play Store link.
+     */
     private fun shareApp() {
-        val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.type = "text/plain"
-        shareIntent.putExtra(
-            Intent.EXTRA_TEXT,
-            getString(R.string.share_app_message) + "https://play.google.com/store/apps/details?id=" + packageName
-        )
-        startActivity(shareIntent)
+        // Create a new intent for sharing content
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            // Set the MIME type to plain text
+            type = "text/plain"
+            // Compose the share message with the app's Play Store URL
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "${getString(R.string.share_app_message)} https://play.google.com/store/apps/details?id=$packageName"
+            )
+        }
 
+        // Start the activity with the sharing intent
+        startActivity(Intent.createChooser(shareIntent, null))
     }
 
     private fun signOut() {
+        // Revoke access from Google account
+        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this) { revokeTask ->
+            // Check if revoking access was successful
+            if (revokeTask.isSuccessful) {
+                // Sign out from Google account
+                mGoogleSignInClient.signOut().addOnCompleteListener(this) { signOutTask ->
+                    if (signOutTask.isSuccessful) {
+                        // Clear local settings and user data
+                        appSettings.remove(Constants.isLogin)
+                        appSettings.remove(Constants.user)
+                        Constants.userData = null
+                        Constants.sheetService = null
+                        Constants.mService = null
 
-        // Google sign out
-        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this) {
+                        // Show success message
+                        Toast.makeText(context, getString(R.string.logout_success_text), Toast.LENGTH_SHORT).show()
 
-            mGoogleSignInClient.signOut().addOnCompleteListener(this) {
-                dismiss()
-                appSettings.remove(Constants.isLogin)
-                appSettings.remove(Constants.user)
-                Toast.makeText(context, getString(R.string.logout_success_text), Toast.LENGTH_SHORT)
-                    .show()
-                Constants.userData = null
-                Constants.sheetService = null
-                Constants.mService = null
-                val scannerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as ScannerFragment
-                scannerFragment.restart()
-                checkUserLoginStatus()
+                        // Restart ScannerFragment
+                        val scannerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? ScannerFragment
+                        scannerFragment?.restart()
+
+                        // Check if user is logged in or not
+                        checkUserLoginStatus()
+                    } else {
+                        // Handle Google sign-out failure
+                        Toast.makeText(context, getString(R.string.logout_failure_text), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                // Handle Google access revoke failure
+                Toast.makeText(context, getString(R.string.logout_failure_text), Toast.LENGTH_SHORT).show()
             }
-
         }
-
     }
 
     // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
     private var googleLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
+            // Check if the result is successful
             if (result.resultCode == Activity.RESULT_OK) {
 
+                // Retrieve the GoogleSignInAccount from the result intent
                 GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                    .addOnSuccessListener(object : OnSuccessListener<GoogleSignInAccount> {
-                        override fun onSuccess(googleSignInAccount: GoogleSignInAccount?) {
+                    .addOnSuccessListener { googleSignInAccount ->
+                        // Ensure the GoogleSignInAccount is not null
+                        googleSignInAccount?.let {
+                            // Initialize GoogleAccountCredential with OAuth2
                             credential = GoogleAccountCredential.usingOAuth2(
                                 context,
                                 scopes
-                            )
-                                .setBackOff(ExponentialBackOff())
-                                .setSelectedAccount(googleSignInAccount!!.account)
+                            ).apply {
+                                // Configure the backoff strategy
+                                setBackOff(ExponentialBackOff())
+                                // Set the selected Google account
+                                setSelectedAccount(it.account)
+                            }
 
+                            // Build the Drive service
                             mService = Drive.Builder(
-                                transport, jsonFactory, credential
+                                httpTransport, jsonFactory, credential
                             ).setHttpRequestInitializer { request ->
                                 credential!!.initialize(request)
-                                request!!.connectTimeout =
-                                    300 * 60000  // 300 minutes connect timeout
-                                request.readTimeout = 300 * 60000  // 300 minutes read timeout
+                                // Set connect and read timeouts to 300 minutes
+                                request.connectTimeout = 300 * 60 * 1000  // 300 minutes connect timeout
+                                request.readTimeout = 300 * 60 * 1000     // 300 minutes read timeout
                             }
                                 .setApplicationName(getString(R.string.app_name))
                                 .build()
 
+                            // Build the Sheets service
                             try {
                                 sheetService = Sheets.Builder(
                                     httpTransport,
@@ -506,149 +590,161 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                     .setApplicationName(getString(R.string.app_name))
                                     .build()
                             } catch (e: Exception) {
+                                // Print the exception stack trace if building Sheets service fails
                                 e.printStackTrace()
                             }
+
+                            // Save the instances for later use
                             DriveService.saveDriveInstance(mService!!)
                             SheetService.saveGoogleSheetInstance(sheetService!!)
-                            if (googleSignInAccount != null) {
-                                handleSignInResult(googleSignInAccount)
-                            }
-                        }
-                    }).addOnFailureListener(object : OnFailureListener {
-                        override fun onFailure(p0: java.lang.Exception) {
-                            showAlert(context, p0.localizedMessage!!)
-                        }
 
-                    })
+                            // Handle the sign-in result
+                            handleSignInResult(it)
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        // Show an alert if the sign-in fails
+                        showAlert(context, exception.localizedMessage ?: "Unknown error occurred")
+                    }
             }
         }
 
     private fun handleSignInResult(acct: GoogleSignInAccount) {
         try {
-
-                        saveUserUpdatedDetail(acct, "new")
-
+            // Attempt to save user details with the provided GoogleSignInAccount.
+            saveUserUpdatedDetail(acct, "new")
         } catch (e: ApiException) {
-            var s = e
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            // Handle the ApiException, which indicates the reason for the failure.
+            // You can log the exception or display an appropriate message to the user.
+            Log.e("SignInError", "Google Sign-In failed with status code: ${e.statusCode}", e)
+            // Optionally, display a user-friendly message
+//             showError("Sign-in failed. Please try again.")
         }
     }
+
 
 
     override fun onBackPressed() {
-        val fragment = supportFragmentManager.findFragmentByTag("scanner")
+        // Check if the drawer is open and close it if necessary
         if (binding.drawer.isDrawerOpen(GravityCompat.START)) {
             binding.drawer.closeDrawer(GravityCompat.START)
-        } else if (fragment != null && fragment.isVisible) {
-            finish()
-        } else {
-            contentBinding.bottomNavigation.selectedItemId = R.id.bottom_scanner
-            supportFragmentManager.beginTransaction().replace(
-                R.id.fragment_container,
-                ScannerFragment(),
-                "scanner"
-            )
-                .addToBackStack("scanner")
-                .commit()
+            return
         }
+
+        // Find the ScannerFragment by its tag
+        val scannerFragment = supportFragmentManager.findFragmentByTag("scanner")
+
+        // Check if the ScannerFragment is visible and finish the activity if it is
+        if (scannerFragment != null && scannerFragment.isVisible) {
+            finish()
+            return
+        }
+
+        // If none of the above conditions were met, replace the current fragment with ScannerFragment
+        contentBinding.bottomNavigation.selectedItemId = R.id.bottom_scanner
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, ScannerFragment(), "scanner")
+            .addToBackStack("scanner")
+            .commit()
     }
+
 
     // THIS METHOD WILL CALL AFTER SELECT THE QR TYPE WITH INPUT DATA
-    override fun onTypeSelected(data: String, position: Int, type: String) {
-        var url = ""
-        val hashMap = hashMapOf<String, String>()
-        hashMap["login"] = "qrmagicapp"
-        hashMap["qrId"] = System.currentTimeMillis().toString()
-        hashMap["userType"] = "free"
-        if (position == 2) {
-
-
-            hashMap["userUrl"] = data
-
-            startLoading(context)
-            lifecycleScope.launch{
-                viewModel.createDynamicQrCode(hashMap)
-            }
-            viewModel.dynamicQrCodeResponse.observe(this, Observer { response ->
-                dismiss()
-                if (response != null) {
-                    url = response.get("generatedUrl").asString
-                    url = if (url.contains(":8990")) {
-                        url.replace(":8990", "")
-                    } else {
-                        url
-                    }
-                    val qrHistory = CodeHistory(
-                        hashMap["login"]!!,
-                        hashMap["qrId"]!!,
-                        hashMap["userUrl"]!!,
-                        type,
-                        hashMap["userType"]!!,
-                        "qr",
-                        "create",
-                        "",
-                        "1",
-                        url,
-                        System.currentTimeMillis().toString(),
-                        ""
-                    )
-
-                    val intent = Intent(context, DesignActivity::class.java)
-                    intent.putExtra("ENCODED_TEXT", url)
-                    intent.putExtra("QR_HISTORY", qrHistory)
-                    startActivity(intent)
-                } else {
-                    showAlert(context, getString(R.string.something_wrong_error))
-                }
-            })
-        } else {
-            encodedTextData = data
-
-            val qrHistory = CodeHistory(
-                hashMap["login"]!!,
-                hashMap["qrId"]!!,
-                encodedTextData,
-                type,
-                hashMap["userType"]!!,
-                "qr",
-                "create",
-                "",
-                "0",
-                "",
-                System.currentTimeMillis().toString(),
-                ""
-            )
-            val intent = Intent(context, DesignActivity::class.java)
-            intent.putExtra("ENCODED_TEXT", encodedTextData)
-            intent.putExtra("QR_HISTORY", qrHistory)
-            startActivity(intent)
-        }
-
-    }
+//    override fun onTypeSelected(data: String, position: Int, type: String) {
+//        var url = ""
+//        val hashMap = hashMapOf<String, String>()
+//        hashMap["login"] = "qrmagicapp"
+//        hashMap["qrId"] = System.currentTimeMillis().toString()
+//        hashMap["userType"] = "free"
+//        if (position == 2) {
+//
+//
+//            hashMap["userUrl"] = data
+//
+//            startLoading(context)
+//            lifecycleScope.launch{
+//                viewModel.createDynamicQrCode(hashMap)
+//            }
+//            viewModel.dynamicQrCodeResponse.observe(this, Observer { response ->
+//                dismiss()
+//                if (response != null) {
+//                    url = response.get("generatedUrl").asString
+//                    url = if (url.contains(":8990")) {
+//                        url.replace(":8990", "")
+//                    } else {
+//                        url
+//                    }
+//                    val qrHistory = CodeHistory(
+//                        hashMap["login"]!!,
+//                        hashMap["qrId"]!!,
+//                        hashMap["userUrl"]!!,
+//                        type,
+//                        hashMap["userType"]!!,
+//                        "qr",
+//                        "create",
+//                        "",
+//                        "1",
+//                        url,
+//                        System.currentTimeMillis().toString(),
+//                        ""
+//                    )
+//
+//                    val intent = Intent(context, DesignActivity::class.java)
+//                    intent.putExtra("ENCODED_TEXT", url)
+//                    intent.putExtra("QR_HISTORY", qrHistory)
+//                    startActivity(intent)
+//                } else {
+//                    showAlert(context, getString(R.string.something_wrong_error))
+//                }
+//            })
+//        } else {
+//            encodedTextData = data
+//
+//            val qrHistory = CodeHistory(
+//                hashMap["login"]!!,
+//                hashMap["qrId"]!!,
+//                encodedTextData,
+//                type,
+//                hashMap["userType"]!!,
+//                "qr",
+//                "create",
+//                "",
+//                "0",
+//                "",
+//                System.currentTimeMillis().toString(),
+//                ""
+//            )
+//            val intent = Intent(context, DesignActivity::class.java)
+//            intent.putExtra("ENCODED_TEXT", encodedTextData)
+//            intent.putExtra("QR_HISTORY", qrHistory)
+//            startActivity(intent)
+//        }
+//
+//    }
 
     override fun onResume() {
         super.onResume()
         checkUserLoginStatus()
     }
 
+    /**
+     * Checks the user's login status and updates the visibility of menu items accordingly.
+     */
     private fun checkUserLoginStatus() {
-        if (appSettings.getBoolean(Constants.isLogin)) {
-            binding.navigation.menu.findItem(R.id.login).isVisible = false
-            binding.navigation.menu.findItem(R.id.logout).isVisible = true
-            binding.navigation.menu.findItem(R.id.profile).isVisible = true
-            binding.navigation.menu.findItem(R.id.tables).isVisible = true
-            binding.navigation.menu.findItem(R.id.field_list).isVisible = true
+        // Retrieve the user's login status from app settings
+        val isLoggedIn = appSettings.getBoolean(Constants.isLogin)
 
-
-        } else {
-            binding.navigation.menu.findItem(R.id.login).isVisible = true
-            binding.navigation.menu.findItem(R.id.logout).isVisible = false
-            binding.navigation.menu.findItem(R.id.profile).isVisible = false
-            binding.navigation.menu.findItem(R.id.tables).isVisible = false
-            binding.navigation.menu.findItem(R.id.field_list).isVisible = false
+        // Update menu item visibility based on login status
+        binding.navigation.menu.apply {
+            // Define menu item visibility for logged-in users
+            findItem(R.id.login).isVisible = !isLoggedIn
+            findItem(R.id.logout).isVisible = isLoggedIn
+            findItem(R.id.profile).isVisible = isLoggedIn
+            findItem(R.id.tables).isVisible = isLoggedIn
+            findItem(R.id.field_list).isVisible = isLoggedIn
         }
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -656,16 +752,32 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 0) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initializeGoogleLoginParameters()
+
+        // Check if the request code matches the expected one
+        when (requestCode) {
+            // Case for Google login permissions
+            0 -> {
+                // Check if the permission request was granted
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Initialize Google login parameters
+                    initializeGoogleLoginParameters()
+                } else {
+                    // Handle the case where permission is denied
+                    // For example, show a message to the user or disable related functionality
+                }
             }
-        } else if (requestCode == 100) {
+            else -> {
+                // Handle unexpected request codes if necessary
+            }
         }
     }
 
+
     override fun login(callback: LoginCallback) {
+        // Set the provided callback for later use
         this.callback = callback
+
+        // Start the login process
         startLogin()
     }
 

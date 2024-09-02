@@ -8,7 +8,6 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.text.format.DateFormat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -24,189 +23,142 @@ import com.expert.qrgenerator.utils.DialogPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.liulishuo.okdownload.DownloadTask
-import com.liulishuo.okdownload.DownloadTask.*
+import com.liulishuo.okdownload.DownloadTask.Builder
 import com.liulishuo.okdownload.core.cause.EndCause
 import com.liulishuo.okdownload.core.cause.ResumeFailedCause
 import com.liulishuo.okdownload.core.listener.DownloadListener1
 import com.liulishuo.okdownload.core.listener.assist.Listener1Assist
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 open class BaseActivity : AppCompatActivity() {
 
     companion object {
-        private var task : DownloadTask? = null
+        private var downloadTask: DownloadTask? = null
         var alert: AlertDialog? = null
 
-        // THIS FUNCTION WILL CHECK THE INTERNET CONNECTION AVAILABLE OR NOT
-        fun isNetworkAvailable(context: Context): Boolean
-        {
+        // Checks if network connection is available
+        fun isNetworkAvailable(context: Context): Boolean {
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val capabilities = connectivityManager.getNetworkCapabilities(
-                    connectivityManager.activeNetwork
-                )
-                if (capabilities != null) {
-                    when {
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                            return true
-                        }
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                            return true
-                        }
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                            return true
-                        }
-                    }
-                }
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+                capabilities?.let {
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                            it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                            it.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                } ?: false
             } else {
                 val activeNetworkInfo = connectivityManager.activeNetworkInfo
-                if (activeNetworkInfo != null && activeNetworkInfo.isConnected)
-                {
-                    return true
-                }
+                activeNetworkInfo?.isConnected == true
             }
-            return false
         }
 
-        // THIS FUNCTION WILL RETURN THE DATE TIME STRING FROM TIMESTAMP
+        // Converts timestamp to formatted date-time string
         fun getDateTimeFromTimeStamp(timeStamp: Long): String {
-            val c = Date(timeStamp)
-            val df = SimpleDateFormat("yyyy-MM-dd kk:mm a", Locale.getDefault())
-            return df.format(c).toUpperCase(Locale.ENGLISH)
+            val date = Date(timeStamp)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd kk:mm a", Locale.getDefault())
+            return dateFormat.format(date).toUpperCase(Locale.ENGLISH)
         }
 
-        // THIS FUNCTION WILL SET THE FONT FAMILY
+        // Sets custom font from a URL
         fun setFontFamily(context: Context, view: MaterialTextView, path: String) {
-            if (path.contains("http") || path.contains("https")) {
-                val extension = path.substring(path.lastIndexOf("."), path.indexOf("?"))
-                val fileName = "tempFont$extension"
-                val filePath = context.externalCacheDir.toString() + "/fonts"
+            if (path.startsWith("http://") || path.startsWith("https://")) {
+                val fileName = "tempFont${path.substringAfterLast('.', "")}"
+                val filePath = context.externalCacheDir?.resolve("fonts")?.toString()
                 val downloadFile = File(filePath, fileName)
-                if (downloadFile.exists()) {
-                    downloadFile.delete()
-                }
 
-                task = Builder(path, File(filePath))
+                downloadFile.takeIf { it.exists() }?.delete()
+
+                downloadTask = Builder(path, File(filePath))
                     .setFilename(fileName)
                     .setMinIntervalMillisCallbackProcess(100) // Update every 100ms
                     .setPassIfAlreadyCompleted(false)
                     .build()
-                task!!.enqueue(object : DownloadListener1(){
-                    override fun taskStart(
-                        task: DownloadTask,
-                        model: Listener1Assist.Listener1Model
-                    ) {
+                downloadTask?.enqueue(object : DownloadListener1() {
+                    override fun taskStart(task: DownloadTask, model: Listener1Assist.Listener1Model) {}
 
+                    override fun taskEnd(task: DownloadTask, cause: EndCause, realCause: Exception?, model: Listener1Assist.Listener1Model) {
+                        val typeface = Typeface.createFromFile(downloadFile)
+                        view.typeface = typeface
                     }
 
-                    override fun taskEnd(
-                        task: DownloadTask,
-                        cause: EndCause,
-                        realCause: java.lang.Exception?,
-                        model: Listener1Assist.Listener1Model
-                    ) {
-                        val face = Typeface.createFromFile(downloadFile)
-                        view.typeface = face
-                    }
+                    override fun retry(task: DownloadTask, cause: ResumeFailedCause) {}
 
-                    override fun retry(task: DownloadTask, cause: ResumeFailedCause) {
+                    override fun connected(task: DownloadTask, blockCount: Int, currentOffset: Long, totalLength: Long) {}
 
-                    }
-
-                    override fun connected(
-                        task: DownloadTask,
-                        blockCount: Int,
-                        currentOffset: Long,
-                        totalLength: Long
-                    ) {
-
-                    }
-
-                    override fun progress(
-                        task: DownloadTask,
-                        currentOffset: Long,
-                        totalLength: Long
-                    ) {
-
-                    }
-
+                    override fun progress(task: DownloadTask, currentOffset: Long, totalLength: Long) {}
                 })
             } else {
                 MaterialAlertDialogBuilder(context)
-                    .setMessage(context.resources.getString(R.string.font_file_error_text))
+                    .setMessage(context.getString(R.string.font_file_error_text))
                     .setCancelable(false)
-                    .setPositiveButton(context.resources.getString(R.string.ok_text)) { dialog, which ->
-                        dialog.dismiss()
-                    }
+                    .setPositiveButton(context.getString(R.string.ok_text)) { dialog, _ -> dialog.dismiss() }
                     .create().show()
             }
-
         }
 
-        fun hideKeyboard(context: Context,activity: MainActivity){
-            val view: View? = activity.currentFocus
-            if (view != null) {
-                val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
+        // Hides the keyboard
+        fun hideKeyboard(context: Context, activity: AppCompatActivity) {
+            val view = activity.currentFocus
+            view?.let {
+                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(it.windowToken, 0)
             }
         }
 
-        // THIS FUNCTION WILL ALERT THE DIFFERENT MESSAGES
+        // Displays an alert with a message
         fun showAlert(context: Context, message: String) {
             MaterialAlertDialogBuilder(context)
                 .setMessage(message)
                 .setCancelable(false)
-                .setPositiveButton("Ok") { dialog, which ->
-                    dialog.dismiss()
-                }
+                .setPositiveButton("Ok") { dialog, _ -> dialog.dismiss() }
                 .create().show()
         }
 
+        // Shows a loading dialog
         fun startLoading(context: Context) {
             val builder = MaterialAlertDialogBuilder(context)
             val layout = LayoutInflater.from(context).inflate(R.layout.custom_loading, null)
             builder.setView(layout)
             builder.setCancelable(false)
             alert = builder.create()
-            alert!!.show()
+            alert?.show()
         }
 
+        // Dismisses the loading dialog
         fun dismiss() {
-            if (alert != null) {
-                alert!!.dismiss()
-            }
+            alert?.dismiss()
         }
 
+        // Converts timestamp to formatted date string
         fun getDateFromTimeStamp(timeStamp: Long): String {
-            val c: Date = Date(timeStamp)
-            val df = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-            return df.format(c).toUpperCase(Locale.ENGLISH)
+            val date = Date(timeStamp)
+            val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+            return dateFormat.format(date).toUpperCase(Locale.ENGLISH)
         }
 
-        fun getFormattedDate(context: Context?, smsTimeInMilis: Long): String {
-            val smsTime = Calendar.getInstance()
-            smsTime.timeInMillis = smsTimeInMilis
+        // Formats date and time with conditions for today, yesterday, or specific date
+        fun getFormattedDate(context: Context?, smsTimeInMillis: Long): String {
+            val smsTime = Calendar.getInstance().apply { timeInMillis = smsTimeInMillis }
             val now = Calendar.getInstance()
             val timeFormatString = "h:mm:ss"
             val dateTimeFormatString = "EEEE, MMMM d, h:mm:ss"
 
-            return if (now[Calendar.DATE] == smsTime[Calendar.DATE]) {
-                "Today " + DateFormat.format(timeFormatString, smsTime)
-            } else if (now[Calendar.DATE] - smsTime[Calendar.DATE] == 1) {
-                "Yesterday " + DateFormat.format(timeFormatString, smsTime)
-            } else if (now[Calendar.YEAR] == smsTime[Calendar.YEAR]) {
-                DateFormat.format(dateTimeFormatString, smsTime).toString()
-            } else {
-                DateFormat.format("MMMM dd yyyy, h:mm:ss", smsTime).toString()
+            return when {
+                now[Calendar.DATE] == smsTime[Calendar.DATE] -> "Today " + DateFormat.format(timeFormatString, smsTime)
+                now[Calendar.DATE] - smsTime[Calendar.DATE] == 1 -> "Yesterday " + DateFormat.format(timeFormatString, smsTime)
+                now[Calendar.YEAR] == smsTime[Calendar.YEAR] -> DateFormat.format(dateTimeFormatString, smsTime).toString()
+                else -> DateFormat.format("MMMM dd yyyy, h:mm:ss", smsTime).toString()
             }
         }
 
+        // Prompts user to rate the app
         fun rateUs(context: AppCompatActivity) {
-            val inflater = context.layoutInflater
-            val view = inflater.inflate(R.layout.layout_dialog_rate_us, null)
+            val view = context.layoutInflater.inflate(R.layout.layout_dialog_rate_us, null)
             val builder = AlertDialog.Builder(context)
                 .setCancelable(false)
                 .setView(view)
@@ -215,71 +167,69 @@ open class BaseActivity : AppCompatActivity() {
             val ratingBar = view.findViewById<AppCompatRatingBar>(R.id.ratingBar)
 
             val alertDialog = builder.show()
-            ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+            ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
                 if (rating <= 4.0) {
                     contactSupport(context)
-                    alertDialog.dismiss()
                 } else {
                     rateAppOnPlay(context)
-                    alertDialog.dismiss()
                 }
+                alertDialog.dismiss()
             }
+
             later.setOnClickListener {
                 DialogPrefs.clearPreferences(context)
                 alertDialog.dismiss()
             }
         }
 
+        // Opens Play Store to rate the app
         private fun rateAppOnPlay(context: AppCompatActivity) {
-            val rateIntent =
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=" + context.packageName)
-                )
+            val rateIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${context.packageName}"))
             context.startActivity(rateIntent)
         }
 
+        // Opens email client to contact support
         fun contactSupport(context: AppCompatActivity) {
-            val intent = Intent(Intent.ACTION_SENDTO)
-            // only email apps should handle this
-            intent.type = "message/rfc822"
-            intent.data = Uri.parse("mailto:")
-            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
-            intent.putExtra(Intent.EXTRA_SUBJECT, "")
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                type = "message/rfc822"
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.support_email)))
+                putExtra(Intent.EXTRA_SUBJECT, "")
+            }
             try {
                 context.startActivity(Intent.createChooser(intent, "Send Mail..."))
             } catch (e: Exception) {
-//                Toast.makeText(context, "No app found to handle this intent", Toast.LENGTH_LONG)
-//                    .show()
+                // No email client installed
             }
-
         }
 
+        // Sets up toolbar with title and back button
         fun setUpToolbar(context: AppCompatActivity, toolbar: Toolbar, title: String) {
             context.setSupportActionBar(toolbar)
-            context.supportActionBar!!.title = title
-            context.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            context.supportActionBar?.apply {
+                this.title = title
+                setDisplayHomeAsUpEnabled(true)
+            }
             toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
         }
 
+        // Validates email address
         fun checkEmail(email: String): Boolean {
             return EMAIL_ADDRESS_PATTERN.matcher(email).matches()
         }
 
+        // Shows the soft keyboard
         fun showSoftKeyboard(context: Context, view: View) {
             if (view.requestFocus()) {
-                val imm: InputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
             }
         }
 
+        // Hides the soft keyboard
         fun hideSoftKeyboard(context: Context, view: View) {
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
-
-
-
     }
-
 }

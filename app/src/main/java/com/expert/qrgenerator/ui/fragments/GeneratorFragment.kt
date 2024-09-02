@@ -13,9 +13,14 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TypesAdapter
 import com.expert.qrgenerator.databinding.FragmentGeneratorBinding
 import com.expert.qrgenerator.model.QRTypes
-import com.expert.qrgenerator.ui.activities.*
+import com.expert.qrgenerator.ui.activities.BaseActivity
+import com.expert.qrgenerator.ui.activities.CouponQrActivity
+import com.expert.qrgenerator.ui.activities.FeedbackQrActivity
+import com.expert.qrgenerator.ui.activities.MainActivity
+import com.expert.qrgenerator.ui.activities.SocialNetworksQrActivity
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
 import java.util.concurrent.TimeUnit
@@ -27,10 +32,25 @@ class GeneratorFragment : Fragment() {
 
     private lateinit var typesAdapter: TypesAdapter
     private var qrTypeList = mutableListOf<QRTypes>()
-    private lateinit var appSettings:AppSettings
+    private lateinit var appSettings: AppSettings
+
+    private val fragments = listOf(
+        TextGeneratorFragment(),
+        StaticLinkGeneratorFragment(),
+        ContactGeneratorFragment(),
+        WifiGeneratorFragment(),
+        PhoneGeneratorFragment(),
+        SmsGeneratorFragment(),
+        InstagramGeneratorFragment(),
+        WhatsappGeneratorFragment()
+    )
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         binding = FragmentGeneratorBinding.inflate(layoutInflater, container, false)
 
@@ -40,7 +60,7 @@ class GeneratorFragment : Fragment() {
     }
 
 
-    private fun initViews(){
+    private fun initViews() {
         appSettings = AppSettings(requireActivity())
     }
 
@@ -54,7 +74,7 @@ class GeneratorFragment : Fragment() {
         )
         binding.typesRecyclerView.hasFixedSize()
         val tempList = Constants.getQRTypes(requireActivity())
-        if (tempList.isNotEmpty()){
+        if (tempList.isNotEmpty()) {
             qrTypeList.clear()
         }
         qrTypeList.addAll(tempList)
@@ -66,20 +86,38 @@ class GeneratorFragment : Fragment() {
                 val qrType = qrTypeList[position]
                 when (position) {
                     9 -> {
-                        BaseActivity.hideSoftKeyboard(requireActivity(),binding.layoutContainer)
-                        requireActivity().startActivity(Intent(requireActivity(), CouponQrActivity::class.java))
+                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
+                        requireActivity().startActivity(
+                            Intent(
+                                requireActivity(),
+                                CouponQrActivity::class.java
+                            )
+                        )
                     }
+
                     10 -> {
-                        BaseActivity.hideSoftKeyboard(requireActivity(),binding.layoutContainer)
-                        requireActivity().startActivity(Intent(requireActivity(), FeedbackQrActivity::class.java))
+                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
+                        requireActivity().startActivity(
+                            Intent(
+                                requireActivity(),
+                                FeedbackQrActivity::class.java
+                            )
+                        )
                     }
+
                     11 -> {
-                        BaseActivity.hideSoftKeyboard(requireActivity(),binding.layoutContainer)
-                        requireActivity().startActivity(Intent(requireActivity(), SocialNetworksQrActivity::class.java))
+                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
+                        requireActivity().startActivity(
+                            Intent(
+                                requireActivity(),
+                                SocialNetworksQrActivity::class.java
+                            )
+                        )
                     }
+
                     else -> {
                         typesAdapter.updatePosition(position)
-                        Constants.getLayout(requireActivity(), position, binding.layoutContainer,binding.nextStepBtn)
+                        replaceFragment(position)
                     }
                 }
 
@@ -88,41 +126,30 @@ class GeneratorFragment : Fragment() {
 
     }
 
-    private fun openQrTypeTooltip(){
-            if (appSettings.getBoolean(getString(R.string.key_tips))) {
-                val duration = appSettings.getLong("tt6")
-                if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
-                    SimpleTooltip.Builder(requireActivity())
-                        .anchorView(binding.typesRecyclerView)
-                        .text(getString(R.string.qr_types_tip_text))
-                        .gravity(Gravity.BOTTOM)
-                        .animated(true)
-                        .transparentOverlay(false)
-                        .onDismissListener { tooltip ->
-                            appSettings.putLong("tt6",System.currentTimeMillis())
-                            tooltip.dismiss()
-                            openInsertBarcodeTooltip()
-                        }
-                        .build()
-                        .show()
-                }
-            }
+
+    private fun replaceFragment(position: Int) {
+        val fragmentTransaction = childFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.layout_container, fragments[position])
+        fragmentTransaction.commit()
     }
 
-    private fun openInsertBarcodeTooltip() {
+    private fun openQrTypeTooltip() {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
-            val duration = appSettings.getLong("tt7")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            val duration = appSettings.getLong("tt6")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
+                    1
+                )
+            ) {
                 SimpleTooltip.Builder(requireActivity())
-                    .anchorView(binding.layoutContainer)
-                    .text(getString(R.string.insert_barcode_data_tip_text))
+                    .anchorView(binding.typesRecyclerView)
+                    .text(getString(R.string.qr_types_tip_text))
                     .gravity(Gravity.BOTTOM)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt7",System.currentTimeMillis())
+                        appSettings.putLong("tt6", System.currentTimeMillis())
                         tooltip.dismiss()
-                        openGeneratorBtnTooltip()
+                        openInsertBarcodeTooltip()
                     }
                     .build()
                     .show()
@@ -130,18 +157,21 @@ class GeneratorFragment : Fragment() {
         }
     }
 
-    private fun openGeneratorBtnTooltip() {
+    private fun openInsertBarcodeTooltip() {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
-            val duration = appSettings.getLong("tt8")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            val duration = appSettings.getLong("tt7")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
+                    1
+                )
+            ) {
                 SimpleTooltip.Builder(requireActivity())
-                    .anchorView(binding.nextStepBtn)
-                    .text(getString(R.string.next_btn_tip_text))
+                    .anchorView(binding.layoutContainer)
+                    .text(getString(R.string.insert_barcode_data_tip_text))
                     .gravity(Gravity.BOTTOM)
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt8",System.currentTimeMillis())
+                        appSettings.putLong("tt7", System.currentTimeMillis())
                         tooltip.dismiss()
                         openHistoryBtnTip()
                     }
@@ -151,10 +181,37 @@ class GeneratorFragment : Fragment() {
         }
     }
 
-    private fun openHistoryBtnTip(){
+    private fun openGeneratorBtnTooltip(view:MaterialButton) {
+        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+            val duration = appSettings.getLong("tt8")
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
+                    1
+                )
+            ) {
+                SimpleTooltip.Builder(requireActivity())
+                    .anchorView(view)
+                    .text(getString(R.string.next_btn_tip_text))
+                    .gravity(Gravity.BOTTOM)
+                    .animated(true)
+                    .transparentOverlay(false)
+                    .onDismissListener { tooltip ->
+                        appSettings.putLong("tt8", System.currentTimeMillis())
+                        tooltip.dismiss()
+//                        openHistoryBtnTip()
+                    }
+                    .build()
+                    .show()
+            }
+        }
+    }
+
+    private fun openHistoryBtnTip() {
         if (appSettings.getBoolean(getString(R.string.key_tips))) {
             val duration = appSettings.getLong("tt9")
-            if (duration.compareTo(0) == 0 || System.currentTimeMillis()-duration > TimeUnit.DAYS.toMillis(1) ) {
+            if (duration.compareTo(0) == 0 || System.currentTimeMillis() - duration > TimeUnit.DAYS.toMillis(
+                    1
+                )
+            ) {
                 SimpleTooltip.Builder(requireActivity())
                     .anchorView((requireActivity() as MainActivity).contentBinding.historyBtn)
                     .text(getString(R.string.generate_history_btn_tip_text))
@@ -162,7 +219,7 @@ class GeneratorFragment : Fragment() {
                     .animated(true)
                     .transparentOverlay(false)
                     .onDismissListener { tooltip ->
-                        appSettings.putLong("tt9",System.currentTimeMillis())
+                        appSettings.putLong("tt9", System.currentTimeMillis())
                         tooltip.dismiss()
                     }
                     .build()
@@ -174,7 +231,7 @@ class GeneratorFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Constants.getLayout(requireActivity(), 0, binding.layoutContainer,binding.nextStepBtn)
+        replaceFragment(0)
         renderQRTypesRecyclerview()
     }
 

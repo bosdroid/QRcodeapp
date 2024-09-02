@@ -12,337 +12,347 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatSpinner
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.LottieAnimationView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.SNIconsAdapter
 import com.expert.qrgenerator.adapters.SocialNetworkAdapter
 import com.expert.qrgenerator.databinding.ActivitySocialNetworksQrBinding
-import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.databinding.SnIconsLayoutDialogBinding
+import com.expert.qrgenerator.databinding.SnUpdateDialogLayoutBinding
+import com.expert.qrgenerator.databinding.TextWithColorUpdateDialogBinding
 import com.expert.qrgenerator.model.SNPayload
 import com.expert.qrgenerator.model.SocialNetwork
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.viewmodel.SocialNetworkQrViewModel
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import top.defaults.colorpicker.ColorPickerPopup
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Locale
 
 @AndroidEntryPoint
 class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     SocialNetworkAdapter.OnItemClickListener {
 
-    private lateinit var binding:ActivitySocialNetworksQrBinding
-    private lateinit var context: Context
-    private lateinit var adapeter: SocialNetworkAdapter
+    // View Binding for ActivitySocialNetworksQr layout
+    private lateinit var binding: ActivitySocialNetworksQrBinding
+
+    // Context of the activity, initialized using lazy delegation
+    private val context: Context by lazy { this }
+
+    // Adapter for social network items
+    private lateinit var adapter: SocialNetworkAdapter
+
+    // List of social network objects
     private var socialNetworkList = mutableListOf<SocialNetwork>()
-    private var updateType = ""
+
+    // Type of update to be performed
+    private var updateType: String = ""
+
+    // Banner image URL for social network
     private var snBannerImage: String = ""
-    private var snContentDetailBackgroundColor = ""
-    private var snTitleText = ""
-    private var snTitleTextColor = ""
-    private var snDescriptionText = ""
-    private var snDescriptionTextColor = ""
-    private var snSelectedSocialNetwork = ""
+
+    // Background color for social network content detail
+    private var snContentDetailBackgroundColor: String = ""
+
+    // Title text for social network
+    private var snTitleText: String = ""
+
+    // Title text color for social network
+    private var snTitleTextColor: String = ""
+
+    // Description text for social network
+    private var snDescriptionText: String = ""
+
+    // Description text color for social network
+    private var snDescriptionTextColor: String = ""
+
+    // Selected social network identifier
+    private var snSelectedSocialNetwork: String = ""
+
+    // ViewModel for handling social network QR data
     private val viewModel: SocialNetworkQrViewModel by viewModels()
+
+    // ViewModel for application-wide data
     private val appViewModel: AppViewModel by viewModels()
+
+    // List of icons represented as pairs of string (icon name) and integer (icon resource ID)
+    val iconsList = mutableListOf<Pair<String, Int>>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize ViewBinding
         binding = ActivitySocialNetworksQrBinding.inflate(layoutInflater)
+
+        // Set the content view using the root of the ViewBinding
         setContentView(binding.root)
 
+        // Initialize view components and set up any necessary configurations
         initViews()
-        setUpToolbar()
-        generateSocialNetworkList()
 
+        // Set up the toolbar with any required settings or customization
+        setUpToolbar()
+
+        // Generate and display the list of social networks
+        generateSocialNetworkList()
     }
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
-        context = this
 
+        // Set click listeners for various buttons
         binding.snHeaderImageEditBtn.setOnClickListener(this)
-
         binding.snDetailsBackgroundColorEditBtn.setOnClickListener(this)
-
         binding.snTextEditBtn.setOnClickListener(this)
-
         binding.snDescriptionEditBtn.setOnClickListener(this)
-
         binding.nextStepBtn.setOnClickListener(this)
-        binding.snListRecyclerview.layoutManager = LinearLayoutManager(context)
-        binding.snListRecyclerview.hasFixedSize()
-        adapeter = SocialNetworkAdapter( socialNetworkList as ArrayList<SocialNetwork>)
-        binding.snListRecyclerview.adapter = adapeter
-        adapeter.setOnItemClickListener(this)
 
+        // Set up RecyclerView with LinearLayoutManager
+        binding.snListRecyclerview.apply {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true) // Improve performance for fixed-size items
+            adapter = SocialNetworkAdapter(socialNetworkList as ArrayList<SocialNetwork>)
+            // Set item click listener for the adapter
+            (adapter as? SocialNetworkAdapter)?.setOnItemClickListener(this@SocialNetworksQrActivity)
+        }
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
+    /**
+     * Sets up the toolbar with the appropriate title and styling.
+     */
     private fun setUpToolbar() {
+        // Set the toolbar as the action bar
         setSupportActionBar(binding.toolbar)
-        supportActionBar!!.title = getString(R.string.social_networks_qr)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
+
+        // Set the title of the action bar
+        supportActionBar?.title = getString(R.string.social_networks_qr)
+
+        // Enable the display of the "up" button (back navigation) in the toolbar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // Set the title text color of the toolbar
+        binding.toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
     }
 
+
+    /**
+     * Generates a list of social network objects and updates the adapter.
+     */
     private fun generateSocialNetworkList() {
-        socialNetworkList.add(
-            SocialNetwork(
-                "facebook",
-                R.drawable.facebook,
-                "Facebook",
-                "facebook",
-                "www.your-url.com",
-                1
-            )
-        )
-        socialNetworkList.add(
-            SocialNetwork(
-                "www",
-                R.drawable.www,
-                "Visit us online",
-                "www",
-                "www.your-website.com",
-                0
-            )
-        )
-        socialNetworkList.add(
-            SocialNetwork(
-                "youtube",
-                R.drawable.youtube,
-                "Youtube",
-                "youtube",
-                "www.your-url.com",
-                0
-            )
-        )
-        socialNetworkList.add(
-            SocialNetwork(
-                "instagram",
-                R.drawable.instagram_sn,
-                "Instagram",
-                "instagram",
-                "www.your-url.com",
-                0
-            )
-        )
-        socialNetworkList.add(
-            SocialNetwork(
-                "twitter",
-                R.drawable.twitter,
-                "Twitter",
-                "twitter",
-                "www.your-url.com",
-                0
-            )
-        )
-        socialNetworkList.add(
-            SocialNetwork(
-                "vk",
-                R.drawable.vk,
-                "VK",
-                "vk",
-                "www.your-url.com",
-                0
-            )
-        )
-        socialNetworkList.add(
-            SocialNetwork(
-                "telegram",
-                R.drawable.telegram,
-                "Telegram",
-                "telegram",
-                "www.your-url.com",
-                0
-            )
+        // List of social network data to add
+        val socialNetworks = listOf(
+            SocialNetwork("facebook", R.drawable.facebook, "Facebook", "facebook", "www.your-url.com", 1),
+            SocialNetwork("www", R.drawable.www, "Visit us online", "www", "www.your-website.com", 0),
+            SocialNetwork("youtube", R.drawable.youtube, "YouTube", "youtube", "www.your-url.com", 0),
+            SocialNetwork("instagram", R.drawable.instagram_sn, "Instagram", "instagram", "www.your-url.com", 0),
+            SocialNetwork("twitter", R.drawable.twitter, "Twitter", "twitter", "www.your-url.com", 0),
+            SocialNetwork("vk", R.drawable.vk, "VK", "vk", "www.your-url.com", 0),
+            SocialNetwork("telegram", R.drawable.telegram, "Telegram", "telegram", "www.your-url.com", 0)
         )
 
+        // Add all social networks to the list
+        socialNetworkList.addAll(socialNetworks)
+
+        // Notify the adapter if the list is not empty
         if (socialNetworkList.isNotEmpty()) {
-            adapeter.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
         }
     }
 
 
     // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            true
-        } else {
-            super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onClick(v: View?) {
-        when (v!!.id) {
-            R.id.sn_header_image_edit_btn -> {
-                if (RuntimePermissionHelper.checkStoragePermission(
-                        context,
-                        Constants.READ_STORAGE_PERMISSION
-                    )
-                ) {
-                    getImageFromLocalStorage()
-                }
-            }
-            R.id.sn_details_background_color_edit_btn -> {
-                openColorDialog(binding.snContentWrapperLayout)
-            }
-            R.id.sn_text_edit_btn -> {
-                updateType = "sn_title"
-                updateTextAndColor(binding.snTitleText)
-            }
-            R.id.sn_description_edit_btn -> {
-                updateType = "sn_description"
-                updateTextAndColor(binding.snDescriptionText)
-            }
-            R.id.next_step_btn -> {
-                if (validation()) {
-                    val selectedList = mutableListOf<SocialNetwork>()
-                    for (i in 0 until socialNetworkList.size) {
-                        val item = socialNetworkList[i]
-                        if (item.isActive == 1) {
-                            selectedList.add(item)
-                        }
-                    }
-
-                    val requestJsonObject = SNPayload(
-                        snBannerImage,
-                        snContentDetailBackgroundColor,
-                        snTitleText,
-                        snTitleTextColor,
-                        snDescriptionText,
-                        snDescriptionTextColor,
-                        selectedList as ArrayList<SocialNetwork>
-                    )
-
-                    startLoading(context)
-                    lifecycleScope.launch {
-                        viewModel.createSnQrCode(requestJsonObject)
-                    }
-                    viewModel.snQrCodeResponse.observe(this, Observer { response ->
-                        var url = ""
-                        dismiss()
-                        if (response != null) {
-                            Log.d("TEST199", response.toString())
-                            url = response.get("generatedUrl").asString
-
-                            // SETUP QR DATA HASMAP FOR HISTORY
-                            val qrData = hashMapOf<String, String>()
-                            qrData["login"] = "qrmagicapp"
-                            qrData["qrId"] = "${System.currentTimeMillis()}"
-                            qrData["userType"] = "free"
-
-                            val qrHistory = CodeHistory(
-                                qrData["login"]!!,
-                                qrData["qrId"]!!,
-                                url,
-                                "sn",
-                                qrData["userType"]!!,
-                                "qr",
-                                "create",
-                                "",
-                                "0",
-                                "",
-                                System.currentTimeMillis().toString(),
-                                ""
-                            )
-
-                            val intent = Intent(context, DesignActivity::class.java)
-                            intent.putExtra("ENCODED_TEXT", url)
-                            intent.putExtra("QR_HISTORY", qrHistory)
-                            startActivity(intent)
-
-                        } else {
-                            showAlert(context, getString(R.string.something_wrong_error))
-                        }
-                    })
-                }
+        // Check if the selected item is the "home" button
+        return when (item.itemId) {
+            android.R.id.home -> {
+                // Handle the "home" button click
+                onBackPressed()
+                true
             }
             else -> {
-
+                // Handle other menu items
+                super.onOptionsItemSelected(item)
             }
         }
     }
 
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.sn_header_image_edit_btn -> handleImageEdit()
+            R.id.sn_details_background_color_edit_btn -> handleColorEdit()
+            R.id.sn_text_edit_btn -> handleTextEdit("sn_title", binding.snTitleText)
+            R.id.sn_description_edit_btn -> handleTextEdit("sn_description", binding.snDescriptionText)
+            R.id.next_step_btn -> handleNextStep()
+            else -> {
+                // Handle unexpected view ids if necessary
+            }
+        }
+    }
+
+    // Handle image edit button click
+    private fun handleImageEdit() {
+        if (RuntimePermissionHelper.checkStoragePermission(
+                context,
+                Constants.READ_STORAGE_PERMISSION
+            )
+        ) {
+            getImageFromLocalStorage()
+        }
+    }
+
+    // Handle background color edit button click
+    private fun handleColorEdit() {
+        openColorDialog(binding.snContentWrapperLayout)
+    }
+
+    // Handle text edit button click
+    private fun handleTextEdit(updateType: String, textView: MaterialTextView) {
+        this.updateType = updateType
+        updateTextAndColor(textView)
+    }
+
+    // Handle the next step button click
+    private fun handleNextStep() {
+        if (validation()) {
+            // Collect active social network items
+            val selectedList = socialNetworkList.filter { it.isActive == 1 }
+
+            // Create the payload object for the request
+            val requestJsonObject = SNPayload(
+                snBannerImage,
+                snContentDetailBackgroundColor,
+                snTitleText,
+                snTitleTextColor,
+                snDescriptionText,
+                snDescriptionTextColor,
+                ArrayList(selectedList)
+            )
+
+            // Start loading state
+            startLoading(context)
+
+            // Launch coroutine for network operation
+            lifecycleScope.launch {
+                viewModel.createSnQrCode(requestJsonObject)
+            }
+
+            // Observe the response
+            viewModel.snQrCodeResponse.observe(this, Observer { response ->
+                if (response != null) {
+                    Log.d("TEST199", response.toString())
+                    val url = response.get("generatedUrl").asString
+                    GeneratorManager.generateQRCode(this@SocialNetworksQrActivity,url,"sn")
+                }
+            })
+        }
+    }
+
+    /**
+     * Validates the input fields for the form.
+     *
+     * @return true if all validations pass, false otherwise.
+     */
     private fun validation(): Boolean {
+        // Check if banner image is empty
         if (snBannerImage.isEmpty()) {
             showAlert(context, getString(R.string.sn_banner_image_error_text))
             return false
-        } else if (snContentDetailBackgroundColor.isEmpty()) {
+        }
+
+        // Check if background color is empty
+        if (snContentDetailBackgroundColor.isEmpty()) {
             showAlert(context, getString(R.string.sn_background_color_error_text))
             return false
-        } else if (snTitleText.isEmpty()) {
+        }
+
+        // Check if title text is empty
+        if (snTitleText.isEmpty()) {
             showAlert(context, getString(R.string.sn_title_error_text))
             return false
-        } else if (snDescriptionText.isEmpty()) {
+        }
+
+        // Check if description text is empty
+        if (snDescriptionText.isEmpty()) {
             showAlert(context, getString(R.string.sn_description_error_text))
             return false
-        } else if (socialNetworkList.size == 0) {
+        }
+
+        // Check if social network list is empty
+        if (socialNetworkList.isEmpty()) {
             showAlert(context, getString(R.string.sn_list_empty_error_text))
             return false
         }
+
+        // All validations passed
         return true
     }
 
+
     // THIS FUNCTION WILL CALL THE IMAGE INTENT
     private fun getImageFromLocalStorage() {
-        val fileIntent = Intent(Intent.ACTION_PICK)
-        fileIntent.type = "image/*"
+        // Create an intent to pick an image from the device's storage
+        val fileIntent = Intent(Intent.ACTION_PICK).apply {
+            type = "image/*"  // Specify that we want to pick images
+        }
+
+        // Launch the intent using the result launcher
         resultLauncher.launch(fileIntent)
     }
 
     // THIS RESULT LAUNCHER WILL CALL THE ACTION PICK FROM FILES FOR BACKGROUND AND LOGO IMAGE
+    // Register an ActivityResultLauncher to handle result from image selection
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-            // THIS LINE OF CODE WILL CHECK THE IMAGE HAS BEEN SELECTED OR NOT
+            // Check if the result code indicates a successful operation
             if (result.resultCode == Activity.RESULT_OK) {
-
+                // Retrieve the selected image data from the Intent
                 val data: Intent? = result.data
-                val size = ImageManager.getImageWidthHeight(context, data!!.data!!)
-                val imageWidth = size.split(",")[0].toInt()
-                val imageHeight = size.split(",")[1].toInt()
-                snBannerImage = ImageManager.convertImageToBase64(context, data.data!!)
-                //val path = ImageManager.getRealPathFromUri(context, data.data!!)
+                data?.data?.let { uri ->
 
-                // THIS LINES OF CODE WILL RE SCALED THE IMAGE WITH ASPECT RATION AND SIZE 640 X 360
-                val bitmapImage =
-                    BitmapFactory.decodeFile(ImageManager.getRealPathFromUri(context, data.data!!))
-                val nh = (bitmapImage.height * (640.0 / bitmapImage.width)).toInt()
-                val scaled = Bitmap.createScaledBitmap(bitmapImage, 640, nh, true)
-                binding.snBannerImage.setImageBitmap(scaled)
-                binding.snHeaderImageEditHint.visibility = View.GONE
-                binding.lavSnHeaderImageEditBtn.visibility = View.GONE
-                binding.snHeaderImageEditBtn.setImageResource(R.drawable.green_checked_icon)
+                    // Get image dimensions
+                    val size = ImageManager.getImageWidthHeight(context, uri)
+                    val (imageWidth, imageHeight) = size.split(",").map { it.toInt() }
 
+                    // Convert image to Base64 format
+                    snBannerImage = ImageManager.convertImageToBase64(context, uri)
+
+                    // Decode the image file into a Bitmap
+                    val realPath = ImageManager.getRealPathFromUri(context, uri)
+                    val bitmapImage = BitmapFactory.decodeFile(realPath)
+
+                    // Calculate new height to maintain aspect ratio (640 x 360)
+                    val newHeight = (bitmapImage.height * (640.0 / bitmapImage.width)).toInt()
+
+                    // Scale the image to the desired size while maintaining aspect ratio
+                    val scaledBitmap = Bitmap.createScaledBitmap(bitmapImage, 640, newHeight, true)
+
+                    // Update UI with the scaled image
+                    binding.snBannerImage.setImageBitmap(scaledBitmap)
+                    binding.snHeaderImageEditHint.visibility = View.GONE
+                    binding.lavSnHeaderImageEditBtn.visibility = View.GONE
+                    binding.snHeaderImageEditBtn.setImageResource(R.drawable.green_checked_icon)
+                }
             }
         }
+
 
     // THIS FUNCTION WILL HANDLE THE RUNTIME PERMISSION RESULT
     override fun onRequestPermissionsResult(
@@ -352,118 +362,137 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
+        // Handle the result of the permission request
         when (requestCode) {
             Constants.READ_STORAGE_REQUEST_CODE -> {
+                // Check if the permission request was granted
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted, proceed with accessing local storage
                     getImageFromLocalStorage()
                 } else {
+                    // Permission denied, show an alert dialog with an error message
                     MaterialAlertDialogBuilder(context)
                         .setMessage(getString(R.string.external_storage_permission_error1))
                         .setCancelable(false)
-                        .setPositiveButton(getString(R.string.ok_text)) { dialog, which ->
+                        .setPositiveButton(getString(R.string.ok_text)) { dialog, _ ->
                             dialog.dismiss()
                         }
-                        .create().show()
+                        .create()
+                        .show()
                 }
             }
+            // Handle other request codes if needed
             else -> {
-
+                // Optionally handle other permission requests here
             }
         }
     }
 
-    private fun openColorDialog(view: View) {
 
+    private fun openColorDialog(view: View) {
+        // Build and configure the ColorPickerPopup
         ColorPickerPopup.Builder(this)
-            .initialColor(Color.RED) // Set initial color
-            .enableBrightness(true) // Enable brightness slider or not
-            .enableAlpha(true) // Enable alpha slider or not
-            .okTitle(getString(R.string.chose_text))
-            .cancelTitle(getString(R.string.cancel_text))
-            .showIndicator(true)
-            .showValue(true)
+            .initialColor(Color.RED) // Set the initial color to red
+            .enableBrightness(true) // Enable the brightness slider
+            .enableAlpha(true) // Enable the alpha (transparency) slider
+            .okTitle(getString(R.string.chose_text)) // Set the title for the OK button
+            .cancelTitle(getString(R.string.cancel_text)) // Set the title for the Cancel button
+            .showIndicator(true) // Show the color indicator
+            .showValue(true) // Show the color value
             .build()
             .show(view, object : ColorPickerPopup.ColorPickerObserver() {
+                /**
+                 * Called when a color is picked.
+                 *
+                 * @param color The selected color.
+                 */
                 override fun onColorPicked(color: Int) {
-                    val hexColor = "#" + Integer.toHexString(color).substring(2)
+                    // Convert the color to a hexadecimal string
+                    val hexColor = "#" + Integer.toHexString(color).substring(2).toUpperCase()
+
+                    // Update the background color of the layout
                     binding.snContentWrapperLayout.setBackgroundColor(Color.parseColor(hexColor))
+
+                    // Update the stored color value
                     snContentDetailBackgroundColor = hexColor
+
+                    // Hide the hint text and edit button
                     binding.snDetailsBackgroundColorHintText.visibility = View.GONE
                     binding.lavSnDetailsBackgroundColorEditBtn.visibility = View.GONE
+
+                    // Update the edit button image resource to indicate the color is selected
                     binding.snDetailsBackgroundColorEditBtn.setImageResource(R.drawable.green_checked_icon)
                 }
 
+                // Optional: This method is not used but can be implemented if needed
                 fun onColor(color: Int, fromUser: Boolean) {
-
+                    // Add implementation if needed
                 }
             })
     }
 
     // THIS FUNCTION WILL UPDATE TEXT AND COLOR
     private fun updateTextAndColor(view: MaterialTextView) {
-        val dialogLayout =
-            LayoutInflater.from(context).inflate(R.layout.text_with_color_update_dialog, null)
-        val cancelBtn =
-            dialogLayout.findViewById<MaterialButton>(R.id.text_with_color_dialog_cancel_btn)
-        val updateBtn =
-            dialogLayout.findViewById<MaterialButton>(R.id.text_with_color_dialog_update_btn)
-        val inputBox =
-            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_text_input_field)
-        val saleBadgeWrapperLayout =
-            dialogLayout.findViewById<LinearLayout>(R.id.text_with_color_sale_badge_wrapper)
-        val saleBadgeSpinner =
-            dialogLayout.findViewById<AppCompatSpinner>(R.id.text_with_color_sale_badge_selector)
-        val customSaleBadgeView =
-            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_custom_sale_badge)
-        val colorBtnView =
-            dialogLayout.findViewById<AppCompatButton>(R.id.text_with_color_color_btn)
-        val colorTextField =
-            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_color_tf)
+        // Inflate the dialog layout using ViewBinding
+        val dialogBinding = TextWithColorUpdateDialogBinding.inflate(LayoutInflater.from(context))
+
+        // Initialize the views from the binding
+        val cancelBtn = dialogBinding.textWithColorDialogCancelBtn
+        val updateBtn = dialogBinding.textWithColorDialogUpdateBtn
+        val inputBox = dialogBinding.textWithColorTextInputField
+        val saleBadgeWrapperLayout = dialogBinding.textWithColorSaleBadgeWrapper
+        val saleBadgeSpinner = dialogBinding.textWithColorSaleBadgeSelector
+        val customSaleBadgeView = dialogBinding.textWithColorCustomSaleBadge
+        val colorBtnView = dialogBinding.textWithColorColorBtn
+        val colorTextField = dialogBinding.textWithColorColorTf
+
+        // Set initial values based on updateType
         var selectedColor = ""
         when (updateType) {
             "sn_title" -> {
                 if (snTitleText.isNotEmpty()) {
                     inputBox.setText(snTitleText)
                 }
-                if (snTitleTextColor.isEmpty()) {
-                    selectedColor = colorTextField.text.toString()
+                selectedColor = if (snTitleTextColor.isEmpty()) {
+                    colorTextField.text.toString()
                 } else {
-                    selectedColor = snTitleTextColor
-                    colorTextField.setText(selectedColor)
-                    colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
+                    colorTextField.setText(snTitleTextColor)
+                    colorBtnView.setBackgroundColor(Color.parseColor(snTitleTextColor))
+                    snTitleTextColor
                 }
             }
             "sn_description" -> {
                 if (snDescriptionText.isNotEmpty()) {
                     inputBox.setText(snDescriptionText)
                 }
-                if (snDescriptionTextColor.isEmpty()) {
-                    selectedColor = colorTextField.text.toString()
+                selectedColor = if (snDescriptionTextColor.isEmpty()) {
+                    colorTextField.text.toString()
                 } else {
-                    selectedColor = snDescriptionTextColor
-                    colorTextField.setText(selectedColor)
-                    colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
+                    colorTextField.setText(snDescriptionTextColor)
+                    colorBtnView.setBackgroundColor(Color.parseColor(snDescriptionTextColor))
+                    snDescriptionTextColor
                 }
             }
-            else -> {
-
-            }
+            else -> { /* No action needed for other cases */ }
         }
 
+        // Hide unnecessary views and show inputBox
         saleBadgeWrapperLayout.visibility = View.GONE
         inputBox.visibility = View.VISIBLE
 
-        val builder = MaterialAlertDialogBuilder(context)
-        builder.setView(dialogLayout)
-        builder.setCancelable(false)
-        val alert = builder.create()
+        // Build and show the alert dialog
+        val alert = MaterialAlertDialogBuilder(context)
+            .setView(dialogBinding.root)
+            .setCancelable(false)
+            .create()
         alert.show()
 
+        // Handle color button click to open color picker
         colorBtnView.setOnClickListener {
             ColorPickerPopup.Builder(this)
                 .initialColor(Color.RED) // Set initial color
-                .enableBrightness(true) // Enable brightness slider or not
-                .enableAlpha(true) // Enable alpha slider or not
+                .enableBrightness(true) // Enable brightness slider
+                .enableAlpha(true) // Enable alpha slider
                 .okTitle(getString(R.string.chose_text))
                 .cancelTitle(getString(R.string.cancel_text))
                 .showIndicator(true)
@@ -475,18 +504,15 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                         colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
                         colorTextField.setText(hexColor)
                         selectedColor = hexColor
-
-                    }
-
-                    fun onColor(color: Int, fromUser: Boolean) {
-
                     }
                 })
         }
 
+        // Handle cancel button click to dismiss the dialog
         cancelBtn.setOnClickListener { alert.dismiss() }
-        updateBtn.setOnClickListener {
 
+        // Handle update button click to update the view
+        updateBtn.setOnClickListener {
             val value = view.text.toString().trim()
             if (value.isNotEmpty()) {
                 view.text = value
@@ -494,7 +520,7 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                     view.setTextColor(Color.parseColor(selectedColor))
                 }
 
-
+                // Update the text and color values based on updateType
                 when (updateType) {
                     "sn_title" -> {
                         snTitleText = value
@@ -508,132 +534,144 @@ class SocialNetworksQrActivity : BaseActivity(), View.OnClickListener,
                         binding.lavSnDescriptionEditBtn.visibility = View.GONE
                         binding.snDescriptionEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
-                    else -> {
-
-                    }
+                    else -> { /* No action needed for other cases */ }
                 }
-
                 alert.dismiss()
             } else {
+                // Show an error if the text is empty
                 showAlert(context, getString(R.string.empty_text_error))
             }
         }
     }
 
     override fun onItemClick(position: Int) {
+        // Get the item at the clicked position
         val item = socialNetworkList[position]
 
-        val snLayout =
-            LayoutInflater.from(context).inflate(R.layout.sn_update_dialog_layout, null)
-        val snTitleEditText =
-            snLayout.findViewById<TextInputEditText>(R.id.sn_title_input_field)
-        snTitleEditText.setText(item.title)
-        val snDescriptionEditText =
-            snLayout.findViewById<TextInputEditText>(R.id.sn_description_input_field)
-        snDescriptionEditText.hint = item.url
-        val cancelBtn = snLayout.findViewById<MaterialButton>(R.id.dialog_cancel_btn)
-        val updateBtn = snLayout.findViewById<MaterialButton>(R.id.dialog_update_btn)
+        // Inflate the dialog layout using ViewBinding
+        val dialogBinding = SnUpdateDialogLayoutBinding.inflate(LayoutInflater.from(context))
 
-        val builder = MaterialAlertDialogBuilder(context)
-        builder.setView(snLayout)
-        builder.setCancelable(false)
-        val alert = builder.create()
+        // Set initial values for the EditTexts
+        dialogBinding.snTitleInputField.setText(item.title)
+        dialogBinding.snDescriptionInputField.hint = item.url
+
+        // Create and show the dialog
+        val alert = MaterialAlertDialogBuilder(context)
+            .setView(dialogBinding.root)
+            .setCancelable(false)
+            .create()
+
         alert.show()
 
-        cancelBtn.setOnClickListener { alert.dismiss() }
-        updateBtn.setOnClickListener {
-            if (snTitleEditText.text.toString().trim().isNotEmpty()
-                && snDescriptionEditText.text.toString().trim().isNotEmpty()
-            ) {
+        // Set up listeners for the buttons
+        dialogBinding.dialogCancelBtn.setOnClickListener { alert.dismiss() }
 
-                val value = snDescriptionEditText.text.toString().trim().toLowerCase(Locale.ENGLISH)
-                if (value.contains("http://") || value.contains("https://")) {
-                    showAlert(
-                        context,
-                        getString(R.string.without_protocol_error)
-                    )
+        dialogBinding.dialogUpdateBtn.setOnClickListener {
+            val title = dialogBinding.snTitleInputField.text.toString().trim()
+            val url = dialogBinding.snDescriptionInputField.text.toString().trim()
+
+            // Validate input
+            if (title.isNotEmpty() && url.isNotEmpty()) {
+                val lowerCaseUrl = url.toLowerCase(Locale.ENGLISH)
+
+                if (lowerCaseUrl.contains("http://") || lowerCaseUrl.contains("https://")) {
+                    showAlert(context, getString(R.string.without_protocol_error))
                 } else {
-                    item.title = snTitleEditText.text.toString().trim()
-                    item.url = snDescriptionEditText.text.toString().trim()
-                    socialNetworkList.removeAt(position)
-                    socialNetworkList.add(position, item)
-                    adapeter.notifyItemChanged(position)
-                    alert.dismiss()
-                    Toast.makeText(
-                        context,
-                        getString(R.string.list_item_update_success_text),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
+                    // Update the item and refresh the list
+                    item.title = title
+                    item.url = url
+                    socialNetworkList[position] = item
+                    adapter.notifyItemChanged(position)
 
+                    alert.dismiss()
+                    Toast.makeText(context, getString(R.string.list_item_update_success_text), Toast.LENGTH_SHORT).show()
+                }
             } else {
                 showAlert(context, getString(R.string.sn_title_description_error_text))
             }
         }
-
     }
 
     override fun onItemCheckClick(position: Int, isChecked: Boolean) {
+        // Retrieve the item at the specified position
         val item = socialNetworkList[position]
-        if (item.isActive == 0 && isChecked) {
-            item.isActive = 1
-            socialNetworkList.removeAt(position)
-            socialNetworkList.add(position, item)
-            adapeter.notifyDataSetChanged()
-        } else if (item.isActive == 1 && !isChecked) {
-            item.isActive = 0
-            socialNetworkList.removeAt(position)
-            socialNetworkList.add(position, item)
-            adapeter.notifyDataSetChanged()
+
+        // Check if the item status needs to be updated
+        if (item.isActive != if (isChecked) 1 else 0) {
+            // Update the item's active status
+            item.isActive = if (isChecked) 1 else 0
+
+            // Notify adapter of the changes
+            // Update the list and notify adapter of data changes
+            socialNetworkList[position] = item
+            adapter.notifyDataSetChanged()
         }
     }
 
-    val iconsList = mutableListOf<Pair<String, Int>>()
     override fun onItemEditIconClick(position: Int, checkBox: MaterialCheckBox) {
+        // Check if the checkbox is checked
         if (checkBox.isChecked) {
+            // Get the selected item from the list
             val item = socialNetworkList[position]
-            generateIconsList()
-            val snIconsLayout =
-                LayoutInflater.from(context).inflate(R.layout.sn_icons_layout_dialog, null)
-            val snIconsRecyclerview =
-                snIconsLayout.findViewById<RecyclerView>(R.id.sn_icons_recyclerview)
-            snIconsRecyclerview.layoutManager = GridLayoutManager(context, 3)
-            snIconsRecyclerview.hasFixedSize()
-            val iconsAdapter = SNIconsAdapter(iconsList as ArrayList<Pair<String, Int>>)
-            snIconsRecyclerview.adapter = iconsAdapter
 
+            // Generate the list of icons
+            generateIconsList()
+
+            // Inflate the dialog layout using ViewBinding
+            val snIconsBinding = SnIconsLayoutDialogBinding.inflate(LayoutInflater.from(context))
+            val snIconsRecyclerView = snIconsBinding.snIconsRecyclerview
+
+            // Set up the RecyclerView with GridLayoutManager and adapter
+            snIconsRecyclerView.layoutManager = GridLayoutManager(context, 3)
+            snIconsRecyclerView.setHasFixedSize(true)
+            val iconsAdapter = SNIconsAdapter(iconsList as ArrayList<Pair<String, Int>>)
+            snIconsRecyclerView.adapter = iconsAdapter
+
+            // Create and show the dialog using MaterialAlertDialogBuilder
             val builder = MaterialAlertDialogBuilder(context)
-            builder.setView(snIconsLayout)
+            builder.setView(snIconsBinding.root)
             val alert = builder.create()
             alert.show()
 
+            // Set item click listener for the icons adapter
             iconsAdapter.setOnItemClickListener(object : SNIconsAdapter.OnItemClickListener {
                 override fun onItemClick(pos: Int) {
+                    // Get the selected icon
                     val pair = iconsList[pos]
+
+                    // Update the item with the selected icon details
                     item.icon = pair.second
                     item.iconName = pair.first
                     item.description = pair.first
 
-                    socialNetworkList.removeAt(position)
-                    socialNetworkList.add(position, item)
-                    adapeter.notifyItemChanged(position)
+                    // Update the list and notify the adapter
+                    socialNetworkList[position] = item
+                    adapter.notifyItemChanged(position)
+
+                    // Dismiss the dialog
                     alert.dismiss()
                 }
             })
         }
     }
 
+
     private fun generateIconsList() {
+        // Check if iconsList is not empty and clear it
         if (iconsList.isNotEmpty()) {
             iconsList.clear()
         }
-        iconsList.add(Pair("facebook", R.drawable.facebook))
-        iconsList.add(Pair("www", R.drawable.www))
-        iconsList.add(Pair("youtube", R.drawable.youtube))
-        iconsList.add(Pair("instagram", R.drawable.instagram_sn))
-        iconsList.add(Pair("twitter", R.drawable.twitter))
-        iconsList.add(Pair("vk", R.drawable.vk))
-        iconsList.add(Pair("telegram", R.drawable.telegram))
+
+        // Populate iconsList with pairs of icon names and drawable resources
+        iconsList.apply {
+            add(Pair("facebook", R.drawable.facebook))
+            add(Pair("www", R.drawable.www))
+            add(Pair("youtube", R.drawable.youtube))
+            add(Pair("instagram", R.drawable.instagram_sn))
+            add(Pair("twitter", R.drawable.twitter))
+            add(Pair("vk", R.drawable.vk))
+            add(Pair("telegram", R.drawable.telegram))
+        }
     }
+
 }

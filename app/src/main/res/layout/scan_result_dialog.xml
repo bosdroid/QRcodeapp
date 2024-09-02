@@ -38,6 +38,7 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="@dimen/sixtyDpMargin"
                 android:gravity="center_vertical"
+                android:visibility="gone"
                 >
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="0dp"
@@ -155,6 +156,13 @@
                     android:id="@+id/scan_result_dialog_submit_btn"
                     />
 
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel_text"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:id="@+id/scan_result_dialog_cancel_btn"
+                />
         </LinearLayout>
 
 

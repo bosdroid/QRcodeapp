@@ -1,55 +1,59 @@
 package com.expert.qrgenerator.ui.activities
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
-import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.ActivityProfileBinding
 import com.expert.qrgenerator.model.User
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
-import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
-import de.hdodenhof.circleimageview.CircleImageView
 
 @AndroidEntryPoint
 class ProfileActivity : BaseActivity() {
 
-    private lateinit var binding:ActivityProfileBinding
-    private lateinit var context: Context
-    private var user:User?=null
+    private lateinit var binding: ActivityProfileBinding
+    // Context of the activity, initialized using lazy delegation
+    private val context: Context by lazy { this }
+    private var user: User? = null
     private lateinit var appSettings: AppSettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Initialize ViewBinding
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Initialize views and settings
         initViews()
+        // Display user details
         displayUserDetail()
-
     }
 
-    private fun initViews(){
-        context = this
+    private fun initViews() {
+
         appSettings = AppSettings(context)
-        if (Constants.userData != null){
-            user  = Constants.userData
-        }
 
+        // Retrieve user data from Constants if available
+        user = Constants.userData
+
+        // Set up click listener for back button
         binding.backArrow.setOnClickListener {
-            super.onBackPressed()
+            onBackPressed()
         }
     }
 
-    private fun displayUserDetail(){
-        if (user != null){
-            Glide.with(context).load(user!!.personPhoto)
+    private fun displayUserDetail() {
+        // Display user details if user is not null
+        user?.let {
+            // Load user photo using Glide
+            Glide.with(context)
+                .load(it.personPhoto)
                 .into(binding.profileImage)
-            binding.profileName.text = user!!.personName
-            binding.profileEmail.text = user!!.personEmail
+
+            // Set user details to UI components
+            binding.profileName.text = it.personName
+            binding.profileEmail.text = it.personEmail
         }
     }
 }

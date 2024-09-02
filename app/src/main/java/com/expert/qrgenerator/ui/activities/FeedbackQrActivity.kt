@@ -1,30 +1,22 @@
 package com.expert.qrgenerator.ui.activities
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatSpinner
-import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
-import com.airbnb.lottie.LottieAnimationView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.ActivityFeedbackQrBinding
-import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.databinding.TextUpdateDialogBinding
+import com.expert.qrgenerator.databinding.TextWithColorUpdateDialogBinding
+import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.viewmodel.FeedbackQrViewModel
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -33,9 +25,13 @@ import top.defaults.colorpicker.ColorPickerPopup
 @AndroidEntryPoint
 class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
 
-    private lateinit var binding:ActivityFeedbackQrBinding
-    private lateinit var context: Context
+    // ViewBinding instance for the activity layout
+    private lateinit var binding: ActivityFeedbackQrBinding
 
+    // Context of the activity, initialized using lazy delegation
+    private val context: Context by lazy { this }
+
+    // Feedback-related properties
     private var feedbackTitleText: String = ""
     private var feedbackTitleBackgroundColor: String = ""
     private var feedbackInnerTitleText: String = ""
@@ -44,230 +40,258 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     private var feedbackSendButtonColor: String = ""
     private var feedbackOwnerEmail: String = ""
 
+    // QR-related properties
     private var qrId: String = ""
+
+    // ViewModel for handling business logic
     private val viewModel: FeedbackQrViewModel by viewModels()
-    private var updateType = ""
+
+    // Type of update operation
+    private var updateType: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Inflate the layout using ViewBinding
         binding = ActivityFeedbackQrBinding.inflate(layoutInflater)
+
+        // Set the content view to the root of the binding layout
         setContentView(binding.root)
 
+        // Initialize views (e.g., set up listeners, default values, etc.)
         initViews()
-        setUpToolbar()
 
+        // Set up the toolbar (e.g., configure title, navigation, etc.)
+        setUpToolbar()
     }
+
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {
-        context = this
-
+        // Set up click listeners for the buttons
+        // Button to proceed to the next step
         binding.nextStepBtn.setOnClickListener(this)
 
+        // Button to edit the title of feedback
         binding.feedbackTitleTextEditBtn.setOnClickListener(this)
 
+        // Button to edit the inner text of feedback
         binding.feedbackInnerTextEditBtn.setOnClickListener(this)
 
+        // Button to edit the inner description of feedback
         binding.feedbackInnerDescriptionEditBtn.setOnClickListener(this)
 
+        // Button to send feedback after editing
         binding.feedbackSendButtonEditBtn.setOnClickListener(this)
-
-
     }
 
     // THIS FUNCTION WILL RENDER THE ACTION BAR/TOOLBAR
     private fun setUpToolbar() {
+        // Set the toolbar as the support action bar
         setSupportActionBar(binding.toolbar)
-        supportActionBar!!.title = getString(R.string.feedback_qr)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
+
+        // Get the ActionBar and check if it's not null
+        supportActionBar?.apply {
+            // Set the title of the action bar
+            title = getString(R.string.feedback_qr)
+
+            // Enable the back button in the action bar
+            setDisplayHomeAsUpEnabled(true)
+        }
+
+        // Set the title text color of the toolbar
+        binding.toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
     }
 
     // THIS FUNCTION WILL HANDLE THE ON BACK ARROW CLICK EVENT
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == android.R.id.home) {
-            if (feedbackTitleText.isEmpty()
-                && feedbackTitleBackgroundColor.isEmpty()
-                && feedbackInnerTitleText.isEmpty()
-                && feedbackInnerDescriptionText.isEmpty()
-                && feedbackSendButtonText.isEmpty()
-                && feedbackSendButtonColor.isEmpty()
-            ) {
-                onBackPressed()
-            } else {
+        // Check if the selected item is the home button
+        if (item.itemId == android.R.id.home) {
+            // Determine if there are any unsaved changes
+            val hasUnsavedChanges = feedbackTitleText.isNotEmpty() ||
+                    feedbackTitleBackgroundColor.isNotEmpty() ||
+                    feedbackInnerTitleText.isNotEmpty() ||
+                    feedbackInnerDescriptionText.isNotEmpty() ||
+                    feedbackSendButtonText.isNotEmpty() ||
+                    feedbackSendButtonColor.isNotEmpty()
+
+            if (hasUnsavedChanges) {
+                // Show a dialog asking the user to confirm leaving with unsaved changes
                 MaterialAlertDialogBuilder(context)
                     .setMessage(getString(R.string.changes_saved_alert_text))
-                    .setNegativeButton(getString(R.string.cancel_text)) { dialog, which ->
+                    .setNegativeButton(getString(R.string.cancel_text)) { dialog, _ ->
+                        // Dismiss the dialog if the user chooses to cancel
                         dialog.dismiss()
                     }
-                    .setPositiveButton(getString(R.string.leave_text)) { dialog, which ->
+                    .setPositiveButton(getString(R.string.leave_text)) { _, _ ->
+                        // Handle leaving the activity when the user confirms
                         onBackPressed()
                     }
-                    .create().show()
+                    .create()
+                    .show()
+            } else {
+                // Simply go back if there are no unsaved changes
+                onBackPressed()
             }
-            true
-        } else {
-            super.onOptionsItemSelected(item)
+            return true
         }
+        // For other menu items, use the default behavior
+        return super.onOptionsItemSelected(item)
     }
 
     // THIS FUNCTION WILL HANDLE THE ALL BUTTONS CLICK EVENT
     override fun onClick(v: View?) {
-        when (v!!.id) {
+        when (v?.id) {
             R.id.next_step_btn -> {
-
-
-                    if (validation()) {
-
-                        val hashMap = hashMapOf<String, String>()
+                if (validation()) {
+                    // Prepare the data to be sent to ViewModel
+                    val hashMap = hashMapOf<String, String>().apply {
                         qrId = "${System.currentTimeMillis()}"
-                        hashMap["feedback_title_text"] = feedbackTitleText
-                        hashMap["feedback_title_background_color"] = feedbackTitleBackgroundColor
-                        hashMap["feedback_inner_title_text"] = feedbackInnerTitleText
-                        hashMap["feedback_inner_description_text"] = feedbackInnerDescriptionText
-                        hashMap["feedback_send_button_text"] = feedbackSendButtonText
-                        hashMap["feedback_send_button_color"] = feedbackSendButtonColor
-                        hashMap["feedback_owner_email"] = feedbackOwnerEmail
-                        hashMap["feedback_qr_id"] = qrId
+                        put("feedback_title_text", feedbackTitleText)
+                        put("feedback_title_background_color", feedbackTitleBackgroundColor)
+                        put("feedback_inner_title_text", feedbackInnerTitleText)
+                        put("feedback_inner_description_text", feedbackInnerDescriptionText)
+                        put("feedback_send_button_text", feedbackSendButtonText)
+                        put("feedback_send_button_color", feedbackSendButtonColor)
+                        put("feedback_owner_email", feedbackOwnerEmail)
+                        put("feedback_qr_id", qrId)
+                    }
 
-                        startLoading(context)
-                        lifecycleScope.launch{
-                            viewModel.createFeedbackQrCode(hashMap)
-                        }
-                        viewModel.feedbackQrCodeResponse.observe(this, { response ->
-                            var url = ""
-                            dismiss()
+                    // Start loading indicator
+                    startLoading(context)
+
+                    // Launch coroutine to create feedback QR code
+                    lifecycleScope.launch {
+                        viewModel.createFeedbackQrCode(hashMap)
+
+                        // Observe the response from ViewModel
+                        viewModel.feedbackQrCodeResponse.observe(this@FeedbackQrActivity) { response ->
+                            // Check if response is not null
                             if (response != null) {
-                                url = response.get("generatedUrl").asString
+                                val url = response.get("generatedUrl").asString
 
-                                // SETUP QR DATA HASMAP FOR HISTORY
-                                val qrData = hashMapOf<String, String>()
-                                qrData["login"] = "qrmagicapp"
-                                qrData["qrId"] = qrId
-                                qrData["userType"] = "free"
+                                GeneratorManager.generateQRCode(this@FeedbackQrActivity,url,"feedback")
 
-                                val qrHistory = CodeHistory(
-                                    qrData["login"]!!,
-                                    qrData["qrId"]!!,
-                                    url,
-                                    "feedback",
-                                    qrData["userType"]!!,
-                                    "qr",
-                                    "create",
-                                    "",
-                                    "0",
-                                    "",
-                                    System.currentTimeMillis().toString(),
-                                    ""
-                                )
-
-                                val intent = Intent(context, DesignActivity::class.java)
-                                intent.putExtra("ENCODED_TEXT", url)
-                                intent.putExtra("QR_HISTORY", qrHistory)
-                                startActivity(intent)
                             } else {
+                                // Show error message if response is null
                                 showAlert(context, getString(R.string.something_wrong_error))
                             }
 
-
-                        })
+                            // Dismiss loading indicator
+                            dismiss()
+                        }
                     }
-//                }
-
+                }
             }
+
+            // Handle feedback title text edit button click
             R.id.feedback_title_text_edit_btn -> {
                 updateType = "feedback_title"
-                updateTextAndColor(binding.feedbackSendButton,1)
-
+                updateTextAndColor(binding.feedbackSendButton, 1)
             }
+
+            // Handle feedback inner title text edit button click
             R.id.feedback_inner_text_edit_btn -> {
                 updateType = "inner_title"
-                updateText(binding.feedbackInnerTitleText,0)
+                updateText(binding.feedbackInnerTitleText, 0)
             }
+
+            // Handle feedback inner description text edit button click
             R.id.feedback_inner_description_edit_btn -> {
                 updateType = "inner_description"
-                updateText(binding.feedbackInnerDescriptionText,0)
+                updateText(binding.feedbackInnerDescriptionText, 0)
             }
+
+            // Handle feedback send button edit button click
             R.id.feedback_send_button_edit_btn -> {
                 updateType = "feedback_send_btn"
-                updateTextAndColor(binding.feedbackSendButton,1)
+                updateTextAndColor(binding.feedbackSendButton, 1)
             }
-            else -> {
 
+            else -> {
+                // Handle other cases or do nothing
             }
         }
     }
 
     // THIS FUNCTION WILL VALIDATE ALL THE COUPON INPUT DATA
     private fun validation(): Boolean {
+        // Check if the title is empty
         if (feedbackTitleText.isEmpty()) {
             showAlert(context, getString(R.string.feedback_text_background_color_error_text))
             return false
-        } else if (feedbackInnerTitleText.isEmpty()) {
+        }
+
+        // Check if the inner title is empty
+        if (feedbackInnerTitleText.isEmpty()) {
             showAlert(context, getString(R.string.feedback_inner_title_error_text))
             return false
-        } else if (feedbackInnerDescriptionText.isEmpty()) {
+        }
+
+        // Check if the inner description is empty
+        if (feedbackInnerDescriptionText.isEmpty()) {
             showAlert(context, getString(R.string.feedback_inner_description_error_text))
             return false
-        } else if (feedbackSendButtonText.isEmpty()) {
+        }
+
+        // Check if the send button text is empty
+        if (feedbackSendButtonText.isEmpty()) {
             showAlert(context, getString(R.string.feedback_send_button_text_color_error_text))
             return false
         }
+
+        // All fields are valid
         return true
     }
 
     // THIS FUNCTION WILL OPEN AND UPDATE TEXT
     private fun updateText(view: MaterialTextView, type: Int) {
-        val dialogLayout = LayoutInflater.from(context).inflate(R.layout.text_update_dialog, null)
-        val textColorLayout = dialogLayout.findViewById<LinearLayout>(R.id.text_top_layout)
-        val cancelBtn = dialogLayout.findViewById<MaterialButton>(R.id.coupon_dialog_cancel_btn)
-        val updateBtn = dialogLayout.findViewById<MaterialButton>(R.id.coupon_dialog_update_btn)
-        val inputBox = dialogLayout.findViewById<TextInputEditText>(R.id.coupon_text_input_field)
-        val colorBtnView = dialogLayout.findViewById<AppCompatButton>(R.id.text_color_btn)
-        val colorTextField = dialogLayout.findViewById<TextInputEditText>(R.id.text_color_tf)
+        // Inflate the dialog layout using ViewBinding
+        val updateBinding = TextUpdateDialogBinding.inflate(LayoutInflater.from(context))
+
+        // Initialize views from the ViewBinding
+        val textColorLayout = updateBinding.textTopLayout
+        val cancelBtn = updateBinding.couponDialogCancelBtn
+        val updateBtn = updateBinding.couponDialogUpdateBtn
+        val inputBox = updateBinding.couponTextInputField
+        val colorBtnView = updateBinding.textColorBtn
+        val colorTextField = updateBinding.textColorTf
 
         var selectedColor = ""
+
+        // Pre-fill the input box based on the update type
         when (updateType) {
-            "inner_title" -> {
-                if (feedbackInnerTitleText.isNotEmpty()) {
-                    inputBox.setText(feedbackInnerTitleText)
-                }
-            }
-            "inner_description" -> {
-                if (feedbackInnerDescriptionText.isNotEmpty()) {
-                    inputBox.setText(feedbackInnerDescriptionText)
-                }
-            }
-            else -> {
-
-            }
+            "inner_title" -> inputBox.setText(feedbackInnerTitleText.takeIf { it.isNotEmpty() })
+            "inner_description" -> inputBox.setText(feedbackInnerDescriptionText.takeIf { it.isNotEmpty() })
         }
 
-        if (type == 1) {
-            textColorLayout.visibility = View.VISIBLE
-        } else {
-            textColorLayout.visibility = View.GONE
-        }
+        // Show or hide the color layout based on the type
+        textColorLayout.visibility = if (type == 1) View.VISIBLE else View.GONE
+
+        // Create and show the dialog
         val builder = MaterialAlertDialogBuilder(context)
-        builder.setView(dialogLayout)
+        builder.setView(updateBinding.root)
         builder.setCancelable(false)
         val alert = builder.create()
         alert.show()
 
+        // Handle cancel button click
         cancelBtn.setOnClickListener {
             alert.dismiss()
         }
+
+        // Handle update button click
         updateBtn.setOnClickListener {
             val value = inputBox.text.toString().trim()
             if (value.isNotEmpty()) {
+                // Update the view text and color
                 view.text = value
-                if (type == 1) {
-                    if (selectedColor.isNotEmpty()) {
-                        view.setTextColor(Color.parseColor(selectedColor))
-
-                    }
+                if (type == 1 && selectedColor.isNotEmpty()) {
+                    view.setTextColor(Color.parseColor(selectedColor))
                 }
+
+                // Update the appropriate feedback text
                 when (updateType) {
                     "inner_title" -> {
                         feedbackInnerTitleText = value
@@ -281,23 +305,20 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         binding.lavFeedbackInnerTextEditBtn.visibility = View.GONE
                         binding.feedbackInnerDescriptionEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
-                    else -> {
-
-                    }
                 }
-
                 alert.dismiss()
-            }
-            else{
-                showAlert(context,getString(R.string.empty_text_error))
+            } else {
+                // Show error message if the input is empty
+                showAlert(context, getString(R.string.empty_text_error))
             }
         }
 
+        // Handle color button click
         colorBtnView.setOnClickListener {
             ColorPickerPopup.Builder(this)
                 .initialColor(Color.RED) // Set initial color
-                .enableBrightness(true) // Enable brightness slider or not
-                .enableAlpha(true) // Enable alpha slider or not
+                .enableBrightness(true) // Enable brightness slider
+                .enableAlpha(true) // Enable alpha slider
                 .okTitle(getString(R.string.chose_text))
                 .cancelTitle(getString(R.string.cancel_text))
                 .showIndicator(true)
@@ -309,81 +330,75 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
                         colorTextField.setText(hexColor)
                         selectedColor = hexColor
-
-                    }
-
-                    fun onColor(color: Int, fromUser: Boolean) {
-
                     }
                 })
         }
-
     }
+
 
     // THIS FUNCTION WILL UPDATE TEXT AND COLOR
     private fun updateTextAndColor(view: AppCompatButton, type: Int) {
-        val dialogLayout =
-            LayoutInflater.from(context).inflate(R.layout.text_with_color_update_dialog, null)
-        val cancelBtn =
-            dialogLayout.findViewById<MaterialButton>(R.id.text_with_color_dialog_cancel_btn)
-        val updateBtn =
-            dialogLayout.findViewById<MaterialButton>(R.id.text_with_color_dialog_update_btn)
-        val inputBox =
-            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_text_input_field)
-        val saleBadgeWrapperLayout =
-            dialogLayout.findViewById<LinearLayout>(R.id.text_with_color_sale_badge_wrapper)
-        val saleBadgeSpinner =
-            dialogLayout.findViewById<AppCompatSpinner>(R.id.text_with_color_sale_badge_selector)
-        val customSaleBadgeView =
-            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_custom_sale_badge)
-        val colorBtnView =
-            dialogLayout.findViewById<AppCompatButton>(R.id.text_with_color_color_btn)
-        val colorTextField =
-            dialogLayout.findViewById<TextInputEditText>(R.id.text_with_color_color_tf)
+        // Inflate the dialog layout using View Binding
+        val dialogBinding = TextWithColorUpdateDialogBinding.inflate(LayoutInflater.from(context))
+
+        // Extract views from the binding
+        val cancelBtn = dialogBinding.textWithColorDialogCancelBtn
+        val updateBtn = dialogBinding.textWithColorDialogUpdateBtn
+        val inputBox = dialogBinding.textWithColorTextInputField
+        val saleBadgeWrapperLayout = dialogBinding.textWithColorSaleBadgeWrapper
+        val saleBadgeSpinner = dialogBinding.textWithColorSaleBadgeSelector
+        val customSaleBadgeView = dialogBinding.textWithColorCustomSaleBadge
+        val colorBtnView = dialogBinding.textWithColorColorBtn
+        val colorTextField = dialogBinding.textWithColorColorTf
+
+        // Variable to store the selected color
         var selectedColor = ""
+
+        // Set initial values based on updateType
         when (updateType) {
             "feedback_title" -> {
                 if (feedbackTitleText.isNotEmpty()) {
                     inputBox.setText(feedbackTitleText)
                 }
-                if (feedbackTitleBackgroundColor.isEmpty()) {
-                    selectedColor = colorTextField.text.toString()
+                selectedColor = if (feedbackTitleBackgroundColor.isEmpty()) {
+                    colorTextField.text.toString()
                 } else {
-                    selectedColor = feedbackTitleBackgroundColor
-                    colorTextField.setText(selectedColor)
-                    colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
+                    feedbackTitleBackgroundColor.also {
+                        colorTextField.setText(it)
+                        colorBtnView.setBackgroundColor(Color.parseColor(it))
+                    }
                 }
             }
             "feedback_send_btn" -> {
                 if (feedbackSendButtonText.isNotEmpty()) {
                     inputBox.setText(feedbackSendButtonText)
                 }
-                if (feedbackSendButtonColor.isEmpty()) {
-                    selectedColor = colorTextField.text.toString()
+                selectedColor = if (feedbackSendButtonColor.isEmpty()) {
+                    colorTextField.text.toString()
                 } else {
-                    selectedColor = feedbackSendButtonColor
-                    colorTextField.setText(selectedColor)
-                    colorBtnView.setBackgroundColor(Color.parseColor(selectedColor))
+                    feedbackSendButtonColor.also {
+                        colorTextField.setText(it)
+                        colorBtnView.setBackgroundColor(Color.parseColor(it))
+                    }
                 }
             }
             else -> {
-
+                // Handle other cases if needed
             }
         }
-        if (type == 0) {
-            inputBox.visibility = View.GONE
-            saleBadgeWrapperLayout.visibility = View.VISIBLE
-        } else {
-            saleBadgeWrapperLayout.visibility = View.GONE
-            inputBox.visibility = View.VISIBLE
-        }
 
-        val builder = MaterialAlertDialogBuilder(context)
-        builder.setView(dialogLayout)
-        builder.setCancelable(false)
-        val alert = builder.create()
+        // Show/hide elements based on the type parameter
+        inputBox.visibility = if (type == 0) View.GONE else View.VISIBLE
+        saleBadgeWrapperLayout.visibility = if (type == 0) View.VISIBLE else View.GONE
+
+        // Create and show the dialog
+        val alert = MaterialAlertDialogBuilder(context)
+            .setView(dialogBinding.root)
+            .setCancelable(false)
+            .create()
         alert.show()
 
+        // Handle color button click to open color picker
         colorBtnView.setOnClickListener {
             ColorPickerPopup.Builder(this)
                 .initialColor(Color.RED) // Set initial color
@@ -400,18 +415,19 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         colorBtnView.setBackgroundColor(Color.parseColor(hexColor))
                         colorTextField.setText(hexColor)
                         selectedColor = hexColor
-
                     }
 
                     fun onColor(color: Int, fromUser: Boolean) {
-
+                        // Handle color changes if needed
                     }
                 })
         }
 
+        // Handle cancel button click
         cancelBtn.setOnClickListener { alert.dismiss() }
-        updateBtn.setOnClickListener {
 
+        // Handle update button click
+        updateBtn.setOnClickListener {
             val value = inputBox.text.toString().trim()
             if (value.isNotEmpty()) {
                 when (updateType) {
@@ -419,9 +435,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         feedbackTitleText = value
                         feedbackTitleBackgroundColor = selectedColor
                         binding.feedbackTitleTextLayout.setBackgroundColor(Color.parseColor(selectedColor))
-                        if (value.isNotEmpty()) {
-                            binding.feedbackTitleText.text = value
-                        }
+                        binding.feedbackTitleText.text = value
                         binding.feedbackTitleText.setTextColor(Color.WHITE)
                         binding.lavFeedbackInnerTextEditBtn.visibility = View.GONE
                         binding.feedbackTitleTextEditBtn.setImageResource(R.drawable.green_checked_icon)
@@ -438,15 +452,14 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         binding.feedbackSendButtonEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
                     else -> {
-
+                        // Handle other cases if needed
                     }
                 }
-
                 alert.dismiss()
-            }
-            else{
-                showAlert(context,getString(R.string.empty_text_error))
+            } else {
+                showAlert(context, getString(R.string.empty_text_error))
             }
         }
     }
+
 }
