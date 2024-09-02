@@ -16,8 +16,8 @@ android {
         applicationId "com.expert.qrgenerator"
         minSdkVersion 21
         targetSdkVersion 34
-        versionCode 109
-        versionName "multi images been added"
+        versionCode 302
+        versionName "generator separately"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

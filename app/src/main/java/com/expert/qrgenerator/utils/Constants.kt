@@ -19,7 +19,7 @@ class Constants {
 
     // HERE WE WILL CREATE ALL THE CONSTANT DATA
     companion object {
-        const val PRIVACY_POLICY_URL = "http://qrmagicapp.com/privacy-policy-2/"
+        const val PRIVACY_POLICY_URL = "https://sites.google.com/view/magicqrgenerator"
         const val FIREBASE_BACKGROUND_IMAGES = "backgroundImages"
         const val FIREBASE_LOGO_IMAGES = "logoImages"
         const val FIREBASE_FONTS = "fonts"
