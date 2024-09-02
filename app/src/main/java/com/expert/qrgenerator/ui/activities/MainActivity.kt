@@ -30,6 +30,7 @@ import com.expert.qrgenerator.ui.fragments.GeneratorFragment
 import com.expert.qrgenerator.ui.fragments.ScannerFragment
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.Constants.Companion.PRIVACY_POLICY_URL
 import com.expert.qrgenerator.viewmodel.MainActivityViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -131,7 +132,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         // Initialize views, set up toolbar, and configure Google login parameters
         initViews()
         setUpToolbar()
-        getAccountsPermission()
+//        getAccountsPermission()
         initializeGoogleLoginParameters()
 
         // Check if tips are enabled in app settings
@@ -184,7 +185,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
             setOnClickListener {
                 binding.drawer.closeDrawer(GravityCompat.START)
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://qrmagicapp.com/privacy-policy-2/"))
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL))
                 startActivity(browserIntent)
             }
         }
@@ -210,17 +211,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         // Handle initial fragment setup based on intent extras
-        if (intent?.getStringExtra("KEY") == "generator") {
+//        if (intent?.getStringExtra("KEY") == "generator") {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, GeneratorFragment(), "generator")
                 .addToBackStack("generator")
                 .commit()
-        } else {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ScannerFragment(), "scanner")
-                .addToBackStack("scanner")
-                .commit()
-        }
+//        } else {
+//            supportFragmentManager.beginTransaction()
+//                .replace(R.id.fragment_container, ScannerFragment(), "scanner")
+//                .addToBackStack("scanner")
+//                .commit()
+//        }
 
 
     }
@@ -632,20 +633,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         // Find the ScannerFragment by its tag
-        val scannerFragment = supportFragmentManager.findFragmentByTag("scanner")
+//        val scannerFragment = supportFragmentManager.findFragmentByTag("scanner")
 
         // Check if the ScannerFragment is visible and finish the activity if it is
-        if (scannerFragment != null && scannerFragment.isVisible) {
+//        if (scannerFragment != null && scannerFragment.isVisible) {
             finish()
-            return
-        }
+//            return
+//        }
 
         // If none of the above conditions were met, replace the current fragment with ScannerFragment
-        contentBinding.bottomNavigation.selectedItemId = R.id.bottom_scanner
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, ScannerFragment(), "scanner")
-            .addToBackStack("scanner")
-            .commit()
+//        contentBinding.bottomNavigation.selectedItemId = R.id.bottom_scanner
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.fragment_container, ScannerFragment(), "scanner")
+//            .addToBackStack("scanner")
+//            .commit()
     }
 
 
