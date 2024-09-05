@@ -23,11 +23,45 @@ import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.ActivityMainBinding
 import com.expert.qrgenerator.databinding.ContentMainBinding
 import com.expert.qrgenerator.interfaces.LoginCallback
+import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
 import com.expert.qrgenerator.model.User
 import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.singleton.SheetService
+import com.expert.qrgenerator.ui.fragments.CalendarFragment
+import com.expert.qrgenerator.ui.fragments.ChooseTypeFragment
+import com.expert.qrgenerator.ui.fragments.ContactFragment
+import com.expert.qrgenerator.ui.fragments.CryptoPaymentFragment
+import com.expert.qrgenerator.ui.fragments.EmailFragment
+import com.expert.qrgenerator.ui.fragments.EtsyFragment
+import com.expert.qrgenerator.ui.fragments.FacebookFragment
 import com.expert.qrgenerator.ui.fragments.GeneratorFragment
+import com.expert.qrgenerator.ui.fragments.GoogleDocsFragment
+import com.expert.qrgenerator.ui.fragments.GoogleFormsFragment
+import com.expert.qrgenerator.ui.fragments.GoogleReviewFragment
+import com.expert.qrgenerator.ui.fragments.GoogleSheetsFragment
+import com.expert.qrgenerator.ui.fragments.InstagramFragment
+import com.expert.qrgenerator.ui.fragments.LinkedinFragment
+import com.expert.qrgenerator.ui.fragments.MapFragment
+import com.expert.qrgenerator.ui.fragments.Office365Fragment
+import com.expert.qrgenerator.ui.fragments.PaymentFragment
+import com.expert.qrgenerator.ui.fragments.PaypalFragment
+import com.expert.qrgenerator.ui.fragments.PhoneFragment
+import com.expert.qrgenerator.ui.fragments.PlayMarketAppStoreFragment
+import com.expert.qrgenerator.ui.fragments.RedditFragment
 import com.expert.qrgenerator.ui.fragments.ScannerFragment
+import com.expert.qrgenerator.ui.fragments.ShapedFragment
+import com.expert.qrgenerator.ui.fragments.SmsFragment
+import com.expert.qrgenerator.ui.fragments.SnapchatFragment
+import com.expert.qrgenerator.ui.fragments.SocialMediaFragment
+import com.expert.qrgenerator.ui.fragments.SpotifyFragment
+import com.expert.qrgenerator.ui.fragments.StaticLinkFragment
+import com.expert.qrgenerator.ui.fragments.TelegramFragment
+import com.expert.qrgenerator.ui.fragments.TextFragment
+import com.expert.qrgenerator.ui.fragments.TikTokFragment
+import com.expert.qrgenerator.ui.fragments.TwitterFragment
+import com.expert.qrgenerator.ui.fragments.WhatsappFragment
+import com.expert.qrgenerator.ui.fragments.WifiFragment
+import com.expert.qrgenerator.ui.fragments.YoutubeFragment
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.Constants.Companion.PRIVACY_POLICY_URL
@@ -60,7 +94,7 @@ import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-     ScannerFragment.ScannerInterface {
+     ScannerFragment.ScannerInterface,OnFragmentReplaceListener {
 
     // Binding for ActivityMain layout
     private lateinit var binding: ActivityMainBinding
@@ -115,6 +149,41 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private val REQUEST_CODE_GET_ACCOUNTS = 0
 
+    private val fragments = listOf(
+        TextFragment(),
+        StaticLinkFragment(),
+        ContactFragment(),
+        WifiFragment(),
+        PhoneFragment(),
+        SmsFragment(),
+        InstagramFragment(),
+        WhatsappFragment(),
+        MapFragment(),
+        FacebookFragment(),
+        YoutubeFragment(),
+        TelegramFragment(),
+        EmailFragment(),
+        TikTokFragment(),
+        GoogleFormsFragment(),
+        TwitterFragment(),
+        SnapchatFragment(),
+        SpotifyFragment(),
+        GoogleDocsFragment(),
+        GoogleReviewFragment(),
+        GoogleSheetsFragment(),
+        PaymentFragment(),
+        Office365Fragment(),
+        ShapedFragment(),
+        PaypalFragment(),
+        EtsyFragment(),
+        LinkedinFragment(),
+        CryptoPaymentFragment(),
+        CalendarFragment(),
+        SocialMediaFragment(),
+        RedditFragment(),
+        PlayMarketAppStoreFragment()
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -136,31 +205,31 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         initializeGoogleLoginParameters()
 
         // Check if tips are enabled in app settings
-        if (appSettings.getBoolean(getString(R.string.key_tips))) {
-            // Retrieve the last shown tip timestamp
-            val lastTipTimestamp = appSettings.getLong("tt1")
-
-            // Check if the tip needs to be shown (if it hasn't been shown for over a day)
-            if (lastTipTimestamp == 0L || System.currentTimeMillis() - lastTipTimestamp > TimeUnit.DAYS.toMillis(1)) {
-                // Build and show the tooltip
-                SimpleTooltip.Builder(this)
-                    .anchorView(contentBinding.bottomNavigation)
-                    .text(getString(R.string.bottom_navigation_tip_text))
-                    .gravity(Gravity.TOP)
-                    .animated(true)
-                    .transparentOverlay(false)
-                    .onDismissListener { tooltip ->
-                        // Update the timestamp when the tooltip is dismissed
-                        appSettings.putLong("tt1", System.currentTimeMillis())
-
-                        // Show table select tip in the ScannerFragment
-                        val fragment = supportFragmentManager.findFragmentByTag("scanner") as? ScannerFragment
-                        fragment?.showTableSelectTip()
-                    }
-                    .build()
-                    .show()
-            }
-        }
+//        if (appSettings.getBoolean(getString(R.string.key_tips))) {
+//            // Retrieve the last shown tip timestamp
+//            val lastTipTimestamp = appSettings.getLong("tt1")
+//
+//            // Check if the tip needs to be shown (if it hasn't been shown for over a day)
+//            if (lastTipTimestamp == 0L || System.currentTimeMillis() - lastTipTimestamp > TimeUnit.DAYS.toMillis(1)) {
+//                // Build and show the tooltip
+//                SimpleTooltip.Builder(this)
+//                    .anchorView(contentBinding.bottomNavigation)
+//                    .text(getString(R.string.bottom_navigation_tip_text))
+//                    .gravity(Gravity.TOP)
+//                    .animated(true)
+//                    .transparentOverlay(false)
+//                    .onDismissListener { tooltip ->
+//                        // Update the timestamp when the tooltip is dismissed
+//                        appSettings.putLong("tt1", System.currentTimeMillis())
+//
+//                        // Show table select tip in the ScannerFragment
+//                        val fragment = supportFragmentManager.findFragmentByTag("scanner") as? ScannerFragment
+//                        fragment?.showTableSelectTip()
+//                    }
+//                    .build()
+//                    .show()
+//            }
+//        }
     }
 
 
@@ -212,10 +281,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         // Handle initial fragment setup based on intent extras
 //        if (intent?.getStringExtra("KEY") == "generator") {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, GeneratorFragment(), "generator")
-                .addToBackStack("generator")
-                .commit()
+//            supportFragmentManager.beginTransaction()
+//                .replace(R.id.fragment_container, GeneratorFragment(), "generator")
+//                .addToBackStack("generator")
+//                .commit()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, ChooseTypeFragment(), "choose-type")
+            .commit()
+
 //        } else {
 //            supportFragmentManager.beginTransaction()
 //                .replace(R.id.fragment_container, ScannerFragment(), "scanner")
@@ -291,8 +364,32 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 binding.drawer.openDrawer(GravityCompat.START)
             }
         }
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            updateToolbar(toggle)
+        }
     }
 
+    private fun updateToolbar(toggle:ActionBarDrawerToggle) {
+        val backStackEntryCount = supportFragmentManager.backStackEntryCount
+        if (backStackEntryCount > 0) {
+            // Show back arrow
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            toggle.isDrawerIndicatorEnabled = false
+            contentBinding.toolbar.setNavigationOnClickListener {
+                hideKeyboard(context,this@MainActivity)
+                onBackPressed()
+            }
+        } else {
+            // Show hamburger menu
+            supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            toggle.isDrawerIndicatorEnabled = true
+            toggle.syncState()
+            contentBinding.toolbar.setNavigationOnClickListener {
+                binding.drawer.openDrawer(GravityCompat.START)
+            }
+        }
+    }
 
     // THIS FUNCTION WILL INITIALIZE THE GOOGLE LOGIN PARAMETERS
     private fun initializeGoogleLoginParameters() {
@@ -633,20 +730,25 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         // Find the ScannerFragment by its tag
-//        val scannerFragment = supportFragmentManager.findFragmentByTag("scanner")
+//        val scannerFragment = supportFragmentManager.findFragmentByTag("choose-type")
 
         // Check if the ScannerFragment is visible and finish the activity if it is
 //        if (scannerFragment != null && scannerFragment.isVisible) {
-            finish()
+//            finish()
 //            return
 //        }
 
         // If none of the above conditions were met, replace the current fragment with ScannerFragment
 //        contentBinding.bottomNavigation.selectedItemId = R.id.bottom_scanner
 //        supportFragmentManager.beginTransaction()
-//            .replace(R.id.fragment_container, ScannerFragment(), "scanner")
-//            .addToBackStack("scanner")
+//            .replace(R.id.fragment_container, ChooseTypeFragment(), "choose-type")
+//            .addToBackStack("choose-type")
 //            .commit()
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+        } else {
+            finish()
+        }
     }
 
 
@@ -791,6 +893,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         hideKeyboard(context,this)
         super.onDestroy()
 
+    }
+
+    override fun replaceFragment(position: Int) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragment_container, fragments[position])
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
 }

@@ -35,14 +35,38 @@ class GeneratorFragment : Fragment() {
     private lateinit var appSettings: AppSettings
 
     private val fragments = listOf(
-        TextGeneratorFragment(),
-        StaticLinkGeneratorFragment(),
-        ContactGeneratorFragment(),
-        WifiGeneratorFragment(),
-        PhoneGeneratorFragment(),
-        SmsGeneratorFragment(),
-        InstagramGeneratorFragment(),
-        WhatsappGeneratorFragment()
+        TextFragment(),
+        StaticLinkFragment(),
+        ContactFragment(),
+        WifiFragment(),
+        PhoneFragment(),
+        SmsFragment(),
+        InstagramFragment(),
+        WhatsappFragment(),
+        MapFragment(),
+        FacebookFragment(),
+        YoutubeFragment(),
+        TelegramFragment(),
+        EmailFragment(),
+        TikTokFragment(),
+        GoogleFormsFragment(),
+        TwitterFragment(),
+        SnapchatFragment(),
+        SpotifyFragment(),
+        GoogleDocsFragment(),
+        GoogleReviewFragment(),
+        GoogleSheetsFragment(),
+        PaymentFragment(),
+        Office365Fragment(),
+        ShapedFragment(),
+        PaypalFragment(),
+        EtsyFragment(),
+        LinkedinFragment(),
+        CryptoPaymentFragment(),
+        CalendarFragment(),
+        SocialMediaFragment(),
+        RedditFragment(),
+        PlayMarketAppStoreFragment()
     )
 
 
@@ -84,42 +108,44 @@ class GeneratorFragment : Fragment() {
         typesAdapter.setOnItemClickListener(object : TypesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
                 val qrType = qrTypeList[position]
-                when (position) {
-                    9 -> {
-                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
-                        requireActivity().startActivity(
-                            Intent(
-                                requireActivity(),
-                                CouponQrActivity::class.java
-                            )
-                        )
-                    }
-
-                    10 -> {
-                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
-                        requireActivity().startActivity(
-                            Intent(
-                                requireActivity(),
-                                FeedbackQrActivity::class.java
-                            )
-                        )
-                    }
-
-                    11 -> {
-                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
-                        requireActivity().startActivity(
-                            Intent(
-                                requireActivity(),
-                                SocialNetworksQrActivity::class.java
-                            )
-                        )
-                    }
-
-                    else -> {
-                        typesAdapter.updatePosition(position)
-                        replaceFragment(position)
-                    }
-                }
+                typesAdapter.updatePosition(position)
+                replaceFragment(position)
+//                when (position) {
+//                    9 -> {
+//                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
+//                        requireActivity().startActivity(
+//                            Intent(
+//                                requireActivity(),
+//                                CouponQrActivity::class.java
+//                            )
+//                        )
+//                    }
+//
+//                    10 -> {
+//                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
+//                        requireActivity().startActivity(
+//                            Intent(
+//                                requireActivity(),
+//                                FeedbackQrActivity::class.java
+//                            )
+//                        )
+//                    }
+//
+//                    11 -> {
+//                        BaseActivity.hideSoftKeyboard(requireActivity(), binding.layoutContainer)
+//                        requireActivity().startActivity(
+//                            Intent(
+//                                requireActivity(),
+//                                SocialNetworksQrActivity::class.java
+//                            )
+//                        )
+//                    }
+//
+//                    else -> {
+//                        typesAdapter.updatePosition(position)
+//                        replaceFragment(position)
+//                    }
+//                }
 
             }
         })
