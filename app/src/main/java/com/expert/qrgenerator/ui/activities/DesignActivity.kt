@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
@@ -39,6 +40,13 @@ import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.viewmodel.DesignActivityViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 @AndroidEntryPoint
 class DesignActivity : BaseActivity(), View.OnClickListener {
@@ -66,6 +74,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     // Variables to track previously selected positions for images and logos
     private var imagePreviousPosition = -1
     private var logoPreviousPosition = -1
+    private var colorPreviousPosition = -1
 
     // Text data for encoding and secondary input text
     private var encodedTextData: String = " "
@@ -87,6 +96,8 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     // Object to hold QR code history data
     private var qrHistory: CodeHistory? = null
+
+    private var fileName:String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,14 +141,20 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
             if (it.hasExtra("ENCODED_TEXT")) {
                 encodedTextData = it.getStringExtra("ENCODED_TEXT") ?: ""
                 Log.d("TEST199", encodedTextData)
-                qrImage = GeneratorManager.generatorQRImage(
-                    context,
-                    encodedTextData,
-                    "",
-                    "",
-                    ""
-                )
-                binding.qrGeneratedImg.setImageBitmap(qrImage)
+                CoroutineScope(Dispatchers.Main).launch {
+                    qrImage = GeneratorManager.generatorQRImage(
+                        context,
+                        encodedTextData,
+                        "",
+                        "",
+                        ""
+                    )
+                    binding.qrGeneratedImg.setImageBitmap(qrImage)
+                }
+            }
+
+            if (it.hasExtra("FILE_NAME")){
+                fileName = it.getStringExtra("FILE_NAME") as String
             }
         }
 
@@ -209,10 +226,23 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
                             // Insert QR history into the ViewModel
                             appViewModel.insert(qrHistory!!)
+                            if (qrHistory!!.type == "vcard"){
 
-                            // Start ShareActivity
-                            val intent = Intent(context, ShareActivity::class.java)
-                            startActivity(intent)
+                             startLoading(context)
+                             viewModel.uploadQrImage(context,bitmap,fileName)
+                             viewModel.uploadImageResponse.observe(this@DesignActivity, Observer { response->
+                                 dismiss()
+                                 // Start ShareActivity
+                                 val intent = Intent(context, ShareActivity::class.java)
+                                 startActivity(intent)
+                             })
+                            }
+                            else{
+                                // Start ShareActivity
+                                val intent = Intent(context, ShareActivity::class.java)
+                                startActivity(intent)
+                            }
+
                         } else {
                             // Show error if QR code text is empty
                             showAlert(context, getString(R.string.qr_code_not_recognizeable_error_text))
@@ -313,14 +343,16 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 if (imagePreviousPosition != position) {
                     imagePreviousPosition = position
                     // Generate QR image based on selected background image
-                    qrImage = GeneratorManager.generatorQRImage(
-                        context,
-                        encodedTextData,
-                        "",
-                        imageList[position],
-                        ""
-                    )
-                    binding.qrGeneratedImg.setImageBitmap(qrImage)
+                   CoroutineScope(Dispatchers.Main).launch {
+                       qrImage = GeneratorManager.generatorQRImage(
+                           context,
+                           encodedTextData,
+                           "",
+                           imageList[position],
+                           ""
+                       )
+                       binding.qrGeneratedImg.setImageBitmap(qrImage)
+                   }
                     // Optionally update `isBackgroundSet` if needed
                     // isBackgroundSet = qrImage != null
                 }
@@ -362,8 +394,6 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     // THIS FUNCTION WILL DISPLAY THE HORIZONTAL COLORS LIST
     private fun renderColorsRecyclerView() {
-        // Variable to keep track of the previously selected color item
-        var previousPosition = -1
 
         // Set up RecyclerView with horizontal orientation
         binding.colorsRecyclerView.layoutManager = LinearLayoutManager(
@@ -403,14 +433,16 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 colorAdapter.updateIcon(true)
 
                 // Generate QR image for the selected color
-                if (previousPosition != position) {
-                    previousPosition = position
-                    qrImage = GeneratorManager.generatorQRImage(
-                        context,
-                        encodedTextData,
-                        colorList[position], "", ""
-                    )
-                    binding.qrGeneratedImg.setImageBitmap(qrImage)
+                if (colorPreviousPosition != position) {
+                    colorPreviousPosition = position
+                    CoroutineScope(Dispatchers.Main).launch {
+                        qrImage = GeneratorManager.generatorQRImage(
+                            context,
+                            encodedTextData,
+                            colorList[position], "", ""
+                        )
+                        binding.qrGeneratedImg.setImageBitmap(qrImage)
+                    }
                 }
             }
 
@@ -454,7 +486,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                         else -> {
                             // Add valid color to the list and update the adapter
                             colorList.add(0, inputText)
-                            previousPosition += 1
+                            colorPreviousPosition += 1
                             colorAdapter.updateAdapter(0)
                             ImageManager.writeColorValueToFile("$inputText ", context)
                             alert.dismiss()
@@ -499,13 +531,15 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 if (logoPreviousPosition != position) {
                     logoPreviousPosition = position
                     logoAdapter.updateIcon(true)
-                    qrImage = GeneratorManager.generatorQRImage(
-                        context,
-                        encodedTextData,
-                        "", "",
-                        logoList[position]
-                    )
-                    binding.qrGeneratedImg.setImageBitmap(qrImage)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        qrImage = GeneratorManager.generatorQRImage(
+                            context,
+                            encodedTextData,
+                            "", "",
+                            logoList[position]
+                        )
+                        binding.qrGeneratedImg.setImageBitmap(qrImage)
+                    }
                 }
             }
 

@@ -48,7 +48,7 @@ class ColorAdapter(private val colorList: List<String>) :
 
             // Handle color item click event
             binding.colorItem.setOnClickListener {
-                val previousItem = selectedPosition
+                val previousItem: Int = adapter.selectedPosition
                 adapter.updateSelectedPosition(position)
                 adapter.notifyItemChanged(previousItem)
                 adapter.notifyItemChanged(position)

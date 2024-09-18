@@ -11,8 +11,9 @@ import com.expert.qrgenerator.databinding.FragmentCryptoPaymentBinding
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.utils.Constants.Companion.openKeyboard
 import com.expert.qrgenerator.utils.GeneratorManager
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class CryptoPaymentFragment : Fragment() {
 
     private lateinit var binding:FragmentCryptoPaymentBinding

@@ -3,8 +3,19 @@ package com.expert.qrgenerator.retrofit
 import com.expert.qrgenerator.model.FeedbackResponse
 import com.expert.qrgenerator.model.SNPayload
 import com.google.gson.JsonObject
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 interface ApiRepository {
+
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING VCARD PAGE
+    suspend fun uploadQrCodeImage(image: MultipartBody.Part,name: RequestBody): JsonObject?
+
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING VCARD PAGE
+    suspend fun createVCard(body: HashMap<String, String>): JsonObject?
+
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR UPDATE QR CODE IMAGE
+//    suspend fun updateQrCodeImage(body: HashMap<String, String>): JsonObject?
 
     // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING DYNAMIC QR
     suspend fun createDynamicQrCode(body: HashMap<String, String>): JsonObject?

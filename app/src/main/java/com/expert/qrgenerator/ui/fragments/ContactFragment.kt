@@ -11,8 +11,9 @@ import com.expert.qrgenerator.databinding.FragmentContactBinding
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.utils.Constants.Companion.openKeyboard
 import com.expert.qrgenerator.utils.GeneratorManager
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ContactFragment : Fragment() {
 
     // Binding object for the fragment's layout

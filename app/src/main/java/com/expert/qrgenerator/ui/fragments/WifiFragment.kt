@@ -11,8 +11,9 @@ import com.expert.qrgenerator.databinding.FragmentWifiBinding
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.utils.Constants.Companion.openKeyboard
 import com.expert.qrgenerator.utils.GeneratorManager
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class WifiFragment : Fragment() {
 
     // ViewBinding instance for accessing the fragment's layout views

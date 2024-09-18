@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    tools:context=".ui.fragments.VCardFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/_8dp"
+            android:layout_marginEnd="@dimen/_8dp"
+            android:padding="4dp">
+
+            <!-- First Name Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/first_name_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:hint="@string/first_name"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- Last Name Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/last_name_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:hint="@string/last_name"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- Company Name Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/company_name_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:hint="@string/company_name"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- Job Title Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/job_title_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:hint="@string/job_title"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- Date of Birth Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/dob_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="date"
+                android:focusableInTouchMode="false"
+                android:imeOptions="actionDone"
+                android:hint="@string/date_of_birth"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- Phone Number Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/phone_number_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="phone"
+                android:imeOptions="actionDone"
+                android:hint="@string/phone_number"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- Email Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/email_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="textEmailAddress"
+                android:imeOptions="actionDone"
+                android:hint="@string/email_text"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- Website Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/website_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="textUri"
+                android:imeOptions="actionDone"
+                android:hint="@string/website_text"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- Address Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/address_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="textPostalAddress"
+                android:imeOptions="actionDone"
+                android:hint="@string/address_text"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+            <!-- File name Input -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/filename_input_field"
+                android:background="@drawable/input_text_field_design"
+                android:padding="15dp"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:hint="@string/your_short_link_url_text"
+                android:gravity="start"
+                android:layout_marginTop="10dp" />
+
+             <com.google.android.material.textview.MaterialTextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:text="@string/short_link_url_example_text"
+                 android:textSize="12sp"
+                 android:textColor="@color/red"
+                 />
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/crypto_wrapper_layout"
+                android:layout_margin="@dimen/eightDpMargin"
+                android:text="@string/generate"
+                android:textSize="@dimen/xlargeText"
+                android:id="@+id/next_step_btn"
+                style="@style/primaryPositiveStyle"
+                android:textAllCaps="true"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

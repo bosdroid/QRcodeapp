@@ -59,6 +59,7 @@ import com.expert.qrgenerator.ui.fragments.TelegramFragment
 import com.expert.qrgenerator.ui.fragments.TextFragment
 import com.expert.qrgenerator.ui.fragments.TikTokFragment
 import com.expert.qrgenerator.ui.fragments.TwitterFragment
+import com.expert.qrgenerator.ui.fragments.VCardFragment
 import com.expert.qrgenerator.ui.fragments.WhatsappFragment
 import com.expert.qrgenerator.ui.fragments.WifiFragment
 import com.expert.qrgenerator.ui.fragments.YoutubeFragment
@@ -72,6 +73,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -181,7 +183,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         CalendarFragment(),
         SocialMediaFragment(),
         RedditFragment(),
-        PlayMarketAppStoreFragment()
+        PlayMarketAppStoreFragment(),
+        VCardFragment()
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -394,58 +397,58 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     // THIS FUNCTION WILL INITIALIZE THE GOOGLE LOGIN PARAMETERS
     private fun initializeGoogleLoginParameters() {
         // Define the required scopes for Google Drive and Sheets API access
-        val scopes = mutableListOf(
-            DriveScopes.DRIVE_METADATA_READONLY,
-            SheetsScopes.SPREADSHEETS_READONLY,
-            SheetsScopes.DRIVE,
-            SheetsScopes.SPREADSHEETS,
-            DriveScopes.DRIVE,
-            DriveScopes.DRIVE_APPDATA
-        )
+//        val scopes = mutableListOf(
+//            DriveScopes.DRIVE_METADATA_READONLY,
+//            SheetsScopes.SPREADSHEETS_READONLY,
+//            SheetsScopes.DRIVE,
+//            SheetsScopes.SPREADSHEETS,
+//            DriveScopes.DRIVE,
+//            DriveScopes.DRIVE_APPDATA
+//        )
 
         // Build GoogleSignInOptions for authentication with the specified scopes
         val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
-            .requestScopes(Scope(DriveScopes.DRIVE_FILE))
-            .requestScopes(Scope(SheetsScopes.SPREADSHEETS))
-            .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
+//            .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+//            .requestScopes(Scope(SheetsScopes.SPREADSHEETS))
+//            .requestScopes(Scope(DriveScopes.DRIVE_APPDATA))
             .build()
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, signInOptions)
 
         // Get the last signed-in Google account
-        val acct: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
-        if (acct != null) {
-            // Initialize GoogleAccountCredential with the required scopes
-            credential = GoogleAccountCredential.usingOAuth2(applicationContext, scopes)
-                .setBackOff(ExponentialBackOff())
-                .setSelectedAccount(acct.account)
-
-            // Build the Drive service with the configured credentials
-            mService = Drive.Builder(httpTransport, jsonFactory, credential)
-                .setHttpRequestInitializer { request ->
-                    credential!!.initialize(request)
-                    request.connectTimeout = 300 * 60000  // Set connect timeout to 300 minutes
-                    request.readTimeout = 300 * 60000     // Set read timeout to 300 minutes
-                }
-                .setApplicationName(getString(R.string.app_name))
-                .build()
-
-            // Build the Sheets service with the configured credentials
-            try {
-                sheetService = Sheets.Builder(httpTransport, jacksonFactory, credential)
-                    .setApplicationName(getString(R.string.app_name))
-                    .build()
-            } catch (e: Exception) {
-                e.printStackTrace() // Log any exceptions encountered during Sheets service creation
-            }
-
-            // Save instances of Drive and Sheets services for later use
-            DriveService.saveDriveInstance(mService!!)
-            SheetService.saveGoogleSheetInstance(sheetService!!)
-            saveUserUpdatedDetail(acct, "last")
-        }
+//        val acct: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
+//        if (acct != null) {
+//            // Initialize GoogleAccountCredential with the required scopes
+//            credential = GoogleAccountCredential.usingOAuth2(applicationContext, scopes)
+//                .setBackOff(ExponentialBackOff())
+//                .setSelectedAccount(acct.account)
+//
+//            // Build the Drive service with the configured credentials
+////            mService = Drive.Builder(httpTransport, jsonFactory, credential)
+////                .setHttpRequestInitializer { request ->
+////                    credential!!.initialize(request)
+////                    request.connectTimeout = 300 * 60000  // Set connect timeout to 300 minutes
+////                    request.readTimeout = 300 * 60000     // Set read timeout to 300 minutes
+////                }
+////                .setApplicationName(getString(R.string.app_name))
+////                .build()
+//
+//            // Build the Sheets service with the configured credentials
+////            try {
+////                sheetService = Sheets.Builder(httpTransport, jacksonFactory, credential)
+////                    .setApplicationName(getString(R.string.app_name))
+////                    .build()
+////            } catch (e: Exception) {
+////                e.printStackTrace() // Log any exceptions encountered during Sheets service creation
+////            }
+//
+//            // Save instances of Drive and Sheets services for later use
+////            DriveService.saveDriveInstance(mService!!)
+////            SheetService.saveGoogleSheetInstance(sheetService!!)
+//            saveUserUpdatedDetail(acct, "last")
+//        }
 
         // Check if the intent contains a request to login and start the login process if needed
         if (intent?.hasExtra("REQUEST") == true && intent.getStringExtra("REQUEST") == "login") {
@@ -484,14 +487,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 callback?.onSuccess() ?: (supportFragmentManager.findFragmentById(R.id.fragment_container) as? ScannerFragment)?.restart()
 
                 // Handle new user sign-in
-                if (isLastSignUser == "new") {
+//                if (isLastSignUser == "new") {
                     appSettings.putBoolean(Constants.isLogin, true)
                     Toast.makeText(
                         context,
                         getString(R.string.user_signin_success_text),
                         Toast.LENGTH_SHORT
                     ).show()
-                }
+//                }
 
                 // Start TablesActivity if requestLogin is "login"
                 if (requestLogin == "login") {
@@ -609,18 +612,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun signOut() {
         // Revoke access from Google account
-        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this) { revokeTask ->
-            // Check if revoking access was successful
-            if (revokeTask.isSuccessful) {
+//        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this) { revokeTask ->
+//            // Check if revoking access was successful
+//            if (revokeTask.isSuccessful) {
                 // Sign out from Google account
                 mGoogleSignInClient.signOut().addOnCompleteListener(this) { signOutTask ->
                     if (signOutTask.isSuccessful) {
+                        dismiss()
                         // Clear local settings and user data
                         appSettings.remove(Constants.isLogin)
                         appSettings.remove(Constants.user)
                         Constants.userData = null
-                        Constants.sheetService = null
-                        Constants.mService = null
+//                        Constants.sheetService = null
+//                        Constants.mService = null
 
                         // Show success message
                         Toast.makeText(context, getString(R.string.logout_success_text), Toast.LENGTH_SHORT).show()
@@ -633,14 +637,15 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         checkUserLoginStatus()
                     } else {
                         // Handle Google sign-out failure
+                        dismiss()
                         Toast.makeText(context, getString(R.string.logout_failure_text), Toast.LENGTH_SHORT).show()
                     }
                 }
-            } else {
-                // Handle Google access revoke failure
-                Toast.makeText(context, getString(R.string.logout_failure_text), Toast.LENGTH_SHORT).show()
-            }
-        }
+//            } else {
+//                // Handle Google access revoke failure
+//                Toast.makeText(context, getString(R.string.logout_failure_text), Toast.LENGTH_SHORT).show()
+//            }
+//        }
     }
 
     // THIS GOOGLE LAUNCHER WILL HANDLE RESULT
@@ -651,61 +656,79 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (result.resultCode == Activity.RESULT_OK) {
 
                 // Retrieve the GoogleSignInAccount from the result intent
-                GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                    .addOnSuccessListener { googleSignInAccount ->
-                        // Ensure the GoogleSignInAccount is not null
-                        googleSignInAccount?.let {
-                            // Initialize GoogleAccountCredential with OAuth2
-                            credential = GoogleAccountCredential.usingOAuth2(
-                                context,
-                                scopes
-                            ).apply {
-                                // Configure the backoff strategy
-                                setBackOff(ExponentialBackOff())
-                                // Set the selected Google account
-                                setSelectedAccount(it.account)
-                            }
-
-                            // Build the Drive service
-                            mService = Drive.Builder(
-                                httpTransport, jsonFactory, credential
-                            ).setHttpRequestInitializer { request ->
-                                credential!!.initialize(request)
-                                // Set connect and read timeouts to 300 minutes
-                                request.connectTimeout = 300 * 60 * 1000  // 300 minutes connect timeout
-                                request.readTimeout = 300 * 60 * 1000     // 300 minutes read timeout
-                            }
-                                .setApplicationName(getString(R.string.app_name))
-                                .build()
-
-                            // Build the Sheets service
-                            try {
-                                sheetService = Sheets.Builder(
-                                    httpTransport,
-                                    jacksonFactory,
-                                    credential
-                                )
-                                    .setApplicationName(getString(R.string.app_name))
-                                    .build()
-                            } catch (e: Exception) {
-                                // Print the exception stack trace if building Sheets service fails
-                                e.printStackTrace()
-                            }
-
-                            // Save the instances for later use
-                            DriveService.saveDriveInstance(mService!!)
-                            SheetService.saveGoogleSheetInstance(sheetService!!)
-
-                            // Handle the sign-in result
-                            handleSignInResult(it)
-                        }
-                    }
-                    .addOnFailureListener { exception ->
-                        // Show an alert if the sign-in fails
-                        showAlert(context, exception.localizedMessage ?: "Unknown error occurred")
-                    }
+//                GoogleSignIn.getSignedInAccountFromIntent(result.data)
+//                    .addOnSuccessListener { googleSignInAccount ->
+//                        // Ensure the GoogleSignInAccount is not null
+//                        googleSignInAccount?.let {
+//                            // Initialize GoogleAccountCredential with OAuth2
+//                            credential = GoogleAccountCredential.usingOAuth2(
+//                                context,
+//                                scopes
+//                            ).apply {
+//                                // Configure the backoff strategy
+//                                setBackOff(ExponentialBackOff())
+//                                // Set the selected Google account
+//                                setSelectedAccount(it.account)
+//                            }
+//
+//                            // Build the Drive service
+////                            mService = Drive.Builder(
+////                                httpTransport, jsonFactory, credential
+////                            ).setHttpRequestInitializer { request ->
+////                                credential!!.initialize(request)
+////                                // Set connect and read timeouts to 300 minutes
+////                                request.connectTimeout = 300 * 60 * 1000  // 300 minutes connect timeout
+////                                request.readTimeout = 300 * 60 * 1000     // 300 minutes read timeout
+////                            }
+////                                .setApplicationName(getString(R.string.app_name))
+////                                .build()
+//
+//                            // Build the Sheets service
+////                            try {
+////                                sheetService = Sheets.Builder(
+////                                    httpTransport,
+////                                    jacksonFactory,
+////                                    credential
+////                                )
+////                                    .setApplicationName(getString(R.string.app_name))
+////                                    .build()
+////                            } catch (e: Exception) {
+////                                // Print the exception stack trace if building Sheets service fails
+////                                e.printStackTrace()
+////                            }
+//
+//                            // Save the instances for later use
+////                            DriveService.saveDriveInstance(mService!!)
+////                            SheetService.saveGoogleSheetInstance(sheetService!!)
+//
+//                            // Handle the sign-in result
+//                            handleSignInResult(it)
+//                        }
+//                    }
+//                    .addOnFailureListener { exception ->
+//                        // Show an alert if the sign-in fails
+//                        showAlert(context, exception.localizedMessage ?: "Unknown error occurred")
+//                    }
+                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                handleSignInResult(task)
             }
         }
+
+    // Handle the result of the sign-in
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
+
+            // Signed in successfully, show authenticated UI.
+            account?.let {
+                handleSignInResult(account)
+                //Toast.makeText(this, "Signed in as: ${it.displayName}", Toast.LENGTH_SHORT).show()
+                // Proceed with further logic (e.g., send token to server, etc.)
+            }
+        } catch (e: ApiException) {
+            Toast.makeText(this, "Sign in failed: ${e.statusCode}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     private fun handleSignInResult(acct: GoogleSignInAccount) {
         try {
@@ -843,8 +866,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             findItem(R.id.login).isVisible = !isLoggedIn
             findItem(R.id.logout).isVisible = isLoggedIn
             findItem(R.id.profile).isVisible = isLoggedIn
-            findItem(R.id.tables).isVisible = isLoggedIn
-            findItem(R.id.field_list).isVisible = isLoggedIn
+//            findItem(R.id.tables).isVisible = isLoggedIn
+//            findItem(R.id.field_list).isVisible = isLoggedIn
         }
     }
 
@@ -896,10 +919,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun replaceFragment(position: Int) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment_container, fragments[position])
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
+        val fragment = fragments[position]
+        val isLoggedIn = appSettings.getBoolean(Constants.isLogin)
+        if (fragment is VCardFragment && !isLoggedIn){
+            startLogin()
+        }
+        else {
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.fragment_container, fragment)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+        }
     }
 
 }

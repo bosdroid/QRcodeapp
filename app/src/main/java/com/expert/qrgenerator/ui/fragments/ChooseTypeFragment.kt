@@ -13,8 +13,9 @@ import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.utils.Constants
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ChooseTypeFragment : Fragment() {
 
     private lateinit var binding:FragmentChooseTypeBinding

@@ -10,6 +10,8 @@ import com.github.sumimakito.awesomeqr.AwesomeQrRenderer
 import com.github.sumimakito.awesomeqr.option.RenderOption
 import com.github.sumimakito.awesomeqr.option.background.StillBackground
 import com.github.sumimakito.awesomeqr.option.logo.Logo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class GeneratorManager {
 
@@ -28,13 +30,13 @@ class GeneratorManager {
          * @param logoUrl URL of the logo to be placed in the center of the QR code.
          * @return A Bitmap object representing the generated QR code image, or null if an error occurred.
          */
-        fun generatorQRImage(
+        suspend fun generatorQRImage(
             context: Context,
             text: String,
             col: String,
             bgImage: String,
             logoUrl: String
-        ): Bitmap? {
+        ): Bitmap? = withContext(Dispatchers.IO){
 
             // Create RenderOption object to configure QR code rendering
             val renderOption = RenderOption().apply {
@@ -88,7 +90,7 @@ class GeneratorManager {
             renderOption.logo = logo
 
             // Render the QR code and return the bitmap
-            return try {
+            return@withContext try {
                 val result = AwesomeQrRenderer.render(renderOption)
                 result.bitmap // Return the generated bitmap or null if an error occurred
             } catch (e: Exception) {
@@ -121,7 +123,7 @@ class GeneratorManager {
          * @param encodedData The data to be encoded into the QR code.
          * @param type The type of QR code being generated.
          */
-        fun generateQRCode(context: Context, encodedData: String, type: String) {
+        fun generateQRCode(context: Context, encodedData: String, type: String,fileName:String = "") {
             // Create a CodeHistory object to log QR code generation details
             val qrHistory = CodeHistory(
                 "qrmagicapp",
@@ -143,6 +145,7 @@ class GeneratorManager {
                 // Add encoded data and QR history to the intent extras
                 putExtra("ENCODED_TEXT", encodedData)
                 putExtra("QR_HISTORY", qrHistory)
+               if (type == "vcard") {putExtra("FILE_NAME",fileName)}
             }
 
             // Start the DesignActivity with the intent

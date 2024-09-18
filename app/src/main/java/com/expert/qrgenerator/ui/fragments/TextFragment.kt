@@ -10,8 +10,9 @@ import com.expert.qrgenerator.databinding.FragmentTextBinding
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.utils.Constants.Companion.openKeyboard
 import com.expert.qrgenerator.utils.GeneratorManager
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class TextFragment : Fragment() {
 
     // View binding instance for the fragment

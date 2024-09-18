@@ -11,8 +11,9 @@ import com.expert.qrgenerator.databinding.FragmentPlayMarketAppStoreBinding
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.utils.Constants.Companion.openKeyboard
 import com.expert.qrgenerator.utils.GeneratorManager
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class PlayMarketAppStoreFragment : Fragment() {
 
     private lateinit var binding:FragmentPlayMarketAppStoreBinding

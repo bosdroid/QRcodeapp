@@ -2,13 +2,44 @@ package com.expert.qrgenerator.retrofit
 
 import com.expert.qrgenerator.model.FeedbackResponse
 import com.google.gson.JsonObject
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ApiServices {
+
+    // THIS IS THE POST REQUEST FOR CREATING VCARD QR CODE
+    @FormUrlEncoded
+    @POST("api/vcard.php")
+    suspend fun createVCard(
+        @Field("user_id") userId: String,
+        @Field("type") type: String,
+        @Field("first_name") firstName: String,
+                            @Field("last_name") lastName: String,
+                            @Field("company_name") companyName: String,
+                            @Field("job_title") jobTitle: String,
+                            @Field("dob") dob: String,
+                            @Field("phone") phone: String,
+                            @Field("email") email: String,
+                            @Field("website") website: String,
+                            @Field("address") address: String,
+                            @Field("file_name") fileName: String):Response<JsonObject?>
+
+    // THIS IS THE POST REQUEST FOR UPDATE QR CODE IMAGE
+    @Multipart
+    @POST("api/updateqrcodeimage.php")
+    suspend fun uploadQrCodeImage(@Part image: MultipartBody.Part,
+                                  @Part("name") name: RequestBody
+                            ):Response<JsonObject?>
+
 
     // THIS IS THE POST REQUEST SERVICE FOR CREATING DYNAMIC QR CODE
     @POST("service/user/add")

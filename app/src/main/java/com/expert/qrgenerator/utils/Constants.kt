@@ -29,7 +29,7 @@ class Constants {
         const val CAMERA_PERMISSION = "android.permission.CAMERA"
         private const val BACKGROUND_IMAGE_PATH = "BackgroundImages"
         private const val LOGO_IMAGE_PATH = "LogoImages"
-        const val BASE_URL = "https://pages.qrmagicapp.com/"
+        const val BASE_URL = "https://qrmagicapp.com/"
         const val GOOGLE_APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4-8R85cCh9C5JXD6BTl0q89NNOTFkYfZO1Sp2LRrVA-mCv06LRYu2PqCPUaKab26-/exec"
         var generatedImage: Bitmap? = null
         var tipsValue :Boolean = true
@@ -111,6 +111,7 @@ class Constants {
             list.add(QRTypes(R.drawable.group, context.getString(R.string.social_media_text), 29))
             list.add(QRTypes(R.drawable.reddit, context.getString(R.string.reddit_text), 30))
             list.add(QRTypes(R.drawable.application, context.getString(R.string.play_market_app_store_text), 31))
+            list.add(QRTypes(R.drawable.application, context.getString(R.string.v_card_text), 32))
             return list
         }
 

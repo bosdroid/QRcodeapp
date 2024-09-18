@@ -5,9 +5,47 @@ import com.expert.qrgenerator.model.FeedbackResponse
 import com.expert.qrgenerator.model.SNPayload
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class ApiRepositoryImpl @Inject constructor(private val apiServices: ApiServices) : ApiRepository {
+
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING DYNAMIC QR
+    override suspend fun createVCard(body: HashMap<String, String>): JsonObject? {
+        val bodyJson = Gson().toJsonTree(body).asJsonObject
+        Log.d("TEST199", bodyJson.toString())
+        val response = apiServices.createVCard(
+            bodyJson.get("user_id").asString,
+            bodyJson.get("type").asString,
+            bodyJson.get("first_name").asString,
+            bodyJson.get("last_name").asString,
+            bodyJson.get("company_name").asString,
+            bodyJson.get("job_title").asString,
+            bodyJson.get("dob").asString,
+            bodyJson.get("phone").asString,
+            bodyJson.get("email").asString,
+            bodyJson.get("website").asString,
+            bodyJson.get("address").asString,
+            bodyJson.get("file_name").asString
+        )
+        if (response.isSuccessful) {
+            return response.body()?.asJsonObject
+        }
+        return null
+    }
+
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING DYNAMIC QR
+    override suspend fun uploadQrCodeImage(image: MultipartBody.Part, name: RequestBody): JsonObject? {
+        val response = apiServices.uploadQrCodeImage(
+            image,
+            name
+        )
+        if (response.isSuccessful) {
+            return response.body()?.asJsonObject
+        }
+        return null
+    }
 
     // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING DYNAMIC QR
     override suspend fun createDynamicQrCode(body: HashMap<String, String>): JsonObject? {
