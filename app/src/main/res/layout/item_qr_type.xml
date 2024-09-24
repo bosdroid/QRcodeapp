@@ -36,6 +36,16 @@
             android:fontFamily="@font/roboto_black"
             android:textColor="@color/black"
             />
+
+        <ImageView
+            android:id="@+id/itemStarImage"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_star"
+            app:tint="@color/yellow"
+            android:visibility="gone"
+            />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 

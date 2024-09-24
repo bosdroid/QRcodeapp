@@ -14,6 +14,24 @@ object DataRepository {
     private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     /**
+     * Add User Feedback into Firebase.
+     *
+     * @param callback Callback to handle the result or error.
+     */
+    fun addUserFeedback(message:String, callback: (String)-> Unit) {
+        val data = HashMap<String,String>()
+        data["message"] = message
+
+        databaseReference.child(Constants.FIREBASE_USER_FEEDBACKS).push().setValue(data)
+            .addOnSuccessListener {
+                callback("success")
+            }
+            .addOnFailureListener {
+                callback("failed")
+            }
+    }
+
+    /**
      * Fetches the list of background images from Firebase.
      *
      * @param callback Callback to handle the result or error.

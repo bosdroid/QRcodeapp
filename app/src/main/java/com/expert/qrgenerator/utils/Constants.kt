@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.model.QRItem
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.model.Sheet
 import com.expert.qrgenerator.model.User
@@ -23,6 +24,7 @@ class Constants {
         const val FIREBASE_BACKGROUND_IMAGES = "backgroundImages"
         const val FIREBASE_LOGO_IMAGES = "logoImages"
         const val FIREBASE_FONTS = "fonts"
+        const val FIREBASE_USER_FEEDBACKS = "USER_FEEDBACKS"
         const val READ_STORAGE_REQUEST_CODE = 100
         const val CAMERA_REQUEST_CODE = 101
         const val READ_STORAGE_PERMISSION = "android.permission.READ_EXTERNAL_STORAGE"
@@ -76,42 +78,81 @@ class Constants {
         }
 
         // THIS FUNCTION WILL RETURN THE TYPES LIST
-        fun getQRTypes(context: Context): List<QRTypes> {
-            val list = mutableListOf<QRTypes>()
-            list.add(QRTypes(R.drawable.text_format, context.getString(R.string.text_text), 0))
-            list.add(QRTypes(R.drawable.link, context.getString(R.string.static_link_text), 1))
-            list.add(QRTypes(R.drawable.contact_book, context.getString(R.string.contact_text), 2))
-            list.add(QRTypes(R.drawable.wifi, context.getString(R.string.wifi_text), 3))
-            list.add(QRTypes(R.drawable.telephone, context.getString(R.string.phone_call_text), 4))
-            list.add(QRTypes(R.drawable.sms, context.getString(R.string.sms_text), 5))
-            list.add(QRTypes(R.drawable.instagram, context.getString(R.string.instagram_text), 6))
-            list.add(QRTypes(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 7))
-            // NEW TYPES ADDED
-            list.add(QRTypes(R.drawable.map, context.getString(R.string.map_text), 8))
-            list.add(QRTypes(R.drawable.ic_facebook, context.getString(R.string.facebook_text), 9))
-            list.add(QRTypes(R.drawable.ic_youtube, context.getString(R.string.youtube_text), 10))
-            list.add(QRTypes(R.drawable.ic_telegram, context.getString(R.string.telegram_text), 11))
-            list.add(QRTypes(R.drawable.email, context.getString(R.string.email_text), 12))
-            list.add(QRTypes(R.drawable.tiktok, context.getString(R.string.tiktok_text), 13))
-            list.add(QRTypes(R.drawable.google_forms, context.getString(R.string.google_forms_text), 14))
-            list.add(QRTypes(R.drawable.ic_twitter, context.getString(R.string.twitter_text), 15))
-            list.add(QRTypes(R.drawable.snapchat, context.getString(R.string.snapchat_text), 16))
-            list.add(QRTypes(R.drawable.spotify, context.getString(R.string.spotify_text), 17))
-            list.add(QRTypes(R.drawable.docs, context.getString(R.string.google_docs_text), 18))
-            list.add(QRTypes(R.drawable.google_review, context.getString(R.string.google_review_text), 19))
-            list.add(QRTypes(R.drawable.sheets, context.getString(R.string.google_sheets_text), 20))
-            list.add(QRTypes(R.drawable.payment, context.getString(R.string.payment_text), 21))
-            list.add(QRTypes(R.drawable.office, context.getString(R.string.office_365_text), 22))
-            list.add(QRTypes(R.drawable.key, context.getString(R.string.shaped_text), 23))
-            list.add(QRTypes(R.drawable.paypal, context.getString(R.string.paypal_text), 24))
-            list.add(QRTypes(R.drawable.etsy, context.getString(R.string.etsy_text), 25))
-            list.add(QRTypes(R.drawable.linkedin, context.getString(R.string.linkedin_text), 26))
-            list.add(QRTypes(R.drawable.bitcoin, context.getString(R.string.crypto_payment_text), 27))
-            list.add(QRTypes(R.drawable.calendar, context.getString(R.string.calendar_text), 28))
-            list.add(QRTypes(R.drawable.group, context.getString(R.string.social_media_text), 29))
-            list.add(QRTypes(R.drawable.reddit, context.getString(R.string.reddit_text), 30))
-            list.add(QRTypes(R.drawable.application, context.getString(R.string.play_market_app_store_text), 31))
-            list.add(QRTypes(R.drawable.application, context.getString(R.string.v_card_text), 32))
+        fun getQRTypes(context: Context): List<QRItem> {
+            val list = mutableListOf<QRItem>()
+            // Digital business card
+            list.add(QRItem.Header("Digital Business Card"))
+            list.add(QRItem.QRType(R.drawable.link, context.getString(R.string.static_link_text), 1))
+            list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.v_card_text), 32))
+            list.add(QRItem.QRType(R.drawable.wifi, context.getString(R.string.wifi_text), 3))
+            list.add(QRItem.QRType(R.drawable.telephone, context.getString(R.string.phone_call_text), 4))
+            list.add(QRItem.QRType(R.drawable.sms, context.getString(R.string.sms_text), 5))
+            list.add(QRItem.QRType(R.drawable.text_format, context.getString(R.string.text_text), 0))
+            list.add(QRItem.QRType(R.drawable.contact_book, context.getString(R.string.contact_text), 2))
+            list.add(QRItem.QRType(R.drawable.map, context.getString(R.string.map_text), 8))
+            list.add(QRItem.QRType(R.drawable.email, context.getString(R.string.email_text), 12))
+            // social networks
+            list.add(QRItem.Header("Social Networks"))
+            list.add(QRItem.QRType(R.drawable.instagram, context.getString(R.string.instagram_text), 6))
+            list.add(QRItem.QRType(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 7))
+            list.add(QRItem.QRType(R.drawable.ic_facebook, context.getString(R.string.facebook_text), 9))
+            list.add(QRItem.QRType(R.drawable.ic_youtube, context.getString(R.string.youtube_text), 10))
+            list.add(QRItem.QRType(R.drawable.ic_telegram, context.getString(R.string.telegram_text), 11))
+            list.add(QRItem.QRType(R.drawable.tiktok, context.getString(R.string.tiktok_text), 13))
+            list.add(QRItem.QRType(R.drawable.ic_twitter, context.getString(R.string.twitter_text), 15))
+            list.add(QRItem.QRType(R.drawable.snapchat, context.getString(R.string.snapchat_text), 16))
+            // others
+            list.add(QRItem.Header("Others"))
+            list.add(QRItem.QRType(R.drawable.google_forms, context.getString(R.string.google_forms_text), 14))
+            list.add(QRItem.QRType(R.drawable.spotify, context.getString(R.string.spotify_text), 17))
+            list.add(QRItem.QRType(R.drawable.docs, context.getString(R.string.google_docs_text), 18))
+            list.add(QRItem.QRType(R.drawable.google_review, context.getString(R.string.google_review_text), 19))
+            list.add(QRItem.QRType(R.drawable.sheets, context.getString(R.string.google_sheets_text), 20))
+            list.add(QRItem.QRType(R.drawable.payment, context.getString(R.string.payment_text), 21))
+            list.add(QRItem.QRType(R.drawable.office, context.getString(R.string.office_365_text), 22))
+            list.add(QRItem.QRType(R.drawable.key, context.getString(R.string.shaped_text), 23))
+            list.add(QRItem.QRType(R.drawable.paypal, context.getString(R.string.paypal_text), 24))
+            list.add(QRItem.QRType(R.drawable.etsy, context.getString(R.string.etsy_text), 25))
+            list.add(QRItem.QRType(R.drawable.linkedin, context.getString(R.string.linkedin_text), 26))
+            list.add(QRItem.QRType(R.drawable.bitcoin, context.getString(R.string.crypto_payment_text), 27))
+            list.add(QRItem.QRType(R.drawable.calendar, context.getString(R.string.calendar_text), 28))
+            list.add(QRItem.QRType(R.drawable.group, context.getString(R.string.social_media_text), 29))
+            list.add(QRItem.QRType(R.drawable.reddit, context.getString(R.string.reddit_text), 30))
+            list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.play_market_app_store_text), 31))
+//            list.add(QRTypes(R.drawable.text_format, context.getString(R.string.text_text), 0))
+//            list.add(QRTypes(R.drawable.link, context.getString(R.string.static_link_text), 1))
+//            list.add(QRTypes(R.drawable.contact_book, context.getString(R.string.contact_text), 2))
+//            list.add(QRTypes(R.drawable.wifi, context.getString(R.string.wifi_text), 3))
+//            list.add(QRTypes(R.drawable.telephone, context.getString(R.string.phone_call_text), 4))
+//            list.add(QRTypes(R.drawable.sms, context.getString(R.string.sms_text), 5))
+//            list.add(QRTypes(R.drawable.instagram, context.getString(R.string.instagram_text), 6))
+//            list.add(QRTypes(R.drawable.whatsapp, context.getString(R.string.whatsapp_text), 7))
+//            // NEW TYPES ADDED
+//            list.add(QRTypes(R.drawable.map, context.getString(R.string.map_text), 8))
+//            list.add(QRTypes(R.drawable.ic_facebook, context.getString(R.string.facebook_text), 9))
+//            list.add(QRTypes(R.drawable.ic_youtube, context.getString(R.string.youtube_text), 10))
+//            list.add(QRTypes(R.drawable.ic_telegram, context.getString(R.string.telegram_text), 11))
+//            list.add(QRTypes(R.drawable.email, context.getString(R.string.email_text), 12))
+//            list.add(QRTypes(R.drawable.tiktok, context.getString(R.string.tiktok_text), 13))
+//            list.add(QRTypes(R.drawable.google_forms, context.getString(R.string.google_forms_text), 14))
+//            list.add(QRTypes(R.drawable.ic_twitter, context.getString(R.string.twitter_text), 15))
+//            list.add(QRTypes(R.drawable.snapchat, context.getString(R.string.snapchat_text), 16))
+//            list.add(QRTypes(R.drawable.spotify, context.getString(R.string.spotify_text), 17))
+//            list.add(QRTypes(R.drawable.docs, context.getString(R.string.google_docs_text), 18))
+//            list.add(QRTypes(R.drawable.google_review, context.getString(R.string.google_review_text), 19))
+//            list.add(QRTypes(R.drawable.sheets, context.getString(R.string.google_sheets_text), 20))
+//            list.add(QRTypes(R.drawable.payment, context.getString(R.string.payment_text), 21))
+//            list.add(QRTypes(R.drawable.office, context.getString(R.string.office_365_text), 22))
+//            list.add(QRTypes(R.drawable.key, context.getString(R.string.shaped_text), 23))
+//            list.add(QRTypes(R.drawable.paypal, context.getString(R.string.paypal_text), 24))
+//            list.add(QRTypes(R.drawable.etsy, context.getString(R.string.etsy_text), 25))
+//            list.add(QRTypes(R.drawable.linkedin, context.getString(R.string.linkedin_text), 26))
+//            list.add(QRTypes(R.drawable.bitcoin, context.getString(R.string.crypto_payment_text), 27))
+//            list.add(QRTypes(R.drawable.calendar, context.getString(R.string.calendar_text), 28))
+//            list.add(QRTypes(R.drawable.group, context.getString(R.string.social_media_text), 29))
+//            list.add(QRTypes(R.drawable.reddit, context.getString(R.string.reddit_text), 30))
+//            list.add(QRTypes(R.drawable.application, context.getString(R.string.play_market_app_store_text), 31))
+//            list.add(QRTypes(R.drawable.application, context.getString(R.string.v_card_text), 32))
             return list
         }
 

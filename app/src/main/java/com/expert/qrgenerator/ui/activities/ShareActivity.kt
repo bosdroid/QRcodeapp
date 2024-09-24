@@ -5,16 +5,25 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatRatingBar
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.ActivityShareBinding
+import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.GeneratorManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -46,6 +55,71 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
         imageShareUri?.let {
             binding.shareQrGeneratedImg.setImageURI(it)
         }
+
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            // SHOW POP UP FOR USER FEEDBACK
+            showPopUpFeedback()
+        },10000)
+
+    }
+
+    private fun showPopUpFeedback() {
+        val view = layoutInflater.inflate(R.layout.layout_dialog_rate_us_with_comment, null)
+        val builder = AlertDialog.Builder(context)
+            .setCancelable(false)
+            .setView(view)
+
+        val later = view.findViewById<AppCompatTextView>(R.id.laterTv)
+        val ratingBar = view.findViewById<AppCompatRatingBar>(R.id.ratingBar)
+        val commentBox = view.findViewById<TextInputEditText>(R.id.text_input_field)
+        val messageTv = view.findViewById<AppCompatTextView>(R.id.messageTv)
+        val submitBtn = view.findViewById<AppCompatTextView>(R.id.submitTv)
+
+        val alertDialog = builder.show()
+        ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
+            if (rating <= 3.0) {
+                commentBox.visibility = View.VISIBLE
+                messageTv.visibility = View.VISIBLE
+                submitBtn.visibility = View.VISIBLE
+            } else {
+                commentBox.visibility = View.GONE
+                messageTv.visibility = View.GONE
+                submitBtn.visibility = View.GONE
+                alertDialog.dismiss()
+                rateAppOnPlay()
+            }
+//            alertDialog.dismiss()
+        }
+
+        submitBtn.setOnClickListener {
+            val comment = commentBox.text.toString().trim()
+            if(comment.isNotEmpty()){
+                startLoading(context)
+              DataRepository.addUserFeedback(comment){response->
+                  dismiss()
+                  if(response == "success")
+                  {
+                      alertDialog.dismiss()
+                      showAlert(context,getString(R.string.feedback_success_message))
+                  }
+                  else{
+                      showAlert(context,getString(R.string.something_wrong_error))
+                  }
+              }
+            }
+        }
+
+        later.setOnClickListener {
+            DialogPrefs.clearPreferences(context)
+            alertDialog.dismiss()
+        }
+    }
+
+    // Opens Play Store to rate the app
+    private fun rateAppOnPlay() {
+        val rateIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${packageName}"))
+       startActivity(rateIntent)
     }
 
     private fun setUpToolbar() {

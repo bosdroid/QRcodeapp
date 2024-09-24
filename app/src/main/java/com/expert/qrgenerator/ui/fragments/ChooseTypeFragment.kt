@@ -2,16 +2,14 @@ package com.expert.qrgenerator.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.QRTypesAdapter
 import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
-import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,10 +43,23 @@ class ChooseTypeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentChooseTypeBinding.inflate(inflater, container, false)
 
+        val layoutManager = GridLayoutManager(requireActivity(), 2) // 2 columns
+
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return when (adapter.getItemViewType(position)) {
+                    QRTypesAdapter.VIEW_TYPE_HEADER -> 2 // Header takes full width (2 columns)
+                    QRTypesAdapter.VIEW_TYPE_ITEM -> {
+                        if (position < 6) 2 else 1  // First 4 items also take full width, rest take 1 column
+                    }   // Items take one column each
+                    else -> 1
+                }
+            }
+        }
+        binding.chooseTypesRecyclerView.layoutManager = layoutManager
         adapter = QRTypesAdapter(Constants.getQRTypes(requireActivity())){ qrType,position ->
             fragmentReplaceListener?.replaceFragment(position)
         }
-        binding.chooseTypesRecyclerView.layoutManager = GridLayoutManager(requireActivity(), 2)
         binding.chooseTypesRecyclerView.adapter = adapter
 
         return binding.root

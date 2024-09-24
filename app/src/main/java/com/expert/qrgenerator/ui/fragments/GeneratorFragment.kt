@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.TypesAdapter
 import com.expert.qrgenerator.databinding.FragmentGeneratorBinding
+import com.expert.qrgenerator.model.QRItem
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.ui.activities.CouponQrActivity
@@ -31,7 +32,7 @@ class GeneratorFragment : Fragment() {
     private lateinit var binding: FragmentGeneratorBinding
 
     private lateinit var typesAdapter: TypesAdapter
-    private var qrTypeList = mutableListOf<QRTypes>()
+    private var qrTypeList = mutableListOf<QRItem>()
     private lateinit var appSettings: AppSettings
 
     private val fragments = listOf(
@@ -102,7 +103,7 @@ class GeneratorFragment : Fragment() {
             qrTypeList.clear()
         }
         qrTypeList.addAll(tempList)
-        typesAdapter = TypesAdapter(requireActivity(), qrTypeList)
+//        typesAdapter = TypesAdapter(requireActivity(), qrTypeList)
         binding.typesRecyclerView.adapter = typesAdapter
         typesAdapter.updatePosition(0)
         typesAdapter.setOnItemClickListener(object : TypesAdapter.OnItemClickListener {

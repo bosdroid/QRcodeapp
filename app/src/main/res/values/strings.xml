@@ -439,7 +439,7 @@
     <string name="tiktok_hint_text">TikTok Link</string>
     <string name="twitter_hint_text">X(Twitter) Link</string>
     <string name="youtube_hint_text">YouTube Link</string>
-    <string name="v_card_text">vCard</string>
+    <string name="v_card_text">Digital business card (vCard)</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="company_name">Company Name</string>
@@ -455,6 +455,9 @@
     <string name="short_link_url_example_text">Exmple:(abc, abc123)</string>
     <string name="file_name_valid_error">Special characters and spaces are not allowed.</string>
     <string name="vcard">vcard</string>
+    <string name="qr_code_feedback_hint">Please share what you didn\'t like?</string>
+    <string name="feedback_success_message">Thanks for submit the feedback!</string>
+    <string name="feedback_valuable_hint">Your valuable opinion...</string>
 
     <string-array name="mode_list">
         <item>Inventory</item>
