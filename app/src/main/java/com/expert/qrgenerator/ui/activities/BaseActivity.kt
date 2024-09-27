@@ -1,5 +1,7 @@
 package com.expert.qrgenerator.ui.activities
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
@@ -11,6 +13,7 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatRatingBar
@@ -230,6 +233,15 @@ open class BaseActivity : AppCompatActivity() {
         fun hideSoftKeyboard(context: Context, view: View) {
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+
+        fun copyToClipboard(context: Context,text:String){
+            val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText("label", text)
+            clipboardManager.setPrimaryClip(clipData)
+
+            // Optionally, show a toast message to notify the user
+            Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -19,12 +19,14 @@ import androidx.core.content.ContextCompat
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.ActivityShareBinding
 import com.expert.qrgenerator.repository.DataRepository
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.GeneratorManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Calendar
 
 @AndroidEntryPoint
 class ShareActivity : BaseActivity(), View.OnClickListener {
@@ -33,6 +35,11 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
     // Context of the activity, initialized using lazy delegation
     private val context: Context by lazy { this }
     private var imageShareUri: Uri? = null
+    private var type:String = ""
+    private var data:String = ""
+    private lateinit var appSettings: AppSettings
+    private lateinit var feedbackHandler: Handler
+    private lateinit var feedbackRunnable: Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +52,8 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun initViews() {
-
+        feedbackHandler = Handler(Looper.getMainLooper())
+         appSettings = AppSettings(this)
         // Set click listeners for buttons
         binding.shareBtn.setOnClickListener(this)
         binding.startNew.setOnClickListener(this)
@@ -55,12 +63,32 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
         imageShareUri?.let {
             binding.shareQrGeneratedImg.setImageURI(it)
         }
+        intent?.let {
+            if (it.hasExtra("TYPE")) {
+                type = it.getStringExtra("TYPE") as String
+            }
+            if (it.hasExtra("DATA")) {
+                data = it.getStringExtra("DATA") as String
+            }
+        }
 
+        if (type == "vcard"){
+            binding.digitalCardLinkViewWrapper.visibility = View.VISIBLE
+            binding.digitalCardLinkView.text = data
+            binding.copyLinkBtn.setOnClickListener {
+                copyToClipboard(context,data)
+            }
+        }
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            // SHOW POP UP FOR USER FEEDBACK
-            showPopUpFeedback()
-        },10000)
+        feedbackRunnable = Runnable {
+            if (shouldShowDialog()) {
+                showPopUpFeedback()
+                appSettings.putLong(Constants.LAST_SHOWN_DATE_KEY, Calendar.getInstance().timeInMillis)
+            }
+        }
+
+        // Post the delayed task
+        feedbackHandler.postDelayed(feedbackRunnable, 10000)
 
     }
 
@@ -114,6 +142,16 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
             DialogPrefs.clearPreferences(context)
             alertDialog.dismiss()
         }
+    }
+
+    private fun shouldShowDialog(): Boolean {
+        val lastShownDate = appSettings.getLong(Constants.LAST_SHOWN_DATE_KEY)
+        val currentDate = Calendar.getInstance().timeInMillis
+
+        // 7 days in milliseconds
+        val oneWeekInMillis = 7 * 24 * 60 * 60 * 1000
+
+        return (currentDate - lastShownDate) >= oneWeekInMillis
     }
 
     // Opens Play Store to rate the app
@@ -192,5 +230,15 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        feedbackHandler.removeCallbacks(feedbackRunnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        feedbackHandler.removeCallbacks(feedbackRunnable)
     }
 }

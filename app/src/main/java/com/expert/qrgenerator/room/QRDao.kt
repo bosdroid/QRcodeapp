@@ -15,6 +15,13 @@ interface QRDao {
     fun insert(qrHistory: CodeHistory)
 
     /**
+     * GET a new QR code history record into the database.
+     * @param qrHistory The QR code history data to be inserted.
+     */
+    @Query("SELECT * FROM barcode_history WHERE login=:loginId")
+    fun getHistoryItem(loginId: String):CodeHistory?
+
+    /**
      * Updates an existing QR code history record in the database.
      * @param inputUrl The new data for the QR code.
      * @param url The new generated URL for the QR code.

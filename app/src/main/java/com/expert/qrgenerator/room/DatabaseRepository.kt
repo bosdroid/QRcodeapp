@@ -35,6 +35,11 @@ class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
         refreshData() // Refresh data after insertion
     }
 
+    // GET a new QR code history record
+    fun getHistoryItem(qrHistory: CodeHistory): CodeHistory? {
+        return qrDao.getHistoryItem(qrHistory.login)
+    }
+
     // Insert a new list value record in a background thread
     suspend fun insertListValue(listValue: ListValue) = withContext(Dispatchers.IO) {
         qrDao.insertListValue(listValue)

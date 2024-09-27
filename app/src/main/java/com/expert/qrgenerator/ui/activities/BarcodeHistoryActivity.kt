@@ -67,9 +67,15 @@ class BarcodeHistoryActivity : BaseActivity() {
             override fun onItemClick(position: Int) {
                 // Handle item click event
                 val historyItem = qrCodeHistoryList[position]
-                val intent = Intent(context, CodeDetailActivity::class.java)
-                intent.putExtra("HISTORY_ITEM", historyItem)
-                startActivity(intent)
+                if(historyItem.type == "vcard"){
+                    val intent = Intent(context, UpdateVCardActivity::class.java)
+                    startActivity(intent)
+                }
+                else{
+                    val intent = Intent(context, CodeDetailActivity::class.java)
+                    intent.putExtra("HISTORY_ITEM", historyItem)
+                    startActivity(intent)
+                }
             }
         })
     }

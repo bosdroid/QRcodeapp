@@ -97,7 +97,8 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     // Object to hold QR code history data
     private var qrHistory: CodeHistory? = null
 
-    private var fileName:String = ""
+    private var fileName: String = ""
+    private var existingVCard: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,8 +154,15 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 }
             }
 
-            if (it.hasExtra("FILE_NAME")){
+            if (it.hasExtra("FILE_NAME")) {
                 fileName = it.getStringExtra("FILE_NAME") as String
+            }
+
+            if (it.hasExtra("FILE_NAME")) {
+                fileName = it.getStringExtra("FILE_NAME") as String
+            }
+            if (it.hasExtra("IS_EXIST")) {
+                existingVCard = it.getStringExtra("IS_EXIST") as String
             }
         }
 
@@ -209,7 +217,8 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 // Handle click event for "Next Step" button
                 R.id.next_step_btn -> {
                     // Load the bitmap from the view
-                    val file = ImageManager.loadBitmapFromView(context, binding.qrImageWrapperLayout)
+                    val file =
+                        ImageManager.loadBitmapFromView(context, binding.qrImageWrapperLayout)
                     val bitmap = ImageManager.getBitmapFromURL(context, file.absolutePath)
 
                     // Check if bitmap is not null
@@ -224,20 +233,32 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                             Constants.finalQrImageUri = uri
                             qrHistory?.localImagePath = uri.toString()
 
-                            // Insert QR history into the ViewModel
-                            appViewModel.insert(qrHistory!!)
-                            if (qrHistory!!.type == "vcard"){
 
-                             startLoading(context)
-                             viewModel.uploadQrImage(context,bitmap,fileName)
-                             viewModel.uploadImageResponse.observe(this@DesignActivity, Observer { response->
-                                 dismiss()
-                                 // Start ShareActivity
-                                 val intent = Intent(context, ShareActivity::class.java)
-                                 startActivity(intent)
-                             })
-                            }
-                            else{
+                            if (qrHistory!!.type == "vcard") {
+                             val codeHistory = appViewModel.getHistoryItem(qrHistory!!)
+                              if (codeHistory == null){
+                                  appViewModel.insert(qrHistory!!)
+                              }
+                                else{
+                                  qrHistory!!.id = codeHistory.id
+                                  appViewModel.updateHistory(qrHistory!!)
+                              }
+
+                                startLoading(context)
+                                viewModel.uploadQrImage(context, bitmap, fileName)
+                                viewModel.uploadImageResponse.observe(
+                                    this@DesignActivity,
+                                    Observer { response ->
+                                        dismiss()
+                                        // Start ShareActivity
+                                        val intent = Intent(context, ShareActivity::class.java)
+                                        intent.putExtra("TYPE",qrHistory?.type)
+                                        intent.putExtra("DATA",qrHistory?.data)
+                                        startActivity(intent)
+                                    })
+                            } else {
+                                // Insert QR history into the ViewModel
+                                appViewModel.insert(qrHistory!!)
                                 // Start ShareActivity
                                 val intent = Intent(context, ShareActivity::class.java)
                                 startActivity(intent)
@@ -245,7 +266,10 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
                         } else {
                             // Show error if QR code text is empty
-                            showAlert(context, getString(R.string.qr_code_not_recognizeable_error_text))
+                            showAlert(
+                                context,
+                                getString(R.string.qr_code_not_recognizeable_error_text)
+                            )
                         }
                     }
                 }
@@ -262,7 +286,8 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 R.id.text_btn -> viewVisibleInvisible(4)
 
                 // Handle other cases
-                else -> { /* No action needed */ }
+                else -> { /* No action needed */
+                }
             }
         }
     }
@@ -343,16 +368,16 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 if (imagePreviousPosition != position) {
                     imagePreviousPosition = position
                     // Generate QR image based on selected background image
-                   CoroutineScope(Dispatchers.Main).launch {
-                       qrImage = GeneratorManager.generatorQRImage(
-                           context,
-                           encodedTextData,
-                           "",
-                           imageList[position],
-                           ""
-                       )
-                       binding.qrGeneratedImg.setImageBitmap(qrImage)
-                   }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        qrImage = GeneratorManager.generatorQRImage(
+                            context,
+                            encodedTextData,
+                            "",
+                            imageList[position],
+                            ""
+                        )
+                        binding.qrGeneratedImg.setImageBitmap(qrImage)
+                    }
                     // Optionally update `isBackgroundSet` if needed
                     // isBackgroundSet = qrImage != null
                 }
@@ -475,14 +500,29 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     val inputText = colorInputBox.text.toString()
                     when {
                         inputText.isEmpty() -> {
-                            Toast.makeText(context, getString(R.string.color_empty_value_error_text), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                getString(R.string.color_empty_value_error_text),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         inputText.contains("#") -> {
-                            Toast.makeText(context, getString(R.string.color_value_error_text), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                getString(R.string.color_value_error_text),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         inputText.length != 6 -> {
-                            Toast.makeText(context, getString(R.string.color_valid_value_error_text), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                getString(R.string.color_valid_value_error_text),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+
                         else -> {
                             // Add valid color to the list and update the adapter
                             colorList.add(0, inputText)
@@ -641,54 +681,64 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
 
     // THIS RESULT LAUNCHER WILL CALL THE ACTION PICK FROM FILES FOR BACKGROUND AND LOGO IMAGE
-    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        // Check if an image selection was successful
-        if (result.resultCode == Activity.RESULT_OK) {
-            // Retrieve the result data
-            val data: Intent? = result.data
-            data?.data?.let { imageUri ->
-                // Get image dimensions
-                val size = ImageManager.getImageWidthHeight(context, imageUri)
-                val (imageWidth, imageHeight) = size.split(",").map { it.toInt() }
+    private var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            // Check if an image selection was successful
+            if (result.resultCode == Activity.RESULT_OK) {
+                // Retrieve the result data
+                val data: Intent? = result.data
+                data?.data?.let { imageUri ->
+                    // Get image dimensions
+                    val size = ImageManager.getImageWidthHeight(context, imageUri)
+                    val (imageWidth, imageHeight) = size.split(",").map { it.toInt() }
 
-                // Determine the type of image and handle accordingly
-                when (intentType) {
-                    "background" -> {
-                        // Dismiss the background alert dialog if it's not null
-                        bAlert?.dismiss()
+                    // Determine the type of image and handle accordingly
+                    when (intentType) {
+                        "background" -> {
+                            // Dismiss the background alert dialog if it's not null
+                            bAlert?.dismiss()
 
-                        // Check if image dimensions are within acceptable range
-                        if (imageWidth > 800 && imageHeight > 800) {
-                            showAlert(context, getString(R.string.background_image_size_error_text))
-                        } else {
-                            // Save the image and update the image list
-                            val filePath = ImageManager.saveImageInLocalStorage(context, imageUri, "background")
-                            imageList.add(0, filePath)
-                            imagePreviousPosition += 1
-                            imageAdapter.updateAdapter(0)
+                            // Check if image dimensions are within acceptable range
+                            if (imageWidth > 800 && imageHeight > 800) {
+                                showAlert(
+                                    context,
+                                    getString(R.string.background_image_size_error_text)
+                                )
+                            } else {
+                                // Save the image and update the image list
+                                val filePath = ImageManager.saveImageInLocalStorage(
+                                    context,
+                                    imageUri,
+                                    "background"
+                                )
+                                imageList.add(0, filePath)
+                                imagePreviousPosition += 1
+                                imageAdapter.updateAdapter(0)
+                            }
+                        }
+
+                        "logo" -> {
+                            // Dismiss the logo alert dialog if it's not null
+                            lAlert?.dismiss()
+
+                            // Check if image dimensions are within acceptable range
+                            if (imageWidth > 500 && imageHeight > 500) {
+                                showAlert(context, getString(R.string.logo_image_size_error_text))
+                            } else {
+                                // Save the image and update the logo list
+                                val filePath =
+                                    ImageManager.saveImageInLocalStorage(context, imageUri, "logo")
+                                logoList.add(0, filePath)
+                                logoPreviousPosition += 1
+                                logoAdapter.updateAdapter(0)
+                            }
                         }
                     }
-                    "logo" -> {
-                        // Dismiss the logo alert dialog if it's not null
-                        lAlert?.dismiss()
-
-                        // Check if image dimensions are within acceptable range
-                        if (imageWidth > 500 && imageHeight > 500) {
-                            showAlert(context, getString(R.string.logo_image_size_error_text))
-                        } else {
-                            // Save the image and update the logo list
-                            val filePath = ImageManager.saveImageInLocalStorage(context, imageUri, "logo")
-                            logoList.add(0, filePath)
-                            logoPreviousPosition += 1
-                            logoAdapter.updateAdapter(0)
-                        }
-                    }
+                } ?: run {
+                    // Handle the case where image data is null
                 }
-            } ?: run {
-                // Handle the case where image data is null
             }
         }
-    }
 
 
     // THIS FUNCTION WILL HANDLE THE RUNTIME PERMISSION RESULT
@@ -710,6 +760,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     showPermissionDeniedDialog()
                 }
             }
+
             else -> {
                 // Handle other request codes if needed
             }
@@ -770,6 +821,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 quitWithoutSaveChanges() // Call function to handle quitting without saving changes
                 true // Indicate that the event was handled
             }
+
             else -> {
                 // For other menu items, use the default behavior
                 super.onOptionsItemSelected(item)

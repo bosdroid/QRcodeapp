@@ -56,6 +56,11 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
         }
     }
 
+    // Function to GET a QR code history item
+    fun getHistoryItem(qrHistory: CodeHistory):CodeHistory? {
+           return repository.getHistoryItem(qrHistory)
+    }
+
     // Suspend function to insert a list value
     suspend fun insertListValue(listValue: ListValue) {
         repository.insertListValue(listValue)

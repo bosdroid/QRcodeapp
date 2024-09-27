@@ -54,7 +54,7 @@ class VCardFragment : Fragment() {
 
                 val hashMap = hashMapOf<String, String>().apply {
                     put("user_id", Constants.userData!!.personId)
-                    put("type", if(existingVCard) {"update"} else{"vcard"})
+                    put("type", if(existingVCard) {"update"}else{"vcard"})
                     put("first_name", binding.firstNameInputField.text.toString())
                     put("last_name", binding.lastNameInputField.text.toString())
                     put("company_name", binding.companyNameInputField.text.toString())
@@ -77,7 +77,7 @@ class VCardFragment : Fragment() {
                             if (status == "success") {
                                 val url = response.get("url")?.asString
                                 Log.d("TEST1999", url as String)
-                                GeneratorManager.generateQRCode(requireActivity(), url, "vcard",binding.filenameInputField.text.toString().trim())
+                                GeneratorManager.generateQRCode(requireActivity(), url, "vcard",binding.filenameInputField.text.toString().trim(), vcardExist = existingVCard.toString())
                             } else {
                                 val message = response.get("message")?.asString
                                 showAlert(requireActivity(), message!!)

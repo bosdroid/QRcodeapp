@@ -123,10 +123,10 @@ class GeneratorManager {
          * @param encodedData The data to be encoded into the QR code.
          * @param type The type of QR code being generated.
          */
-        fun generateQRCode(context: Context, encodedData: String, type: String,fileName:String = "") {
+        fun generateQRCode(context: Context, encodedData: String, type: String,fileName:String = "",vcardExist:String="false") {
             // Create a CodeHistory object to log QR code generation details
             val qrHistory = CodeHistory(
-                "qrmagicapp",
+                if(Constants.userData != null){Constants.userData!!.personId}else{  "qrmagicapp"},
                 System.currentTimeMillis().toString(),
                 encodedData,
                 type,
@@ -146,6 +146,7 @@ class GeneratorManager {
                 putExtra("ENCODED_TEXT", encodedData)
                 putExtra("QR_HISTORY", qrHistory)
                if (type == "vcard") {putExtra("FILE_NAME",fileName)}
+                if (type == "vcard") {putExtra("IS_EXIST",vcardExist)}
             }
 
             // Start the DesignActivity with the intent

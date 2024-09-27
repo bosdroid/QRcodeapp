@@ -1,23 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
-    tools:context=".ui.fragments.VCardFragment">
+    tools:context=".ui.activities.UpdateVCardActivity">
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/app_bar_layout"
+            android:background="#fff"
+            android:elevation="4dp"
+            >
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center_vertical"
+                >
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
             android:orientation="vertical"
             android:gravity="center"
             android:layout_marginStart="@dimen/_8dp"
@@ -144,13 +169,13 @@
                 android:hint="@string/your_short_link_url_text"
                 android:layout_marginTop="10dp" />
 
-             <com.google.android.material.textview.MaterialTextView
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:text="@string/short_link_url_example_text"
-                 android:textSize="12sp"
-                 android:textColor="@color/red"
-                 />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/short_link_url_example_text"
+                android:textSize="12sp"
+                android:textColor="@color/red"
+                />
 
             <com.google.android.material.button.MaterialButton
                 android:layout_width="wrap_content"
@@ -159,7 +184,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/crypto_wrapper_layout"
                 android:layout_margin="@dimen/eightDpMargin"
-                android:text="@string/generate"
+                android:text="@string/update_text"
                 android:textSize="@dimen/xlargeText"
                 android:id="@+id/next_step_btn"
                 style="@style/primaryPositiveStyle"
@@ -172,5 +197,6 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </ScrollView>

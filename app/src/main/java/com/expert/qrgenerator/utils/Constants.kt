@@ -44,6 +44,7 @@ class Constants {
         var sheetService: Sheets? = null
         var captureImagePath: String? = null
         var sheetsList = mutableListOf<Sheet>()
+        val LAST_SHOWN_DATE_KEY = "lastShownDate"
         val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
             "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                     "\\@" +

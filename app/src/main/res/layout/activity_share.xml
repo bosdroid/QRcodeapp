@@ -1,105 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ui.activities.ShareActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/app_bar_layout"
-        android:background="#fff"
-        android:elevation="4dp"
-        >
+        android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:gravity="center_vertical"
+            android:id="@+id/app_bar_layout"
+            android:background="#fff"
+            android:elevation="4dp"
             >
-        </androidx.appcompat.widget.Toolbar>
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center_vertical"
+                >
+            </androidx.appcompat.widget.Toolbar>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-        android:layout_margin="@dimen/sixtyDpMargin"
-        android:id="@+id/top_heading"
-        android:text="@string/share_top_heading_text"
-        android:gravity="center"
-        android:textColor="@color/black"
-        />
+        </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/share_qr_generated_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_heading"
-        app:layout_constraintBottom_toTopOf="@id/start_new"
-        />
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+            android:layout_margin="@dimen/sixtyDpMargin"
+            android:id="@+id/top_heading"
+            android:text="@string/share_top_heading_text"
+            android:gravity="center"
+            android:textColor="@color/black"
+            />
 
-       <com.google.android.material.textview.MaterialTextView
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           app:layout_constraintStart_toStartOf="parent"
-           app:layout_constraintEnd_toEndOf="parent"
-           app:layout_constraintTop_toBottomOf="@id/share_qr_generated_img"
-           app:layout_constraintBottom_toTopOf="@id/share_wrapper_layout"
-           android:id="@+id/start_new"
-           android:text="@string/start_new"
-           android:textSize="@dimen/xlargeText"
-           android:textAllCaps="true"
-           style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-           android:layout_marginTop="@dimen/defaultDpMargin"
-           />
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_heading"
+            android:id="@+id/heading_one"
+            android:text="@string/here_is_your_qr_code"
+            android:textSize="@dimen/mediumText"
+            android:textAllCaps="true"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_marginTop="@dimen/defaultDpMargin"
+            />
 
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="vertical"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintBottom_toBottomOf="parent"
-          android:gravity="center_horizontal"
-          android:layout_marginBottom="@dimen/eightDpMargin"
-          android:id="@+id/share_wrapper_layout"
-          >
-         <com.google.android.material.textview.MaterialTextView
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="@string/ready_to_share_text"
-             android:layout_marginBottom="@dimen/eightDpMargin"
-             android:textColor="@color/black"
-             android:textSize="@dimen/xxlargeText"
-             />
-          <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/share_qr_generated_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/heading_one"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/share_qr_generated_img"
+            android:id="@+id/heading_two"
+            android:text="@string/here_is_the_link_to_your_digital_business_card"
+            android:textSize="@dimen/mediumText"
+            android:textAllCaps="true"
+            android:visibility="gone"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_marginTop="@dimen/defaultDpMargin"
+            android:layout_marginStart="@dimen/sixtyDpMargin"
+            android:layout_marginEnd="@dimen/sixtyDpMargin"
+            />
+
+          <androidx.appcompat.widget.LinearLayoutCompat
               android:layout_width="match_parent"
-              android:layout_height="60dp"
-              android:text="@string/share_button_text"
-              android:textSize="@dimen/xlargeText"
-              style="@style/primaryPositiveStyle"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:gravity="center"
+              android:id="@+id/digital_card_link_view_wrapper"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintTop_toBottomOf="@id/heading_two"
+              android:layout_marginTop="@dimen/defaultDpMargin"
+android:visibility="gone"
               android:layout_marginLeft="@dimen/sixtyDpMargin"
               android:layout_marginStart="@dimen/sixtyDpMargin"
               android:layout_marginRight="@dimen/sixtyDpMargin"
               android:layout_marginEnd="@dimen/sixtyDpMargin"
-              android:id="@+id/share_btn"
-              />
-      </LinearLayout>
+              >
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+              <com.google.android.material.textview.MaterialTextView
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center"
+                  android:id="@+id/digital_card_link_view"
+                  android:textSize="@dimen/mediumText"
+                  app:textAllCaps="false"
+
+                  />
+              <com.google.android.material.button.MaterialButton
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/copy_text"
+                  android:id="@+id/copy_link_btn"
+                  android:layout_marginStart="@dimen/defaultDpMargin"
+                  />
+          </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/eightDpMargin"
+            android:id="@+id/share_wrapper_layout"
+            >
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ready_to_share_text"
+                android:layout_marginBottom="@dimen/eightDpMargin"
+                android:textColor="@color/black"
+                android:textSize="@dimen/xxlargeText"
+                />
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/share_button_text"
+                android:textSize="@dimen/xlargeText"
+                style="@style/primaryPositiveStyle"
+                android:layout_marginLeft="@dimen/sixtyDpMargin"
+                android:layout_marginStart="@dimen/sixtyDpMargin"
+                android:layout_marginRight="@dimen/sixtyDpMargin"
+                android:layout_marginEnd="@dimen/sixtyDpMargin"
+                android:id="@+id/share_btn"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/share_qr_generated_img"
+                app:layout_constraintBottom_toTopOf="@id/share_wrapper_layout"
+                android:id="@+id/start_new"
+                android:text="@string/start_new"
+                android:textSize="@dimen/mediumText"
+                android:textAllCaps="true"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_marginTop="@dimen/defaultDpMargin"
+                />
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

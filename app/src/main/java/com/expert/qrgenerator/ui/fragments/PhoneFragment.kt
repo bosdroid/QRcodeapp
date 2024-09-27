@@ -1,7 +1,9 @@
 package com.expert.qrgenerator.ui.fragments
 
 import android.os.Bundle
+import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,8 +59,41 @@ class PhoneFragment : Fragment() {
             }
         }
 
+        binding.phoneStartNumberInputField.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(s.toString().length == 3){
+                    binding.phoneNumberInputField.requestFocus()
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+        })
+
+        binding.phoneCcInputField.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(s.toString().length == 1){
+                    binding.phoneStartNumberInputField.requestFocus()
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+        })
+
         // Set focus to the country code input field
         binding.phoneCcInputField.requestFocus()
+
         // Open the keyboard for the user to start typing
         openKeyboard(requireActivity())
 
