@@ -25,124 +25,173 @@
             android:padding="4dp">
 
             <!-- First Name Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/first_name"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
+
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/first_name_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="text"
                 android:imeOptions="actionNext"
-                android:hint="@string/first_name"
-                android:layout_marginTop="10dp" />
-
+                />
+            </com.google.android.material.textfield.TextInputLayout>
             <!-- Last Name Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/last_name"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/last_name_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="text"
                 android:imeOptions="actionNext"
-                android:hint="@string/last_name"
-                android:layout_marginTop="10dp" />
-
+                />
+            </com.google.android.material.textfield.TextInputLayout>
             <!-- Company Name Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/company_name"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/company_name_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="text"
                 android:imeOptions="actionNext"
-                android:hint="@string/company_name"
-                android:layout_marginTop="10dp" />
+                />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Job Title Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/job_title"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/job_title_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="text"
                 android:imeOptions="actionNext"
-                android:hint="@string/job_title"
-                android:layout_marginTop="10dp" />
+                 />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Date of Birth Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/date_of_birth"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/dob_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="date"
                 android:focusableInTouchMode="false"
-                android:hint="@string/date_of_birth"
-                android:layout_marginTop="10dp" />
+                 />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Phone Number Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/phone_number"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/phone_number_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="phone"
                 android:imeOptions="actionNext"
-                android:hint="@string/phone_number"
-                android:layout_marginTop="10dp" />
+                 />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Email Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email_text"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/email_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="textEmailAddress"
                 android:imeOptions="actionNext"
-                android:hint="@string/email_text"
-                android:layout_marginTop="10dp" />
+               />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Website Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/website_text"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/website_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="textUri"
                 android:imeOptions="actionNext"
-                android:hint="@string/website_text"
-                android:layout_marginTop="10dp" />
+                />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Address Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/address_text"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/address_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="textPostalAddress"
                 android:imeOptions="actionNext"
-                android:hint="@string/address_text"
-                android:layout_marginTop="10dp" />
+                 />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- File name Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/your_short_link_url_text"
+                android:layout_marginTop="10dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/filename_input_field"
-                android:background="@drawable/input_text_field_design"
-                android:padding="15dp"
                 android:inputType="text"
                 android:imeOptions="actionDone"
-                android:hint="@string/your_short_link_url_text"
-                android:layout_marginTop="10dp" />
+                 />
+            </com.google.android.material.textfield.TextInputLayout>
 
              <com.google.android.material.textview.MaterialTextView
                  android:layout_width="match_parent"

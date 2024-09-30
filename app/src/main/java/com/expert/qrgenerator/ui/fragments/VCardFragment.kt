@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -125,8 +126,10 @@ class VCardFragment : Fragment() {
                     binding.addressInputField.setText(vcard?.get("address")?.asString)
                     binding.filenameInputField.setText(vcard?.get("short_code")?.asString)
                     existingVCard = true
+                    binding.addressInputField.setImeOptions(EditorInfo.IME_ACTION_DONE)
                 }
                 else{
+                    binding.addressInputField.setImeOptions(EditorInfo.IME_ACTION_NEXT)
                     existingVCard = false
                 }
             }

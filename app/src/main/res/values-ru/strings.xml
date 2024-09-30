@@ -439,12 +439,12 @@
 	<string name="file_name_input_error">Please enter file name</string>
 	<string name="your_url_text">Your url</string>
     <string name="your_short_link_url_text">Your Short Link Url</string>
-    <string name="short_link_url_example_text">Exmple:(abc, abc123)</string>
+    <string name="short_link_url_example_text">Example:(abc, abc123)</string>
 	<string name="file_name_valid_error">Special characters and spaces are not allowed.</string>
     <string name="vcard">vcard</string>
     <string name="qr_code_feedback_hint">Please share what you didn\'t like?</string>
     <string name="feedback_success_message">Thanks for submit the feedback!</string>
-	<string name="feedback_valuable_hint">Your valuable opinion...</string>
+	<string name="feedback_valuable_hint">Your valuable opinion…</string>
     <string name="here_is_your_qr_code">Here is your QR code</string>
     <string name="here_is_the_link_to_your_digital_business_card">Here is the link to your digital business card</string>
     <string name="update_vcard_text">Update vCard Details</string>

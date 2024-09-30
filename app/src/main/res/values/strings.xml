@@ -452,7 +452,7 @@
     <string name="file_name_input_error">Please enter file name</string>
     <string name="your_url_text">Your url</string>
     <string name="your_short_link_url_text">Your Short Link Url</string>
-    <string name="short_link_url_example_text">Exmple:(abc, abc123)</string>
+    <string name="short_link_url_example_text">Example:(abc, abc123)</string>
     <string name="file_name_valid_error">Special characters and spaces are not allowed.</string>
     <string name="vcard">vcard</string>
     <string name="qr_code_feedback_hint">Please share what you didn\'t like?</string>
