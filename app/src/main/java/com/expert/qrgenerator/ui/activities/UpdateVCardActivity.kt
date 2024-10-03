@@ -56,26 +56,27 @@ class UpdateVCardActivity : BaseActivity() {
         startLoading(context)
         lifecycleScope.launch {
             viewModel.existVCard(hashMap)
-            viewModel.existVCardResponse.observe(this@UpdateVCardActivity) { response ->
-                dismiss()
-                val status = response?.get("status")?.asString
-                if (status == "success") {
-                    val vcard = response.get("vcard")?.asJsonObject
-                    binding.filenameInputField.isEnabled = false
-                    binding.firstNameInputField.setText(vcard?.get("first_name")?.asString)
-                    binding.lastNameInputField.setText(vcard?.get("last_name")?.asString)
-                    binding.companyNameInputField.setText(vcard?.get("company_name")?.asString)
-                    binding.jobTitleInputField.setText(vcard?.get("job_title")?.asString)
-                    binding.dobInputField.setText(vcard?.get("dob")?.asString)
-                    binding.phoneNumberInputField.setText(vcard?.get("phone")?.asString)
-                    binding.emailInputField.setText(vcard?.get("email")?.asString)
-                    binding.websiteInputField.setText(vcard?.get("website")?.asString)
-                    binding.addressInputField.setText(vcard?.get("address")?.asString)
-                    binding.filenameInputField.setText(vcard?.get("short_code")?.asString)
-                    existingVCard = true
-                }
-                else{
-                    existingVCard = false
+            viewModel.existVCardResponse.observe(this@UpdateVCardActivity) { event ->
+                event.getContentIfNotHandled()?.let { response ->
+                    dismiss()
+                    val status = response.get("status")?.asString
+                    if (status == "success") {
+                        val vcard = response.get("vcard")?.asJsonObject
+                        binding.filenameInputField.isEnabled = false
+                        binding.firstNameInputField.setText(vcard?.get("first_name")?.asString)
+                        binding.lastNameInputField.setText(vcard?.get("last_name")?.asString)
+                        binding.companyNameInputField.setText(vcard?.get("company_name")?.asString)
+                        binding.jobTitleInputField.setText(vcard?.get("job_title")?.asString)
+                        binding.dobInputField.setText(vcard?.get("dob")?.asString)
+                        binding.phoneNumberInputField.setText(vcard?.get("phone")?.asString)
+                        binding.emailInputField.setText(vcard?.get("email")?.asString)
+                        binding.websiteInputField.setText(vcard?.get("website")?.asString)
+                        binding.addressInputField.setText(vcard?.get("address")?.asString)
+                        binding.filenameInputField.setText(vcard?.get("short_code")?.asString)
+                        existingVCard = true
+                    } else {
+                        existingVCard = false
+                    }
                 }
             }
         }

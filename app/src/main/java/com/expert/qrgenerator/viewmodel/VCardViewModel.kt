@@ -22,8 +22,8 @@ class VCardViewModel @Inject constructor(
     val vCardResponse: LiveData<SingleEvent<JsonObject?>> get() = _vCardResponse
 
     // LiveData to observe QR code creation responses
-    private val _existVCardResponse = MutableLiveData<JsonObject?>()
-    val existVCardResponse: LiveData<JsonObject?> get() = _existVCardResponse
+    private val _existVCardResponse = MutableLiveData<SingleEvent<JsonObject?>>()
+    val existVCardResponse: LiveData<SingleEvent<JsonObject?>> get() = _existVCardResponse
 
     /**
      * Function to create a vCard webpage.
@@ -45,7 +45,7 @@ class VCardViewModel @Inject constructor(
         viewModelScope.launch {
             // Fetch QR code data and post to LiveData
             val response = apiRepository.createVCard(body)
-            _existVCardResponse.postValue(response)
+            _existVCardResponse.postValue(SingleEvent(response))
         }
     }
 }
