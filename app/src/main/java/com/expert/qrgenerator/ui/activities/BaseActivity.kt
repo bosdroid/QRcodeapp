@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ import com.expert.qrgenerator.utils.Constants.Companion.EMAIL_ADDRESS_PATTERN
 import com.expert.qrgenerator.utils.DialogPrefs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.liulishuo.okdownload.DownloadTask
 import com.liulishuo.okdownload.DownloadTask.Builder
 import com.liulishuo.okdownload.core.cause.EndCause
@@ -39,6 +41,27 @@ import java.util.Locale
 
 
 open class BaseActivity : AppCompatActivity() {
+
+    // Initialize Firebase Analytics
+    private lateinit var analytics: FirebaseAnalytics
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        analytics = FirebaseAnalytics.getInstance(this)
+
+    }
+
+    fun logCustomEvent(eventName: String, paramKey: String? = null, paramValue: String? = null) {
+        val bundle = Bundle()
+
+        // Add the parameter only if both paramKey and paramValue are not null
+        if (paramKey != null && paramValue != null) {
+            bundle.putString(paramKey, paramValue)
+        }
+
+        // Log the custom event
+        analytics.logEvent(eventName, bundle)
+    }
 
     companion object {
         private var downloadTask: DownloadTask? = null

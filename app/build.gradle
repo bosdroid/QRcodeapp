@@ -11,13 +11,12 @@ plugins {
 android {
     compileSdkVersion 34
     buildToolsVersion "30.0.3"
-
     defaultConfig {
         applicationId "com.expert.qrgenerator"
         minSdkVersion 21
         targetSdkVersion 34
-        versionCode 109
-        versionName "multi images been added"
+        versionCode 304
+        versionName "Digital business card been added"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

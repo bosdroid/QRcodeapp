@@ -103,6 +103,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        logCustomEvent(eventName = "screen_design_opened")
 
         // Initialize ViewBinding
         binding = ActivityDesignBinding.inflate(layoutInflater)

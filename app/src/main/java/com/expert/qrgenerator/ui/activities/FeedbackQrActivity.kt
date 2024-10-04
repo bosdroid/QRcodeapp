@@ -53,6 +53,8 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        logCustomEvent(eventName = "screen_feedback_opened")
+
         // Inflate the layout using ViewBinding
         binding = ActivityFeedbackQrBinding.inflate(layoutInflater)
 

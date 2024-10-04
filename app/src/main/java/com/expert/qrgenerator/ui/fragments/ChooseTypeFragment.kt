@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.expert.qrgenerator.adapters.QRTypesAdapter
 import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
+import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,6 +25,10 @@ class ChooseTypeFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        (requireActivity() as? BaseActivity)?.logCustomEvent(
+            eventName = "screen_choose_type_opened"
+        )
+
         try {
             fragmentReplaceListener = context as OnFragmentReplaceListener
         } catch (e: ClassCastException) {

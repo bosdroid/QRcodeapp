@@ -45,6 +45,7 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityShareBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        logCustomEvent(eventName = "screen_share_opened")
 
         // Initialize views and set up toolbar
         initViews()
