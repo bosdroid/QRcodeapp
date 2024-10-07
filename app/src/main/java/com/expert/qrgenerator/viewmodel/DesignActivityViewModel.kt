@@ -49,6 +49,10 @@ class DesignActivityViewModel @Inject constructor(
     private val _uploadImageResponse = MutableLiveData<JsonObject?>()
     val uploadImageResponse: LiveData<JsonObject?> get() = _uploadImageResponse
 
+    // LiveData to observe the upload result
+    private val _saveTrackableDataResponse = MutableLiveData<JsonObject?>()
+    val saveTrackableDataResponse: LiveData<JsonObject?> get() = _saveTrackableDataResponse
+
     /**
      * Creates and saves the color list from string array resources.
      *
@@ -126,6 +130,16 @@ class DesignActivityViewModel @Inject constructor(
 
             // Fetch QR code data and post to LiveData
             val response = apiRepository.uploadQrCodeImage(body,rName)
+            _uploadImageResponse.postValue(response!!)
+        }
+    }
+
+    fun saveTrackableData(qrId:String,targetUrl:String) {
+        viewModelScope.launch {
+            val hashMap = HashMap<String,String>()
+            hashMap["qr_id"] = qrId
+            hashMap["target_url"] = targetUrl
+            val response = apiRepository.saveTrackableData(hashMap)
             _uploadImageResponse.postValue(response!!)
         }
     }

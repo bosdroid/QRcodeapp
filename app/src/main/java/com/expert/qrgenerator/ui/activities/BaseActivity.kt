@@ -67,6 +67,13 @@ open class BaseActivity : AppCompatActivity() {
             return dateFormat.format(date).toUpperCase(Locale.ENGLISH)
         }
 
+        // Converts timestamp to formatted date-time 11:45 AM 02 Dec 2024 string
+        fun getDateTimeFromTimeStamp1(timeStamp: Long): String {
+            val date = Date(timeStamp)
+            val dateFormat = SimpleDateFormat("hh:mm a dd MMM yyyy", Locale.getDefault())
+            return dateFormat.format(date).toUpperCase(Locale.ENGLISH)
+        }
+
         // Sets custom font from a URL
         fun setFontFamily(context: Context, view: MaterialTextView, path: String) {
             if (path.startsWith("http://") || path.startsWith("https://")) {

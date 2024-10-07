@@ -388,7 +388,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/db_parent_layout"
-                app:layout_constraintBottom_toTopOf="@+id/view"
                 android:layout_marginBottom="@dimen/eightDpMargin"
                 >
                 <LinearLayout
@@ -496,11 +495,62 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/scan_history_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barcode_image_detail_layout"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp"
+                android:visibility="gone"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:maxHeight="250dp"
+                    android:padding="@dimen/_10dp"
+                    >
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/scan_history_text"
+                        android:textColor="@color/purple_700"
+                        android:textStyle="bold"
+                        />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:id="@+id/total_scans_view"
+                        android:text="@string/total_0"
+                        />
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/scans_history_recyclerview"
+                    tools:listitem="@layout/scan_history_item_layout"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/code_detail_notes"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/view"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scan_history_layout"
                 android:layout_marginTop="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp"
                 android:visibility="gone"

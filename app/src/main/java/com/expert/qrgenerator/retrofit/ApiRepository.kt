@@ -8,6 +8,9 @@ import okhttp3.RequestBody
 
 interface ApiRepository {
 
+    // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR SAVE TRACKABLE DATA
+    suspend fun saveTrackableData(body: HashMap<String, String>): JsonObject?
+
     // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING VCARD PAGE
     suspend fun uploadQrCodeImage(image: MultipartBody.Part,name: RequestBody): JsonObject?
 

@@ -4,7 +4,9 @@ import android.util.Log
 import com.expert.qrgenerator.interfaces.BackgroundImagesCallback
 import com.expert.qrgenerator.interfaces.FontsCallback
 import com.expert.qrgenerator.interfaces.LogoImagesCallback
+import com.expert.qrgenerator.interfaces.TrackableScansCallback
 import com.expert.qrgenerator.model.Fonts
+import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.utils.Constants
 import com.google.firebase.database.*
 
@@ -12,6 +14,35 @@ object DataRepository {
 
     // Firebase Database reference
     private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
+
+
+    /**
+     * Fetches the list of SCAN HISTORY from Firebase.
+     *
+     * @param callback Callback to handle the result or error.
+     */
+    fun getAllScanHistory(qrId:String, callback: TrackableScansCallback) {
+        val trackableScanList = mutableListOf<TrackableScan>()
+
+        databaseReference.child(Constants.FIREBASE_TRACKABLE_SCANS).child(qrId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (postSnapshot in dataSnapshot.children) {
+                            postSnapshot.getValue(TrackableScan::class.java)?.let { trackableScanList.add(it) }
+                        }
+                        callback.onTrackableScansLoaded(trackableScanList)
+                    } else {
+                        callback.onTrackableScansError() // Handle case when no data exists
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w("DataRepository", "Error fetching background images", databaseError.toException())
+                    callback.onTrackableScansError()
+                }
+            })
+    }
 
     /**
      * Add User Feedback into Firebase.

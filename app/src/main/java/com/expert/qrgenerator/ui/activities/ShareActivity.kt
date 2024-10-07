@@ -128,6 +128,7 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
                   dismiss()
                   if(response == "success")
                   {
+                      appSettings.putString("POPUP_FEEDBACK","done")
                       alertDialog.dismiss()
                       showAlert(context,getString(R.string.feedback_success_message))
                   }
@@ -150,8 +151,9 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
 
         // 7 days in milliseconds
         val oneWeekInMillis = 7 * 24 * 60 * 60 * 1000
+        val popUpFeedbackStatus = appSettings.getString("POPUP_FEEDBACK") as String
 
-        return (currentDate - lastShownDate) >= oneWeekInMillis
+        return ((currentDate - lastShownDate) >= oneWeekInMillis) && (popUpFeedbackStatus.isEmpty() || popUpFeedbackStatus != "done")
     }
 
     // Opens Play Store to rate the app

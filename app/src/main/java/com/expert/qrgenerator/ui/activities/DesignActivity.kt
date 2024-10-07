@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -43,10 +42,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
 
 @AndroidEntryPoint
 class DesignActivity : BaseActivity(), View.OnClickListener {
@@ -79,6 +74,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     // Text data for encoding and secondary input text
     private var encodedTextData: String = " "
     private var secondaryInputText: String? = null
+    private var originalInputText:String = ""
 
     // Type of intent used to determine the activity's behavior
     private var intentType: String? = null
@@ -141,11 +137,16 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
             // Retrieve the encoded text and generate QR code if it exists in the intent
             if (it.hasExtra("ENCODED_TEXT")) {
                 encodedTextData = it.getStringExtra("ENCODED_TEXT") ?: ""
-                Log.d("TEST199", encodedTextData)
+
+                if(qrHistory != null && qrHistory!!.type == "trackable"){
+                    originalInputText = encodedTextData
+                    encodedTextData = "${Constants.BASE_URL}track.php?id=${qrHistory!!.qrId}"
+                }
+
                 CoroutineScope(Dispatchers.Main).launch {
                     qrImage = GeneratorManager.generatorQRImage(
                         context,
-                        encodedTextData,
+                       encodedTextData,
                         "",
                         "",
                         ""
@@ -187,6 +188,20 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
         // Make QR sign text visible
         binding.qrSignText.visibility = View.VISIBLE
+
+        // SAVE QR URL AND QR ID IF QR TYPE IS TRACKABLE
+        if(originalInputText.isNotEmpty() && qrHistory!!.type == "trackable"){
+            saveTrackableQrData(qrHistory!!.qrId,originalInputText)
+        }
+    }
+
+    private fun saveTrackableQrData(qrId: String,trackableLink: String) {
+        viewModel.saveTrackableData(qrId, trackableLink)
+        viewModel.saveTrackableDataResponse.observe(
+            this@DesignActivity,
+            Observer { response ->
+
+            })
     }
 
 

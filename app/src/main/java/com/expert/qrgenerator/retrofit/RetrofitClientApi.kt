@@ -1,6 +1,7 @@
 package com.expert.qrgenerator.retrofit
 
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.getUnsafeOkHttpClient
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -23,7 +24,7 @@ object RetrofitClientApi {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL) // Set the base URL for API requests
             .addConverterFactory(GsonConverterFactory.create()) // Add Gson converter for JSON serialization/deserialization
-            .client(client) // Set the OkHttpClient instance
+            .client(getUnsafeOkHttpClient()) // Set the OkHttpClient instance
             .build()
     }
 }

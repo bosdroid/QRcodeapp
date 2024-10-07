@@ -11,6 +11,19 @@ import javax.inject.Inject
 
 class ApiRepositoryImpl @Inject constructor(private val apiServices: ApiServices) : ApiRepository {
 
+    override suspend fun saveTrackableData(body: HashMap<String, String>): JsonObject? {
+        val bodyJson = Gson().toJsonTree(body).asJsonObject
+        Log.d("TEST199", bodyJson.toString())
+        val response = apiServices.saveTrackableData(
+            bodyJson.get("qr_id").asString,
+            bodyJson.get("target_url").asString
+        )
+        if (response.isSuccessful) {
+            return response.body()?.asJsonObject
+        }
+        return null
+    }
+
     // THIS FUNCTION WILL SEND THE POST REQUEST TO SERVER FOR CREATING DYNAMIC QR
     override suspend fun createVCard(body: HashMap<String, String>): JsonObject? {
         val bodyJson = Gson().toJsonTree(body).asJsonObject

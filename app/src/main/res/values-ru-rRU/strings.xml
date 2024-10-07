@@ -162,4 +162,8 @@
     <string name="update_vcard_text">Update vCard Details</string>
     <string name="copy_short_url_text">Copy Short URL</string>
     <string name="edit_text">Edit</string>
+    <string name="tackable_text">Trackable</string>
+    <string name="trackable_hint_text">Trackable Link</string>
+    <string name="scan_history_text">Scans History</string>
+    <string name="total_0">Total:0</string>
 </resources>

@@ -51,6 +51,7 @@ class QrCodeHistoryAdapter(
                     context.getString(R.string.feedback) -> R.drawable.ic_feedback
                     context.getString(R.string.sn) -> R.drawable.ic_social_networks
                     context.getString(R.string.vcard)->R.drawable.application
+                    context.getString(R.string.trackable)->R.drawable.ic_link
                     else -> R.mipmap.ic_launcher // Fallback icon
                 }
             )

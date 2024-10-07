@@ -18,6 +18,14 @@ interface ApiServices {
 
     // THIS IS THE POST REQUEST FOR CREATING VCARD QR CODE
     @FormUrlEncoded
+    @POST("api/savetrackabledata.php")
+    suspend fun saveTrackableData(
+        @Field("qr_id") qrId: String,
+        @Field("target_url") targetUrl: String):Response<JsonObject?>
+
+
+    // THIS IS THE POST REQUEST FOR CREATING VCARD QR CODE
+    @FormUrlEncoded
     @POST("api/vcard.php")
     suspend fun createVCard(
         @Field("user_id") userId: String,

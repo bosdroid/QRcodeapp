@@ -58,6 +58,7 @@ import com.expert.qrgenerator.ui.fragments.StaticLinkFragment
 import com.expert.qrgenerator.ui.fragments.TelegramFragment
 import com.expert.qrgenerator.ui.fragments.TextFragment
 import com.expert.qrgenerator.ui.fragments.TikTokFragment
+import com.expert.qrgenerator.ui.fragments.TrackableFragment
 import com.expert.qrgenerator.ui.fragments.TwitterFragment
 import com.expert.qrgenerator.ui.fragments.VCardFragment
 import com.expert.qrgenerator.ui.fragments.WhatsappFragment
@@ -66,6 +67,7 @@ import com.expert.qrgenerator.ui.fragments.YoutubeFragment
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.Constants.Companion.PRIVACY_POLICY_URL
+import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.viewmodel.MainActivityViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -184,7 +186,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         SocialMediaFragment(),
         RedditFragment(),
         PlayMarketAppStoreFragment(),
-        VCardFragment()
+        VCardFragment(),
+        TrackableFragment()
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -851,6 +854,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onResume() {
         super.onResume()
         checkUserLoginStatus()
+        if(Constants.isOpenVcardScreen){
+            Constants.isOpenVcardScreen = false
+            replaceFragment(32)
+        }
     }
 
     /**
@@ -919,17 +926,23 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun replaceFragment(position: Int) {
-        val fragment = fragments[position]
-        val isLoggedIn = appSettings.getBoolean(Constants.isLogin)
-        if (fragment is VCardFragment && !isLoggedIn){
-            startLogin()
-        }
-        else {
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.fragment_container, fragment)
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.commit()
-        }
+//        if(position == 33){
+//          GeneratorManager.generateQRCode(context,"${Constants.BASE_URL}track.php?id=${System.currentTimeMillis()}","trackable")
+//        }
+//        else{
+            val fragment = fragments[position]
+            val isLoggedIn = appSettings.getBoolean(Constants.isLogin)
+            if (fragment is VCardFragment && !isLoggedIn){
+                startLogin()
+            }
+            else {
+                val fragmentTransaction = supportFragmentManager.beginTransaction()
+                fragmentTransaction.replace(R.id.fragment_container, fragment)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+            }
+//        }
+
     }
 
 }

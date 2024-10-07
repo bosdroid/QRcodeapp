@@ -45,6 +45,8 @@ class Constants {
         var captureImagePath: String? = null
         var sheetsList = mutableListOf<Sheet>()
         val LAST_SHOWN_DATE_KEY = "lastShownDate"
+        val FIREBASE_TRACKABLE_SCANS = "TRACKABLE_SCANS"
+        var isOpenVcardScreen = false
         val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
             "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                     "\\@" +
@@ -120,6 +122,7 @@ class Constants {
             list.add(QRItem.QRType(R.drawable.group, context.getString(R.string.social_media_text), 29))
             list.add(QRItem.QRType(R.drawable.reddit, context.getString(R.string.reddit_text), 30))
             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.play_market_app_store_text), 31))
+            list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.tackable_text), 33))
 //            list.add(QRTypes(R.drawable.text_format, context.getString(R.string.text_text), 0))
 //            list.add(QRTypes(R.drawable.link, context.getString(R.string.static_link_text), 1))
 //            list.add(QRTypes(R.drawable.contact_book, context.getString(R.string.contact_text), 2))

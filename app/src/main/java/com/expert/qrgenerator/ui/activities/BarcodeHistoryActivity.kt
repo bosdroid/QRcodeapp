@@ -17,6 +17,7 @@ import com.expert.qrgenerator.adapters.ViewPagerAdapter
 import com.expert.qrgenerator.databinding.ActivityBarcodeHistoryBinding
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.utils.Constants
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -68,8 +69,10 @@ class BarcodeHistoryActivity : BaseActivity() {
                 // Handle item click event
                 val historyItem = qrCodeHistoryList[position]
                 if(historyItem.type == "vcard"){
-                    val intent = Intent(context, UpdateVCardActivity::class.java)
-                    startActivity(intent)
+//                    val intent = Intent(context, UpdateVCardActivity::class.java)
+//                    startActivity(intent)
+                    Constants.isOpenVcardScreen = true
+                    finish()
                 }
                 else{
                     val intent = Intent(context, CodeDetailActivity::class.java)

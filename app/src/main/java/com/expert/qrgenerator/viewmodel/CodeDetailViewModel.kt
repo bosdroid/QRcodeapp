@@ -3,7 +3,11 @@ package com.expert.qrgenerator.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.expert.qrgenerator.interfaces.BackgroundImagesCallback
+import com.expert.qrgenerator.interfaces.TrackableScansCallback
 import com.expert.qrgenerator.model.FeedbackResponse
+import com.expert.qrgenerator.model.TrackableScan
+import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.retrofit.ApiRepository
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +25,10 @@ class CodeDetailViewModel @Inject constructor(
     // LiveData to observe dynamic QR code responses
     private val _dynamicQrCodeResponse = MutableLiveData<JsonObject?>()
     val dynamicQrCodeResponse: LiveData<JsonObject?> get() = _dynamicQrCodeResponse
+
+    // LiveData to hold the list of Trackable Scans
+    private val _trackableScanList = MutableLiveData<List<TrackableScan>>()
+    val trackableScanList: LiveData<List<TrackableScan>> get() = _trackableScanList
 
     /**
      * Creates a dynamic QR code using the provided parameters.
@@ -42,5 +50,20 @@ class CodeDetailViewModel @Inject constructor(
     suspend fun callFeedbacks(id: String) {
         // Post the result to LiveData
         _feedbackResponse.postValue(apiRepository.getAllFeedbacks(id))
+    }
+
+    /**
+     * Fetches the background images from the data repository.
+     */
+    fun callTrackableScans(qrId:String) {
+        DataRepository.getAllScanHistory(qrId, object : TrackableScansCallback {
+            override fun onTrackableScansLoaded(trackableScanList: List<TrackableScan>) {
+                _trackableScanList.postValue(trackableScanList)
+            }
+
+            override fun onTrackableScansError() {
+                _trackableScanList.postValue(emptyList())
+            }
+        })
     }
 }

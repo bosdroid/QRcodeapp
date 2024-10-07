@@ -24,15 +24,19 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.FeedbackAdapter
+import com.expert.qrgenerator.adapters.TimestampAdapter
 import com.expert.qrgenerator.databinding.ActivityCodeDetailBinding
 import com.expert.qrgenerator.databinding.BarcodeDetailItemRowBinding
 import com.expert.qrgenerator.databinding.UpdateBarcodeDetailDialogBinding
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.Feedback
 import com.expert.qrgenerator.model.TableObject
+import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
@@ -94,6 +98,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     // Adapter for displaying feedback items in a RecyclerView or similar UI component.
 // Initialized later when the data is ready to be bound to the UI.
     lateinit var feedbackAdapter: FeedbackAdapter
+
+    private var timestampList = mutableListOf<TrackableScan>()
+    private lateinit var timestampAdapter:TimestampAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -241,7 +248,37 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         binding.codeDetailTopImageType.setImageResource(R.drawable.ic_qr_code)
         binding.codeDetailTypeTextHeading.text = getString(R.string.qr_text_data_heading)
         binding.codeDetailTypeImageHeading.text = getString(R.string.qr_image_heading)
-        binding.codeDetailImageType.setImageResource(R.drawable.qrcode)
+//        binding.codeDetailImageType.setImageResource(R.drawable.qrcode)
+        Glide.with(context)
+            .load(codeHistory!!.localImagePath)
+            .override(200, 200) // Set the desired width and height
+            .into(binding.codeDetailImageType)
+
+       if(codeHistory!!.type == "trackable"){
+           binding.scanHistoryLayout.visibility = View.VISIBLE
+           binding.scansHistoryRecyclerview.layoutManager = LinearLayoutManager(context)
+           timestampAdapter = TimestampAdapter(timestampList)
+           binding.scansHistoryRecyclerview.adapter = timestampAdapter
+           val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+           binding.scansHistoryRecyclerview.addItemDecoration(dividerItemDecoration)
+
+           // Observe the LiveData from the ViewModel for trackable scans
+           viewModel.callTrackableScans(codeHistory!!.qrId)
+           viewModel.trackableScanList.observe(this@CodeDetailActivity) { list ->
+               list?.let {
+                   binding.totalScansView.text = "Total: ${list.size}"
+                   if (list.isNotEmpty()){
+                       timestampList.clear()
+                       timestampList.addAll(list)
+                       timestampAdapter.notifyDataSetChanged()
+                   }
+               }
+           }
+       }
+        else
+       {
+           binding.scanHistoryLayout.visibility = View.GONE
+       }
     }
 
     /**
