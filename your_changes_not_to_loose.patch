@@ -1,0 +1,287 @@
+Subject: [PATCH] your changes not to loose
+---
+Index: app/src/main/res/values-ru/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values-ru/strings.xml b/app/src/main/res/values-ru/strings.xml
+--- a/app/src/main/res/values-ru/strings.xml	(revision 507f192f84bd7b093b22364a94e178891b3f86a4)
++++ b/app/src/main/res/values-ru/strings.xml	(date 1728484076430)
+@@ -454,6 +454,12 @@
+     <string name="trackable_hint_text">Trackable Link</string>
+     <string name="scan_history_text">Scans History</string>
+ 	<string name="total_0">Total:0</string>
++    <string name="website_url">Website URL</string>
++    <string name="utm_source">UTM Source (e.g newsletter, google, etc)</string>
++	<string name="utm_medium">UTM Medium (e.g email, social, cpc, etc)</string>
++	<string name="utm_campaign">UTM Campaign (e.g promotion, sale, etc)</string>
++	<string name="generated_utm_tracking_url">Generated UTM tracking URL</string>
++	<string name="utm">UTM Builder</string>
+ 
+ 
+ 	<string-array name="mode_list">
+Index: app/src/main/java/com/expert/qrgenerator/utils/Constants.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/utils/Constants.kt b/app/src/main/java/com/expert/qrgenerator/utils/Constants.kt
+--- a/app/src/main/java/com/expert/qrgenerator/utils/Constants.kt	(revision 507f192f84bd7b093b22364a94e178891b3f86a4)
++++ b/app/src/main/java/com/expert/qrgenerator/utils/Constants.kt	(date 1728587105411)
+@@ -123,6 +123,7 @@
+             list.add(QRItem.QRType(R.drawable.reddit, context.getString(R.string.reddit_text), 30))
+             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.play_market_app_store_text), 31))
+             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.tackable_text), 33))
++//            list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.utm), 34))
+ //            list.add(QRTypes(R.drawable.text_format, context.getString(R.string.text_text), 0))
+ //            list.add(QRTypes(R.drawable.link, context.getString(R.string.static_link_text), 1))
+ //            list.add(QRTypes(R.drawable.contact_book, context.getString(R.string.contact_text), 2))
+Index: app/src/main/java/com/expert/qrgenerator/ui/fragments/UtmBuilderFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/fragments/UtmBuilderFragment.kt b/app/src/main/java/com/expert/qrgenerator/ui/fragments/UtmBuilderFragment.kt
+new file mode 100644
+--- /dev/null	(date 1728587105416)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/fragments/UtmBuilderFragment.kt	(date 1728587105416)
+@@ -0,0 +1,28 @@
++package com.expert.qrgenerator.ui.fragments
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import androidx.fragment.app.Fragment
++import com.expert.qrgenerator.databinding.FragmentUtmBuilderBinding
++
++
++class UtmBuilderFragment : Fragment() {
++
++    private lateinit var binding:FragmentUtmBuilderBinding
++
++    override fun onCreateView(
++        inflater: LayoutInflater, container: ViewGroup?,
++        savedInstanceState: Bundle?
++    ): View? {
++        // Inflate the layout for this fragment
++        binding = FragmentUtmBuilderBinding.inflate(inflater, container, false)
++
++        binding.nextStepBtn.setOnClickListener {
++
++        }
++
++       return binding.root
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt b/app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt
+--- a/app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt	(revision 507f192f84bd7b093b22364a94e178891b3f86a4)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt	(date 1728484103439)
+@@ -60,6 +60,7 @@
+ import com.expert.qrgenerator.ui.fragments.TikTokFragment
+ import com.expert.qrgenerator.ui.fragments.TrackableFragment
+ import com.expert.qrgenerator.ui.fragments.TwitterFragment
++import com.expert.qrgenerator.ui.fragments.UtmBuilderFragment
+ import com.expert.qrgenerator.ui.fragments.VCardFragment
+ import com.expert.qrgenerator.ui.fragments.WhatsappFragment
+ import com.expert.qrgenerator.ui.fragments.WifiFragment
+@@ -187,7 +188,8 @@
+         RedditFragment(),
+         PlayMarketAppStoreFragment(),
+         VCardFragment(),
+-        TrackableFragment()
++        TrackableFragment(),
++        UtmBuilderFragment()
+     )
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	(revision 507f192f84bd7b093b22364a94e178891b3f86a4)
++++ b/app/src/main/res/values/strings.xml	(date 1728484076414)
+@@ -468,6 +468,12 @@
+     <string name="scan_history_text">Scans History</string>
+     <string name="total_0">Total:0</string>
+     <string name="trackable">trackable</string>
++    <string name="website_url">Website URL</string>
++    <string name="utm_source">UTM Source (e.g newsletter, google, etc)</string>
++    <string name="utm_medium">UTM Medium (e.g email, social, cpc, etc)</string>
++    <string name="utm_campaign">UTM Campaign (e.g promotion, sale, etc)</string>
++    <string name="generated_utm_tracking_url">Generated UTM tracking URL</string>
++    <string name="utm">UTM Builder</string>
+ 
+     <string-array name="mode_list">
+         <item>Inventory</item>
+Index: app/src/main/res/values-ru-rRU/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values-ru-rRU/strings.xml b/app/src/main/res/values-ru-rRU/strings.xml
+--- a/app/src/main/res/values-ru-rRU/strings.xml	(revision 507f192f84bd7b093b22364a94e178891b3f86a4)
++++ b/app/src/main/res/values-ru-rRU/strings.xml	(date 1728484076421)
+@@ -166,4 +166,10 @@
+     <string name="trackable_hint_text">Trackable Link</string>
+     <string name="scan_history_text">Scans History</string>
+     <string name="total_0">Total:0</string>
++    <string name="website_url">Website URL</string>
++    <string name="utm_source">UTM Source (e.g newsletter, google, etc)</string>
++    <string name="utm_medium">UTM Medium (e.g email, social, cpc, etc)</string>
++    <string name="utm_campaign">UTM Campaign (e.g promotion, sale, etc)</string>
++    <string name="generated_utm_tracking_url">Generated UTM tracking URL</string>
++    <string name="utm">UTM Builder</string>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/res/layout/fragment_utm_builder.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_utm_builder.xml b/app/src/main/res/layout/fragment_utm_builder.xml
+new file mode 100644
+--- /dev/null	(date 1728484390740)
++++ b/app/src/main/res/layout/fragment_utm_builder.xml	(date 1728484390740)
+@@ -0,0 +1,131 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    tools:context=".ui.fragments.UtmBuilderFragment">
++
++    <androidx.appcompat.widget.LinearLayoutCompat
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:orientation="vertical"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"
++        app:layout_constraintTop_toTopOf="parent"
++        android:layout_marginLeft="16dp"
++        android:layout_marginStart="16dp"
++        android:layout_marginRight="16dp"
++        android:layout_marginEnd="16dp"
++        android:layout_marginTop="8dp"
++        >
++
++        <com.google.android.material.textfield.TextInputLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="@string/website_url"
++            android:layout_marginTop="10dp"
++            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
++            >
++
++            <com.google.android.material.textfield.TextInputEditText
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"
++                android:id="@+id/website_url_input_field"
++                android:inputType="text"
++                android:imeOptions="actionNext"
++                />
++        </com.google.android.material.textfield.TextInputLayout>
++
++        <com.google.android.material.textfield.TextInputLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="@string/utm_source"
++            android:layout_marginTop="10dp"
++            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
++            >
++            <com.google.android.material.textfield.TextInputEditText
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"
++                android:id="@+id/utm_source_input_field"
++                android:inputType="text"
++                android:imeOptions="actionNext"
++                />
++        </com.google.android.material.textfield.TextInputLayout>
++
++        <com.google.android.material.textfield.TextInputLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="@string/utm_medium"
++            android:layout_marginTop="10dp"
++            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
++            >
++            <com.google.android.material.textfield.TextInputEditText
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"
++                android:id="@+id/utm_medium_input_field"
++                android:inputType="text"
++                android:imeOptions="actionNext"
++                />
++        </com.google.android.material.textfield.TextInputLayout>
++
++
++        <com.google.android.material.textfield.TextInputLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="@string/utm_campaign"
++            android:layout_marginTop="10dp"
++            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
++            >
++            <com.google.android.material.textfield.TextInputEditText
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"
++                android:id="@+id/utm_campaign_input_field"
++                android:inputType="text"
++                android:imeOptions="actionNext"
++                />
++        </com.google.android.material.textfield.TextInputLayout>
++
++        <com.google.android.material.textview.MaterialTextView
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:text="@string/generated_utm_tracking_url"
++            android:layout_marginTop="@dimen/eightDpMargin"
++            android:textSize="@dimen/mediumText"
++            android:textColor="@color/black"
++            android:textStyle="bold"
++            />
++
++        <com.google.android.material.textfield.TextInputLayout
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:layout_marginBottom="@dimen/eightDpMargin"
++            android:layout_marginTop="@dimen/defaultDpMargin"
++            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
++            app:hintEnabled="false"
++            >
++            <com.google.android.material.textfield.TextInputEditText
++                android:layout_width="match_parent"
++                android:layout_height="wrap_content"
++                android:id="@+id/utm_generated_url_input_field"
++                android:inputType="textMultiLine"
++                android:focusableInTouchMode="false"
++                android:focusable="false"
++                />
++        </com.google.android.material.textfield.TextInputLayout>
++
++        <com.google.android.material.button.MaterialButton
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_gravity="center_horizontal"
++            android:layout_margin="@dimen/eightDpMargin"
++            android:text="@string/generate"
++            android:textSize="@dimen/xlargeText"
++            android:id="@+id/next_step_btn"
++            style="@style/primaryPositiveStyle"
++            android:textAllCaps="true"
++            />
++
++    </androidx.appcompat.widget.LinearLayoutCompat>
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file

@@ -123,6 +123,7 @@ class Constants {
             list.add(QRItem.QRType(R.drawable.reddit, context.getString(R.string.reddit_text), 30))
             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.play_market_app_store_text), 31))
             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.tackable_text), 33))
+//            list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.utm), 34))
 //            list.add(QRTypes(R.drawable.text_format, context.getString(R.string.text_text), 0))
 //            list.add(QRTypes(R.drawable.link, context.getString(R.string.static_link_text), 1))
 //            list.add(QRTypes(R.drawable.contact_book, context.getString(R.string.contact_text), 2))

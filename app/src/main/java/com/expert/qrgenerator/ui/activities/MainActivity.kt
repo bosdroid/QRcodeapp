@@ -60,6 +60,7 @@ import com.expert.qrgenerator.ui.fragments.TextFragment
 import com.expert.qrgenerator.ui.fragments.TikTokFragment
 import com.expert.qrgenerator.ui.fragments.TrackableFragment
 import com.expert.qrgenerator.ui.fragments.TwitterFragment
+import com.expert.qrgenerator.ui.fragments.UtmBuilderFragment
 import com.expert.qrgenerator.ui.fragments.VCardFragment
 import com.expert.qrgenerator.ui.fragments.WhatsappFragment
 import com.expert.qrgenerator.ui.fragments.WifiFragment
@@ -89,6 +90,9 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.SheetsScopes
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -187,11 +191,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         RedditFragment(),
         PlayMarketAppStoreFragment(),
         VCardFragment(),
-        TrackableFragment()
+        TrackableFragment(),
+        UtmBuilderFragment()
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         // Inflate the main activity layout and bind it to the ActivityMainBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -849,7 +855,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //            startActivity(intent)
 //        }
 //
-//    }
+//    } Ok good. now your branch has my commit with analytics + some changes you had before. Now
 
     override fun onResume() {
         super.onResume()
@@ -857,6 +863,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         if(Constants.isOpenVcardScreen){
             Constants.isOpenVcardScreen = false
             replaceFragment(32)
+        }
+
+        try {//now make the same try catch with all logCustomEvent that we have total 6 places then
+            logCustomEvent(eventName = "screen_main_opened")
+        }catch (exception: Exception){
+            Log.e("errors","logging error: $exception")
         }
     }
 

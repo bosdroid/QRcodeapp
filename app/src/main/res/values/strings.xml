@@ -468,6 +468,12 @@
     <string name="scan_history_text">Scans History</string>
     <string name="total_0">Total:0</string>
     <string name="trackable">trackable</string>
+    <string name="website_url">Website URL</string>
+    <string name="utm_source">UTM Source (e.g newsletter, google, etc)</string>
+    <string name="utm_medium">UTM Medium (e.g email, social, cpc, etc)</string>
+    <string name="utm_campaign">UTM Campaign (e.g promotion, sale, etc)</string>
+    <string name="generated_utm_tracking_url">Generated UTM tracking URL</string>
+    <string name="utm">UTM Builder</string>
 
     <string-array name="mode_list">
         <item>Inventory</item>

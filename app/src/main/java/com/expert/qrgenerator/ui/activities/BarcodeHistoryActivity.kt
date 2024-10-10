@@ -43,6 +43,9 @@ class BarcodeHistoryActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        logCustomEvent(eventName = "screen_history_opened")
+
         binding = ActivityBarcodeHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

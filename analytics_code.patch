@@ -1,0 +1,220 @@
+Subject: [PATCH] release-303-degital business card improved
+---
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle b/app/build.gradle
+--- a/app/build.gradle	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/build.gradle	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -11,13 +11,12 @@
+ android {
+     compileSdkVersion 34
+     buildToolsVersion "30.0.3"
+-
+     defaultConfig {
+         applicationId "com.expert.qrgenerator"
+         minSdkVersion 21
+         targetSdkVersion 34
+-        versionCode 109
+-        versionName "multi images been added"
++        versionCode 304
++        versionName "Digital business card been added"
+         multiDexEnabled true
+         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+     }
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/src/main/AndroidManifest.xml	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -14,9 +14,10 @@
+     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+     <uses-permission android:name="android.permission.GET" />
+     <uses-permission android:name="android.permission.WAKE_LOCK" />
+-    <uses-permission android:name="android.permission.VIBRATE" />
++    <uses-permission android:name="android.permission.VIBRATE"/>
+     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
++    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
++    <uses-permission android:name="android.permission.AD_ID"/>
+ 
+     <uses-feature
+         android:name="android.hardware.camera"
+Index: app/src/main/java/com/expert/qrgenerator/ui/activities/BarcodeHistoryActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/activities/BarcodeHistoryActivity.kt b/app/src/main/java/com/expert/qrgenerator/ui/activities/BarcodeHistoryActivity.kt
+--- a/app/src/main/java/com/expert/qrgenerator/ui/activities/BarcodeHistoryActivity.kt	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/activities/BarcodeHistoryActivity.kt	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -42,6 +42,9 @@
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
++
++        logCustomEvent(eventName = "screen_history_opened")
++
+         binding = ActivityBarcodeHistoryBinding.inflate(layoutInflater)
+         setContentView(binding.root)
+ 
+Index: app/src/main/java/com/expert/qrgenerator/ui/activities/BaseActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/activities/BaseActivity.kt b/app/src/main/java/com/expert/qrgenerator/ui/activities/BaseActivity.kt
+--- a/app/src/main/java/com/expert/qrgenerator/ui/activities/BaseActivity.kt	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/activities/BaseActivity.kt	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -9,6 +9,7 @@
+ import android.net.NetworkCapabilities
+ import android.net.Uri
+ import android.os.Build
++import android.os.Bundle
+ import android.text.format.DateFormat
+ import android.view.LayoutInflater
+ import android.view.View
+@@ -25,6 +26,7 @@
+ import com.expert.qrgenerator.utils.DialogPrefs
+ import com.google.android.material.dialog.MaterialAlertDialogBuilder
+ import com.google.android.material.textview.MaterialTextView
++import com.google.firebase.analytics.FirebaseAnalytics
+ import com.liulishuo.okdownload.DownloadTask
+ import com.liulishuo.okdownload.DownloadTask.Builder
+ import com.liulishuo.okdownload.core.cause.EndCause
+@@ -40,6 +42,27 @@
+ 
+ open class BaseActivity : AppCompatActivity() {
+ 
++    // Initialize Firebase Analytics
++    private lateinit var analytics: FirebaseAnalytics
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        analytics = FirebaseAnalytics.getInstance(this)
++
++    }
++
++    fun logCustomEvent(eventName: String, paramKey: String? = null, paramValue: String? = null) {
++        val bundle = Bundle()
++
++        // Add the parameter only if both paramKey and paramValue are not null
++        if (paramKey != null && paramValue != null) {
++            bundle.putString(paramKey, paramValue)
++        }
++
++        // Log the custom event
++        analytics.logEvent(eventName, bundle)
++    }
++
+     companion object {
+         private var downloadTask: DownloadTask? = null
+         var alert: AlertDialog? = null
+Index: app/src/main/java/com/expert/qrgenerator/ui/activities/DesignActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/activities/DesignActivity.kt b/app/src/main/java/com/expert/qrgenerator/ui/activities/DesignActivity.kt
+--- a/app/src/main/java/com/expert/qrgenerator/ui/activities/DesignActivity.kt	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/activities/DesignActivity.kt	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -103,6 +103,7 @@
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
++        logCustomEvent(eventName = "screen_design_opened")
+ 
+         // Initialize ViewBinding
+         binding = ActivityDesignBinding.inflate(layoutInflater)
+Index: app/src/main/java/com/expert/qrgenerator/ui/activities/FeedbackQrActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/activities/FeedbackQrActivity.kt b/app/src/main/java/com/expert/qrgenerator/ui/activities/FeedbackQrActivity.kt
+--- a/app/src/main/java/com/expert/qrgenerator/ui/activities/FeedbackQrActivity.kt	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/activities/FeedbackQrActivity.kt	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -53,6 +53,8 @@
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+ 
++        logCustomEvent(eventName = "screen_feedback_opened")
++
+         // Inflate the layout using ViewBinding
+         binding = ActivityFeedbackQrBinding.inflate(layoutInflater)
+ 
+Index: app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt b/app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt
+--- a/app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/activities/MainActivity.kt	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -87,6 +87,9 @@
+ import com.google.api.services.drive.DriveScopes
+ import com.google.api.services.sheets.v4.Sheets
+ import com.google.api.services.sheets.v4.SheetsScopes
++import com.google.firebase.analytics.FirebaseAnalytics
++import com.google.firebase.analytics.ktx.analytics
++import com.google.firebase.analytics.ktx.logEvent
+ import com.google.firebase.auth.FirebaseAuth
+ import com.google.firebase.auth.ktx.auth
+ import com.google.firebase.ktx.Firebase
+@@ -190,6 +193,8 @@
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+ 
++        logCustomEvent(eventName = "screen_main_opened")
++
+         // Inflate the main activity layout and bind it to the ActivityMainBinding
+         binding = ActivityMainBinding.inflate(layoutInflater)
+         setContentView(binding.root)
+Index: app/src/main/java/com/expert/qrgenerator/ui/activities/ShareActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/activities/ShareActivity.kt b/app/src/main/java/com/expert/qrgenerator/ui/activities/ShareActivity.kt
+--- a/app/src/main/java/com/expert/qrgenerator/ui/activities/ShareActivity.kt	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/activities/ShareActivity.kt	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -45,6 +45,7 @@
+         super.onCreate(savedInstanceState)
+         binding = ActivityShareBinding.inflate(layoutInflater)
+         setContentView(binding.root)
++        logCustomEvent(eventName = "screen_share_opened")
+ 
+         // Initialize views and set up toolbar
+         initViews()
+Index: app/src/main/java/com/expert/qrgenerator/ui/fragments/ChooseTypeFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/expert/qrgenerator/ui/fragments/ChooseTypeFragment.kt b/app/src/main/java/com/expert/qrgenerator/ui/fragments/ChooseTypeFragment.kt
+--- a/app/src/main/java/com/expert/qrgenerator/ui/fragments/ChooseTypeFragment.kt	(revision 71a05e8d04a2b0f631c8a603c5348ce57cae270d)
++++ b/app/src/main/java/com/expert/qrgenerator/ui/fragments/ChooseTypeFragment.kt	(revision 9263580654ae48312ceacfaf8d4d45a33a095398)
+@@ -10,6 +10,7 @@
+ import com.expert.qrgenerator.adapters.QRTypesAdapter
+ import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
+ import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
++import com.expert.qrgenerator.ui.activities.BaseActivity
+ import com.expert.qrgenerator.utils.Constants
+ import dagger.hilt.android.AndroidEntryPoint
+ 
+@@ -24,6 +25,10 @@
+ 
+     override fun onAttach(context: Context) {
+         super.onAttach(context)
++        (requireActivity() as? BaseActivity)?.logCustomEvent(
++            eventName = "screen_choose_type_opened"
++        )
++
+         try {
+             fragmentReplaceListener = context as OnFragmentReplaceListener
+         } catch (e: ClassCastException) {
