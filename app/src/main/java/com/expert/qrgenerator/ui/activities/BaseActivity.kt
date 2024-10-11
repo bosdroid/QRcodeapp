@@ -42,26 +42,6 @@ import java.util.Locale
 
 open class BaseActivity : AppCompatActivity() {
 
-    // Initialize Firebase Analytics
-    private lateinit var analytics: FirebaseAnalytics
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        analytics = FirebaseAnalytics.getInstance(this)
-
-    }
-
-    fun logCustomEvent(eventName: String, paramKey: String? = null, paramValue: String? = null) {
-        val bundle = Bundle()
-
-        // Add the parameter only if both paramKey and paramValue are not null
-        if (paramKey != null && paramValue != null) {
-            bundle.putString(paramKey, paramValue)
-        }
-
-        // Log the custom event
-        analytics.logEvent(eventName, bundle)
-    }
 
     companion object {
         private var downloadTask: DownloadTask? = null
@@ -69,9 +49,11 @@ open class BaseActivity : AppCompatActivity() {
 
         // Checks if network connection is available
         fun isNetworkAvailable(context: Context): Boolean {
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+                val capabilities =
+                    connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
                 capabilities?.let {
                     it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
                             it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
@@ -112,18 +94,38 @@ open class BaseActivity : AppCompatActivity() {
                     .setPassIfAlreadyCompleted(false)
                     .build()
                 downloadTask?.enqueue(object : DownloadListener1() {
-                    override fun taskStart(task: DownloadTask, model: Listener1Assist.Listener1Model) {}
+                    override fun taskStart(
+                        task: DownloadTask,
+                        model: Listener1Assist.Listener1Model
+                    ) {
+                    }
 
-                    override fun taskEnd(task: DownloadTask, cause: EndCause, realCause: Exception?, model: Listener1Assist.Listener1Model) {
+                    override fun taskEnd(
+                        task: DownloadTask,
+                        cause: EndCause,
+                        realCause: Exception?,
+                        model: Listener1Assist.Listener1Model
+                    ) {
                         val typeface = Typeface.createFromFile(downloadFile)
                         view.typeface = typeface
                     }
 
                     override fun retry(task: DownloadTask, cause: ResumeFailedCause) {}
 
-                    override fun connected(task: DownloadTask, blockCount: Int, currentOffset: Long, totalLength: Long) {}
+                    override fun connected(
+                        task: DownloadTask,
+                        blockCount: Int,
+                        currentOffset: Long,
+                        totalLength: Long
+                    ) {
+                    }
 
-                    override fun progress(task: DownloadTask, currentOffset: Long, totalLength: Long) {}
+                    override fun progress(
+                        task: DownloadTask,
+                        currentOffset: Long,
+                        totalLength: Long
+                    ) {
+                    }
                 })
             } else {
                 MaterialAlertDialogBuilder(context)
@@ -138,7 +140,8 @@ open class BaseActivity : AppCompatActivity() {
         fun hideKeyboard(context: Context, activity: AppCompatActivity) {
             val view = activity.currentFocus
             view?.let {
-                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(it.windowToken, 0)
             }
         }
@@ -182,9 +185,21 @@ open class BaseActivity : AppCompatActivity() {
             val dateTimeFormatString = "EEEE, MMMM d, h:mm:ss"
 
             return when {
-                now[Calendar.DATE] == smsTime[Calendar.DATE] -> "Today " + DateFormat.format(timeFormatString, smsTime)
-                now[Calendar.DATE] - smsTime[Calendar.DATE] == 1 -> "Yesterday " + DateFormat.format(timeFormatString, smsTime)
-                now[Calendar.YEAR] == smsTime[Calendar.YEAR] -> DateFormat.format(dateTimeFormatString, smsTime).toString()
+                now[Calendar.DATE] == smsTime[Calendar.DATE] -> "Today " + DateFormat.format(
+                    timeFormatString,
+                    smsTime
+                )
+
+                now[Calendar.DATE] - smsTime[Calendar.DATE] == 1 -> "Yesterday " + DateFormat.format(
+                    timeFormatString,
+                    smsTime
+                )
+
+                now[Calendar.YEAR] == smsTime[Calendar.YEAR] -> DateFormat.format(
+                    dateTimeFormatString,
+                    smsTime
+                ).toString()
+
                 else -> DateFormat.format("MMMM dd yyyy, h:mm:ss", smsTime).toString()
             }
         }
@@ -217,7 +232,8 @@ open class BaseActivity : AppCompatActivity() {
 
         // Opens Play Store to rate the app
         private fun rateAppOnPlay(context: AppCompatActivity) {
-            val rateIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${context.packageName}"))
+            val rateIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${context.packageName}"))
             context.startActivity(rateIntent)
         }
 
@@ -254,7 +270,8 @@ open class BaseActivity : AppCompatActivity() {
         // Shows the soft keyboard
         fun showSoftKeyboard(context: Context, view: View) {
             if (view.requestFocus()) {
-                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
             }
         }
@@ -265,8 +282,9 @@ open class BaseActivity : AppCompatActivity() {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
 
-        fun copyToClipboard(context: Context,text:String){
-            val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        fun copyToClipboard(context: Context, text: String) {
+            val clipboardManager =
+                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clipData = ClipData.newPlainText("label", text)
             clipboardManager.setPrimaryClip(clipData)
 

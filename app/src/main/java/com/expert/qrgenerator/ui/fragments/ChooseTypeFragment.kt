@@ -17,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ChooseTypeFragment : Fragment() {
 
-    private lateinit var binding:FragmentChooseTypeBinding
+    private lateinit var binding: FragmentChooseTypeBinding
     private lateinit var adapter: QRTypesAdapter
 
     private var fragmentReplaceListener: OnFragmentReplaceListener? = null
@@ -25,9 +25,6 @@ class ChooseTypeFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (requireActivity() as? BaseActivity)?.logCustomEvent(
-            eventName = "screen_choose_type_opened"
-        )
 
         try {
             fragmentReplaceListener = context as OnFragmentReplaceListener
@@ -62,7 +59,7 @@ class ChooseTypeFragment : Fragment() {
             }
         }
         binding.chooseTypesRecyclerView.layoutManager = layoutManager
-        adapter = QRTypesAdapter(Constants.getQRTypes(requireActivity())){ qrType,position ->
+        adapter = QRTypesAdapter(Constants.getQRTypes(requireActivity())) { qrType, position ->
             fragmentReplaceListener?.replaceFragment(position)
         }
         binding.chooseTypesRecyclerView.adapter = adapter

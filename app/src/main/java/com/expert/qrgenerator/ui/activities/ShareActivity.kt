@@ -25,6 +25,7 @@ import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.GeneratorManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
@@ -32,11 +33,12 @@ import java.util.Calendar
 class ShareActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityShareBinding
+
     // Context of the activity, initialized using lazy delegation
     private val context: Context by lazy { this }
     private var imageShareUri: Uri? = null
-    private var type:String = ""
-    private var data:String = ""
+    private var type: String = ""
+    private var data: String = ""
     private lateinit var appSettings: AppSettings
     private lateinit var feedbackHandler: Handler
     private lateinit var feedbackRunnable: Runnable
@@ -45,16 +47,28 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityShareBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        logCustomEvent(eventName = "screen_share_opened")
 
         // Initialize views and set up toolbar
         initViews()
         setUpToolbar()
     }
 
+    override fun onResume() {
+        super.onResume()
+        logEvent()
+    }
+
+    private fun logEvent() {
+        val mainAnalytics = FirebaseAnalytics.getInstance(this)
+        val bundle = Bundle()
+        // Log the custom event
+        mainAnalytics.logEvent("screen_share_opened", bundle)
+    }
+
+
     private fun initViews() {
         feedbackHandler = Handler(Looper.getMainLooper())
-         appSettings = AppSettings(this)
+        appSettings = AppSettings(this)
         // Set click listeners for buttons
         binding.shareBtn.setOnClickListener(this)
         binding.startNew.setOnClickListener(this)
@@ -73,18 +87,21 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
-        if (type == "vcard"){
+        if (type == "vcard") {
             binding.digitalCardLinkViewWrapper.visibility = View.VISIBLE
             binding.digitalCardLinkView.text = data
             binding.copyLinkBtn.setOnClickListener {
-                copyToClipboard(context,data)
+                copyToClipboard(context, data)
             }
         }
 
         feedbackRunnable = Runnable {
             if (shouldShowDialog()) {
                 showPopUpFeedback()
-                appSettings.putLong(Constants.LAST_SHOWN_DATE_KEY, Calendar.getInstance().timeInMillis)
+                appSettings.putLong(
+                    Constants.LAST_SHOWN_DATE_KEY,
+                    Calendar.getInstance().timeInMillis
+                )
             }
         }
 
@@ -123,20 +140,18 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
 
         submitBtn.setOnClickListener {
             val comment = commentBox.text.toString().trim()
-            if(comment.isNotEmpty()){
+            if (comment.isNotEmpty()) {
                 startLoading(context)
-              DataRepository.addUserFeedback(comment){response->
-                  dismiss()
-                  if(response == "success")
-                  {
-                      appSettings.putString("POPUP_FEEDBACK","done")
-                      alertDialog.dismiss()
-                      showAlert(context,getString(R.string.feedback_success_message))
-                  }
-                  else{
-                      showAlert(context,getString(R.string.something_wrong_error))
-                  }
-              }
+                DataRepository.addUserFeedback(comment) { response ->
+                    dismiss()
+                    if (response == "success") {
+                        appSettings.putString("POPUP_FEEDBACK", "done")
+                        alertDialog.dismiss()
+                        showAlert(context, getString(R.string.feedback_success_message))
+                    } else {
+                        showAlert(context, getString(R.string.something_wrong_error))
+                    }
+                }
             }
         }
 
@@ -160,7 +175,7 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
     // Opens Play Store to rate the app
     private fun rateAppOnPlay() {
         val rateIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${packageName}"))
-       startActivity(rateIntent)
+        startActivity(rateIntent)
     }
 
     private fun setUpToolbar() {
@@ -231,6 +246,7 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
                 onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -18,6 +18,7 @@ import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.viewmodel.FeedbackQrViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import top.defaults.colorpicker.ColorPickerPopup
@@ -53,8 +54,6 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        logCustomEvent(eventName = "screen_feedback_opened")
-
         // Inflate the layout using ViewBinding
         binding = ActivityFeedbackQrBinding.inflate(layoutInflater)
 
@@ -66,6 +65,18 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
 
         // Set up the toolbar (e.g., configure title, navigation, etc.)
         setUpToolbar()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        logEvent()
+    }
+
+    private fun logEvent() {
+        val mainAnalytics = FirebaseAnalytics.getInstance(this)
+        val bundle = Bundle()
+        // Log the custom event
+        mainAnalytics.logEvent("screen_feedback_opened", bundle)
     }
 
 
@@ -173,7 +184,11 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                             if (response != null) {
                                 val url = response.get("generatedUrl").asString
 
-                                GeneratorManager.generateQRCode(this@FeedbackQrActivity,url,"feedback")
+                                GeneratorManager.generateQRCode(
+                                    this@FeedbackQrActivity,
+                                    url,
+                                    "feedback"
+                                )
 
                             } else {
                                 // Show error message if response is null
@@ -301,6 +316,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         binding.lavFeedbackInnerTextEditBtn.visibility = View.GONE
                         binding.feedbackInnerTextEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
+
                     "inner_description" -> {
                         feedbackInnerDescriptionText = value
                         binding.feedbackInnerDescriptionText.setTextColor(Color.BLACK)
@@ -371,6 +387,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                     }
                 }
             }
+
             "feedback_send_btn" -> {
                 if (feedbackSendButtonText.isNotEmpty()) {
                     inputBox.setText(feedbackSendButtonText)
@@ -384,6 +401,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                     }
                 }
             }
+
             else -> {
                 // Handle other cases if needed
             }
@@ -436,12 +454,17 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                     "feedback_title" -> {
                         feedbackTitleText = value
                         feedbackTitleBackgroundColor = selectedColor
-                        binding.feedbackTitleTextLayout.setBackgroundColor(Color.parseColor(selectedColor))
+                        binding.feedbackTitleTextLayout.setBackgroundColor(
+                            Color.parseColor(
+                                selectedColor
+                            )
+                        )
                         binding.feedbackTitleText.text = value
                         binding.feedbackTitleText.setTextColor(Color.WHITE)
                         binding.lavFeedbackInnerTextEditBtn.visibility = View.GONE
                         binding.feedbackTitleTextEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
+
                     "feedback_send_btn" -> {
                         feedbackSendButtonText = value
                         feedbackSendButtonColor = selectedColor
@@ -453,6 +476,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
                         binding.feedbackSendButtonEditBtn.visibility = View.GONE
                         binding.feedbackSendButtonEditBtn.setImageResource(R.drawable.green_checked_icon)
                     }
+
                     else -> {
                         // Handle other cases if needed
                     }
