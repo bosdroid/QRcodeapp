@@ -67,6 +67,67 @@ class ChooseTypeFragment : Fragment() {
         }
         binding.chooseTypesRecyclerView.adapter = adapter
 
+<<<<<<< Updated upstream
+=======
+        // Set up a listener for changes in the protocol selection
+        binding.httpProtocolGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.http_protocol_rb -> {
+                    selectedProtocol = "http://"
+                }
+                R.id.https_protocol_rb -> {
+                    selectedProtocol = "https://"
+                }
+                else -> {
+                    // Handle other cases if necessary
+                }
+            }
+        }
+
+        binding.staticLayoutContinueBtn.setOnClickListener {
+            val value = binding.staticLinkLayoutInputField.text.toString().trim()
+
+            // Check if a protocol is selected
+            if (selectedProtocol.isEmpty()) {
+                BaseActivity.hideSoftKeyboard(requireActivity(), binding.staticLinkLayoutInputField.rootView)
+                BaseActivity.showAlert(
+                    requireActivity(),
+                    requireActivity().resources.getString(R.string.protocol_error)
+                )
+            }
+            // Check if the input field is empty
+            else if (value.isEmpty()) {
+                BaseActivity.showAlert(
+                    requireActivity(),
+                    requireActivity().resources.getString(R.string.required_data_input_error)
+                )
+            }
+            // Check if the input contains 'http://' or 'https://'
+            else if (value.contains("http://") || value.contains("https://")) {
+                BaseActivity.showAlert(
+                    requireActivity(),
+                    requireActivity().resources.getString(R.string.without_protocol_error)
+                )
+            }
+            // Validate the URL format using a regular expression
+            else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
+                BaseActivity.showAlert(
+                    requireActivity(),
+                    requireActivity().resources.getString(R.string.valid_website_error)
+                )
+            }
+            // If all validations pass, encode the data and generate a QR code
+            else {
+                encodedData = "$selectedProtocol$value"
+                binding.staticLinkLayoutInputField.setText("")
+                BaseActivity.hideSoftKeyboard(requireActivity(),binding.staticLinkLayoutInputField)
+                binding.staticLinkLayoutInputField.clearFocus()
+                GeneratorManager.generateQRCode(requireActivity(), encodedData, "trackable")
+            }
+        }
+
+
+>>>>>>> Stashed changes
         return binding.root
     }
 

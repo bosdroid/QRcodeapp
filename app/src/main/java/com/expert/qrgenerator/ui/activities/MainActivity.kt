@@ -25,8 +25,12 @@ import com.expert.qrgenerator.databinding.ContentMainBinding
 import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
 import com.expert.qrgenerator.model.User
+<<<<<<< Updated upstream
 import com.expert.qrgenerator.singleton.DriveService
 import com.expert.qrgenerator.singleton.SheetService
+=======
+import com.expert.qrgenerator.repository.DataRepository
+>>>>>>> Stashed changes
 import com.expert.qrgenerator.ui.fragments.CalendarFragment
 import com.expert.qrgenerator.ui.fragments.ChooseTypeFragment
 import com.expert.qrgenerator.ui.fragments.ContactFragment
@@ -250,7 +254,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         appSettings = AppSettings(context)
         auth = Firebase.auth
+<<<<<<< Updated upstream
 
+=======
+        DataRepository.getChatGptApiKey()
+>>>>>>> Stashed changes
         // Initialize fragments
         val scannerFragment = ScannerFragment()
         val generatorFragment = GeneratorFragment()

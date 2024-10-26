@@ -271,13 +271,33 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                                         intent.putExtra("TYPE",qrHistory?.type)
                                         intent.putExtra("DATA",qrHistory?.data)
                                         startActivity(intent)
+                                        finish()
                                     })
                             } else {
                                 // Insert QR history into the ViewModel
                                 appViewModel.insert(qrHistory!!)
+<<<<<<< Updated upstream
                                 // Start ShareActivity
                                 val intent = Intent(context, ShareActivity::class.java)
                                 startActivity(intent)
+=======
+
+                                if(qrHistory!!.type == "trackable"){
+                                    // Start Code Detail Activity
+                                    val intent = Intent(context, CodeDetailActivity::class.java)
+                                    intent.putExtra("HISTORY_ITEM",qrHistory)
+                                    startActivity(intent)
+                                    finish()
+                                }
+                                else{
+                                    // Start ShareActivity
+                                    val intent = Intent(context, ShareActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                }
+
+
+>>>>>>> Stashed changes
                             }
 
                         } else {

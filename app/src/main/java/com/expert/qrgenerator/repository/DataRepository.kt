@@ -149,4 +149,23 @@ object DataRepository {
                 }
             })
     }
+
+    fun getChatGptApiKey(){
+        databaseReference.child("Keys").child("chatgpt_api_key").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val apiKey = snapshot.getValue(String::class.java)
+                if (apiKey != null) {
+                    // Use the API key
+                    Constants.chatGptApiKey = apiKey
+                    println("API Key: $apiKey")
+                } else {
+                    println("API Key not found!")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Failed to fetch API Key: ${error.message}")
+            }
+        })
+    }
 }
