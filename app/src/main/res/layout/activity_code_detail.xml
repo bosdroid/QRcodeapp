@@ -55,6 +55,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:id="@+id/code_detail_top_framelayout"
+                android:visibility="gone"
                 >
 
                 <androidx.cardview.widget.CardView
@@ -64,6 +65,7 @@
                     android:padding="10dp"
                     app:cardCornerRadius="10dp"
                     android:layout_marginTop="@dimen/sixtyDpMargin"
+                    android:visibility="gone"
                     >
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -74,12 +76,12 @@
                         android:paddingBottom="30dp"
                         android:gravity="center_horizontal"
                         >
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/mediumText"
-                        android:id="@+id/code_detail_type_text_heading"
-                        />
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/mediumText"
+                            android:id="@+id/code_detail_type_text_heading"
+                            />
 
                         <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
@@ -105,59 +107,59 @@
                             />
 
 
-                      <LinearLayout
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:orientation="horizontal"
-                          android:layout_marginTop="@dimen/sixtyDpMargin"
-                          android:baselineAligned="false">
-
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            >
-                         <androidx.appcompat.widget.AppCompatImageButton
-                             android:layout_width="80dp"
-                             android:layout_height="wrap_content"
-                             android:src="@drawable/ic_search"
-                             android:background="@drawable/button_background_design"
-                             android:id="@+id/code_detail_text_search_button"
-                             />
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/search_web_text"
-                                android:textSize="@dimen/largeText"
-                                android:textColor="@color/black"
-                                />
-                        </LinearLayout>
+                            android:orientation="horizontal"
+                            android:layout_marginTop="@dimen/sixtyDpMargin"
+                            android:baselineAligned="false">
 
-                          <LinearLayout
-                              android:layout_width="0dp"
-                              android:layout_height="wrap_content"
-                              android:orientation="vertical"
-                              android:layout_weight="1"
-                              android:gravity="center"
-                              >
-                              <androidx.appcompat.widget.AppCompatImageButton
-                                  android:layout_width="80dp"
-                                  android:layout_height="wrap_content"
-                                  android:src="@drawable/ic_share"
-                                  android:background="@drawable/button_background_design"
-                                  android:id="@+id/code_detail_text_share_button"
-                                  />
-                              <com.google.android.material.textview.MaterialTextView
-                                  android:layout_width="wrap_content"
-                                  android:layout_height="wrap_content"
-                                  android:text="@string/share_button_text"
-                                  android:textSize="@dimen/largeText"
-                                  android:textColor="@color/black"
-                                  />
-                          </LinearLayout>
-                      </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                >
+                                <androidx.appcompat.widget.AppCompatImageButton
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_search"
+                                    android:background="@drawable/button_background_design"
+                                    android:id="@+id/code_detail_text_search_button"
+                                    />
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/search_web_text"
+                                    android:textSize="@dimen/largeText"
+                                    android:textColor="@color/black"
+                                    />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                >
+                                <androidx.appcompat.widget.AppCompatImageButton
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/ic_share"
+                                    android:background="@drawable/button_background_design"
+                                    android:id="@+id/code_detail_text_share_button"
+                                    />
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/share_button_text"
+                                    android:textSize="@dimen/largeText"
+                                    android:textColor="@color/black"
+                                    />
+                            </LinearLayout>
+                        </LinearLayout>
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -381,13 +383,74 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/code_id_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/db_parent_layout"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10dp"
+                    >
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/current_qr_id"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            />
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/current_qr_code_id_view"
+                            android:textColor="@color/purple_700"
+                            android:layout_marginStart="@dimen/eightDpMargin"
+                            />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/text_input_field"
+                        android:hint="@string/qr_code_id_text"
+                        android:id="@+id/qr_code_id_input_field"
+                        android:layout_marginTop="@dimen/eightDpMargin"
+                        android:inputType="text"
+                        android:imeOptions="actionDone"
+                        />
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/button_background_design"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="@dimen/defaultDpMargin"
+                        android:text="@string/update_text"
+                        android:textColor="@color/white"
+                        android:id="@+id/update_qr_id_btn"
+                        />
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/barcode_image_detail_layout"
                 android:padding="10dp"
                 app:cardCornerRadius="10dp"
                 android:layout_marginTop="@dimen/eightDpMargin"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/db_parent_layout"
+                app:layout_constraintTop_toBottomOf="@id/code_id_layout"
                 android:layout_marginBottom="@dimen/eightDpMargin"
                 >
                 <LinearLayout
@@ -469,6 +532,20 @@
                         </LinearLayout>
                     </LinearLayout>
 
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/sixtyDpMargin"
+                        >
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            >
+
+                        </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -495,65 +572,12 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/scan_history_layout"
+                android:id="@+id/code_detail_notes"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/barcode_image_detail_layout"
                 android:layout_marginTop="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp"
-                android:visibility="gone"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:maxHeight="250dp"
-                    android:padding="@dimen/_10dp"
-                    >
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/scan_history_text"
-                        android:textColor="@color/purple_700"
-                        android:textStyle="bold"
-                        />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:id="@+id/total_scans_view"
-                        android:text="@string/total_0"
-                        />
-                </LinearLayout>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/scans_history_recyclerview"
-                    tools:listitem="@layout/scan_history_item_layout"
-                    android:layout_margin="@dimen/eightDpMargin"
-                    />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/code_detail_notes"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/scan_history_layout"
-                android:layout_marginTop="@dimen/eightDpMargin"
-                app:cardCornerRadius="10dp"
-                android:visibility="gone"
                 >
 
                 <LinearLayout
@@ -584,6 +608,177 @@
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/scan_history_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/code_detail_notes"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp"
+                android:visibility="gone"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:maxHeight="250dp"
+                        android:padding="@dimen/_10dp"
+                        >
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/scan_history_text"
+                            android:textColor="@color/purple_700"
+                            android:textStyle="bold"
+                            />
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:id="@+id/total_scans_view"
+                            android:text="@string/total_0"
+                            />
+                    </LinearLayout>
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nobody_scan_this_qr_code_yet"
+                        android:textColor="@color/gray"
+                        android:textSize="@dimen/largeText"
+                        android:gravity="center"
+                        android:layout_margin="@dimen/tenDpMargin"
+                        android:textStyle="bold"
+                        android:id="@+id/empty_history_textview"
+                        android:visibility="gone"
+                        />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/scans_history_recyclerview"
+                        tools:listitem="@layout/scan_history_item_layout"
+                        android:layout_margin="@dimen/eightDpMargin"
+                        android:visibility="gone"
+                        />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/conversion_revenue_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scan_history_layout"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp"
+                android:visibility="gone"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/eightDpMargin"
+                    >
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/results_text"
+                        android:textSize="@dimen/mediumText"
+                        android:textColor="@color/purple_700"
+                        />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/conversion_text"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="@dimen/eightDpMargin"
+                        android:layout_marginEnd="@dimen/eightDpMargin"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        >
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/conversion_input_field"
+                            android:inputType="text"
+                            android:imeOptions="actionNext"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/revenue_text"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="@dimen/eightDpMargin"
+                        android:layout_marginEnd="@dimen/eightDpMargin"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        >
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/revenue_input_field"
+                            android:inputType="text"
+                            android:imeOptions="actionDone"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ai_recommendation_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/conversion_revenue_layout"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp"
+                android:visibility="gone"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/tenDpMargin"
+                    >
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ai_recommendation"
+                        android:id="@+id/ai_recommendation_btn"
+                        />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ai_recommendation_view"
+                        android:layout_marginTop="@dimen/tenDpMargin"
+                        android:text="@string/ai_recommendation_hint"
+                        />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
 
             <View
                 android:layout_width="match_parent"

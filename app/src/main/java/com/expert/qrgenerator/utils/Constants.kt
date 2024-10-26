@@ -47,6 +47,7 @@ class Constants {
         val LAST_SHOWN_DATE_KEY = "lastShownDate"
         val FIREBASE_TRACKABLE_SCANS = "TRACKABLE_SCANS"
         var isOpenVcardScreen = false
+        var chatGptApiKey = ""
         val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
             "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                     "\\@" +

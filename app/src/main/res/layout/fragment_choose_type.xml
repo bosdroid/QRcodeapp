@@ -6,12 +6,101 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.ChooseTypeFragment">
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/static_link_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="@dimen/eightDpMargin"
+        app:cardCornerRadius="10dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10dp"
+            >
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/static_link_trackable"
+                android:textColor="@color/purple_700"
+                android:textStyle="bold"
+                android:textSize="@dimen/largeText"
+                android:gravity="center"
+                android:layout_marginBottom="@dimen/eightDpMargin"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/static_link_layout_heading"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                />
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dialog_heading"
+                app:layout_constraintBottom_toTopOf="@id/website_input_field"
+                android:layout_marginTop="8dp"
+                android:id="@+id/http_protocol_group"
+                >
+                <androidx.appcompat.widget.AppCompatRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/https"
+                    android:id="@+id/https_protocol_rb"
+                    android:checked="true"
+                    />
+
+                <androidx.appcompat.widget.AppCompatRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/http"
+                    android:id="@+id/http_protocol_rb"
+                    android:layout_marginStart="@dimen/tenDpMargin"
+                    />
+
+
+            </RadioGroup>
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_input_field"
+                android:hint="@string/static_link_text"
+                android:id="@+id/static_link_layout_input_field"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                />
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_background_design"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:layout_marginBottom="@dimen/eightDpMargin"
+                android:text="@string/continue_text"
+                android:textColor="@color/white"
+                android:id="@+id/static_layout_continue_btn"
+                />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/static_link_layout"
         android:layout_margin="@dimen/_10dp"
         android:textColor="@color/black"
         android:textSize="16sp"

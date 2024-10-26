@@ -102,6 +102,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private var timestampList = mutableListOf<TrackableScan>()
     private lateinit var timestampAdapter:TimestampAdapter
 
+    private var scanDateList = mutableListOf<String>()
+    private var totalScans = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -189,6 +192,16 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         if (codeHistory != null) {
             // Make the notes section visible
             binding.codeDetailNotes.visibility = View.VISIBLE
+            binding.currentQrCodeIdView.text = "${codeHistory!!.qrId}"
+
+            binding.updateQrIdBtn.setOnClickListener {
+                if (binding.qrCodeIdInputField.text.toString().isNotEmpty()){
+                    codeHistory!!.qrId = binding.qrCodeIdInputField.text.toString()
+                    appViewModel.updateHistory(codeHistory!!)
+                    binding.currentQrCodeIdView.text = "${codeHistory!!.qrId}"
+                    binding.qrCodeIdInputField.setText("")
+                }
+            }
 
             // Update UI based on the code type
             when (codeHistory!!.codeType) {
@@ -254,31 +267,91 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             .override(200, 200) // Set the desired width and height
             .into(binding.codeDetailImageType)
 
-       if(codeHistory!!.type == "trackable"){
-           binding.scanHistoryLayout.visibility = View.VISIBLE
-           binding.scansHistoryRecyclerview.layoutManager = LinearLayoutManager(context)
-           timestampAdapter = TimestampAdapter(timestampList)
-           binding.scansHistoryRecyclerview.adapter = timestampAdapter
-           val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-           binding.scansHistoryRecyclerview.addItemDecoration(dividerItemDecoration)
+        if(codeHistory!!.type == "trackable"){
+            binding.aiRecommendationLayout.visibility = View.VISIBLE
+            binding.conversionRevenueLayout.visibility = View.VISIBLE
+            binding.scanHistoryLayout.visibility = View.VISIBLE
+            binding.scansHistoryRecyclerview.layoutManager = LinearLayoutManager(context)
+            timestampAdapter = TimestampAdapter(timestampList)
+            binding.scansHistoryRecyclerview.adapter = timestampAdapter
+            val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+            binding.scansHistoryRecyclerview.addItemDecoration(dividerItemDecoration)
 
-           // Observe the LiveData from the ViewModel for trackable scans
-           viewModel.callTrackableScans(codeHistory!!.qrId)
-           viewModel.trackableScanList.observe(this@CodeDetailActivity) { list ->
-               list?.let {
-                   binding.totalScansView.text = "Total: ${list.size}"
-                   if (list.isNotEmpty()){
-                       timestampList.clear()
-                       timestampList.addAll(list)
-                       timestampAdapter.notifyDataSetChanged()
-                   }
-               }
-           }
-       }
+            // Observe the LiveData from the ViewModel for trackable scans
+            viewModel.callTrackableScans(codeHistory!!.qrId)
+            viewModel.trackableScanList.observe(this@CodeDetailActivity) { list ->
+                list?.let {
+                    binding.totalScansView.text = "Total: ${list.size}"
+                    totalScans = list.size
+                    if (list.isNotEmpty()){
+                        binding.emptyHistoryTextview.visibility = View.GONE
+                        binding.scansHistoryRecyclerview.visibility = View.VISIBLE
+                        timestampList.clear()
+                        timestampList.addAll(list)
+                        timestampAdapter.notifyDataSetChanged()
+
+                        for (element in list){
+                            scanDateList.add(getDateTimeFromTimeStamp1(element.timestamp!!))
+                        }
+                    }
+                    else{
+                        binding.emptyHistoryTextview.visibility = View.VISIBLE
+                        binding.scansHistoryRecyclerview.visibility = View.GONE
+                    }
+                }
+            }
+        }
         else
-       {
-           binding.scanHistoryLayout.visibility = View.GONE
-       }
+        {
+            binding.conversionRevenueLayout.visibility = View.GONE
+            binding.aiRecommendationLayout.visibility = View.GONE
+            binding.scanHistoryLayout.visibility = View.GONE
+        }
+
+        binding.aiRecommendationBtn.setOnClickListener {
+
+            if(binding.conversionInputField.text.toString().isNotEmpty() &&
+                binding.revenueInputField.text.toString().isNotEmpty()){
+
+                val prompt = generateQrAnalysisMessage(codeHistory!!.qrId,totalScans, scanDateList ,binding.conversionInputField.text.toString().toInt(),
+                    binding.revenueInputField.text.toString().toDouble())
+
+                startLoading(context)
+                lifecycleScope.launch {
+                    viewModel.callAiRecommendationRequest(prompt){result->
+                        dismiss()
+                        binding.aiRecommendationView.text = result
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    private fun generateQrAnalysisMessage(
+        qrCodeId: String,
+        numberOfScans: Int,
+        dateList: List<String>,
+        conversions: Int,
+        profit: Double
+    ): String {
+        val dateString = dateList.joinToString(", ") // Converts the date list to a comma-separated string
+
+        return """
+        Analyze the following QR code data and provide actionable suggestions to improve conversions and profits (limit response to 500 characters). Return the result as a readable list:
+
+        QR Code ID: $qrCodeId
+
+        Number of Scans: $numberOfScans
+
+        Scan Dates: $dateString
+
+        User Input: Conversions: $conversions, Profit: $profit
+
+
+        Focus on identifying patterns and offering practical recommendations.
+    """.trimIndent()
     }
 
     /**
@@ -578,6 +651,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                         Toast.LENGTH_SHORT
                     ).show()
                     binding.qrCodeHistoryNotesInputField.clearFocus()
+                    binding.qrCodeHistoryNotesInputField.setText("")
                     hideSoftKeyboard(context, binding.qrCodeHistoryNotesInputField)
 
                 } else {

@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.Log
-import android.view.Gravity
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,12 +24,7 @@ import com.expert.qrgenerator.databinding.ContentMainBinding
 import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
 import com.expert.qrgenerator.model.User
-<<<<<<< Updated upstream
-import com.expert.qrgenerator.singleton.DriveService
-import com.expert.qrgenerator.singleton.SheetService
-=======
 import com.expert.qrgenerator.repository.DataRepository
->>>>>>> Stashed changes
 import com.expert.qrgenerator.ui.fragments.CalendarFragment
 import com.expert.qrgenerator.ui.fragments.ChooseTypeFragment
 import com.expert.qrgenerator.ui.fragments.ContactFragment
@@ -72,14 +66,12 @@ import com.expert.qrgenerator.ui.fragments.YoutubeFragment
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.Constants.Companion.PRIVACY_POLICY_URL
-import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.viewmodel.MainActivityViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -89,20 +81,12 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.drive.Drive
-import com.google.api.services.drive.DriveScopes
 import com.google.api.services.sheets.v4.Sheets
-import com.google.api.services.sheets.v4.SheetsScopes
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip
-import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -254,11 +238,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         appSettings = AppSettings(context)
         auth = Firebase.auth
-<<<<<<< Updated upstream
 
-=======
         DataRepository.getChatGptApiKey()
->>>>>>> Stashed changes
+
         // Initialize fragments
         val scannerFragment = ScannerFragment()
         val generatorFragment = GeneratorFragment()

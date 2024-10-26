@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.QRTypesAdapter
 import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.GeneratorManager
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.regex.Pattern
 
 @AndroidEntryPoint
 class ChooseTypeFragment : Fragment() {
@@ -22,6 +25,10 @@ class ChooseTypeFragment : Fragment() {
 
     private var fragmentReplaceListener: OnFragmentReplaceListener? = null
 
+    var selectedProtocol = "https://"
+
+    // Variable to hold the encoded data for QR code generation
+    private var encodedData: String = ""
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,8 +74,6 @@ class ChooseTypeFragment : Fragment() {
         }
         binding.chooseTypesRecyclerView.adapter = adapter
 
-<<<<<<< Updated upstream
-=======
         // Set up a listener for changes in the protocol selection
         binding.httpProtocolGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
@@ -126,8 +131,6 @@ class ChooseTypeFragment : Fragment() {
             }
         }
 
-
->>>>>>> Stashed changes
         return binding.root
     }
 

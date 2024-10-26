@@ -49,8 +49,6 @@
                     android:visible="false" />
 
                 <item
-<<<<<<< Updated upstream
-=======
                     android:icon="@drawable/ic_table_view"
                     android:id="@+id/ganalytics"
                     app:iconTint="@color/white"
@@ -58,7 +56,6 @@
                     android:visible="false" />
 
                 <item
->>>>>>> Stashed changes
                     android:id="@+id/nav_setting"
                     android:icon="@drawable/ic_settings"
                     android:visible="false"

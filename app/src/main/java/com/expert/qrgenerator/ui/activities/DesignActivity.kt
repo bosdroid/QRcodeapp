@@ -251,14 +251,14 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
 
                             if (qrHistory!!.type == "vcard") {
-                             val codeHistory = appViewModel.getHistoryItem(qrHistory!!)
-                              if (codeHistory == null){
-                                  appViewModel.insert(qrHistory!!)
-                              }
+                                val codeHistory = appViewModel.getHistoryItem(qrHistory!!)
+                                if (codeHistory == null){
+                                    appViewModel.insert(qrHistory!!)
+                                }
                                 else{
-                                  qrHistory!!.id = codeHistory.id
-                                  appViewModel.updateHistory(qrHistory!!)
-                              }
+                                    qrHistory!!.id = codeHistory.id
+                                    appViewModel.updateHistory(qrHistory!!)
+                                }
 
                                 startLoading(context)
                                 viewModel.uploadQrImage(context, bitmap, fileName)
@@ -276,11 +276,6 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                             } else {
                                 // Insert QR history into the ViewModel
                                 appViewModel.insert(qrHistory!!)
-<<<<<<< Updated upstream
-                                // Start ShareActivity
-                                val intent = Intent(context, ShareActivity::class.java)
-                                startActivity(intent)
-=======
 
                                 if(qrHistory!!.type == "trackable"){
                                     // Start Code Detail Activity
@@ -297,7 +292,6 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                                 }
 
 
->>>>>>> Stashed changes
                             }
 
                         } else {

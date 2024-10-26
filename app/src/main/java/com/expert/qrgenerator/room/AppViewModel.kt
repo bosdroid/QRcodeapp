@@ -1,5 +1,6 @@
 package com.expert.qrgenerator.room
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -42,11 +43,27 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
 
     // Function to load all data from the repository into LiveData
     private fun loadData() {
-        _dynamicQrCodes.postValue(repository.getAllDynamicQrCodes())
-        _allQRCodeHistory.postValue(repository.getAllQRCodeHistory())
-        _allScanQRCodeHistory.postValue(repository.getAllScanQRCodeHistory())
-        _allCreateQRCodeHistory.postValue(repository.getAllCreateQRCodeHistory())
-        _allListValues.postValue(repository.getAllListValues())
+        viewModelScope.launch {
+            val dynamicQrCodes = repository.getAllDynamicQrCodes()
+            val allQRCodeHistory = repository.getAllQRCodeHistory()
+            val allScanQRCodeHistory = repository.getAllScanQRCodeHistory()
+            val allCreateQRCodeHistory = repository.getAllCreateQRCodeHistory()
+            val allListValues = repository.getAllListValues()
+
+            // Log to check data
+            Log.d("AppViewModel", "dynamicQrCodes: $dynamicQrCodes")
+            Log.d("AppViewModel", "allQRCodeHistory: $allQRCodeHistory")
+            Log.d("AppViewModel", "allScanQRCodeHistory: $allScanQRCodeHistory")
+            Log.d("AppViewModel", "allCreateQRCodeHistory: $allCreateQRCodeHistory")
+            Log.d("AppViewModel", "allListValues: $allListValues")
+
+            // Update LiveData
+            _dynamicQrCodes.postValue(dynamicQrCodes)
+            _allQRCodeHistory.postValue(allQRCodeHistory)
+            _allScanQRCodeHistory.postValue(allScanQRCodeHistory)
+            _allCreateQRCodeHistory.postValue(allCreateQRCodeHistory)
+            _allListValues.postValue(allListValues)
+        }
     }
 
     // Function to insert a QR code history item
@@ -58,7 +75,7 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
 
     // Function to GET a QR code history item
     fun getHistoryItem(qrHistory: CodeHistory):CodeHistory? {
-           return repository.getHistoryItem(qrHistory)
+        return repository.getHistoryItem(qrHistory)
     }
 
     // Suspend function to insert a list value
@@ -79,4 +96,10 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
             repository.updateHistory(qrHistory)
         }
     }
+
+    fun getAllCreatedQrCodeHistory():LiveData<List<CodeHistory>>{
+        return _allCreateQRCodeHistory
+    }
+
+
 }

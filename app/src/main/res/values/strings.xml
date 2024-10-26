@@ -474,10 +474,6 @@
     <string name="utm_campaign">UTM Campaign (e.g promotion, sale, etc)</string>
     <string name="generated_utm_tracking_url">Generated UTM tracking URL</string>
     <string name="utm">UTM Builder</string>
-<<<<<<< Updated upstream
-
-    <string-array name="mode_list">
-=======
     <string name="analytics">Analytics</string>
     <string name="ai_recommendation">AI Recommendation</string>
     <string name="qr_ai_analyzer">Qr Code AI Analyzer</string>
@@ -492,7 +488,6 @@
     <string name="continue_text">Continue</string>
     <string name="static_link_trackable">Static Link (trackable)</string>
      <string-array name="mode_list">
->>>>>>> Stashed changes
         <item>Inventory</item>
         <item>Seller</item>
         <item>Search</item>

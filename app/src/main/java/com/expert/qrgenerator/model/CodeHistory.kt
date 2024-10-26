@@ -8,7 +8,7 @@ import java.io.Serializable
 @Entity(tableName = "barcode_history")
 data class CodeHistory(
     @ColumnInfo(name = "login") val login: String, // User login information
-    @ColumnInfo(name = "qrId") val qrId: String, // Unique identifier for the QR code
+    @ColumnInfo(name = "qrId") var qrId: String, // Unique identifier for the QR code
     @ColumnInfo(name = "data") val data: String, // Data contained in the QR code
     @ColumnInfo(name = "type") var type: String, // Type of QR code (TEXT, LINK, CONTACT, etc.)
     @ColumnInfo(name = "userType") var userType: String, // User type (FREE, PREMIUM)

@@ -460,8 +460,19 @@
 	<string name="utm_campaign">UTM Campaign (e.g promotion, sale, etc)</string>
 	<string name="generated_utm_tracking_url">Generated UTM tracking URL</string>
 	<string name="utm">UTM Builder</string>
-
-
+	<string name="analytics">Analytics</string>
+	<string name="ai_recommendation">AI Recommendation</string>
+	<string name="qr_ai_analyzer">Qr Code AI Analyzer</string>
+	<string name="conversion_text">Conversion %</string>
+	<string name="revenue_text">Revenue</string>
+	<string name="ai_recommendation_hint">AI Recommendation will show here!</string>
+	<string name="results_text">Results</string>
+	<string name="nobody_scan_this_qr_code_yet">nobody scan this QR code yet</string>
+	<string name="qr_code_id_text">QR Code ID</string>
+	<string name="current_qr_id">Current QR ID:</string>
+	<string name="static_link_layout_heading">Your QR code will be trackable and you will get analytics on scans</string>
+	<string name="continue_text">Continue</string>
+	<string name="static_link_trackable">Static Link (trackable)</string>
 	<string-array name="mode_list">
 		<item>Инвентарь</item>
 		<item>Продавец</item>

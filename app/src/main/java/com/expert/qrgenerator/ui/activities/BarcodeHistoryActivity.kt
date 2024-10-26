@@ -52,7 +52,7 @@ class BarcodeHistoryActivity : BaseActivity() {
         // Initialize views and setup components
         initViews()
         setUpToolbar()
-        getDisplayCreateHistory()
+
     }
 
     /**
@@ -104,10 +104,10 @@ class BarcodeHistoryActivity : BaseActivity() {
      */
     private fun getDisplayCreateHistory() {
         // Show loading indicator
-        BaseActivity.startLoading(context)
+        startLoading(context)
 
         // Observe the ViewModel's LiveData for QR Code history
-        appViewModel.allCreateQRCodeHistory.observe(this@BarcodeHistoryActivity, Observer { list ->
+        appViewModel.getAllCreatedQrCodeHistory().observe(this@BarcodeHistoryActivity, Observer { list ->
             // Dismiss loading indicator
             dismiss()
 
@@ -126,5 +126,12 @@ class BarcodeHistoryActivity : BaseActivity() {
                 binding.emptyView.visibility = View.VISIBLE
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getDisplayCreateHistory()
+
+
     }
 }
