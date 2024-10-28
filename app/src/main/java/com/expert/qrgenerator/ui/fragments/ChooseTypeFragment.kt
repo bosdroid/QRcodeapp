@@ -2,6 +2,8 @@ package com.expert.qrgenerator.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +28,8 @@ class ChooseTypeFragment : Fragment() {
     private var fragmentReplaceListener: OnFragmentReplaceListener? = null
 
     var selectedProtocol = "https://"
+
+    var isUpdating = false
 
     // Variable to hold the encoded data for QR code generation
     private var encodedData: String = ""
@@ -89,8 +93,27 @@ class ChooseTypeFragment : Fragment() {
             }
         }
 
+        binding.staticLinkLayoutInputField.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (!isUpdating) {
+                    isUpdating = true // Set the flag to true to prevent recursion
+                    binding.staticLinkLayoutInputField.setText(s.toString().lowercase())
+                    binding.staticLinkLayoutInputField.setSelection(binding.staticLinkLayoutInputField.text.toString().length) // Move the cursor to the end
+                    isUpdating = false // Reset the flag
+                }
+            }
+        })
+
         binding.staticLayoutContinueBtn.setOnClickListener {
-            val value = binding.staticLinkLayoutInputField.text.toString().trim()
+            val value = binding.staticLinkLayoutInputField.text.toString().trim().lowercase()
 
             // Check if a protocol is selected
             if (selectedProtocol.isEmpty()) {

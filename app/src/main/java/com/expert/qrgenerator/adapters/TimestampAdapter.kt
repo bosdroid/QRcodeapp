@@ -12,7 +12,7 @@ class TimestampAdapter(private val timestamps: List<TrackableScan>) :
 
     class TimestampViewHolder(val binding: ScanHistoryItemLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(trackableScan: TrackableScan,position: Int) {
-            val dateTimeString = BaseActivity.getDateTimeFromTimeStamp1(trackableScan.timestamp!!)
+            val dateTimeString = BaseActivity.getDateTimeFromTimeStamp1(trackableScan.timestamp!! * 1000)
             binding.scanHistoryView.text = "${position+1}. ${dateTimeString}"
         }
     }

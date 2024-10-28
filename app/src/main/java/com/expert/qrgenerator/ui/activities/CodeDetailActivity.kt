@@ -311,10 +311,11 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         binding.aiRecommendationBtn.setOnClickListener {
 
             if(binding.conversionInputField.text.toString().isNotEmpty() &&
-                binding.revenueInputField.text.toString().isNotEmpty()){
+                binding.revenueInputField.text.toString().isNotEmpty()
+                && binding.expensesInputField.text.toString().isNotEmpty()){
 
                 val prompt = generateQrAnalysisMessage(codeHistory!!.qrId,totalScans, scanDateList ,binding.conversionInputField.text.toString().toInt(),
-                    binding.revenueInputField.text.toString().toDouble())
+                    binding.revenueInputField.text.toString().toDouble(),binding.expensesInputField.text.toString().toDouble())
 
                 startLoading(context)
                 lifecycleScope.launch {
@@ -325,6 +326,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 }
 
             }
+            else{
+                showAlert(context,getString(R.string.conversion_revenue_expense_field_empty))
+            }
 
         }
     }
@@ -334,7 +338,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         numberOfScans: Int,
         dateList: List<String>,
         conversions: Int,
-        profit: Double
+        profit: Double,
+        expenses: Double
     ): String {
         val dateString = dateList.joinToString(", ") // Converts the date list to a comma-separated string
 
@@ -347,7 +352,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
         Scan Dates: $dateString
 
-        User Input: Conversions: $conversions, Profit: $profit
+        User Input: Conversions: $conversions, Profit: $profit, Expenses: $expenses
 
 
         Focus on identifying patterns and offering practical recommendations.
@@ -554,28 +559,28 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.code_detail_pdf_save_button -> {
-                if (RuntimePermissionHelper.checkStoragePermission(
-                        context,
-                        Constants.READ_STORAGE_PERMISSION
-                    )
-                ) {
+//                if (RuntimePermissionHelper.checkStoragePermission(
+//                        context,
+//                        Constants.READ_STORAGE_PERMISSION
+//                    )
+//                ) {
                     createPdf(false)
-                }
+//                }
             }
 
             R.id.code_detail_pdf_share_button -> {
                 isShareAfterCreated = true
-                if (RuntimePermissionHelper.checkStoragePermission(
-                        context,
-                        Constants.READ_STORAGE_PERMISSION
-                    )
-                ) {
+//                if (RuntimePermissionHelper.checkStoragePermission(
+//                        context,
+//                        Constants.READ_STORAGE_PERMISSION
+//                    )
+//                ) {
                     if (pdfFile == null) {
                         createPdf(true)
                     } else {
                         sharePdfFile()
                     }
-                }
+//                }
 
             }
 
@@ -808,7 +813,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             // Define the PDF file path and ensure the directory exists
             val pdfDir = File("${applicationContext.getExternalFilesDir("")}/PDF")
             if (!pdfDir.exists()) pdfDir.mkdirs()
-            val pdfFile = File(pdfDir, "pdf_${codeHistory!!.createdAt}.pdf")
+            pdfFile = File(pdfDir, "pdf_${codeHistory!!.createdAt}.pdf")
 
             // Initialize PDF document and output stream
             FileOutputStream(pdfFile).use { fOut ->
