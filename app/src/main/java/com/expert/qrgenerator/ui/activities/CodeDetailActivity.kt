@@ -310,9 +310,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
         binding.aiRecommendationBtn.setOnClickListener {
 
-            if(binding.conversionInputField.text.toString().isNotEmpty() &&
+            if(binding.conversionInputField.text.toString().isNotEmpty() ||
                 binding.revenueInputField.text.toString().isNotEmpty()
-                && binding.expensesInputField.text.toString().isNotEmpty()){
+                || binding.expensesInputField.text.toString().isNotEmpty()){
 
                 val prompt = generateQrAnalysisMessage(codeHistory!!.qrId,totalScans, scanDateList ,binding.conversionInputField.text.toString().toInt(),
                     binding.revenueInputField.text.toString().toDouble(),binding.expensesInputField.text.toString().toDouble())

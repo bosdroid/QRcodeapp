@@ -185,6 +185,6 @@
     <string name="static_link_layout_heading">Your QR code will be trackable and you will get analytics on scans</string>
     <string name="continue_text">Continue</string>
     <string name="static_link_trackable">Static Link (trackable)</string>
-    <string name="conversion_revenue_expense_field_empty">Please enter conversion, revenue and expense input are required!</string>
+    <string name="conversion_revenue_expense_field_empty">Please enter any one results input value!</string>
     <string name="expenses_text">Expenses</string>
 </resources>
