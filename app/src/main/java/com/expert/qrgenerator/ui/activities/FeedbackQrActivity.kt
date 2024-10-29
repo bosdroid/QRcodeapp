@@ -18,6 +18,7 @@ import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.viewmodel.FeedbackQrViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import top.defaults.colorpicker.ColorPickerPopup
@@ -53,7 +54,7 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        logCustomEvent(eventName = "screen_feedback_opened")
+//        logCustomEvent(eventName = "screen_feedback_opened")
 
         // Inflate the layout using ViewBinding
         binding = ActivityFeedbackQrBinding.inflate(layoutInflater)
@@ -68,6 +69,17 @@ class FeedbackQrActivity : BaseActivity(), View.OnClickListener {
         setUpToolbar()
     }
 
+    override fun onResume() {
+        super.onResume()
+        logEvent()
+    }
+
+    private fun logEvent() {
+        val mainAnalytics = FirebaseAnalytics.getInstance(this)
+        val bundle = Bundle()
+        // Log the custom event
+        mainAnalytics.logEvent("screen_feedback_opened", bundle)
+    }
 
     // THIS FUNCTION WILL INITIALIZE ALL THE VIEWS AND REFERENCE OF OBJECTS
     private fun initViews() {

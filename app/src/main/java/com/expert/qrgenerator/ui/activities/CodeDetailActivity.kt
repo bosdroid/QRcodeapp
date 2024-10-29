@@ -39,6 +39,7 @@ import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
@@ -195,6 +196,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             binding.currentQrCodeIdView.text = "${codeHistory!!.qrId}"
 
             binding.updateQrIdBtn.setOnClickListener {
+                if(codeHistory!!.type == "trackable"){
+                    logCustomEvent(context,"trackable_type_qr_id_update")
+                }
+
                 if (binding.qrCodeIdInputField.text.toString().isNotEmpty()){
                     codeHistory!!.qrId = binding.qrCodeIdInputField.text.toString()
                     appViewModel.updateHistory(codeHistory!!)
@@ -309,13 +314,22 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         }
 
         binding.aiRecommendationBtn.setOnClickListener {
+            if(codeHistory!!.type == "trackable"){
+                logCustomEvent(context,"trackable_type_ai_button_click")
+            }
+             val conversion = binding.conversionInputField.text.toString()
+            val revenue = binding.revenueInputField.text.toString()
+            val expenses = binding.expensesInputField.text.toString()
 
-            if(binding.conversionInputField.text.toString().isNotEmpty() ||
-                binding.revenueInputField.text.toString().isNotEmpty()
-                || binding.expensesInputField.text.toString().isNotEmpty()){
+            if(conversion.isNotEmpty() ||
+                revenue.isNotEmpty()
+                || expenses.isNotEmpty()){
 
-                val prompt = generateQrAnalysisMessage(codeHistory!!.qrId,totalScans, scanDateList ,binding.conversionInputField.text.toString().toInt(),
-                    binding.revenueInputField.text.toString().toDouble(),binding.expensesInputField.text.toString().toDouble())
+
+                val prompt = generateQrAnalysisMessage(codeHistory!!.qrId,totalScans, scanDateList ,
+                    if(conversion.isEmpty()){"0".toInt()}else{conversion.toInt()},
+                    if(revenue.isEmpty()){"0".toDouble()}else{revenue.toDouble()},
+                    if(expenses.isEmpty()){"0".toDouble()}else{expenses.toDouble()})
 
                 startLoading(context)
                 lifecycleScope.launch {
@@ -559,6 +573,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.code_detail_pdf_save_button -> {
+                if(codeHistory!!.type == "trackable"){
+                    logCustomEvent(context,"trackable_type_save_pdf")
+                }
 //                if (RuntimePermissionHelper.checkStoragePermission(
 //                        context,
 //                        Constants.READ_STORAGE_PERMISSION
@@ -570,6 +587,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
             R.id.code_detail_pdf_share_button -> {
                 isShareAfterCreated = true
+                if(codeHistory!!.type == "trackable"){
+                    logCustomEvent(context,"trackable_type_save_and_share_pdf")
+                }
 //                if (RuntimePermissionHelper.checkStoragePermission(
 //                        context,
 //                        Constants.READ_STORAGE_PERMISSION
@@ -645,6 +665,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.update_notes_btn -> {
+                if(codeHistory!!.type == "trackable"){
+                    logCustomEvent(context,"trackable_type_notes_update")
+                }
                 val notesText = binding.qrCodeHistoryNotesInputField.text.toString().trim()
                 if (notesText.isNotEmpty()) {
                     codeHistory!!.notes = notesText
@@ -796,8 +819,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     // Function to create a PDF file from code detail and optionally share it
     private fun createPdf(isShareAfterCreated: Boolean) {
         // Determine the appropriate bitmap based on the code type
-        val bitmapResId = if (codeHistory!!.codeType == "qr") R.drawable.qrcode else R.drawable.barcode
-        val bitmap = BitmapFactory.decodeResource(resources, bitmapResId)
+//        val bitmapResId = if (codeHistory!!.codeType == "qr") R.drawable.qrcode else R.drawable.barcode
+//        val bitmap = BitmapFactory.decodeResource(resources, bitmapResId)
+         val bitmap = ImageManager.getBitmapFromURL(context,codeHistory!!.localImagePath) as Bitmap
 
         // Define dimensions based on code type
         val (codeWidth, codeHeight) = if (codeHistory!!.codeType == "qr") {
@@ -829,7 +853,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     color = Color.RED
                 }
                 val dataPaint = Paint().apply {
-                    textAlign = Paint.Align.CENTER
+                    textAlign = Paint.Align.LEFT
                 }
                 val typePaint = Paint().apply {
                     textAlign = Paint.Align.RIGHT

@@ -19,6 +19,7 @@ import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -44,7 +45,7 @@ class BarcodeHistoryActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        logCustomEvent(eventName = "screen_history_opened")
+//        logCustomEvent(eventName = "screen_history_opened")
 
         binding = ActivityBarcodeHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,6 +54,19 @@ class BarcodeHistoryActivity : BaseActivity() {
         initViews()
         setUpToolbar()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        logEvent()
+        getDisplayCreateHistory()
+    }
+
+    private fun logEvent() {
+        val mainAnalytics = FirebaseAnalytics.getInstance(this)
+        val bundle = Bundle()
+        // Log the custom event
+        mainAnalytics.logEvent("screen_history_opened", bundle)
     }
 
     /**
@@ -126,12 +140,5 @@ class BarcodeHistoryActivity : BaseActivity() {
                 binding.emptyView.visibility = View.VISIBLE
             }
         })
-    }
-
-    override fun onResume() {
-        super.onResume()
-        getDisplayCreateHistory()
-
-
     }
 }

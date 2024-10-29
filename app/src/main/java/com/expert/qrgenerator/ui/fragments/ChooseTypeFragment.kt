@@ -36,9 +36,9 @@ class ChooseTypeFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (requireActivity() as? BaseActivity)?.logCustomEvent(
-            eventName = "screen_choose_type_opened"
-        )
+//        (requireActivity() as? BaseActivity)?.logCustomEvent(
+//            eventName = "screen_choose_type_opened"
+//        )
 
         try {
             fragmentReplaceListener = context as OnFragmentReplaceListener
@@ -66,14 +66,15 @@ class ChooseTypeFragment : Fragment() {
                 return when (adapter.getItemViewType(position)) {
                     QRTypesAdapter.VIEW_TYPE_HEADER -> 2 // Header takes full width (2 columns)
                     QRTypesAdapter.VIEW_TYPE_ITEM -> {
-                        if (position < 6) 2 else 1  // First 4 items also take full width, rest take 1 column
+                        if (position < 5) 2 else 1  // First 4 items also take full width, rest take 1 column
                     }   // Items take one column each
                     else -> 1
                 }
             }
         }
         binding.chooseTypesRecyclerView.layoutManager = layoutManager
-        adapter = QRTypesAdapter(Constants.getQRTypes(requireActivity())){ qrType,position ->
+        adapter = QRTypesAdapter(Constants.getQRTypes(requireActivity())){ type,position ->
+            BaseActivity.logCustomEvent(requireActivity(),"qr_type_chosen","type",type)
             fragmentReplaceListener?.replaceFragment(position)
         }
         binding.chooseTypesRecyclerView.adapter = adapter

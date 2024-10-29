@@ -23,6 +23,8 @@ import com.google.zxing.common.HybridBinarizer
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 
 class ImageManager {
@@ -40,7 +42,7 @@ class ImageManager {
             _view.draw(canvas)
 
             val fileName =
-                "final_qr_image_" + BaseActivity.getDateTimeFromTimeStamp(System.currentTimeMillis()) + ".jpg"
+                "final_qr_image_" + System.currentTimeMillis() + ".jpg"
             val fileDir = File(context.externalCacheDir.toString(), fileName)
 
             try {
@@ -139,12 +141,12 @@ class ImageManager {
                     null
                 }
             } else {
-
+                val decodeSrc = decodeEncodedString(src)
                 return try {
                     val input: InputStream = context.contentResolver.openInputStream(
                         Uri.fromFile(
                             File(
-                                src
+                                decodeSrc
                             )
                         )
                     )!!
@@ -156,6 +158,12 @@ class ImageManager {
                     null
                 }
             }
+        }
+
+
+
+        private fun decodeEncodedString(encodedString: String): String {
+            return URLDecoder.decode(encodedString, StandardCharsets.UTF_8.toString())
         }
 
 

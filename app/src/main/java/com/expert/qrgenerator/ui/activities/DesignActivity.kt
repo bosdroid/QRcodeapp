@@ -38,6 +38,7 @@ import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.viewmodel.DesignActivityViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -99,7 +100,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        logCustomEvent(eventName = "screen_design_opened")
+//        logCustomEvent(eventName = "screen_design_opened")
 
         // Initialize ViewBinding
         binding = ActivityDesignBinding.inflate(layoutInflater)
@@ -118,6 +119,17 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         renderFontRecyclerView()  // Set up RecyclerView for font options
     }
 
+    override fun onResume() {
+        super.onResume()
+        logEvent()
+    }
+
+    private fun logEvent() {
+        val mainAnalytics = FirebaseAnalytics.getInstance(this)
+        val bundle = Bundle()
+        // Log the custom event
+        mainAnalytics.logEvent("screen_design_opened", bundle)
+    }
 
     // Initialize all views and set up listeners
     private fun initViews() {
@@ -148,7 +160,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                     qrImage = GeneratorManager.generatorQRImage(
                         context,
                        encodedTextData,
-                        "",
+                        "000000",
                         "",
                         ""
                     )
@@ -247,7 +259,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                             // Share the image and update URI
                             val uri = ImageManager.shareImage(context, binding.qrImageWrapperLayout)
                             Constants.finalQrImageUri = uri
-                            qrHistory?.localImagePath = uri.toString()
+                            qrHistory?.localImagePath = file.absolutePath
 
 
                             if (qrHistory!!.type == "vcard") {

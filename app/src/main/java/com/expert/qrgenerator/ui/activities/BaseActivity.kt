@@ -42,30 +42,21 @@ import java.util.Locale
 
 open class BaseActivity : AppCompatActivity() {
 
-    // Initialize Firebase Analytics
-    private lateinit var analytics: FirebaseAnalytics
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        analytics = FirebaseAnalytics.getInstance(this)
-
-    }
-
-    fun logCustomEvent(eventName: String, paramKey: String? = null, paramValue: String? = null) {
-        val bundle = Bundle()
-
-        // Add the parameter only if both paramKey and paramValue are not null
-        if (paramKey != null && paramValue != null) {
-            bundle.putString(paramKey, paramValue)
-        }
-
-        // Log the custom event
-        analytics.logEvent(eventName, bundle)
-    }
-
     companion object {
         private var downloadTask: DownloadTask? = null
         var alert: AlertDialog? = null
+
+        fun logCustomEvent(context: Context,eventName: String, paramKey: String? = null, paramValue: String? = null) {
+            val bundle = Bundle()
+            val mainAnalytics = FirebaseAnalytics.getInstance(context)
+            // Add the parameter only if both paramKey and paramValue are not null
+            if (paramKey != null && paramValue != null) {
+                bundle.putString(paramKey, paramValue)
+            }
+
+            // Log the custom event
+            mainAnalytics.logEvent(eventName, bundle)
+        }
 
         // Checks if network connection is available
         fun isNetworkAvailable(context: Context): Boolean {

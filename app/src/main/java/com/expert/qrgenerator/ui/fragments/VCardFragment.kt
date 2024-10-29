@@ -25,6 +25,7 @@ import com.expert.qrgenerator.databinding.FragmentVCardBinding
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.copyToClipboard
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.dismiss
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.logCustomEvent
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.showAlert
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.startLoading
 import com.expert.qrgenerator.utils.Constants
@@ -107,6 +108,7 @@ class VCardFragment : Fragment() {
         }
 
         binding.editBtn.setOnClickListener {
+            logCustomEvent(requireActivity(),"vcard_edit_clicked")
             binding.vcardDesignLayoutWrapper.visibility = View.GONE
             binding.vcardCreateLayoutWrapper.visibility = View.VISIBLE
         }
@@ -129,9 +131,9 @@ class VCardFragment : Fragment() {
         startLoading(requireActivity())
         lifecycleScope.launch {
             viewModel.existVCard(hashMap)
-            viewModel.existVCardResponse.observe(viewLifecycleOwner) { event ->
-                event.getContentIfNotHandled()?.let { response ->
-                    val status = response.get("status")?.asString
+            viewModel.existVCardResponse.observe(viewLifecycleOwner) { response ->
+//                event.getContentIfNotHandled()?.let { response ->
+                    val status = response?.get("status")?.asString
                     if (status == "success") {
                         val vcard = response.get("vcard")?.asJsonObject
                         binding.filenameInputField.isEnabled = false
@@ -169,25 +171,29 @@ class VCardFragment : Fragment() {
                         binding.addressInputField.setImeOptions(EditorInfo.IME_ACTION_DONE)
                         binding.vcardDesignLayoutWrapper.visibility = View.VISIBLE
                         binding.vcardCreateLayoutWrapper.visibility = View.GONE
-                    } else {
+                    }
+                    else
+                    {
                         dismiss()
                         binding.addressInputField.setImeOptions(EditorInfo.IME_ACTION_NEXT)
                         binding.vcardDesignLayoutWrapper.visibility = View.GONE
                         binding.vcardCreateLayoutWrapper.visibility = View.VISIBLE
                         existingVCard = false
                     }
-                }
+//                }
             }
         }
 
 
         binding.copyShortUtlBtn.setOnClickListener {
+            logCustomEvent(requireActivity(),"vcard_copy_url_clicked")
             if(shortUrl.isNotEmpty()){
                 copyToClipboard(requireActivity(),shortUrl)
             }
         }
 
         binding.shareQrImageBtn.setOnClickListener {
+            logCustomEvent(requireActivity(),"vcard_share_clicked")
             startLoading(requireActivity())
             Picasso.get().load(imageUrl)
                 .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)

@@ -25,6 +25,7 @@ import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.GeneratorManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
@@ -45,11 +46,23 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityShareBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        logCustomEvent(eventName = "screen_share_opened")
+//        logCustomEvent(eventName = "screen_share_opened")
 
         // Initialize views and set up toolbar
         initViews()
         setUpToolbar()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        logEvent()
+    }
+
+    private fun logEvent() {
+        val mainAnalytics = FirebaseAnalytics.getInstance(this)
+        val bundle = Bundle()
+        // Log the custom event
+        mainAnalytics.logEvent("screen_share_opened", bundle)
     }
 
     private fun initViews() {

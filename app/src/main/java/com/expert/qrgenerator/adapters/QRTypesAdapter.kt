@@ -10,7 +10,7 @@ import com.expert.qrgenerator.model.QRItem
 
 class QRTypesAdapter(
     private val qrTypesList: List<QRItem>,
-    private val itemClickListener: (QRItem,Int) -> Unit
+    private val itemClickListener: (String,Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -57,13 +57,13 @@ class QRTypesAdapter(
 
     class QRTypesViewHolder(
         private val binding: ItemQrTypeBinding,
-        private val itemClickListener: (QRItem,Int) -> Unit
+        private val itemClickListener: (String,Int) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(qrType: QRItem.QRType) {
             binding.itemImage.setImageResource(qrType.image)
             binding.itemText.text = qrType.name
-            if(layoutPosition == 2){
+            if(layoutPosition == 1){
                 binding.itemStarImage.visibility = View.VISIBLE
             }
             else{
@@ -71,7 +71,7 @@ class QRTypesAdapter(
             }
             // Set click listener on the entire itemView
             itemView.setOnClickListener {
-                itemClickListener(qrType,qrType.position)
+                itemClickListener(qrType.name,qrType.position)
             }
         }
     }

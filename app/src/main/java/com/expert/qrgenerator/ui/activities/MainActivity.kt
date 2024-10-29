@@ -83,6 +83,7 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.sheets.v4.Sheets
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -855,11 +856,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             replaceFragment(32)
         }
 
-        try {//now make the same try catch with all logCustomEvent that we have total 6 places then
-            logCustomEvent(eventName = "screen_main_opened")
-        }catch (exception: Exception){
-            Log.e("errors","logging error: $exception")
-        }
+//        try {//now make the same try catch with all logCustomEvent that we have total 6 places then
+//            logCustomEvent(eventName = "screen_main_opened")
+//        }catch (exception: Exception){
+//            Log.e("errors","logging error: $exception")
+//        }
+        logMainEvent()
+
+    }
+
+    private fun logMainEvent() {
+        val mainAnalytics = FirebaseAnalytics.getInstance(this)
+        val bundle = Bundle()
+        // Log the custom event
+        mainAnalytics.logEvent("screen_main_opened", bundle)
     }
 
     /**

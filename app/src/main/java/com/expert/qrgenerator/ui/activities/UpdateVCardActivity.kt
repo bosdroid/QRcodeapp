@@ -56,10 +56,10 @@ class UpdateVCardActivity : BaseActivity() {
         startLoading(context)
         lifecycleScope.launch {
             viewModel.existVCard(hashMap)
-            viewModel.existVCardResponse.observe(this@UpdateVCardActivity) { event ->
-                event.getContentIfNotHandled()?.let { response ->
+            viewModel.existVCardResponse.observe(this@UpdateVCardActivity) { response ->
+//                event.getContentIfNotHandled()?.let { response ->
                     dismiss()
-                    val status = response.get("status")?.asString
+                    val status = response?.get("status")?.asString
                     if (status == "success") {
                         val vcard = response.get("vcard")?.asJsonObject
                         binding.filenameInputField.isEnabled = false
@@ -77,7 +77,7 @@ class UpdateVCardActivity : BaseActivity() {
                     } else {
                         existingVCard = false
                     }
-                }
+//                }
             }
         }
 
