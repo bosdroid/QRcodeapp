@@ -48,6 +48,7 @@ class Constants {
         val FIREBASE_TRACKABLE_SCANS = "TRACKABLE_SCANS"
         var isOpenVcardScreen = false
         var chatGptApiKey = ""
+        val allowedCharactersRegex = "[^A-Za-z0-9_]".toRegex()
         val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
             "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                     "\\@" +

@@ -14,6 +14,8 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -207,6 +209,37 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     binding.qrCodeIdInputField.setText("")
                 }
             }
+
+            binding.qrCodeIdInputField.addTextChangedListener(object :TextWatcher{
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                }
+
+                override fun afterTextChanged(editable: Editable?) {
+                    editable?.let {
+                        // Replace spaces with underscores
+                        var result = it.toString().replace(" ", "_")
+
+                        // Remove special characters by keeping only allowed characters
+                        result = result.replace(Constants.allowedCharactersRegex, "")
+
+                        // Update the EditText only if the result is different
+                        if (result != it.toString()) {
+                            binding.qrCodeIdInputField.setText(result)
+                            binding.qrCodeIdInputField.setSelection(result.length) // Move the cursor to the end
+                        }
+                    }
+                }
+            })
 
             // Update UI based on the code type
             when (codeHistory!!.codeType) {

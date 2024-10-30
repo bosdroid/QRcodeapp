@@ -713,7 +713,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/conversion_input_field"
-                            android:inputType="text"
+                            android:inputType="numberDecimal"
                             android:imeOptions="actionNext"
                             />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -731,7 +731,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/revenue_input_field"
-                            android:inputType="text"
+                            android:inputType="numberDecimal"
                             android:imeOptions="actionNext"
                             />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -749,7 +749,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/expenses_input_field"
-                            android:inputType="text"
+                            android:inputType="numberDecimal"
                             android:imeOptions="actionDone"
                             />
                     </com.google.android.material.textfield.TextInputLayout>
