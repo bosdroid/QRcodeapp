@@ -67,10 +67,10 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
     }
 
     // Function to insert a QR code history item
-    fun insert(qrHistory: CodeHistory) {
-        viewModelScope.launch {
-            repository.insert(qrHistory)
-        }
+    fun insert(qrHistory: CodeHistory):Long {
+//        viewModelScope.launch {
+            return repository.insert(qrHistory)
+//        }
     }
 
     // Function to GET a QR code history item
@@ -93,9 +93,11 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
     // Function to update a QR code history item
     fun updateHistory(qrHistory: CodeHistory) {
         viewModelScope.launch {
+
             repository.updateHistory(qrHistory)
         }
     }
+
 
     fun getAllCreatedQrCodeHistory():LiveData<List<CodeHistory>>{
         return _allCreateQRCodeHistory

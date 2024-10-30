@@ -12,7 +12,7 @@ interface QRDao {
      * @param qrHistory The QR code history data to be inserted.
      */
     @Insert
-    fun insert(qrHistory: CodeHistory)
+    fun insert(qrHistory: CodeHistory):Long
 
     /**
      * GET a new QR code history record into the database.
@@ -73,4 +73,5 @@ interface QRDao {
      */
     @Query("SELECT * FROM list_values ORDER BY id DESC")
     fun getAllListValues(): List<ListValue>
+
 }

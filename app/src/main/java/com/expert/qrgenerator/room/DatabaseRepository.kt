@@ -30,9 +30,10 @@ class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
     }
 
     // Insert a new QR code history record
-    fun insert(qrHistory: CodeHistory) {
-        qrDao.insert(qrHistory)
-        refreshData() // Refresh data after insertion
+    fun insert(qrHistory: CodeHistory):Long {
+        return qrDao.insert(qrHistory)
+//        refreshData() // Refresh data after insertion
+
     }
 
     // GET a new QR code history record
@@ -51,6 +52,7 @@ class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
         qrDao.update(inputUrl, url, id)
         refreshData() // Refresh data after update
     }
+
 
     // Update a QR code history record
     fun updateHistory(qrHistory: CodeHistory) {

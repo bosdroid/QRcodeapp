@@ -265,7 +265,8 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                             if (qrHistory!!.type == "vcard") {
                                 val codeHistory = appViewModel.getHistoryItem(qrHistory!!)
                                 if (codeHistory == null){
-                                    appViewModel.insert(qrHistory!!)
+                                   val insertedId = appViewModel.insert(qrHistory!!)
+                                    qrHistory!!.id = insertedId.toInt()
                                 }
                                 else{
                                     qrHistory!!.id = codeHistory.id
@@ -287,8 +288,8 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                                     })
                             } else {
                                 // Insert QR history into the ViewModel
-                                appViewModel.insert(qrHistory!!)
-
+                               val insertId = appViewModel.insert(qrHistory!!)
+                                qrHistory!!.id = insertId.toInt()
                                 if(qrHistory!!.type == "trackable"){
                                     // Start Code Detail Activity
                                     val intent = Intent(context, CodeDetailActivity::class.java)

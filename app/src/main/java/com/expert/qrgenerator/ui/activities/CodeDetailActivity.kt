@@ -195,7 +195,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         if (codeHistory != null) {
             // Make the notes section visible
             binding.codeDetailNotes.visibility = View.VISIBLE
-            binding.currentQrCodeIdView.text = "${codeHistory!!.qrId}"
+            binding.currentQrCodeIdView.text = codeHistory!!.qrId
 
             binding.updateQrIdBtn.setOnClickListener {
                 if(codeHistory!!.type == "trackable"){
@@ -205,7 +205,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 if (binding.qrCodeIdInputField.text.toString().isNotEmpty()){
                     codeHistory!!.qrId = binding.qrCodeIdInputField.text.toString()
                     appViewModel.updateHistory(codeHistory!!)
-                    binding.currentQrCodeIdView.text = "${codeHistory!!.qrId}"
+                    binding.currentQrCodeIdView.text = codeHistory!!.qrId
                     binding.qrCodeIdInputField.setText("")
                 }
             }
