@@ -380,6 +380,32 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+//    private fun generateQrAnalysisMessage(
+//        qrCodeId: String,
+//        numberOfScans: Int,
+//        dateList: List<String>,
+//        conversions: Int,
+//        profit: Double,
+//        expenses: Double
+//    ): String {
+//        val dateString = dateList.joinToString(", ") // Converts the date list to a comma-separated string
+//
+//        return """
+//        Analyze the following QR code data and provide actionable suggestions to improve conversions and profits (limit response to 500 characters). Return the result as a readable list:
+//
+//        QR Code ID: $qrCodeId
+//
+//        Number of Scans: $numberOfScans
+//
+//        Scan Dates: $dateString
+//
+//        User Input: Conversions: $conversions, Profit: $profit, Expenses: $expenses
+//
+//
+//        Focus on identifying patterns and offering practical recommendations.
+//    """.trimIndent()
+//    }
+
     private fun generateQrAnalysisMessage(
         qrCodeId: String,
         numberOfScans: Int,
@@ -390,21 +416,43 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     ): String {
         val dateString = dateList.joinToString(", ") // Converts the date list to a comma-separated string
 
+        // Create a list to hold non-empty lines
+        val messageLines = mutableListOf<String>()
+
+        // Always add the QR Code ID
+        messageLines.add("QR Code ID: $qrCodeId")
+
+        // Add number of scans if it's greater than 0
+        if (numberOfScans > 0) {
+            messageLines.add("Number of Scans: $numberOfScans")
+        }
+
+        // Add scan dates if the list is not empty
+        if (dateList.isNotEmpty()) {
+            messageLines.add("Scan Dates: $dateString")
+        }
+
+        // Add user input only if the values are greater than 0
+        if (conversions > 0) {
+            messageLines.add("Conversions: $conversions")
+        }
+        if (profit > 0) {
+            messageLines.add("Profit: $profit")
+        }
+        if (expenses > 0) {
+            messageLines.add("Expenses: $expenses")
+        }
+
+        // Generate the final message with the focused recommendations
         return """
         Analyze the following QR code data and provide actionable suggestions to improve conversions and profits (limit response to 500 characters). Return the result as a readable list:
 
-        QR Code ID: $qrCodeId
-
-        Number of Scans: $numberOfScans
-
-        Scan Dates: $dateString
-
-        User Input: Conversions: $conversions, Profit: $profit, Expenses: $expenses
-
-
+        ${messageLines.joinToString("\n")}
+        
         Focus on identifying patterns and offering practical recommendations.
     """.trimIndent()
     }
+
 
     /**
      * Handles the visibility and content for dynamic links.

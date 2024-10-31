@@ -630,7 +630,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:maxHeight="250dp"
                         android:padding="@dimen/_10dp"
                         >
                         <com.google.android.material.textview.MaterialTextView
@@ -663,7 +662,7 @@
                         />
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="270dp"
                         android:id="@+id/scans_history_recyclerview"
                         tools:listitem="@layout/scan_history_item_layout"
                         android:layout_margin="@dimen/eightDpMargin"
