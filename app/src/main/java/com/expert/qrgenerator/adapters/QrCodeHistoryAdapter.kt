@@ -65,11 +65,12 @@ class QrCodeHistoryAdapter(
             // Display notes if available, otherwise hide the notes section
             if (qrHistory.notes.isNotEmpty()) {
                 binding.qrCodeHistoryItemNotesText.visibility = View.VISIBLE
-                binding.qrCodeHistoryItemNotesText.text = if (qrHistory.notes.length >= 110) {
-                    "${qrHistory.notes.substring(0, 107)}..."
-                } else {
-                    qrHistory.notes
-                }
+                binding.qrCodeHistoryItemNotesText.text = qrHistory.notes
+//                    if (qrHistory.notes.length >= 110) {
+//                    "${qrHistory.notes.substring(0, 107)}..."
+//                } else {
+//                    qrHistory.notes
+//                }
             } else {
                 binding.qrCodeHistoryItemNotesText.visibility = View.GONE
             }

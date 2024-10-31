@@ -70,6 +70,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/qr_code_history_item_notes_text"
                     android:textSize="@dimen/mediumText"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textColor="@color/dark_gray"
                     android:layout_margin="@dimen/defaultDpMargin"
                     />
