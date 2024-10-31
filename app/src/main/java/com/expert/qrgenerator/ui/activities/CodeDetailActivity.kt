@@ -262,7 +262,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             // Display notes or set hint if notes are empty
             binding.qrCodeHistoryNotesInputField.apply {
                 if (codeHistory!!.notes.isEmpty()) {
-                    hint = getString(R.string.notes)
+                    hint = getString(R.string.description_text)
                 } else {
                     setText(codeHistory!!.notes)
                 }
@@ -756,7 +756,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
                     Toast.makeText(
                         context,
-                        getString(R.string.notes_update_success_text),
+                        getString(R.string.description_update_success_text),
                         Toast.LENGTH_SHORT
                     ).show()
                     binding.qrCodeHistoryNotesInputField.clearFocus()

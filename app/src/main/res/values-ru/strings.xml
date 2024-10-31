@@ -475,7 +475,9 @@
 	<string name="static_link_trackable">Static Link (trackable)</string>
     <string name="conversion_revenue_expense_field_empty">Please enter any one results input value!</string>
 	<string name="expenses_text">Expenses</string>
-	<string-array name="mode_list">
+    <string name="description_text">Description</string>
+    <string name="description_update_success_text">Description Updated Successfully!</string>
+    <string-array name="mode_list">
 		<item>Инвентарь</item>
 		<item>Продавец</item>
 		<item>Поиск</item>

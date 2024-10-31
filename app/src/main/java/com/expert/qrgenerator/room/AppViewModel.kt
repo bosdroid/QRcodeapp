@@ -99,9 +99,4 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
     }
 
 
-    fun getAllCreatedQrCodeHistory():LiveData<List<CodeHistory>>{
-        return _allCreateQRCodeHistory
-    }
-
-
 }

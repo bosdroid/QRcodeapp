@@ -41,6 +41,14 @@
                 android:layout_marginEnd="@dimen/eightDpMargin"
                 android:layout_marginRight="@dimen/eightDpMargin"
                 >
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/mediumText"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:id="@+id/qr_code_history_item_id"
+                    />
              <com.google.android.material.textview.MaterialTextView
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
@@ -56,6 +64,15 @@
                     android:layout_marginTop="@dimen/defaultDpMargin"
                     android:id="@+id/qr_code_history_item_created_date"
                     />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/qr_code_history_item_notes_text"
+                    android:textSize="@dimen/mediumText"
+                    android:textColor="@color/dark_gray"
+                    android:layout_margin="@dimen/defaultDpMargin"
+                    />
             </LinearLayout>
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
@@ -64,19 +81,11 @@
                 app:tint="@color/black"
                 android:id="@+id/qr_code_history_item_next_arrow"
                 />
+
+
         </LinearLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/qr_code_history_top_layout"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:id="@+id/qr_code_history_item_notes_text"
-            android:textSize="@dimen/mediumText"
-            android:textColor="@color/dark_gray"
-            android:layout_margin="@dimen/defaultDpMargin"
-            />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

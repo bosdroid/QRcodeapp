@@ -57,6 +57,7 @@ class QrCodeHistoryAdapter(
             )
 
             // Set QR code data and formatted date
+            binding.qrCodeHistoryItemId.text = "QR ID: ${qrHistory.qrId}"
             binding.qrCodeHistoryItemText.text = qrHistory.data
             binding.qrCodeHistoryItemCreatedDate.text =
                 BaseActivity.getFormattedDate(context, qrHistory.createdAt.toLong())

@@ -389,6 +389,7 @@
                 app:layout_constraintTop_toBottomOf="@id/db_parent_layout"
                 android:layout_marginTop="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp"
+                android:visibility="gone"
                 >
 
                 <LinearLayout
@@ -590,7 +591,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/text_input_field"
-                        android:hint="@string/notes"
+                        android:hint="@string/description_text"
                         android:id="@+id/qr_code_history_notes_input_field"
                         android:inputType="text"
                         android:imeOptions="actionDone"

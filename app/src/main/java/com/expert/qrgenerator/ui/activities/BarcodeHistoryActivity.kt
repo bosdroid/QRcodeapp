@@ -121,7 +121,7 @@ class BarcodeHistoryActivity : BaseActivity() {
         startLoading(context)
 
         // Observe the ViewModel's LiveData for QR Code history
-        appViewModel.getAllCreatedQrCodeHistory().observe(this@BarcodeHistoryActivity, Observer { list ->
+        appViewModel.allCreateQRCodeHistory.observe(this@BarcodeHistoryActivity, Observer { list ->
             // Dismiss loading indicator
             dismiss()
 
@@ -141,4 +141,5 @@ class BarcodeHistoryActivity : BaseActivity() {
             }
         })
     }
+
 }
