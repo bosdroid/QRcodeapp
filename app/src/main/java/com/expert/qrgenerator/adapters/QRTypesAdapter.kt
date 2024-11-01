@@ -63,7 +63,7 @@ class QRTypesAdapter(
         fun bind(qrType: QRItem.QRType) {
             binding.itemImage.setImageResource(qrType.image)
             binding.itemText.text = qrType.name
-            if(layoutPosition == 1){
+            if(layoutPosition == 0){
                 binding.itemStarImage.visibility = View.VISIBLE
             }
             else{

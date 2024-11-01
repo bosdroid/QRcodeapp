@@ -86,7 +86,7 @@ class Constants {
         fun getQRTypes(context: Context): List<QRItem> {
             val list = mutableListOf<QRItem>()
             // Digital business card
-            list.add(QRItem.Header("Digital Business Card"))
+//            list.add(QRItem.Header("Digital Business Card"))
 //            list.add(QRItem.QRType(R.drawable.link, context.getString(R.string.static_link_text), 1))
             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.v_card_text), 32))
             list.add(QRItem.QRType(R.drawable.wifi, context.getString(R.string.wifi_text), 3))
