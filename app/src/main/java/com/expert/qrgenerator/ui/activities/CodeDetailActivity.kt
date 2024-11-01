@@ -707,7 +707,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     logCustomEvent(context,"trackable_type_save_and_share_pdf")
                 }
 
-                shareImage(Uri.parse(codeHistory!!.localImagePath))
+                shareImage(codeHistory!!.localImagePath)
 //                if (RuntimePermissionHelper.checkStoragePermission(
 //                        context,
 //                        Constants.READ_STORAGE_PERMISSION
@@ -851,19 +851,30 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     }
 
 
-    private fun shareImage(imageShareUri:Uri?) {
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/*"
-            imageShareUri?.let {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    private fun shareImage(imagePath:String) {
+        val imageFile = File(imagePath)
+        if(imageFile.exists()) {
+            val imageUri: Uri = FileProvider.getUriForFile(
+                this,
+                "${applicationContext.packageName}.fileprovider",
+                imageFile
+            )
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "image/*"
+                imageUri.let {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    putExtra(Intent.EXTRA_STREAM, it)
                 }
-                putExtra(Intent.EXTRA_STREAM, it)
             }
+            shareResultLauncher.launch(
+                Intent.createChooser(shareIntent, "Share with")
+            )
         }
-        shareResultLauncher.launch(
-            Intent.createChooser(shareIntent, "Share with")
-        )
+        else{
+            showAlert(context,getString(R.string.image_file_not_exist))
+        }
     }
 
     // This launcher handles the result after sharing the QR image

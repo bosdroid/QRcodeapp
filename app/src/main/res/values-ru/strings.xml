@@ -480,6 +480,7 @@
     <string name="image_saved_success_text">Image Saved successfully!</string>
     <string name="code_comparison_text">Qr Codes Comparison</string>
     <string name="ai_analysis_limit_error"><![CDATA[Not enough data to analyze. Need at least 10 scans!]]></string>
+    <string name="image_file_not_exist">Image file does not exist</string>
     <string-array name="mode_list">
 		<item>Инвентарь</item>
 		<item>Продавец</item>
