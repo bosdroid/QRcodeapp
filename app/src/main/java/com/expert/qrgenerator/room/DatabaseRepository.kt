@@ -84,4 +84,8 @@ class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
     fun getAllListValues(): List<ListValue> {
         return allListValues
     }
+
+    fun getAllTrackableQRCodes(type:String):List<CodeHistory>{
+        return qrDao.getAllTrackableQRCodes(type)
+    }
 }

@@ -519,6 +519,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         when (item.itemId) {
             R.id.dynamic_links -> startActivity(DynamicQrActivity::class.java)
 
+            R.id.code_comparison -> startActivity(CodeComparisonActivity::class.java)
+
             R.id.sheets -> {
                 if (appSettings.getBoolean(Constants.isLogin)) {
                     startActivity(SheetsActivity::class.java)

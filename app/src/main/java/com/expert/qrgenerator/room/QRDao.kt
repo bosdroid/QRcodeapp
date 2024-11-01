@@ -59,6 +59,9 @@ interface QRDao {
     @Query("SELECT * FROM barcode_history ORDER BY qrId")
     fun getAllCreateQRCodeHistory(): List<CodeHistory>
 
+    // THIS FUNCTION WILL GET ALL THE QR CODES WITH TYPE TRACKABLE
+    @Query("SELECT * FROM barcode_history WHERE type=:type  ORDER BY qrId")
+    fun getAllTrackableQRCodes(type:String): List<CodeHistory>
 
     /**
      * Inserts a new list value record into the database.

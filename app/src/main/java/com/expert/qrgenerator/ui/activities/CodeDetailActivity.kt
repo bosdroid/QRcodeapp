@@ -3,24 +3,28 @@ package com.expert.qrgenerator.ui.activities
 import android.app.SearchManager
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
@@ -42,13 +46,13 @@ import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.ImageManager
-import com.expert.qrgenerator.utils.RuntimePermissionHelper
 import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URLEncoder
@@ -314,30 +318,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             binding.scansHistoryRecyclerview.adapter = timestampAdapter
             val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
             binding.scansHistoryRecyclerview.addItemDecoration(dividerItemDecoration)
+            getTrackableScanHistory()
 
-            // Observe the LiveData from the ViewModel for trackable scans
-            viewModel.callTrackableScans(codeHistory!!.qrId)
-            viewModel.trackableScanList.observe(this@CodeDetailActivity) { list ->
-                list?.let {
-                    binding.totalScansView.text = "Total: ${list.size}"
-                    totalScans = list.size
-                    if (list.isNotEmpty()){
-                        binding.emptyHistoryTextview.visibility = View.GONE
-                        binding.scansHistoryRecyclerview.visibility = View.VISIBLE
-                        timestampList.clear()
-                        timestampList.addAll(list)
-                        timestampAdapter.notifyDataSetChanged()
-
-                        for (element in list){
-                            scanDateList.add(getDateTimeFromTimeStamp1(element.timestamp!!))
-                        }
-                    }
-                    else{
-                        binding.emptyHistoryTextview.visibility = View.VISIBLE
-                        binding.scansHistoryRecyclerview.visibility = View.GONE
-                    }
-                }
-            }
         }
         else
         {
@@ -346,37 +328,88 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             binding.scanHistoryLayout.visibility = View.GONE
         }
 
+        binding.scanListRefreshBtn.setOnClickListener {
+            getTrackableScanHistory()
+        }
+
         binding.aiRecommendationBtn.setOnClickListener {
             if(codeHistory!!.type == "trackable"){
                 logCustomEvent(context,"trackable_type_ai_button_click")
             }
-             val conversion = binding.conversionInputField.text.toString()
-            val revenue = binding.revenueInputField.text.toString()
-            val expenses = binding.expensesInputField.text.toString()
+            if (scanDateList.size >= 10) {
+                val conversion = binding.conversionInputField.text.toString()
+                val revenue = binding.revenueInputField.text.toString()
+                val expenses = binding.expensesInputField.text.toString()
 
-            if(conversion.isNotEmpty() ||
-                revenue.isNotEmpty()
-                || expenses.isNotEmpty()){
+                if (conversion.isNotEmpty() ||
+                    revenue.isNotEmpty()
+                    || expenses.isNotEmpty()
+                ) {
 
 
-                val prompt = generateQrAnalysisMessage(codeHistory!!.qrId,totalScans, scanDateList ,
-                    if(conversion.isEmpty()){"0".toInt()}else{conversion.toInt()},
-                    if(revenue.isEmpty()){"0".toDouble()}else{revenue.toDouble()},
-                    if(expenses.isEmpty()){"0".toDouble()}else{expenses.toDouble()})
+                    val prompt = generateQrAnalysisMessage(
+                        codeHistory!!.qrId, totalScans, scanDateList,
+                        if (conversion.isEmpty()) {
+                            "0".toInt()
+                        } else {
+                            conversion.toInt()
+                        },
+                        if (revenue.isEmpty()) {
+                            "0".toDouble()
+                        } else {
+                            revenue.toDouble()
+                        },
+                        if (expenses.isEmpty()) {
+                            "0".toDouble()
+                        } else {
+                            expenses.toDouble()
+                        }
+                    )
 
-                startLoading(context)
-                lifecycleScope.launch {
-                    viewModel.callAiRecommendationRequest(prompt){result->
-                        dismiss()
-                        binding.aiRecommendationView.text = result
+                    startLoading(context)
+                    lifecycleScope.launch {
+                        viewModel.callAiRecommendationRequest(prompt) { result ->
+                            dismiss()
+                            binding.aiRecommendationView.text = result
+                        }
                     }
-                }
 
+                } else {
+                    showAlert(context, getString(R.string.conversion_revenue_expense_field_empty))
+                }
             }
             else{
-                showAlert(context,getString(R.string.conversion_revenue_expense_field_empty))
+                showAlert(context, getString(R.string.ai_analysis_limit_error))
             }
 
+        }
+    }
+
+    private fun getTrackableScanHistory(){
+
+        // Observe the LiveData from the ViewModel for trackable scans
+        viewModel.callTrackableScans(codeHistory!!.qrId)
+        viewModel.trackableScanList.observe(this@CodeDetailActivity) { list ->
+            list?.let {
+                binding.totalScansView.text = "Total: ${list.size}"
+                totalScans = list.size
+                if (list.isNotEmpty()){
+                    binding.emptyHistoryTextview.visibility = View.GONE
+                    binding.scansHistoryRecyclerview.visibility = View.VISIBLE
+                    timestampList.clear()
+                    timestampList.addAll(list)
+                    timestampAdapter.notifyDataSetChanged()
+                    scanDateList.clear()
+
+                    for (element in list){
+                        scanDateList.add(getDateTimeFromTimeStamp1(element.timestamp!!))
+                    }
+                }
+                else{
+                    binding.emptyHistoryTextview.visibility = View.VISIBLE
+                    binding.scansHistoryRecyclerview.visibility = View.GONE
+                }
+            }
         }
     }
 
@@ -662,8 +695,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 //                        Constants.READ_STORAGE_PERMISSION
 //                    )
 //                ) {
-                    createPdf(false)
+//                    createPdf(false)
 //                }
+                saveImageToGallery(codeHistory!!.localImagePath)
+//                Toast.makeText(this, getString(R.string.image_saved_success_text), Toast.LENGTH_SHORT).show()
             }
 
             R.id.code_detail_pdf_share_button -> {
@@ -671,16 +706,18 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 if(codeHistory!!.type == "trackable"){
                     logCustomEvent(context,"trackable_type_save_and_share_pdf")
                 }
+
+                shareImage(Uri.parse(codeHistory!!.localImagePath))
 //                if (RuntimePermissionHelper.checkStoragePermission(
 //                        context,
 //                        Constants.READ_STORAGE_PERMISSION
 //                    )
 //                ) {
-                    if (pdfFile == null) {
-                        createPdf(true)
-                    } else {
-                        sharePdfFile()
-                    }
+//                    if (pdfFile == null) {
+//                        createPdf(true)
+//                    } else {
+//                        sharePdfFile()
+//                    }
 //                }
 
             }
@@ -777,6 +814,63 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
         }
     }
+
+    private fun saveImageToGallery(imagePath: String) {
+        // Create a File object from the image path
+        val imageFile = File(imagePath)
+
+        if (imageFile.exists()) {
+            val values = ContentValues().apply {
+                put(MediaStore.Images.Media.DISPLAY_NAME, imageFile.name) // Use original file name
+                put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg") // Adjust MIME type if necessary
+                put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES) // Save to Pictures
+            }
+
+            // Insert the image into the MediaStore
+            val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+            uri?.let {
+                try {
+                    // Use FileInputStream to read the image
+                    val inputStream = FileInputStream(imageFile)
+                    val outputStream = contentResolver.openOutputStream(it)
+
+                    // Copy the image to the output stream
+                    inputStream.copyTo(outputStream!!)
+                    outputStream.close()
+                    inputStream.close()
+                    Toast.makeText(this, "Image saved to gallery", Toast.LENGTH_SHORT).show()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "Error saving image", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(this, "File does not exist", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun shareImage(imageShareUri:Uri?) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/*"
+            imageShareUri?.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                putExtra(Intent.EXTRA_STREAM, it)
+            }
+        }
+        shareResultLauncher.launch(
+            Intent.createChooser(shareIntent, "Share with")
+        )
+    }
+
+    // This launcher handles the result after sharing the QR image
+    private val shareResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            // Handle the result if needed
+        }
 
     private fun updateBarcodeDetail(id: Int, triple: Triple<AppCompatImageView, String, String>) {
         // Inflate the dialog layout using View Binding

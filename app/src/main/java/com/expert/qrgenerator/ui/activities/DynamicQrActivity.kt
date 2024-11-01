@@ -242,9 +242,9 @@ class DynamicQrActivity : BaseActivity(), DynamicQrAdapter.OnItemClickListener {
                     }
                     viewModel.dynamicQrCodeResponse.observe(this, Observer { response ->
                         response?.let {
-                            var url = it.get("generatedUrl").asString
-                            url = url.replace(":8990", "")
-                            appViewModel.update("$selectedProtocol$value", url, selectedDynamicUrl.id)
+                            val genUrl = it.get("generatedUrl").asString
+//                            url = url.replace(":8990", "")
+                            appViewModel.update("$selectedProtocol$value", genUrl, selectedDynamicUrl.id)
                             showAlert(context, "Dynamic URL updated successfully!")
                         } ?: run {
                             showAlert(context, "Something went wrong, please try again!")

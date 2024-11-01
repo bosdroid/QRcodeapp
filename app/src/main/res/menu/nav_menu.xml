@@ -13,13 +13,6 @@
                     android:title="@string/login"
                     android:visible="false" />
 
-                <item
-                    app:iconTint="#000000"
-                    android:icon="@drawable/ic_link"
-                    android:id="@+id/dynamic_links"
-                    android:title="@string/dynamic_links_text"
-                    android:visible="false"
-                    />
 
                 <item
                     android:icon="@drawable/ic_sheets"
@@ -67,6 +60,23 @@
                     android:icon="@drawable/ic_table_view"
                     android:visible="false"
                     />
+
+                <item
+                    app:iconTint="#000000"
+                    android:icon="@drawable/ic_link"
+                    android:id="@+id/dynamic_links"
+                    android:title="@string/dynamic_links_text"
+                    android:visible="false"
+                    />
+
+                <item
+                    app:iconTint="#000000"
+                    android:icon="@drawable/ic_qr_code"
+                    android:id="@+id/code_comparison"
+                    android:title="@string/code_comparison_text"
+                    android:visible="false"
+                    />
+
 
             </menu>
         </item>

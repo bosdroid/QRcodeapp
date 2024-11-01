@@ -36,6 +36,10 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
     private val _allListValues = MutableLiveData<List<ListValue>>()
     val allListValues: LiveData<List<ListValue>> get() = _allListValues
 
+    // LiveData to observe all create QR code history
+    private val _allTrackableQRCodes = MutableLiveData<List<CodeHistory>>()
+    val allTrackableQRCodes: LiveData<List<CodeHistory>> get() = _allTrackableQRCodes
+
     init {
         // Load data into LiveData upon initialization
         loadData()
@@ -47,6 +51,7 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
             val dynamicQrCodes = repository.getAllDynamicQrCodes()
             val allQRCodeHistory = repository.getAllQRCodeHistory()
             val allScanQRCodeHistory = repository.getAllScanQRCodeHistory()
+            val allTrackableQRCodes = repository.getAllTrackableQRCodes("trackable")
             val allCreateQRCodeHistory = repository.getAllCreateQRCodeHistory()
             val allListValues = repository.getAllListValues()
 
@@ -62,6 +67,7 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
             _allQRCodeHistory.postValue(allQRCodeHistory)
             _allScanQRCodeHistory.postValue(allScanQRCodeHistory)
             _allCreateQRCodeHistory.postValue(allCreateQRCodeHistory)
+            _allTrackableQRCodes.postValue(allTrackableQRCodes)
             _allListValues.postValue(allListValues)
         }
     }
@@ -93,10 +99,8 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
     // Function to update a QR code history item
     fun updateHistory(qrHistory: CodeHistory) {
         viewModelScope.launch {
-
             repository.updateHistory(qrHistory)
         }
     }
-
 
 }
