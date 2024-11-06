@@ -1232,18 +1232,18 @@ class ScannerFragment : Fragment() {
                     1
                 )
             ) {
-                SimpleTooltip.Builder(requireActivity())
-                    .anchorView((requireActivity() as MainActivity).contentBinding.historyBtn)
-                    .text(getString(R.string.history_btn_tip_text))
-                    .gravity(Gravity.BOTTOM)
-                    .animated(true)
-                    .transparentOverlay(false)
-                    .onDismissListener { tooltip ->
-                        appSettings.putLong("tt5", System.currentTimeMillis())
-                        tooltip.dismiss()
-                    }
-                    .build()
-                    .show()
+//                SimpleTooltip.Builder(requireActivity())
+//                    .anchorView((requireActivity() as MainActivity).contentBinding.historyBtn)
+//                    .text(getString(R.string.history_btn_tip_text))
+//                    .gravity(Gravity.BOTTOM)
+//                    .animated(true)
+//                    .transparentOverlay(false)
+//                    .onDismissListener { tooltip ->
+//                        appSettings.putLong("tt5", System.currentTimeMillis())
+//                        tooltip.dismiss()
+//                    }
+//                    .build()
+//                    .show()
             }
         }
     }

@@ -54,7 +54,43 @@
                     android:id="@+id/qr_code_item_created_date"
                     android:layout_marginTop="@dimen/defaultDpMargin" />
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/smallText"
+                    android:id="@+id/qr_code_item_conversion"
+                    android:layout_marginTop="@dimen/defaultDpMargin" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/smallText"
+                    android:id="@+id/qr_code_item_revenue"
+                    android:layout_marginTop="@dimen/defaultDpMargin" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/smallText"
+                    android:id="@+id/qr_code_item_expenses"
+                    android:layout_marginTop="@dimen/defaultDpMargin" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/smallText"
+                    android:id="@+id/qr_code_item_total_scans"
+                    android:layout_marginTop="@dimen/defaultDpMargin" />
+
             </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_edit"
+                android:id="@+id/edit_conversion_parameters"
+                android:layout_marginEnd="@dimen/defaultDpMargin"
+                />
 
         </LinearLayout>
 

@@ -239,18 +239,18 @@ class GeneratorFragment : Fragment() {
                     1
                 )
             ) {
-                SimpleTooltip.Builder(requireActivity())
-                    .anchorView((requireActivity() as MainActivity).contentBinding.historyBtn)
-                    .text(getString(R.string.generate_history_btn_tip_text))
-                    .gravity(Gravity.BOTTOM)
-                    .animated(true)
-                    .transparentOverlay(false)
-                    .onDismissListener { tooltip ->
-                        appSettings.putLong("tt9", System.currentTimeMillis())
-                        tooltip.dismiss()
-                    }
-                    .build()
-                    .show()
+//                SimpleTooltip.Builder(requireActivity())
+//                    .anchorView((requireActivity() as MainActivity).contentBinding.historyBtn)
+//                    .text(getString(R.string.generate_history_btn_tip_text))
+//                    .gravity(Gravity.BOTTOM)
+//                    .animated(true)
+//                    .transparentOverlay(false)
+//                    .onDismissListener { tooltip ->
+//                        appSettings.putLong("tt9", System.currentTimeMillis())
+//                        tooltip.dismiss()
+//                    }
+//                    .build()
+//                    .show()
             }
         }
     }

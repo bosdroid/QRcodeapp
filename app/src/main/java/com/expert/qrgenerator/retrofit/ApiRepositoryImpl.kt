@@ -64,7 +64,11 @@ class ApiRepositoryImpl @Inject constructor(private val apiServices: ApiServices
     override suspend fun createDynamicQrCode(body: HashMap<String, String>): JsonObject? {
         val bodyJson = Gson().toJsonTree(body).asJsonObject
         Log.d("TEST199", bodyJson.toString())
-        val response = apiServices.createDynamicQrCode(bodyJson)
+        val response = apiServices.createDynamicQrCode(
+            bodyJson.get("login").asString,
+            bodyJson.get("qrId").asString,
+            bodyJson.get("userUrl").asString,
+            bodyJson.get("userType").asString)
         if (response.isSuccessful) {
             return response.body()?.asJsonObject
         }

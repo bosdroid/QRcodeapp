@@ -89,6 +89,7 @@ class Constants {
 //            list.add(QRItem.Header("Digital Business Card"))
 //            list.add(QRItem.QRType(R.drawable.link, context.getString(R.string.static_link_text), 1))
             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.v_card_text), 32))
+            list.add(QRItem.QRType(R.drawable.link, context.getString(R.string.dynamic_link_text), 35))
             list.add(QRItem.QRType(R.drawable.wifi, context.getString(R.string.wifi_text), 3))
             list.add(QRItem.QRType(R.drawable.telephone, context.getString(R.string.phone_call_text), 4))
             list.add(QRItem.QRType(R.drawable.sms, context.getString(R.string.sms_text), 5))
@@ -126,6 +127,7 @@ class Constants {
             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.play_market_app_store_text), 31))
 //            list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.tackable_text), 33))
             list.add(QRItem.QRType(R.drawable.application, context.getString(R.string.utm), 34))
+
 //            list.add(QRTypes(R.drawable.text_format, context.getString(R.string.text_text), 0))
 //            list.add(QRTypes(R.drawable.link, context.getString(R.string.static_link_text), 1))
 //            list.add(QRTypes(R.drawable.contact_book, context.getString(R.string.contact_text), 2))

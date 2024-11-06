@@ -2,6 +2,7 @@ package com.expert.qrgenerator.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
@@ -24,6 +25,13 @@ data class CodeHistory(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int = 0 // Unique identifier for each entry
+
+    @Ignore
+    var conversion:Int = 0
+    @Ignore var revenue:Int = 0
+    @Ignore var expenses:Int= 0
+    @Ignore var totalScans:Int = 0
+    @Ignore var scanDateList:List<String> = emptyList()
 
     // Provides a string representation of the CodeHistory object
     override fun toString(): String {

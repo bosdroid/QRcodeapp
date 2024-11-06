@@ -481,6 +481,11 @@
     <string name="code_comparison_text">Qr Codes Comparison</string>
     <string name="ai_analysis_limit_error"><![CDATA[Not enough data to analyze. Need at least 10 scans!]]></string>
     <string name="image_file_not_exist">Image file does not exist</string>
+    <string name="dynamic_link_heading">Dynamic Link Qr Code</string>
+	<string name="history">History</string>
+	<string name="compare">Compare</string>
+    <string name="qr_codes_empty_list_error">Select Qr code for comparison</string>
+    <string name="qr_codes_selected_size_error">Select more than 1 Qr codes for comparison!</string>
     <string-array name="mode_list">
 		<item>Инвентарь</item>
 		<item>Продавец</item>

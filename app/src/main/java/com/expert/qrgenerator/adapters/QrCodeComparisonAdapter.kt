@@ -20,7 +20,8 @@ class QrCodeComparisonAdapter(
 
     // Interface to handle checkbox change events
     interface OnCheckboxChangeListener {
-        fun onCheckboxChanged(position: Int, isChecked: Boolean)
+        fun onClickEdit(position: Int)
+        fun onCheckboxChanged(position: Int, isChecked: Boolean,item:CodeHistory)
     }
 
     // Function to set the OnCheckboxChangeListener
@@ -42,14 +43,21 @@ class QrCodeComparisonAdapter(
             binding.qrCodeItemText.text = qrHistory.data
             binding.qrCodeItemCreatedDate.text =
                 BaseActivity.getFormattedDate(context, qrHistory.createdAt.toLong())
+            binding.qrCodeItemConversion.text = "Conversion: ${qrHistory.conversion}"
+            binding.qrCodeItemRevenue.text = "Revenue: ${qrHistory.revenue}"
+            binding.qrCodeItemExpenses.text = "Expenses: ${qrHistory.expenses}"
+            binding.qrCodeItemTotalScans.text = "Total Scans: ${qrHistory.totalScans}"
 
+            binding.editConversionParameters.setOnClickListener {
+                checkboxListener?.onClickEdit(layoutPosition)
+            }
 
             // Handle checkbox change event
             binding.qrCodeItemCheckbox.setOnCheckedChangeListener(null) // Clear previous listener
 //            binding.qrCodeItemCheckbox.isChecked = qrHistory.isChecked // Set checkbox state based on data
 
             binding.qrCodeItemCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
-                checkboxListener?.onCheckboxChanged(position, isChecked)
+                checkboxListener?.onCheckboxChanged(layoutPosition, isChecked,qrHistory)
             }
         }
     }

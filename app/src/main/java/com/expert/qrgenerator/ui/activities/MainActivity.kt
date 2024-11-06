@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +30,7 @@ import com.expert.qrgenerator.ui.fragments.CalendarFragment
 import com.expert.qrgenerator.ui.fragments.ChooseTypeFragment
 import com.expert.qrgenerator.ui.fragments.ContactFragment
 import com.expert.qrgenerator.ui.fragments.CryptoPaymentFragment
+import com.expert.qrgenerator.ui.fragments.DynamicFragment
 import com.expert.qrgenerator.ui.fragments.EmailFragment
 import com.expert.qrgenerator.ui.fragments.EtsyFragment
 import com.expert.qrgenerator.ui.fragments.FacebookFragment
@@ -181,7 +183,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         PlayMarketAppStoreFragment(),
         VCardFragment(),
         TrackableFragment(),
-        UtmBuilderFragment()
+        UtmBuilderFragment(),
+        DynamicFragment()
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -247,9 +250,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val generatorFragment = GeneratorFragment()
 
         // Set up history button click listener
-        contentBinding.historyBtn.setOnClickListener {
-            startActivity(Intent(context, BarcodeHistoryActivity::class.java))
-        }
+//        contentBinding.historyBtn.setOnClickListener {
+//            startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+//        }
 
         // Set up privacy policy view with clickable link
         binding.privacyPolicyView.apply {
@@ -517,9 +520,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         when (item.itemId) {
-            R.id.dynamic_links -> startActivity(DynamicQrActivity::class.java)
-
-            R.id.code_comparison -> startActivity(CodeComparisonActivity::class.java)
+//            R.id.dynamic_links -> startActivity(DynamicQrActivity::class.java)
+//
+//            R.id.code_comparison -> startActivity(CodeComparisonActivity::class.java)
 
             R.id.sheets -> {
                 if (appSettings.getBoolean(Constants.isLogin)) {
@@ -570,12 +573,25 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu,menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
                 // Handle the home button press
                 // Optionally, hide the soft keyboard if needed
                 // hideSoftKeyboard(context, mDrawer)
+                true
+            }
+            R.id.history->{
+                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+                true
+            }
+            R.id.compare->{
+                startActivity(Intent(context, CodeComparisonActivity::class.java))
                 true
             }
             else -> {

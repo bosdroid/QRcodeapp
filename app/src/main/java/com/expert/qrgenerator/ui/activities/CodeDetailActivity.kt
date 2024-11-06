@@ -492,7 +492,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
      */
     private fun handleDynamicLinks() {
         if (codeHistory!!.isDynamic.toInt() == 1) {
-            binding.dynamicLinkUpdateBtn.visibility = View.VISIBLE
+            binding.codeDetailDynamicLinkUpdateLayout.visibility = View.VISIBLE
             binding.dialogSubHeading.text =
                 "${getString(R.string.current_link_text)} ${codeHistory!!.data}"
         } else {
@@ -765,11 +765,6 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                         dismiss()
                         if (response != null) {
                             url = response.get("generatedUrl").asString
-                            url = if (url.contains(":8990")) {
-                                url.replace(":8990", "")
-                            } else {
-                                url
-                            }
                             binding.dialogSubHeading.text =
                                 "${getString(R.string.current_link_text)} $selectedProtocol$value"
                             binding.codeDetailEncodeData.text = "$selectedProtocol$value"

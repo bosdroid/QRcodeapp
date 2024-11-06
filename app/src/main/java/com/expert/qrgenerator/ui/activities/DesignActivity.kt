@@ -286,7 +286,17 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                                         startActivity(intent)
                                         finish()
                                     })
-                            } else {
+                            }
+                            else if(qrHistory!!.type == "dynamic"){
+                                appViewModel.updateHistory(qrHistory!!)
+                                // Start ShareActivity
+                                val intent = Intent(context, ShareActivity::class.java)
+                                intent.putExtra("TYPE",qrHistory?.type)
+                                intent.putExtra("DATA",qrHistory?.data)
+                                startActivity(intent)
+                                finish()
+                            }
+                            else {
                                 // Insert QR history into the ViewModel
                                val insertId = appViewModel.insert(qrHistory!!)
                                 qrHistory!!.id = insertId.toInt()

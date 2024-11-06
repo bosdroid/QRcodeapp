@@ -2,16 +2,32 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+<!--    <item-->
+<!--        android:title="Barcode History"-->
+<!--        android:id="@+id/barcode_history"-->
+<!--        app:showAsAction="never"-->
+<!--        />-->
+
+<!--    <item-->
+<!--        android:title="Dynamic QR"-->
+<!--        android:id="@+id/dynamic_qr"-->
+<!--        app:showAsAction="never"-->
+<!--        />-->
+
     <item
-        android:title="Barcode History"
-        android:id="@+id/barcode_history"
-        app:showAsAction="never"
+        android:title="@string/history"
+        android:id="@+id/history"
+        app:iconTint="@color/purple_700"
+        android:icon="@drawable/ic_history"
+        app:showAsAction="ifRoom"
         />
 
     <item
-        android:title="Dynamic QR"
-        android:id="@+id/dynamic_qr"
-        app:showAsAction="never"
+        android:title="@string/compare"
+        android:icon="@drawable/ic_compare"
+        app:iconTint="@color/purple_700"
+        android:id="@+id/compare"
+        app:showAsAction="ifRoom"
         />
 
 </menu>
