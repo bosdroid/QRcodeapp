@@ -20,6 +20,7 @@
         app:iconTint="@color/purple_700"
         android:id="@+id/create"
         app:showAsAction="never"
+        android:visible="false"
         />
 
     <item
@@ -28,6 +29,7 @@
         app:iconTint="@color/purple_700"
         android:id="@+id/compare"
         app:showAsAction="never"
+        android:visible="false"
         />
 
     <item
@@ -36,6 +38,7 @@
         app:iconTint="@color/purple_700"
         android:icon="@drawable/ic_history"
         app:showAsAction="never"
+        android:visible="false"
         />
 
 

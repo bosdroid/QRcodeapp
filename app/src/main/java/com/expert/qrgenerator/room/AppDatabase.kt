@@ -11,7 +11,7 @@ import com.expert.qrgenerator.model.ListValue
  *
  * @property qrDao Provides access to the QRDao for data operations.
  */
-@Database(entities = [CodeHistory::class, ListValue::class], version = 4, exportSchema = false)
+@Database(entities = [CodeHistory::class, ListValue::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     /**

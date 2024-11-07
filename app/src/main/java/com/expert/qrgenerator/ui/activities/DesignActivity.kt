@@ -875,6 +875,9 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
+        menu!!.findItem(R.id.create).isVisible = true
+        menu.findItem(R.id.compare).isVisible = true
+        menu.findItem(R.id.history).isVisible = true
         return true
     }
 

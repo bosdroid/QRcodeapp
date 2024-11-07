@@ -173,6 +173,12 @@ class CodeComparisonActivity : BaseActivity() {
                  if(expenses.isNotEmpty()){
                      qrCodeList[position].expenses = expenses.toInt()
                  }
+
+                 val item = qrCodeList[position]
+                 item.conversion = conversion.toInt()
+                 item.revenue = revenue.toInt()
+                 item .expenses = expenses.toInt()
+                 appViewModel.updateHistory(item)
                  adapter.notifyItemChanged(position)
                  alertdialog.dismiss()
              }
@@ -259,6 +265,9 @@ class CodeComparisonActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
+        menu!!.findItem(R.id.create).isVisible = true
+        menu.findItem(R.id.compare).isVisible = false
+        menu.findItem(R.id.history).isVisible = true
         return true
     }
 

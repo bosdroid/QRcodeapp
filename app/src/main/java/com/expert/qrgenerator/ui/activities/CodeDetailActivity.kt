@@ -405,6 +405,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         if(codeHistory!!.type == "trackable"){
             binding.aiRecommendationLayout.visibility = View.VISIBLE
             binding.conversionRevenueLayout.visibility = View.VISIBLE
+            binding.conversionInputField.setText("${codeHistory!!.conversion}")
+            binding.revenueInputField.setText("${codeHistory!!.revenue}")
+            binding.expensesInputField.setText("${codeHistory!!.expenses}")
             binding.scanHistoryLayout.visibility = View.VISIBLE
             binding.scansHistoryRecyclerview.layoutManager = LinearLayoutManager(context)
             timestampAdapter = TimestampAdapter(timestampList)
@@ -458,7 +461,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                             expenses.toDouble()
                         }
                     )
-
+                    codeHistory!!.conversion = conversion.toInt()
+                    codeHistory!!.revenue = revenue.toInt()
+                    codeHistory!!.expenses = expenses.toInt()
+                    appViewModel.updateHistory(codeHistory!!)
                     startLoading(context)
                     lifecycleScope.launch {
                         viewModel.callAiRecommendationRequest(prompt) { result ->
@@ -733,6 +739,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
+        menu!!.findItem(R.id.create).isVisible = true
+        menu.findItem(R.id.compare).isVisible = true
+        menu.findItem(R.id.history).isVisible = true
         return true
     }
 

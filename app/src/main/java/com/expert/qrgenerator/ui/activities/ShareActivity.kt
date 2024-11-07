@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
@@ -238,13 +239,38 @@ class ShareActivity : BaseActivity(), View.OnClickListener {
             // Handle the result if needed
         }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu,menu)
+        menu!!.findItem(R.id.create).isVisible = true
+        menu.findItem(R.id.compare).isVisible = true
+        menu.findItem(R.id.history).isVisible = true
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+            onBackPressed()
                 true
             }
-            else -> super.onOptionsItemSelected(item)
+            R.id.create->{
+                startActivity(Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                true
+            }
+            R.id.history->{
+                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+                true
+            }
+            R.id.compare->{
+                startActivity(Intent(context, CodeComparisonActivity::class.java))
+                true
+            }
+            else -> {
+                // Pass the event to the superclass to handle other menu items
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 

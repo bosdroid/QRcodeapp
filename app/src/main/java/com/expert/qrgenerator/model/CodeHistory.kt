@@ -19,17 +19,16 @@ data class CodeHistory(
     @ColumnInfo(name = "isDynamic") var isDynamic: String, // Indicates if the QR code is dynamic (0 or 1)
     @ColumnInfo(name = "generatedUrl") var generatedUrl: String = "", // URL generated from the QR code
     @ColumnInfo(name = "createdAt") var createdAt: String, // Timestamp of creation
-    @ColumnInfo(name = "notes") var notes: String // Additional notes
+    @ColumnInfo(name = "notes") var notes: String, // Additional notes
+    @ColumnInfo(name = "conversion") var conversion: Int = 0,
+    @ColumnInfo(name = "revenue") var revenue: Int = 0,
+    @ColumnInfo(name = "expenses") var expenses: Int = 0
 ) : Serializable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int = 0 // Unique identifier for each entry
 
-    @Ignore
-    var conversion:Int = 0
-    @Ignore var revenue:Int = 0
-    @Ignore var expenses:Int= 0
     @Ignore var totalScans:Int = 0
     @Ignore var scanDateList:List<String> = emptyList()
 
