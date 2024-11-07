@@ -1,9 +1,11 @@
 package com.expert.qrgenerator.ui.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -80,18 +82,22 @@ class CodeComparisonActivity : BaseActivity() {
 
         })
 
-        binding.compareImg.setOnClickListener {
-
+        binding.aiAnalyzerBtn.setOnClickListener {
+            logCustomEvent(context,"comparison_screen","event","analyze code comparison")
           if(selectedItems.size > 0){
               if (selectedItems.size > 1){
-                  val finalPrompt = buildComparisonPrompt(selectedItems)
-                  startLoading(context)
-                  lifecycleScope.launch {
-                      viewModel.callAiRecommendationRequest(finalPrompt) { result ->
-                          dismiss()
-                          showAlert(context,result)
-                      }
-                  }
+                 if(hasInsufficientScans(selectedItems)){
+                     showAlert(context,"AI comparison not start if any selected Qr code Scans less then 10!")
+                 }else{
+                     val finalPrompt = buildComparisonPrompt(selectedItems)
+                     startLoading(context)
+                     lifecycleScope.launch {
+                         viewModel.callAiRecommendationRequest(finalPrompt) { result ->
+                             dismiss()
+                             showAlert(context,result)
+                         }
+                     }
+                 }
               }
               else{
                   showAlert(context,getString(R.string.qr_codes_selected_size_error))
@@ -101,6 +107,15 @@ class CodeComparisonActivity : BaseActivity() {
               showAlert(context,getString(R.string.qr_codes_empty_list_error))
           }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        logCustomEvent(context,"comparison_screen_open")
+    }
+
+    private fun hasInsufficientScans(qrCodes: List<CodeHistory>): Boolean {
+        return qrCodes.any { it.totalScans < 10 }
     }
 
     private fun buildComparisonPrompt(qrCodes: List<CodeHistory>): String {
@@ -242,21 +257,43 @@ class CodeComparisonActivity : BaseActivity() {
         binding.toolbar.setTitleTextColor(ContextCompat.getColor(context, R.color.black))
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu,menu)
+        return true
+    }
+
     /**
      * Handles the item selection in the options menu.
      *
      * @param item The menu item that was selected.
      * @return True if the event was handled, false otherwise.
      */
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Check if the selected item is the home (back arrow) button
-        return if (item.itemId == android.R.id.home) {
-            // Handle the back arrow click event
-            onBackPressed()
-            true
-        } else {
-            // Pass the event to the superclass for handling other items
-            super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            R.id.create->{
+                startActivity(Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                true
+            }
+            R.id.history->{
+                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+                true
+            }
+            R.id.compare->{
+                startActivity(Intent(context, CodeComparisonActivity::class.java))
+                true
+            }
+            else -> {
+                // Pass the event to the superclass to handle other menu items
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 }

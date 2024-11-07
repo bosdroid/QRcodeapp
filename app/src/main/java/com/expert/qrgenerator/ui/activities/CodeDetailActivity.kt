@@ -15,18 +15,24 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatRatingBar
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
@@ -43,12 +49,16 @@ import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.Feedback
 import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.model.TrackableScan
+import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
+import com.expert.qrgenerator.utils.DialogPrefs
 import com.expert.qrgenerator.utils.ImageManager
 import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
@@ -56,6 +66,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URLEncoder
+import java.util.Calendar
 import java.util.Locale
 import java.util.regex.Pattern
 
@@ -111,7 +122,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
     private var scanDateList = mutableListOf<String>()
     private var totalScans = 0
-
+    private lateinit var feedbackHandler: Handler
+    private lateinit var feedbackRunnable: Runnable
+    private lateinit var appSettings: AppSettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,12 +141,92 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
         // Display code details
         displayCodeDetails()
+
+        feedbackRunnable = Runnable {
+            if (shouldShowDialog()) {
+                showPopUpFeedback()
+                appSettings.putLong(Constants.LAST_SHOWN_DATE_KEY, Calendar.getInstance().timeInMillis)
+            }
+        }
+
+        // Post the delayed task
+        feedbackHandler.postDelayed(feedbackRunnable, 10000)
     }
 
+    private fun shouldShowDialog(): Boolean {
+        val lastShownDate = appSettings.getLong(Constants.LAST_SHOWN_DATE_KEY)
+        val currentDate = Calendar.getInstance().timeInMillis
+
+        // 7 days in milliseconds
+        val oneWeekInMillis = 7 * 24 * 60 * 60 * 1000
+        val popUpFeedbackStatus = appSettings.getString("POPUP_FEEDBACK") as String
+
+        return ((currentDate - lastShownDate) >= oneWeekInMillis) && (popUpFeedbackStatus.isEmpty() || popUpFeedbackStatus != "done")
+    }
+
+    private fun showPopUpFeedback() {
+        val view = layoutInflater.inflate(R.layout.layout_dialog_rate_us_with_comment, null)
+        val builder = AlertDialog.Builder(context)
+            .setCancelable(false)
+            .setView(view)
+
+        val later = view.findViewById<AppCompatTextView>(R.id.laterTv)
+        val ratingBar = view.findViewById<AppCompatRatingBar>(R.id.ratingBar)
+        val commentBox = view.findViewById<TextInputEditText>(R.id.text_input_field)
+        val messageTv = view.findViewById<AppCompatTextView>(R.id.messageTv)
+        val submitBtn = view.findViewById<AppCompatTextView>(R.id.submitTv)
+
+        val alertDialog = builder.show()
+        ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
+            if (rating <= 3.0) {
+                commentBox.visibility = View.VISIBLE
+                messageTv.visibility = View.VISIBLE
+                submitBtn.visibility = View.VISIBLE
+            } else {
+                commentBox.visibility = View.GONE
+                messageTv.visibility = View.GONE
+                submitBtn.visibility = View.GONE
+                alertDialog.dismiss()
+                rateAppOnPlay()
+            }
+//            alertDialog.dismiss()
+        }
+
+        submitBtn.setOnClickListener {
+            val comment = commentBox.text.toString().trim()
+            if(comment.isNotEmpty()){
+                startLoading(context)
+                DataRepository.addUserFeedback(comment){ response->
+                    dismiss()
+                    if(response == "success")
+                    {
+                        appSettings.putString("POPUP_FEEDBACK","done")
+                        alertDialog.dismiss()
+                        showAlert(context,getString(R.string.feedback_success_message))
+                    }
+                    else{
+                        showAlert(context,getString(R.string.something_wrong_error))
+                    }
+                }
+            }
+        }
+
+        later.setOnClickListener {
+            DialogPrefs.clearPreferences(context)
+            alertDialog.dismiss()
+        }
+    }
+
+    // Opens Play Store to rate the app
+    private fun rateAppOnPlay() {
+        val rateIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${packageName}"))
+        startActivity(rateIntent)
+    }
 
     // This function initializes all views and references to objects
     private fun initViews() {
-
+        feedbackHandler = Handler(Looper.getMainLooper())
+        appSettings = AppSettings(this)
         tableGenerator = TableGenerator(context)
 
         // Retrieve data from the intent if available
@@ -638,21 +731,42 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         startActivity(Intent.createChooser(intent, getString(R.string.share_using)))
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu,menu)
+        return true
+    }
+
     /**
      * Handles the item selection in the options menu.
      *
      * @param item The menu item that was selected.
      * @return True if the event was handled, false otherwise.
      */
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Check if the selected item is the home (back arrow) button
-        return if (item.itemId == android.R.id.home) {
-            // Handle the back arrow click event
-            onBackPressed()
-            true
-        } else {
-            // Pass the event to the superclass for handling other items
-            super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            R.id.create->{
+                startActivity(Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                true
+            }
+            R.id.history->{
+                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+                true
+            }
+            R.id.compare->{
+                startActivity(Intent(context, CodeComparisonActivity::class.java))
+                true
+            }
+            else -> {
+                // Pass the event to the superclass to handle other menu items
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 

@@ -15,11 +15,11 @@
 <!--        />-->
 
     <item
-        android:title="@string/history"
-        android:id="@+id/history"
+        android:title="@string/create"
+        android:icon="@drawable/ic_compare"
         app:iconTint="@color/purple_700"
-        android:icon="@drawable/ic_history"
-        app:showAsAction="ifRoom"
+        android:id="@+id/create"
+        app:showAsAction="never"
         />
 
     <item
@@ -27,7 +27,17 @@
         android:icon="@drawable/ic_compare"
         app:iconTint="@color/purple_700"
         android:id="@+id/compare"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         />
+
+    <item
+        android:title="@string/history"
+        android:id="@+id/history"
+        app:iconTint="@color/purple_700"
+        android:icon="@drawable/ic_history"
+        app:showAsAction="never"
+        />
+
+
 
 </menu>

@@ -24,19 +24,7 @@
             android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_compare"
-                android:layout_gravity="end"
-                android:layout_marginEnd="@dimen/tenDpMargin"
-                app:tint="@color/purple_700"
-                android:id="@+id/compare_img"
-                />
-
-        </androidx.appcompat.widget.Toolbar>
+            app:layout_constraintTop_toTopOf="parent"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -47,9 +35,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/ai_analyzer_btn"
         android:layout_margin="@dimen/eightDpMargin"
         android:id="@+id/qr_codes_recyclerview"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ai_analyzer_btn"
+        android:text="@string/ai_compare"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="@dimen/eightDpMargin"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

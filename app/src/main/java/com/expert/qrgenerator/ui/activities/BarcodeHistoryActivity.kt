@@ -3,6 +3,8 @@ package com.expert.qrgenerator.ui.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
@@ -135,6 +137,38 @@ class BarcodeHistoryActivity : BaseActivity() {
                 binding.emptyView.visibility = View.VISIBLE
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            R.id.create->{
+                startActivity(Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                true
+            }
+            R.id.history->{
+                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+                true
+            }
+            R.id.compare->{
+                startActivity(Intent(context, CodeComparisonActivity::class.java))
+                true
+            }
+            else -> {
+                // Pass the event to the superclass to handle other menu items
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
 }

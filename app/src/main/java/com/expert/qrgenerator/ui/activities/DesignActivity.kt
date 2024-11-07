@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -866,27 +867,42 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     }
 
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Check which menu item was selected
-        return when (item.itemId) {
-            android.R.id.home -> {
-                // Handle the home button click
-                quitWithoutSaveChanges() // Call function to handle quitting without saving changes
-                true // Indicate that the event was handled
-            }
-
-            else -> {
-                // For other menu items, use the default behavior
-                super.onOptionsItemSelected(item)
-            }
-        }
-    }
-
-
     override fun onBackPressed() {
         // Call a custom method to handle the back press action
         // This method is responsible for quitting the activity without saving changes
         quitWithoutSaveChanges()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                quitWithoutSaveChanges()
+                true
+            }
+            R.id.create->{
+                startActivity(Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                true
+            }
+            R.id.history->{
+                startActivity(Intent(context, BarcodeHistoryActivity::class.java))
+                true
+            }
+            R.id.compare->{
+                startActivity(Intent(context, CodeComparisonActivity::class.java))
+                true
+            }
+            else -> {
+                // Pass the event to the superclass to handle other menu items
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
 }

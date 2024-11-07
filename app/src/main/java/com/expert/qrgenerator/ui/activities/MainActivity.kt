@@ -586,6 +586,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 // hideSoftKeyboard(context, mDrawer)
                 true
             }
+            R.id.create->{
+                startActivity(Intent(context, MainActivity::class.java)).apply {
+                    finish()
+                }
+                true
+            }
             R.id.history->{
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
                 true
