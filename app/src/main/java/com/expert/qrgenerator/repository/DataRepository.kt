@@ -168,4 +168,19 @@ object DataRepository {
             }
         })
     }
+
+    fun getAiPrompts(){
+        databaseReference.child("AI_PROMPTS").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                Constants.singlePrompt = snapshot.child("single_prompt").getValue(String::class.java) as String
+                Constants.comparePrompt = snapshot.child("compare_prompt").getValue(String::class.java) as String
+                Log.d("TEST1000",Constants.singlePrompt)
+                Log.d("TEST1000",Constants.comparePrompt)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Failed to fetch API Key: ${error.message}")
+            }
+        })
+    }
 }

@@ -22,6 +22,7 @@ import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -119,32 +120,41 @@ class CodeComparisonActivity : BaseActivity() {
     }
 
     private fun buildComparisonPrompt(qrCodes: List<CodeHistory>): String {
-        val promptBuilder = StringBuilder()
-        promptBuilder.append("Compare the following QR codes and provide insights on which performs better in terms of conversions and profits (limit response to 500 characters). Return the result as a readable list:\n\n")
-
+        // Build the message for each QR code
+        val messageLines = mutableListOf<String>()
         qrCodes.filter { it.totalScans >= 10 }
             .forEachIndexed { index, qrCode ->
-                promptBuilder.append("QR Code ${index + 1}: ID: ${qrCode.id}, Scans: ${qrCode.totalScans}")
+                val qrCodeDetails = mutableListOf<String>()
+                qrCodeDetails.add("QR Code ${index + 1}: ID: ${qrCode.id}, Scans: ${qrCode.totalScans}")
 
                 if (qrCode.scanDateList.isNotEmpty()) {
-                    promptBuilder.append(", Scan Dates: ${qrCode.scanDateList.joinToString(", ")}")
+                    qrCodeDetails.add("Scan Dates: ${qrCode.scanDateList.joinToString(", ")}")
                 }
                 if (qrCode.conversion != 0) {
-                    promptBuilder.append(", Conversions: ${qrCode.conversion}")
+                    qrCodeDetails.add("Conversions: ${qrCode.conversion}")
                 }
                 if (qrCode.revenue != 0) {
-                    promptBuilder.append(", Revenue: ${qrCode.revenue}")
+                    qrCodeDetails.add("Revenue: ${qrCode.revenue}")
                 }
                 if (qrCode.expenses != 0) {
-                    promptBuilder.append(", Expenses: ${qrCode.expenses}")
+                    qrCodeDetails.add("Expenses: ${qrCode.expenses}")
                 }
 
-                promptBuilder.append("\n\n")
+                messageLines.add(qrCodeDetails.joinToString(", "))
             }
 
-        promptBuilder.append("Focus on key performance differences and brief recommendations.")
-        return promptBuilder.toString()
+        // Convert the messageLines list to a string with line breaks
+        val qrData = messageLines.joinToString("\n")
+
+        // Template that will be dynamically updated
+        val promptTemplate = """
+        ${Constants.comparePrompt}
+    """.trimIndent()
+
+        // Replace placeholder with the actual message lines
+        return promptTemplate.replace("{messageLines}", qrData)
     }
+
 
 
 

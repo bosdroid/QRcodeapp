@@ -118,7 +118,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     lateinit var feedbackAdapter: FeedbackAdapter
 
     private var timestampList = mutableListOf<TrackableScan>()
-    private lateinit var timestampAdapter:TimestampAdapter
+    private lateinit var timestampAdapter: TimestampAdapter
 
     private var scanDateList = mutableListOf<String>()
     private var totalScans = 0
@@ -145,7 +145,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         feedbackRunnable = Runnable {
             if (shouldShowDialog()) {
                 showPopUpFeedback()
-                appSettings.putLong(Constants.LAST_SHOWN_DATE_KEY, Calendar.getInstance().timeInMillis)
+                appSettings.putLong(
+                    Constants.LAST_SHOWN_DATE_KEY,
+                    Calendar.getInstance().timeInMillis
+                )
             }
         }
 
@@ -194,18 +197,16 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
         submitBtn.setOnClickListener {
             val comment = commentBox.text.toString().trim()
-            if(comment.isNotEmpty()){
+            if (comment.isNotEmpty()) {
                 startLoading(context)
-                DataRepository.addUserFeedback(comment){ response->
+                DataRepository.addUserFeedback(comment) { response ->
                     dismiss()
-                    if(response == "success")
-                    {
-                        appSettings.putString("POPUP_FEEDBACK","done")
+                    if (response == "success") {
+                        appSettings.putString("POPUP_FEEDBACK", "done")
                         alertDialog.dismiss()
-                        showAlert(context,getString(R.string.feedback_success_message))
-                    }
-                    else{
-                        showAlert(context,getString(R.string.something_wrong_error))
+                        showAlert(context, getString(R.string.feedback_success_message))
+                    } else {
+                        showAlert(context, getString(R.string.something_wrong_error))
                     }
                 }
             }
@@ -295,11 +296,11 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             binding.currentQrCodeIdView.text = codeHistory!!.qrId
 
             binding.updateQrIdBtn.setOnClickListener {
-                if(codeHistory!!.type == "trackable"){
-                    logCustomEvent(context,"trackable_type_qr_id_update")
+                if (codeHistory!!.type == "trackable") {
+                    logCustomEvent(context, "trackable_type_qr_id_update")
                 }
 
-                if (binding.qrCodeIdInputField.text.toString().isNotEmpty()){
+                if (binding.qrCodeIdInputField.text.toString().isNotEmpty()) {
                     codeHistory!!.qrId = binding.qrCodeIdInputField.text.toString()
                     appViewModel.updateHistory(codeHistory!!)
                     binding.currentQrCodeIdView.text = codeHistory!!.qrId
@@ -307,7 +308,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 }
             }
 
-            binding.qrCodeIdInputField.addTextChangedListener(object :TextWatcher{
+            binding.qrCodeIdInputField.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
                     start: Int,
@@ -402,7 +403,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             .override(200, 200) // Set the desired width and height
             .into(binding.codeDetailImageType)
 
-        if(codeHistory!!.type == "trackable"){
+        if (codeHistory!!.type == "trackable") {
             binding.aiRecommendationLayout.visibility = View.VISIBLE
             binding.conversionRevenueLayout.visibility = View.VISIBLE
             binding.conversionInputField.setText("${codeHistory!!.conversion}")
@@ -412,13 +413,12 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             binding.scansHistoryRecyclerview.layoutManager = LinearLayoutManager(context)
             timestampAdapter = TimestampAdapter(timestampList)
             binding.scansHistoryRecyclerview.adapter = timestampAdapter
-            val dividerItemDecoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+            val dividerItemDecoration =
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
             binding.scansHistoryRecyclerview.addItemDecoration(dividerItemDecoration)
             getTrackableScanHistory()
 
-        }
-        else
-        {
+        } else {
             binding.conversionRevenueLayout.visibility = View.GONE
             binding.aiRecommendationLayout.visibility = View.GONE
             binding.scanHistoryLayout.visibility = View.GONE
@@ -429,8 +429,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         }
 
         binding.aiRecommendationBtn.setOnClickListener {
-            if(codeHistory!!.type == "trackable"){
-                logCustomEvent(context,"trackable_type_ai_button_click")
+            if (codeHistory!!.type == "trackable") {
+                logCustomEvent(context, "trackable_type_ai_button_click")
             }
             if (scanDateList.size >= 10) {
                 val conversion = binding.conversionInputField.text.toString()
@@ -476,15 +476,14 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 } else {
                     showAlert(context, getString(R.string.conversion_revenue_expense_field_empty))
                 }
-            }
-            else{
+            } else {
                 showAlert(context, getString(R.string.ai_analysis_limit_error))
             }
 
         }
     }
 
-    private fun getTrackableScanHistory(){
+    private fun getTrackableScanHistory() {
 
         // Observe the LiveData from the ViewModel for trackable scans
         viewModel.callTrackableScans(codeHistory!!.qrId)
@@ -492,7 +491,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             list?.let {
                 binding.totalScansView.text = "Total: ${list.size}"
                 totalScans = list.size
-                if (list.isNotEmpty()){
+                if (list.isNotEmpty()) {
                     binding.emptyHistoryTextview.visibility = View.GONE
                     binding.scansHistoryRecyclerview.visibility = View.VISIBLE
                     timestampList.clear()
@@ -500,11 +499,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     timestampAdapter.notifyDataSetChanged()
                     scanDateList.clear()
 
-                    for (element in list){
+                    for (element in list) {
                         scanDateList.add(getDateTimeFromTimeStamp1(element.timestamp!!))
                     }
-                }
-                else{
+                } else {
                     binding.emptyHistoryTextview.visibility = View.VISIBLE
                     binding.scansHistoryRecyclerview.visibility = View.GONE
                 }
@@ -546,7 +544,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         profit: Double,
         expenses: Double
     ): String {
-        val dateString = dateList.joinToString(", ") // Converts the date list to a comma-separated string
+        val dateString =
+            dateList.joinToString(", ") // Converts the date list to a comma-separated string
 
         // Create a list to hold non-empty lines
         val messageLines = mutableListOf<String>()
@@ -574,15 +573,13 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         if (expenses > 0) {
             messageLines.add("Expenses: $expenses")
         }
-
+        val qrData = messageLines.joinToString("\n")
         // Generate the final message with the focused recommendations
-        return """
-        Analyze the following QR code data and provide actionable suggestions to improve conversions and profits (limit response to 500 characters). Return the result as a readable list:
-
-        ${messageLines.joinToString("\n")}
-        
-        Focus on identifying patterns and offering practical recommendations.
+        val promptTemplate = """
+        ${Constants.singlePrompt}
     """.trimIndent()
+        Log.d("TEST1000",promptTemplate.replace("{messageLines}", qrData))
+        return promptTemplate.replace("{messageLines}", qrData)
     }
 
 
@@ -695,7 +692,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
                 // Create a File object and get its URI
                 val file = File(filesDir, fileName)
-                val path = FileProvider.getUriForFile(context, "com.expert.qrgenerator.fileprovider", file)
+                val path =
+                    FileProvider.getUriForFile(context, "com.expert.qrgenerator.fileprovider", file)
 
                 // Dismiss loading indication
                 dismiss()
@@ -738,7 +736,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu,menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         menu!!.findItem(R.id.create).isVisible = true
         menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
@@ -758,20 +756,24 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 onBackPressed()
                 true
             }
-            R.id.create->{
+
+            R.id.create -> {
                 startActivity(Intent(context, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 })
                 true
             }
-            R.id.history->{
+
+            R.id.history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
                 true
             }
-            R.id.compare->{
+
+            R.id.compare -> {
                 startActivity(Intent(context, CodeComparisonActivity::class.java))
                 true
             }
+
             else -> {
                 // Pass the event to the superclass to handle other menu items
                 super.onOptionsItemSelected(item)
@@ -810,8 +812,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.code_detail_pdf_save_button -> {
-                if(codeHistory!!.type == "trackable"){
-                    logCustomEvent(context,"trackable_type_save_pdf")
+                if (codeHistory!!.type == "trackable") {
+                    logCustomEvent(context, "trackable_type_save_pdf")
                 }
 //                if (RuntimePermissionHelper.checkStoragePermission(
 //                        context,
@@ -826,8 +828,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
             R.id.code_detail_pdf_share_button -> {
                 isShareAfterCreated = true
-                if(codeHistory!!.type == "trackable"){
-                    logCustomEvent(context,"trackable_type_save_and_share_pdf")
+                if (codeHistory!!.type == "trackable") {
+                    logCustomEvent(context, "trackable_type_save_and_share_pdf")
                 }
 
                 shareImage(codeHistory!!.localImagePath)
@@ -901,8 +903,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.update_notes_btn -> {
-                if(codeHistory!!.type == "trackable"){
-                    logCustomEvent(context,"trackable_type_notes_update")
+                if (codeHistory!!.type == "trackable") {
+                    logCustomEvent(context, "trackable_type_notes_update")
                 }
                 val notesText = binding.qrCodeHistoryNotesInputField.text.toString().trim()
                 if (notesText.isNotEmpty()) {
@@ -940,8 +942,14 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         if (imageFile.exists()) {
             val values = ContentValues().apply {
                 put(MediaStore.Images.Media.DISPLAY_NAME, imageFile.name) // Use original file name
-                put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg") // Adjust MIME type if necessary
-                put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES) // Save to Pictures
+                put(
+                    MediaStore.Images.Media.MIME_TYPE,
+                    "image/jpeg"
+                ) // Adjust MIME type if necessary
+                put(
+                    MediaStore.Images.Media.RELATIVE_PATH,
+                    Environment.DIRECTORY_PICTURES
+                ) // Save to Pictures
             }
 
             // Insert the image into the MediaStore
@@ -969,9 +977,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     }
 
 
-    private fun shareImage(imagePath:String) {
+    private fun shareImage(imagePath: String) {
         val imageFile = File(imagePath)
-        if(imageFile.exists()) {
+        if (imageFile.exists()) {
             val imageUri: Uri = FileProvider.getUriForFile(
                 this,
                 "${applicationContext.packageName}.fileprovider",
@@ -989,9 +997,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             shareResultLauncher.launch(
                 Intent.createChooser(shareIntent, "Share with")
             )
-        }
-        else{
-            showAlert(context,getString(R.string.image_file_not_exist))
+        } else {
+            showAlert(context, getString(R.string.image_file_not_exist))
         }
     }
 
@@ -1003,7 +1010,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
     private fun updateBarcodeDetail(id: Int, triple: Triple<AppCompatImageView, String, String>) {
         // Inflate the dialog layout using View Binding
-        val updateBarcodeLayoutBinding = UpdateBarcodeDetailDialogBinding.inflate(LayoutInflater.from(context))
+        val updateBarcodeLayoutBinding =
+            UpdateBarcodeDetailDialogBinding.inflate(LayoutInflater.from(context))
 
         // Access views directly through the binding
         val updateInputBox = updateBarcodeLayoutBinding.updateBarcodeDetailTextInputField
@@ -1035,14 +1043,16 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 hideSoftKeyboard(context, updateBtn)
                 alert.dismiss()
                 // Update the barcode detail
-                val isUpdate = tableGenerator.updateBarcodeDetail(tableName, triple.third, value, id)
+                val isUpdate =
+                    tableGenerator.updateBarcodeDetail(tableName, triple.third, value, id)
                 if (isUpdate) {
                     // Refresh the barcode details
                     tableObject = tableGenerator.getUpdateBarcodeDetail(tableName, id)
                     displayBarcodeDetail()
                 }
             } else {
-                Toast.makeText(context, getString(R.string.empty_text_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.empty_text_error), Toast.LENGTH_SHORT)
+                    .show()
             }
         }
 
@@ -1062,7 +1072,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
             // Set static details in the views
             binding.codeDetailEncodeData.text = tableObj.code_data
-            binding.codeDetailCodeSequenceView.text = "${getString(R.string.code_text)} ${tableObj.id}"
+            binding.codeDetailCodeSequenceView.text =
+                "${getString(R.string.code_text)} ${tableObj.id}"
             binding.codeDetailDateTimeView.text = tableObj.date
 
             // Clear previous child views if any
@@ -1110,7 +1121,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             type = "text/plain"
 
             // Construct the body of the message
-            val shareBody = "${getString(R.string.app_name)} \n ${binding.codeDetailEncodeData.text.toString().trim()}"
+            val shareBody = "${getString(R.string.app_name)} \n ${
+                binding.codeDetailEncodeData.text.toString().trim()
+            }"
 
             // Add the message body to the intent
             putExtra(Intent.EXTRA_TEXT, shareBody)
@@ -1125,7 +1138,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         // Determine the appropriate bitmap based on the code type
 //        val bitmapResId = if (codeHistory!!.codeType == "qr") R.drawable.qrcode else R.drawable.barcode
 //        val bitmap = BitmapFactory.decodeResource(resources, bitmapResId)
-         val bitmap = ImageManager.getBitmapFromURL(context,codeHistory!!.localImagePath) as Bitmap
+        val bitmap = ImageManager.getBitmapFromURL(context, codeHistory!!.localImagePath) as Bitmap
 
         // Define dimensions based on code type
         val (codeWidth, codeHeight) = if (codeHistory!!.codeType == "qr") {
@@ -1204,7 +1217,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 document.close()
 
                 // Notify the user
-                Toast.makeText(this, getString(R.string.pdf_saved_success_text), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.pdf_saved_success_text), Toast.LENGTH_SHORT)
+                    .show()
 
                 // Optionally share the PDF file
                 if (isShareAfterCreated) {
@@ -1243,6 +1257,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                         .create().show()
                 }
             }
+
             else -> {
                 // Handle other request codes if needed
             }

@@ -244,7 +244,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         auth = Firebase.auth
 
         DataRepository.getChatGptApiKey()
-
+        DataRepository.getAiPrompts()
         // Initialize fragments
         val scannerFragment = ScannerFragment()
         val generatorFragment = GeneratorFragment()
