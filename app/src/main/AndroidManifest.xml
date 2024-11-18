@@ -46,6 +46,9 @@
         tools:replace="android:allowBackup"
         tools:targetApi="n">
         <activity
+            android:name=".ui.activities.AnalyticsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activities.CodeComparisonActivity"
             android:exported="false" />
         <activity

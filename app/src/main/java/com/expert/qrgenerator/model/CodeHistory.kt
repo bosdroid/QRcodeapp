@@ -20,9 +20,9 @@ data class CodeHistory(
     @ColumnInfo(name = "generatedUrl") var generatedUrl: String = "", // URL generated from the QR code
     @ColumnInfo(name = "createdAt") var createdAt: String, // Timestamp of creation
     @ColumnInfo(name = "notes") var notes: String, // Additional notes
-    @ColumnInfo(name = "conversion") var conversion: Int = 0,
-    @ColumnInfo(name = "revenue") var revenue: Int = 0,
-    @ColumnInfo(name = "expenses") var expenses: Int = 0
+    @ColumnInfo(name = "conversion") var conversion: Float = 0F,
+    @ColumnInfo(name = "revenue") var revenue: Float = 0F,
+    @ColumnInfo(name = "expenses") var expenses: Float = 0F
 ) : Serializable {
 
     @PrimaryKey(autoGenerate = true)

@@ -144,6 +144,7 @@ class BarcodeHistoryActivity : BaseActivity() {
         menu!!.findItem(R.id.create).isVisible = true
         menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = false
+        menu.findItem(R.id.analytics).isVisible = true
         return true
     }
 
@@ -151,6 +152,10 @@ class BarcodeHistoryActivity : BaseActivity() {
         return when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
+                true
+            }
+            R.id.analytics->{
+                startActivity(Intent(context, AnalyticsActivity::class.java))
                 true
             }
             R.id.create->{

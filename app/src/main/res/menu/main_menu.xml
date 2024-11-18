@@ -41,6 +41,13 @@
         android:visible="false"
         />
 
-
+    <item
+        android:title="@string/analytics"
+        android:id="@+id/analytics"
+        app:iconTint="@color/purple_700"
+        android:icon="@drawable/ic_history"
+        app:showAsAction="never"
+        android:visible="false"
+        />
 
 </menu>

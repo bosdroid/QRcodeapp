@@ -54,6 +54,7 @@ interface ApiServices {
     @POST("api/create_dynamic_qr_code.php")
     suspend fun createDynamicQrCode(@Field("login") login: String,
                                     @Field("qrId") qrId: String,
+                                    @Field("qrType") qrType: String,
                                     @Field("userUrl") userUrl: String,
                                     @Field("userType") userType: String,):Response<JsonObject?>
 

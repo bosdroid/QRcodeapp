@@ -1,23 +1,39 @@
 package com.expert.qrgenerator.ui.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.TooltipCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.QRTypesAdapter
+import com.expert.qrgenerator.adapters.QrCodeComparisonAdapter
 import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
+import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
+import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.ui.activities.BaseActivity
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.dismiss
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.showAlert
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.startLoading
+import com.expert.qrgenerator.ui.activities.DesignActivity
+import com.expert.qrgenerator.ui.fragments.ScannerFragment.ScannerInterface
 import com.expert.qrgenerator.utils.Constants
-import com.expert.qrgenerator.utils.Constants.Companion.openKeyboard
 import com.expert.qrgenerator.utils.GeneratorManager
+import com.expert.qrgenerator.viewmodel.DynamicQrViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 @AndroidEntryPoint
@@ -27,13 +43,21 @@ class ChooseTypeFragment : Fragment() {
     private lateinit var adapter: QRTypesAdapter
 
     private var fragmentReplaceListener: OnFragmentReplaceListener? = null
-
+    private val viewModel: DynamicQrViewModel by viewModels()
+    private val appViewModel: AppViewModel by viewModels()
     var selectedProtocol = "https://"
+
+    var selectedQrType = "advance"
 
     var isUpdating = false
 
     // Variable to hold the encoded data for QR code generation
     private var encodedData: String = ""
+    private var listener: ChooseTypeInterface? = null
+
+    interface ChooseTypeInterface {
+        fun login(callback: LoginCallback)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -45,6 +69,12 @@ class ChooseTypeFragment : Fragment() {
             fragmentReplaceListener = context as OnFragmentReplaceListener
         } catch (e: ClassCastException) {
             throw ClassCastException("$context must implement OnFragmentReplaceListener")
+        }
+
+        if (context is ChooseTypeInterface) {
+            listener = context
+        } else {
+            throw ClassCastException("$context must implement ChooseTypeInterface")
         }
     }
 
@@ -79,6 +109,29 @@ class ChooseTypeFragment : Fragment() {
             fragmentReplaceListener?.replaceFragment(position)
         }
         binding.chooseTypesRecyclerView.adapter = adapter
+
+        binding.infoImageView.setOnClickListener {
+//            TooltipCompat.setTooltipText(binding.infoImageView, getString(R.string.static_link_hint_message))
+//            binding.infoImageView.performLongClick()
+            val dialog = YouTubeDialogFragment("Jh1AnV5opZA")
+            dialog.show(childFragmentManager, "YouTubeDialogFragment")
+        }
+
+
+// Set up a listener for changes in the protocol selection
+        binding.staticTypeGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.advance_type_rb -> {
+                    selectedQrType = "advance"
+                }
+                R.id.regular_type_rb -> {
+                    selectedQrType = "link"
+                }
+                else -> {
+                    // Handle other cases if necessary
+                }
+            }
+        }
 
         // Set up a listener for changes in the protocol selection
         binding.httpProtocolGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -148,14 +201,88 @@ class ChooseTypeFragment : Fragment() {
             }
             // If all validations pass, encode the data and generate a QR code
             else {
-                encodedData = "$selectedProtocol$value"
-                binding.staticLinkLayoutInputField.setText("")
-                BaseActivity.hideSoftKeyboard(requireActivity(),binding.staticLinkLayoutInputField)
-                binding.staticLinkLayoutInputField.clearFocus()
-                GeneratorManager.generateQRCode(requireActivity(), encodedData, "trackable")
+
+                if (selectedQrType == "link"){
+                    encodedData = "$selectedProtocol$value"
+                    binding.staticLinkLayoutInputField.setText("")
+                    BaseActivity.hideSoftKeyboard(requireActivity(),binding.staticLinkLayoutInputField)
+                    binding.staticLinkLayoutInputField.clearFocus()
+                    GeneratorManager.generateQRCode(requireActivity(), encodedData, selectedQrType)
+                }
+                else{
+                    if(Constants.userData != null) {
+
+                        encodedData = "$selectedProtocol$value"
+                        binding.staticLinkLayoutInputField.setText("")
+                        BaseActivity.hideSoftKeyboard(
+                            requireActivity(),
+                            binding.staticLinkLayoutInputField
+                        )
+                        binding.staticLinkLayoutInputField.clearFocus()
+                        val qrId = System.currentTimeMillis()
+                        val userId = Constants.userData?.personId
+                        val hashMap = hashMapOf<String, String>().apply {
+                            put("login", "$userId")
+                            put("qrId", "$qrId")
+                            put("qrType", selectedQrType)
+                            put("userUrl", encodedData)
+                            put("userType", "free")
+                        }
+
+                        startLoading(requireActivity())
+                        lifecycleScope.launch {
+                            viewModel.createDynamicQrCode(hashMap)
+                        }
+                        viewModel.dynamicQrCodeResponse.observe(
+                            requireActivity(),
+                            Observer { response ->
+                                dismiss()
+                                response?.let {
+                                    val genUrl = it.get("generatedUrl").asString
+                                    val qrHistory = CodeHistory(
+                                        "$userId",
+                                        "$qrId",
+                                        encodedData,
+                                        selectedQrType,
+                                        "free",
+                                        "qr",
+                                        "create",
+                                        "",
+                                        "1",
+                                        genUrl,
+                                        System.currentTimeMillis().toString(),
+                                        ""
+                                    )
+//                                    val insertedId = appViewModel.insert(qrHistory)
+//                                    qrHistory.id = insertedId.toInt()
+                                    val intent = Intent(context, DesignActivity::class.java).apply {
+                                        // Add encoded data and QR history to the intent extras
+                                        putExtra("ENCODED_TEXT", genUrl)
+                                        putExtra("QR_HISTORY", qrHistory)
+                                    }
+
+                                    // Start the DesignActivity with the intent
+                                    startActivity(intent)
+                                } ?: run {
+                                    showAlert(
+                                        requireActivity(),
+                                        "Something went wrong, please try again!"
+                                    )
+                                }
+                            })
+                    }
+                    else{
+                        listener?.login(object : LoginCallback {
+                            override fun onSuccess() {
+                                onResume()
+                            }
+                        })
+                    }
+                }
+
             }
         }
-        BaseActivity.hideSoftKeyboard(requireActivity(), binding.staticLinkLayoutInputField.rootView)
+//        BaseActivity.hideSoftKeyboard(requireActivity(), binding.staticLinkLayoutInputField.rootView)
 //        binding.staticLinkLayoutInputField.requestFocus()
 //        openKeyboard(requireActivity())
 

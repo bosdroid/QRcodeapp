@@ -670,9 +670,10 @@
                         android:id="@+id/empty_history_textview"
                         android:visibility="gone"
                         />
-                    <androidx.recyclerview.widget.RecyclerView
+                    <com.expert.qrgenerator.utils.MaxHeightRecyclerView
                         android:layout_width="match_parent"
-                        android:layout_height="270dp"
+                        android:layout_height="wrap_content"
+                        app:maxHeight="270dp"
                         android:id="@+id/scans_history_recyclerview"
                         tools:listitem="@layout/scan_history_item_layout"
                         android:layout_margin="@dimen/eightDpMargin"

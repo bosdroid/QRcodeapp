@@ -24,16 +24,32 @@
             android:padding="@dimen/_10dp"
             >
 
-            <com.google.android.material.textview.MaterialTextView
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/static_link_trackable"
-                android:textColor="@color/purple_700"
-                android:textStyle="bold"
-                android:textSize="@dimen/largeText"
+                android:orientation="horizontal"
                 android:gravity="center"
                 android:layout_marginBottom="@dimen/eightDpMargin"
-                />
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/static_link_trackable_dynamic"
+                    android:textColor="@color/purple_700"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/largeText"
+                    android:gravity="center"
+                    />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_info"
+                    android:layout_marginStart="@dimen/tenDpMargin"
+                    android:id="@+id/info_image_view"
+                    />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
@@ -42,6 +58,34 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 />
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dialog_heading"
+                app:layout_constraintBottom_toTopOf="@id/website_input_field"
+                android:layout_marginTop="8dp"
+                android:id="@+id/static_type_group"
+                >
+                <androidx.appcompat.widget.AppCompatRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/advance"
+                    android:id="@+id/advance_type_rb"
+                    android:checked="true"
+                    />
+
+                <androidx.appcompat.widget.AppCompatRadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/regular"
+                    android:id="@+id/regular_type_rb"
+                    android:layout_marginStart="@dimen/tenDpMargin"
+                    />
+
+
+            </RadioGroup>
             <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

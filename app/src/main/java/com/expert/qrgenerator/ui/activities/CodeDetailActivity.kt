@@ -403,7 +403,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             .override(200, 200) // Set the desired width and height
             .into(binding.codeDetailImageType)
 
-        if (codeHistory!!.type == "trackable") {
+        if (codeHistory!!.type == "trackable" || codeHistory!!.type == "advance") {
             binding.aiRecommendationLayout.visibility = View.VISIBLE
             binding.conversionRevenueLayout.visibility = View.VISIBLE
             binding.conversionInputField.setText("${codeHistory!!.conversion}")
@@ -429,7 +429,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         }
 
         binding.aiRecommendationBtn.setOnClickListener {
-            if (codeHistory!!.type == "trackable") {
+            if (codeHistory!!.type == "trackable" || codeHistory!!.type == "advance") {
                 logCustomEvent(context, "trackable_type_ai_button_click")
             }
             if (scanDateList.size >= 10) {
@@ -446,24 +446,24 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                     val prompt = generateQrAnalysisMessage(
                         codeHistory!!.qrId, totalScans, scanDateList,
                         if (conversion.isEmpty()) {
-                            "0".toInt()
+                            "0".toFloat()
                         } else {
-                            conversion.toInt()
+                            conversion.toFloat()
                         },
                         if (revenue.isEmpty()) {
-                            "0".toDouble()
+                            "0".toFloat()
                         } else {
-                            revenue.toDouble()
+                            revenue.toFloat()
                         },
                         if (expenses.isEmpty()) {
-                            "0".toDouble()
+                            "0".toFloat()
                         } else {
-                            expenses.toDouble()
+                            expenses.toFloat()
                         }
                     )
-                    codeHistory!!.conversion = conversion.toInt()
-                    codeHistory!!.revenue = revenue.toInt()
-                    codeHistory!!.expenses = expenses.toInt()
+                    codeHistory!!.conversion = conversion.toFloat()
+                    codeHistory!!.revenue = revenue.toFloat()
+                    codeHistory!!.expenses = expenses.toFloat()
                     appViewModel.updateHistory(codeHistory!!)
                     startLoading(context)
                     lifecycleScope.launch {
@@ -540,9 +540,9 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         qrCodeId: String,
         numberOfScans: Int,
         dateList: List<String>,
-        conversions: Int,
-        profit: Double,
-        expenses: Double
+        conversions: Float,
+        profit: Float,
+        expenses: Float
     ): String {
         val dateString =
             dateList.joinToString(", ") // Converts the date list to a comma-separated string
@@ -587,7 +587,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
      * Handles the visibility and content for dynamic links.
      */
     private fun handleDynamicLinks() {
-        if (codeHistory!!.isDynamic.toInt() == 1) {
+        if (codeHistory!!.isDynamic.toInt() == 1 || codeHistory!!.type == "advance") {
             binding.codeDetailDynamicLinkUpdateLayout.visibility = View.VISIBLE
             binding.dialogSubHeading.text =
                 "${getString(R.string.current_link_text)} ${codeHistory!!.data}"
@@ -740,6 +740,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         menu!!.findItem(R.id.create).isVisible = true
         menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
+        menu.findItem(R.id.analytics).isVisible = true
         return true
     }
 
@@ -756,7 +757,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 onBackPressed()
                 true
             }
-
+            R.id.analytics->{
+                startActivity(Intent(context, AnalyticsActivity::class.java))
+                true
+            }
             R.id.create -> {
                 startActivity(Intent(context, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -812,7 +816,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.code_detail_pdf_save_button -> {
-                if (codeHistory!!.type == "trackable") {
+                if (codeHistory!!.type == "trackable" || codeHistory!!.type == "advance") {
                     logCustomEvent(context, "trackable_type_save_pdf")
                 }
 //                if (RuntimePermissionHelper.checkStoragePermission(
@@ -828,7 +832,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
             R.id.code_detail_pdf_share_button -> {
                 isShareAfterCreated = true
-                if (codeHistory!!.type == "trackable") {
+                if (codeHistory!!.type == "trackable" || codeHistory!!.type == "advance") {
                     logCustomEvent(context, "trackable_type_save_and_share_pdf")
                 }
 
@@ -903,7 +907,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.update_notes_btn -> {
-                if (codeHistory!!.type == "trackable") {
+                if (codeHistory!!.type == "trackable" || codeHistory!!.type == "advance") {
                     logCustomEvent(context, "trackable_type_notes_update")
                 }
                 val notesText = binding.qrCodeHistoryNotesInputField.text.toString().trim()
@@ -917,7 +921,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                         Toast.LENGTH_SHORT
                     ).show()
                     binding.qrCodeHistoryNotesInputField.clearFocus()
-                    binding.qrCodeHistoryNotesInputField.setText("")
+//                    binding.qrCodeHistoryNotesInputField.setText("")
                     hideSoftKeyboard(context, binding.qrCodeHistoryNotesInputField)
 
                 } else {

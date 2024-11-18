@@ -199,7 +199,7 @@ dependencies {
     implementation "androidx.camera:camera-extensions:1.0.0-alpha25"
     implementation 'com.google.mlkit:barcode-scanning:16.1.2'
     implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:16.1.5'
-
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
     // TOOLTIPS LIBRARY
     implementation 'com.github.douglasjunior:android-simple-tooltip:1.0.0-rc.0'
 
@@ -209,5 +209,5 @@ dependencies {
     // CSV FILE READER LIBRARY
     implementation 'com.opencsv:opencsv:4.6'
 
-
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.1'
 }

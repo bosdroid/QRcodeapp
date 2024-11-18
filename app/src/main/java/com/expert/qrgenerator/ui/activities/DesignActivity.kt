@@ -281,9 +281,13 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                                     Observer { response ->
                                         dismiss()
                                         // Start ShareActivity
-                                        val intent = Intent(context, ShareActivity::class.java)
-                                        intent.putExtra("TYPE",qrHistory?.type)
-                                        intent.putExtra("DATA",qrHistory?.data)
+//                                        val intent = Intent(context, ShareActivity::class.java)
+//                                        intent.putExtra("TYPE",qrHistory?.type)
+//                                        intent.putExtra("DATA",qrHistory?.data)
+//                                        startActivity(intent)
+//                                        finish()
+                                        val intent = Intent(context, CodeDetailActivity::class.java)
+                                        intent.putExtra("HISTORY_ITEM",qrHistory)
                                         startActivity(intent)
                                         finish()
                                     })
@@ -291,9 +295,13 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                             else if(qrHistory!!.type == "dynamic"){
                                 appViewModel.updateHistory(qrHistory!!)
                                 // Start ShareActivity
-                                val intent = Intent(context, ShareActivity::class.java)
-                                intent.putExtra("TYPE",qrHistory?.type)
-                                intent.putExtra("DATA",qrHistory?.data)
+//                                val intent = Intent(context, ShareActivity::class.java)
+//                                intent.putExtra("TYPE",qrHistory?.type)
+//                                intent.putExtra("DATA",qrHistory?.data)
+//                                startActivity(intent)
+//                                finish()
+                                val intent = Intent(context, CodeDetailActivity::class.java)
+                                intent.putExtra("HISTORY_ITEM",qrHistory)
                                 startActivity(intent)
                                 finish()
                             }
@@ -310,7 +318,8 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                                 }
                                 else{
                                     // Start ShareActivity
-                                    val intent = Intent(context, ShareActivity::class.java)
+                                    val intent = Intent(context, CodeDetailActivity::class.java)
+                                    intent.putExtra("HISTORY_ITEM",qrHistory)
                                     startActivity(intent)
                                     finish()
                                 }
@@ -878,6 +887,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         menu!!.findItem(R.id.create).isVisible = true
         menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
+        menu.findItem(R.id.analytics).isVisible = true
         return true
     }
 
@@ -899,6 +909,10 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
             }
             R.id.compare->{
                 startActivity(Intent(context, CodeComparisonActivity::class.java))
+                true
+            }
+            R.id.analytics->{
+                startActivity(Intent(context, AnalyticsActivity::class.java))
                 true
             }
             else -> {

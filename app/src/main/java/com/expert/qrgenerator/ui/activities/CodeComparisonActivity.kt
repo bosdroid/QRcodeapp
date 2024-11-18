@@ -130,13 +130,13 @@ class CodeComparisonActivity : BaseActivity() {
                 if (qrCode.scanDateList.isNotEmpty()) {
                     qrCodeDetails.add("Scan Dates: ${qrCode.scanDateList.joinToString(", ")}")
                 }
-                if (qrCode.conversion != 0) {
+                if (qrCode.conversion != 0F) {
                     qrCodeDetails.add("Conversions: ${qrCode.conversion}")
                 }
-                if (qrCode.revenue != 0) {
+                if (qrCode.revenue != 0F) {
                     qrCodeDetails.add("Revenue: ${qrCode.revenue}")
                 }
-                if (qrCode.expenses != 0) {
+                if (qrCode.expenses != 0F) {
                     qrCodeDetails.add("Expenses: ${qrCode.expenses}")
                 }
 
@@ -175,19 +175,19 @@ class CodeComparisonActivity : BaseActivity() {
                  val expenses = expensesInputField.text.toString()
 
                  if(conversion.isNotEmpty()){
-                     qrCodeList[position].conversion = conversion.toInt()
+                     qrCodeList[position].conversion = conversion.toFloat()
                  }
                  if(revenue.isNotEmpty()){
-                     qrCodeList[position].revenue = revenue.toInt()
+                     qrCodeList[position].revenue = revenue.toFloat()
                  }
                  if(expenses.isNotEmpty()){
-                     qrCodeList[position].expenses = expenses.toInt()
+                     qrCodeList[position].expenses = expenses.toFloat()
                  }
 
                  val item = qrCodeList[position]
-                 item.conversion = conversion.toInt()
-                 item.revenue = revenue.toInt()
-                 item .expenses = expenses.toInt()
+                 item.conversion = conversion.toFloat()
+                 item.revenue = revenue.toFloat()
+                 item .expenses = expenses.toFloat()
                  appViewModel.updateHistory(item)
                  adapter.notifyItemChanged(position)
                  alertdialog.dismiss()
@@ -278,6 +278,7 @@ class CodeComparisonActivity : BaseActivity() {
         menu!!.findItem(R.id.create).isVisible = true
         menu.findItem(R.id.compare).isVisible = false
         menu.findItem(R.id.history).isVisible = true
+        menu.findItem(R.id.analytics).isVisible = true
         return true
     }
 
@@ -293,6 +294,10 @@ class CodeComparisonActivity : BaseActivity() {
         return when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
+                true
+            }
+            R.id.analytics->{
+                startActivity(Intent(context, AnalyticsActivity::class.java))
                 true
             }
             R.id.create->{

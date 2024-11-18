@@ -93,7 +93,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-     ScannerFragment.ScannerInterface,OnFragmentReplaceListener {
+     ChooseTypeFragment.ChooseTypeInterface,OnFragmentReplaceListener {
 
     // Binding for ActivityMain layout
     private lateinit var binding: ActivityMainBinding
@@ -578,6 +578,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         menu!!.findItem(R.id.create).isVisible = false
         menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
+        menu.findItem(R.id.analytics).isVisible = true
         return true
     }
 
@@ -601,6 +602,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             R.id.compare->{
                 startActivity(Intent(context, CodeComparisonActivity::class.java))
+                true
+            }
+            R.id.analytics->{
+                startActivity(Intent(context, AnalyticsActivity::class.java))
                 true
             }
             else -> {
