@@ -31,6 +31,7 @@ data class CodeHistory(
 
     @Ignore var totalScans:Int = 0
     @Ignore var scanDateList:List<String> = emptyList()
+    @Ignore var scanDateTimeStampList = mutableListOf<Long>()
 
     // Provides a string representation of the CodeHistory object
     override fun toString(): String {

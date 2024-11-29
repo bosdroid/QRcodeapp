@@ -4,20 +4,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.fragments.TimeAnalyticsFragment">
+    tools:context=".ui.fragments.ConversionRateFragment">
 
+    <!-- TextView to display overall conversion rate -->
+    <TextView
+        android:id="@+id/overallConversionRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="Overall Conversion Rate: 0%"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="8dp" />
 
-    <!-- BarChart for displaying histogram -->
+    <!-- BarChart to display conversion rates per QR code -->
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barChart"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/overallConversionRate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="16dp"
-        android:layout_margin="@dimen/tenDpMargin"
         android:background="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

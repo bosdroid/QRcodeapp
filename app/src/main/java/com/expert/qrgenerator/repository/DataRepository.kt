@@ -15,6 +15,29 @@ object DataRepository {
     // Firebase Database reference
     private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
 
+    fun getAllLiveScanHistory(qrId:String, callback: TrackableScansCallback) {
+        val trackableScanList = mutableListOf<TrackableScan>()
+
+        databaseReference.child(Constants.FIREBASE_TRACKABLE_SCANS).child(qrId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (postSnapshot in dataSnapshot.children) {
+                            postSnapshot.getValue(TrackableScan::class.java)?.let { trackableScanList.add(it) }
+                        }
+                        callback.onTrackableScansLoaded(trackableScanList)
+                    } else {
+                        callback.onTrackableScansError() // Handle case when no data exists
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w("DataRepository", "Error fetching background images", databaseError.toException())
+                    callback.onTrackableScansError()
+                }
+            })
+    }
+
 
     /**
      * Fetches the list of SCAN HISTORY from Firebase.

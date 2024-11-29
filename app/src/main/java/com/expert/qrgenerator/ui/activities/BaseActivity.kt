@@ -3,6 +3,7 @@ package com.expert.qrgenerator.ui.activities
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.ConnectivityManager
@@ -143,14 +144,24 @@ open class BaseActivity : AppCompatActivity() {
                 .create().show()
         }
 
+        fun showAlert(context: Context, message: String,listener:OnClickListener) {
+            MaterialAlertDialogBuilder(context)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Ok") { dialog, which -> listener.onClick(dialog,which) }
+                .create().show()
+        }
+
         // Shows a loading dialog
         fun startLoading(context: Context) {
-            val builder = MaterialAlertDialogBuilder(context)
-            val layout = LayoutInflater.from(context).inflate(R.layout.custom_loading, null)
-            builder.setView(layout)
-            builder.setCancelable(false)
-            alert = builder.create()
-            alert?.show()
+            if(alert == null){
+                val builder = MaterialAlertDialogBuilder(context)
+                val layout = LayoutInflater.from(context).inflate(R.layout.custom_loading, null)
+                builder.setView(layout)
+                builder.setCancelable(false)
+                alert = builder.create()
+                alert?.show()
+            }
         }
 
         // Dismisses the loading dialog

@@ -1,64 +1,710 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/light_gray"
     android:fillViewport="true"
     tools:context=".ui.activities.AnalyticsActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></androidx.appcompat.widget.Toolbar>
 
-        <com.google.android.material.appbar.AppBarLayout
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:id="@+id/nested_scroll_view"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/app_bar_layout"
-            android:background="#fff"
-            android:elevation="4dp"
-            >
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:gravity="center_vertical"
-                >
-            </androidx.appcompat.widget.Toolbar>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:orientation="vertical">
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_qr"
+                android:textStyle="bold"
+                android:id="@+id/choose_qr_codes_btn"
+                android:layout_gravity="end"
+                android:layout_margin="@dimen/eightDpMargin"
+                android:textColor="@color/white"
+                />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/codes_display_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:tabMode="fixed"
-                app:tabGravity="fill" />
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewPager"
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/qr_codes_data_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10dp"
+
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_margin="@dimen/eightDpMargin"
+                        android:gravity="center_vertical"
+                        android:padding="4dp"
+                        >
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/code_comparison_text"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/largeText"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/qr_code_image1"
+                            android:layout_width="0dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitCenter"
+                            />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/qr_code_image2"
+                            android:layout_width="0dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitCenter"
+                             />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <TableLayout
+                        android:id="@+id/tableLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/defaultDpMargin"
+                        android:stretchColumns="1">
+
+                        <!-- Row 1 -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/qr_code_name"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/qr_code_name1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+                        </TableRow>
+
+                        <!-- Row 2 -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/qr_code_scans"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/qr_code_scans1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+                        </TableRow>
+
+                        <!-- Repeat for remaining rows -->
+                        <!-- Row 3 -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/qr_code_expenses"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/qr_code_expenses1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+                        </TableRow>
+
+                        <!-- Row 4 -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/qr_code_revenue"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/qr_code_revenue1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+                        </TableRow>
+
+                        <!-- Row 5 -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/qr_code_conversion"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/qr_code_conversion1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+                        </TableRow>
+
+                        <!-- Row 6 -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/qr_code_quality_score"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/qr_code_quality_score1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+                        </TableRow>
+                    </TableLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/qr_codes_empty_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/create_qr_code_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/create_qr_code" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/overall_quality_score_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_10dp">
+                    <!-- Quality Score Text -->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/qualityScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/quality_score_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
 
-</ScrollView>
+                    <!-- Trend Arrow Icon -->
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/trendArrow"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@string/trend_arrow"
+                        android:paddingStart="@dimen/eightDpMargin"
+                        android:paddingLeft="@dimen/eightDpMargin"
+                        android:src="@drawable/ic_arrow_upward" />
+
+                    <!--                   &lt;!&ndash; Quality Level Indicator &ndash;&gt;-->
+                    <!--                   <View-->
+                    <!--                       android:id="@+id/qualityIndicator"-->
+                    <!--                       android:layout_width="match_parent"-->
+                    <!--                       android:layout_height="2dp"-->
+                    <!--                       android:background="@color/red"-->
+                    <!--                       android:layout_marginTop="@dimen/eightDpMargin" />-->
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/scan_count_analytics_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/scan_count_analytics"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="@dimen/tenDpMargin"
+                        android:layout_marginBottom="@dimen/sixtyDpMargin"
+                        android:background="@drawable/border"
+                        android:gravity="center">
+
+                        <Spinner
+                            android:id="@+id/periodSpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:entries="@array/period_options"
+                            android:spinnerMode="dropdown" />
+                    </LinearLayout>
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/lineChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/time_analytics_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/time_analytics"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
+
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/timeBarChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_margin="@dimen/tenDpMargin"
+                        android:background="@color/white"
+                        android:padding="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/conversion_rate_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/conversion_rate_analytics"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
+
+                    <!-- TextView to display overall conversion rate -->
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/overallConversionRate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="@string/overall_conversion_rate_0"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                    <!-- BarChart to display conversion rates per QR code -->
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/conversionRateBarChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:background="@color/white"
+                        android:padding="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/overallConversionRate" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/revenue_analytics_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/revenue_analytics"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
+
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/revenueBarChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_margin="@dimen/tenDpMargin"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/roi_analytics_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/roi_return_on_investment"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
+
+
+                    <com.expert.qrgenerator.utils.MaxHeightRecyclerView
+                        android:id="@+id/roi_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tenDpMargin"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:maxHeight="250dp" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/code_comparison_analytics_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/code_comparison_analytics"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/largeText"
+                        android:textStyle="bold" />
+
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/codeComparisonBarChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_margin="@dimen/tenDpMargin"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.cardview.widget.CardView>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="horizontal"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"-->
+    <!--            android:id="@+id/overall_quality_score_layout"-->
+    <!--            android:padding="@dimen/sixtyDpMargin"-->
+    <!--            >-->
+    <!--            &lt;!&ndash; Quality Score Text &ndash;&gt;-->
+    <!--            <TextView-->
+    <!--                android:id="@+id/qualityScore"-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:textSize="24sp"-->
+    <!--                android:textStyle="bold"-->
+    <!--                android:text="Quality Score: 0"-->
+    <!--                android:textColor="@color/black"-->
+    <!--                app:layout_constraintTop_toTopOf="parent"-->
+    <!--                app:layout_constraintStart_toStartOf="parent" />-->
+
+    <!--            &lt;!&ndash; Trend Arrow Icon &ndash;&gt;-->
+    <!--            <ImageView-->
+    <!--                android:id="@+id/trendArrow"-->
+    <!--                android:layout_width="24dp"-->
+    <!--                android:layout_height="24dp"-->
+    <!--                android:src="@drawable/ic_arrow_upward"-->
+    <!--                android:contentDescription="Trend Arrow"-->
+    <!--                app:layout_constraintTop_toTopOf="@id/qualityScore"-->
+    <!--                app:layout_constraintStart_toEndOf="@id/qualityScore"-->
+    <!--                app:layout_constraintBottom_toBottomOf="@id/qualityScore"-->
+    <!--                android:paddingStart="8dp" />-->
+
+    <!--            &lt;!&ndash; Quality Level Indicator &ndash;&gt;-->
+    <!--            <View-->
+    <!--                android:id="@+id/qualityIndicator"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="2dp"-->
+    <!--                android:background="@color/red"-->
+    <!--                app:layout_constraintTop_toBottomOf="@id/qualityScore"-->
+    <!--                app:layout_constraintStart_toStartOf="parent"-->
+    <!--                app:layout_constraintEnd_toEndOf="parent"-->
+    <!--                android:layout_marginTop="@dimen/eightDpMargin" />-->
+
+    <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabGravity="fill"
+            app:tabMode="fixed" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

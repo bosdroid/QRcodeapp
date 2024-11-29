@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -48,6 +49,8 @@ class CodeComparisonActivity : BaseActivity() {
 
     private val viewModel: CodeDetailViewModel by viewModels()
 
+    private var from = "ai_comparison"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCodeComparisonBinding.inflate(layoutInflater)
@@ -72,9 +75,22 @@ class CodeComparisonActivity : BaseActivity() {
                 openConversionParametersDialog(position)
             }
 
-            override fun onCheckboxChanged(position: Int, isChecked: Boolean,item:CodeHistory) {
+            override fun onCheckboxChanged(position: Int, isChecked: Boolean,item:CodeHistory,buttonView:AppCompatCheckBox) {
                 if (isChecked) {
-                    selectedItems.add(item) // Add to selected items
+                    if(from.isNotEmpty() && from != "ai_comparison" && item.totalScans == 0){
+                        showAlert(context,"You can only select QR codes that have a scan count of at least 1!")
+                        buttonView.isChecked = false
+                    }
+                    else if(from.isNotEmpty() && from != "ai_comparison" && selectedItems.size >=2){
+                        showAlert(context,"You can only select 2 qr codes for comparison!")
+                        buttonView.isChecked = false
+                    }
+
+                    else
+                    {
+                        selectedItems.add(item) // Add to selected items
+                    }
+
                 } else {
                     selectedItems.remove(item) // Remove from selected items
                 }
@@ -84,6 +100,13 @@ class CodeComparisonActivity : BaseActivity() {
         })
 
         binding.aiAnalyzerBtn.setOnClickListener {
+           if(from.isNotEmpty() && from != "ai_comparison"){
+               val resultIntent = Intent()
+               resultIntent.putExtra("SELECTED_QR_CODES", selectedItems as ArrayList<CodeHistory>)
+               setResult(RESULT_OK, resultIntent)
+               finish() // Close the second activity
+               return@setOnClickListener
+           }
             logCustomEvent(context,"comparison_screen","event","analyze code comparison")
           if(selectedItems.size > 0){
               if (selectedItems.size > 1){
@@ -107,6 +130,11 @@ class CodeComparisonActivity : BaseActivity() {
           else{
               showAlert(context,getString(R.string.qr_codes_empty_list_error))
           }
+        }
+
+        if (intent != null && intent.hasExtra("FROM")){
+            from = intent.getStringExtra("FROM") as String
+            binding.aiAnalyzerBtn.text = getString(R.string.done)
         }
     }
 
@@ -239,10 +267,15 @@ class CodeComparisonActivity : BaseActivity() {
 
                     // Map the trackableScans to a list of formatted date-time strings
                     val formattedDates = trackableScans.mapNotNull { scan ->
-                        scan.timestamp?.let { getDateTimeFromTimeStamp1(it) }
+                        scan.timestamp?.let { getDateTimeFromTimeStamp1(it*1000) }
+                    }
+
+                    val timestampDates = trackableScans.mapNotNull { scan ->
+                        scan.timestamp?.let { it * 1000 }
                     }
 
                     qrCodeList[i].scanDateList = formattedDates
+                    qrCodeList[i].scanDateTimeStampList.addAll(timestampDates)
                     adapter.notifyItemChanged(i)
                 }
 

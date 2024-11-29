@@ -491,7 +491,19 @@
 	<string name="static_link_hint_message"><![CDATA[Trackable - you will track when someone scan your QR code\n\nDynamic - you will be able to change final url without changing QR code]]></string>
     <string name="advance">Advance</string>
 	<string name="regular">Regular</string>
-	<string-array name="mode_list">
+    <string name="quality_score_0">Overall Quality Score: 0</string>
+    <string name="scan_count_analytics">Scan Count Analytics</string>
+	<string name="time_analytics">Time Analytics</string>
+	<string name="conversion_rate_analytics">Conversion Rate Analytics</string>
+	<string name="revenue_analytics">Revenue Analytics</string>
+	<string name="roi_return_on_investment">ROI (Return on Investment)</string>
+    <string name="code_comparison_analytics">Code Comparison Analytics</string>
+	<string name="overall_conversion_rate_0">Overall Conversion Rate: 0%</string>
+    <string name="create_qr_code">Create QR Code</string>
+    <string name="choose_qr">Choose QR</string>
+    <string name="done">Done</string>
+    <string name="quality_score">Quality Score: %1$s</string>
+    <string-array name="mode_list">
 		<item>Инвентарь</item>
 		<item>Продавец</item>
 		<item>Поиск</item>

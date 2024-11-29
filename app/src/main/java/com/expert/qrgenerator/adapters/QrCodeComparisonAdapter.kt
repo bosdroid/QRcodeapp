@@ -4,6 +4,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.recyclerview.widget.RecyclerView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.databinding.QrCodeComparisonItemDesignBinding
@@ -21,7 +23,7 @@ class QrCodeComparisonAdapter(
     // Interface to handle checkbox change events
     interface OnCheckboxChangeListener {
         fun onClickEdit(position: Int)
-        fun onCheckboxChanged(position: Int, isChecked: Boolean,item:CodeHistory)
+        fun onCheckboxChanged(position: Int, isChecked: Boolean,item:CodeHistory,buttonView: AppCompatCheckBox)
     }
 
     // Function to set the OnCheckboxChangeListener
@@ -57,7 +59,7 @@ class QrCodeComparisonAdapter(
 //            binding.qrCodeItemCheckbox.isChecked = qrHistory.isChecked // Set checkbox state based on data
 
             binding.qrCodeItemCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
-                checkboxListener?.onCheckboxChanged(layoutPosition, isChecked,qrHistory)
+                checkboxListener?.onCheckboxChanged(layoutPosition, isChecked,qrHistory,binding.qrCodeItemCheckbox)
             }
         }
     }
