@@ -576,7 +576,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
         menu!!.findItem(R.id.create).isVisible = false
-        menu.findItem(R.id.compare).isVisible = true
+//        menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
         menu.findItem(R.id.analytics).isVisible = true
         return true
@@ -600,10 +600,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
                 true
             }
-            R.id.compare->{
-                startActivity(Intent(context, CodeComparisonActivity::class.java))
-                true
-            }
+//            R.id.compare->{
+//                startActivity(Intent(context, CodeComparisonActivity::class.java))
+//                true
+//            }
             R.id.analytics->{
                 startActivity(Intent(context, AnalyticsActivity::class.java))
                 true

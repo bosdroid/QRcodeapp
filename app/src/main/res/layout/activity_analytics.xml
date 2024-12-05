@@ -46,16 +46,35 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/choose_qr"
-                android:textStyle="bold"
-                android:id="@+id/choose_qr_codes_btn"
-                android:layout_gravity="end"
-                android:layout_margin="@dimen/eightDpMargin"
-                android:textColor="@color/white"
-                />
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal"
+               android:layout_margin="@dimen/eightDpMargin"
+               >
+
+               <com.google.android.material.button.MaterialButton
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="@string/ai_compare"
+                   android:textStyle="bold"
+                   android:id="@+id/ai_compare_btn"
+                   android:textColor="@color/white"
+                   />
+              <View
+                  android:layout_width="0dp"
+                  android:layout_weight="1"
+                  android:layout_height="wrap_content"/>
+               <com.google.android.material.button.MaterialButton
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="@string/choose_qr"
+                   android:textStyle="bold"
+                   android:id="@+id/choose_qr_codes_btn"
+                   android:textColor="@color/white"
+                   />
+
+           </LinearLayout>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/codes_display_layout"
@@ -303,7 +322,67 @@
                                 android:textColor="@color/black"
                                 android:textSize="16sp" />
                         </TableRow>
+                        <!-- Row 7 -->
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/qr_code_roi"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/qr_code_roi1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+
+                                android:layout_weight="1"
+
+                                android:background="@drawable/table_cell_border"
+                                android:padding="8dp"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+                        </TableRow>
                     </TableLayout>
+
+<!--                    <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_margin="@dimen/eightDpMargin"-->
+<!--                        android:orientation="vertical"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent">-->
+
+<!--                        <com.google.android.material.textview.MaterialTextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:gravity="center"-->
+<!--                            android:text="@string/roi_return_on_investment"-->
+<!--                            android:textColor="@color/black"-->
+<!--                            android:textSize="@dimen/largeText"-->
+<!--                            android:textStyle="bold" />-->
+
+
+<!--                        <com.expert.qrgenerator.utils.MaxHeightRecyclerView-->
+<!--                            android:id="@+id/roi_recycler_view"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_margin="@dimen/tenDpMargin"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent"-->
+<!--                            app:maxHeight="250dp" />-->
+<!--                    </androidx.appcompat.widget.LinearLayoutCompat>-->
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -447,8 +526,8 @@
                         android:textStyle="bold" />
 
 
-                    <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/timeBarChart"
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/timeLineChart"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
                         android:layout_margin="@dimen/tenDpMargin"
@@ -559,6 +638,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/eightDpMargin"
+                android:visibility="gone"
                 app:cardCornerRadius="10dp">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -581,7 +661,6 @@
 
 
                     <com.expert.qrgenerator.utils.MaxHeightRecyclerView
-                        android:id="@+id/roi_recycler_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/tenDpMargin"
@@ -614,14 +693,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="@string/code_comparison_analytics"
+                        android:text="@string/expense_revenue_text"
                         android:textColor="@color/black"
                         android:textSize="@dimen/largeText"
                         android:textStyle="bold" />
 
 
                     <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/codeComparisonBarChart"
+                        android:id="@+id/codeExpenseRevenueBarChart"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
                         android:layout_margin="@dimen/tenDpMargin"

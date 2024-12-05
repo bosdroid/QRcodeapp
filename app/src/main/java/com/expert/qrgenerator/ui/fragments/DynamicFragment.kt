@@ -118,7 +118,7 @@ class DynamicFragment : Fragment() {
                             "1",
                             genUrl,
                             System.currentTimeMillis().toString(),
-                            ""
+                            "","","",""
                         )
                         val insertedId = appViewModel.insert(qrHistory)
                         qrHistory.id = insertedId.toInt()

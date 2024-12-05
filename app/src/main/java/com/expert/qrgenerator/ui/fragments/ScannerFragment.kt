@@ -833,7 +833,8 @@ class ScannerFragment : Fragment() {
                 "0",
                 "",
                 System.currentTimeMillis().toString(),
-                ""
+                "",
+                "","",""
             )
             appViewModel.insert(qrHistory)
             saveSuccessScans()

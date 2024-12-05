@@ -158,13 +158,13 @@ class CodeComparisonActivity : BaseActivity() {
                 if (qrCode.scanDateList.isNotEmpty()) {
                     qrCodeDetails.add("Scan Dates: ${qrCode.scanDateList.joinToString(", ")}")
                 }
-                if (qrCode.conversion != 0F) {
+                if (qrCode.conversion != "") {
                     qrCodeDetails.add("Conversions: ${qrCode.conversion}")
                 }
-                if (qrCode.revenue != 0F) {
+                if (qrCode.revenue != "") {
                     qrCodeDetails.add("Revenue: ${qrCode.revenue}")
                 }
-                if (qrCode.expenses != 0F) {
+                if (qrCode.expenses != "") {
                     qrCodeDetails.add("Expenses: ${qrCode.expenses}")
                 }
 
@@ -203,19 +203,19 @@ class CodeComparisonActivity : BaseActivity() {
                  val expenses = expensesInputField.text.toString()
 
                  if(conversion.isNotEmpty()){
-                     qrCodeList[position].conversion = conversion.toFloat()
+                     qrCodeList[position].conversion = conversion
                  }
                  if(revenue.isNotEmpty()){
-                     qrCodeList[position].revenue = revenue.toFloat()
+                     qrCodeList[position].revenue = revenue
                  }
                  if(expenses.isNotEmpty()){
-                     qrCodeList[position].expenses = expenses.toFloat()
+                     qrCodeList[position].expenses = expenses
                  }
 
                  val item = qrCodeList[position]
-                 item.conversion = conversion.toFloat()
-                 item.revenue = revenue.toFloat()
-                 item .expenses = expenses.toFloat()
+                 item.conversion = conversion
+                 item.revenue = revenue
+                 item .expenses = expenses
                  appViewModel.updateHistory(item)
                  adapter.notifyItemChanged(position)
                  alertdialog.dismiss()
@@ -309,7 +309,7 @@ class CodeComparisonActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
         menu!!.findItem(R.id.create).isVisible = true
-        menu.findItem(R.id.compare).isVisible = false
+//        menu.findItem(R.id.compare).isVisible = false
         menu.findItem(R.id.history).isVisible = true
         menu.findItem(R.id.analytics).isVisible = true
         return true

@@ -433,6 +433,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 logCustomEvent(context, "trackable_type_ai_button_click")
             }
             if (scanDateList.size >= 10) {
+                binding.aiRecommendationBtn.isEnabled = false
                 val conversion = binding.conversionInputField.text.toString()
                 val revenue = binding.revenueInputField.text.toString()
                 val expenses = binding.expensesInputField.text.toString()
@@ -461,26 +462,85 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                             expenses.toFloat()
                         }
                     )
-                    codeHistory!!.conversion = conversion.toFloat()
-                    codeHistory!!.revenue = revenue.toFloat()
-                    codeHistory!!.expenses = expenses.toFloat()
+
+                    codeHistory!!.conversion = conversion
+                    codeHistory!!.revenue = revenue
+                    codeHistory!!.expenses = expenses
                     appViewModel.updateHistory(codeHistory!!)
                     startLoading(context)
                     lifecycleScope.launch {
                         viewModel.callAiRecommendationRequest(prompt) { result ->
                             dismiss()
                             binding.aiRecommendationView.text = result
+                            binding.aiRecommendationBtn.isEnabled =  true
                         }
                     }
 
                 } else {
                     showAlert(context, getString(R.string.conversion_revenue_expense_field_empty))
+                    binding.aiRecommendationBtn.isEnabled = true
                 }
             } else {
                 showAlert(context, getString(R.string.ai_analysis_limit_error))
             }
 
         }
+
+        binding.conversionInputField.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val inputValue = s.toString()
+                if(inputValue.isNotEmpty() && inputValue.toInt() <=100){
+                    codeHistory!!.conversion = s.toString()
+                    appViewModel.updateHistory(codeHistory!!)
+                }
+                else{
+                    binding.conversionInputField.error = "Conversion will not more than 100%"
+                }
+            }
+
+        })
+        binding.revenueInputField.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if(s.toString().isNotEmpty()){
+                    codeHistory!!.revenue = s.toString()
+                    appViewModel.updateHistory(codeHistory!!)
+                }
+            }
+
+        })
+        binding.expensesInputField.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if(s.toString().isNotEmpty()){
+                    codeHistory!!.expenses = s.toString()
+                    appViewModel.updateHistory(codeHistory!!)
+                }
+            }
+
+        })
     }
 
     private fun getTrackableScanHistory() {
@@ -738,7 +798,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         menu!!.findItem(R.id.create).isVisible = true
-        menu.findItem(R.id.compare).isVisible = true
+//        menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
         menu.findItem(R.id.analytics).isVisible = true
         return true
@@ -773,10 +833,10 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 true
             }
 
-            R.id.compare -> {
-                startActivity(Intent(context, CodeComparisonActivity::class.java))
-                true
-            }
+//            R.id.compare -> {
+//                startActivity(Intent(context, CodeComparisonActivity::class.java))
+//                true
+//            }
 
             else -> {
                 // Pass the event to the superclass to handle other menu items

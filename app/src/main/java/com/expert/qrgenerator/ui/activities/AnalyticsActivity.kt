@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
@@ -38,6 +39,7 @@ import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.ui.fragments.CodeComparisonAnalyticsFragment
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TapTargetHelper
+import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
@@ -50,10 +52,12 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -77,6 +81,8 @@ class AnalyticsActivity : BaseActivity() {
     private var selectedQrCodesForAnalytics = mutableListOf<CodeHistory>()
 
     private lateinit var tapTargetHelper:TapTargetHelper
+
+    private val viewModel: CodeDetailViewModel by viewModels()
 
     // Register the ActivityResultLauncher
     private val selectedQrCodesResultLauncher =
@@ -199,6 +205,7 @@ class AnalyticsActivity : BaseActivity() {
             if (list.isEmpty()) {
                 // No QR codes, dismiss loading and exit
                 dismiss()
+                showTopTwoQrCodes()
                 return@Observer
             }
 
@@ -272,8 +279,10 @@ class AnalyticsActivity : BaseActivity() {
         showConversionRateAnalytics()
         // SHOW REVENUE ANALYTICS
         showRevenueAnalytics()
-        // SHOW ROI (RETURN ON INVESTMENT) ANALYTICS
-        showReturnOnInvestmentAnalytics()
+
+        // SHOW EXPENSES/REVENUE ANALYTICS
+        showExpensesRevenueAnalytics()
+
 
     }
 
@@ -284,7 +293,8 @@ class AnalyticsActivity : BaseActivity() {
             binding.qrCodesEmptyLayout.visibility = View.GONE
 
             showTwoSelectedQrCodesData()
-
+                // SHOW ROI (RETURN ON INVESTMENT) ANALYTICS
+//            showReturnOnInvestmentAnalytics()
         } else {
             binding.qrCodesEmptyLayout.visibility = View.VISIBLE
             binding.qrCodesDataLayout.visibility = View.GONE
@@ -302,12 +312,76 @@ class AnalyticsActivity : BaseActivity() {
                     putExtra("FROM", "code_comparison")
                 })
         }
+
+        binding.aiCompareBtn.setOnClickListener {
+            if (selectedQrCodesForAnalytics.size > 1){
+                if(hasInsufficientScans(selectedQrCodesForAnalytics)){
+                    showAlert(context,"AI comparison not start if any selected Qr code Scans less then 10!")
+                }else{
+                    val finalPrompt = buildComparisonPrompt(selectedQrCodesForAnalytics)
+                    startLoading(context)
+                    binding.aiCompareBtn.text = getString(R.string.please_wait)
+                    binding.aiCompareBtn.isEnabled = false
+                    lifecycleScope.launch {
+                        viewModel.callAiRecommendationRequest(finalPrompt) { result ->
+                            binding.aiCompareBtn.text = getString(R.string.ai_compare)
+                            binding.aiCompareBtn.isEnabled = true
+                            dismiss()
+                            showAlert(context,result)
+                        }
+                    }
+                }
+            }
+            else{
+                showAlert(context,getString(R.string.qr_codes_selected_size_error))
+            }
+        }
+    }
+
+    private fun buildComparisonPrompt(qrCodes: List<CodeHistory>): String {
+        // Build the message for each QR code
+        val messageLines = mutableListOf<String>()
+        qrCodes.filter { it.totalScans >= 10 }
+            .forEachIndexed { index, qrCode ->
+                val qrCodeDetails = mutableListOf<String>()
+                qrCodeDetails.add("QR Code ${index + 1}: ID: ${qrCode.id}, Scans: ${qrCode.totalScans}")
+
+                if (qrCode.scanDateList.isNotEmpty()) {
+                    qrCodeDetails.add("Scan Dates: ${qrCode.scanDateList.joinToString(", ")}")
+                }
+                if (qrCode.conversion != "") {
+                    qrCodeDetails.add("Conversions: ${qrCode.conversion}")
+                }
+                if (qrCode.revenue != "") {
+                    qrCodeDetails.add("Revenue: ${qrCode.revenue}")
+                }
+                if (qrCode.expenses != "") {
+                    qrCodeDetails.add("Expenses: ${qrCode.expenses}")
+                }
+
+                messageLines.add(qrCodeDetails.joinToString(", "))
+            }
+
+        // Convert the messageLines list to a string with line breaks
+        val qrData = messageLines.joinToString("\n")
+
+        // Template that will be dynamically updated
+        val promptTemplate = """
+        ${Constants.comparePrompt}
+    """.trimIndent()
+
+        // Replace placeholder with the actual message lines
+        return promptTemplate.replace("{messageLines}", qrData)
+    }
+
+    private fun hasInsufficientScans(qrCodes: List<CodeHistory>): Boolean {
+        return qrCodes.any { it.totalScans < 10 }
     }
 
     private fun showTwoSelectedQrCodesData() {
         if (selectedQrCodesForAnalytics.isNotEmpty()) {
             // SHOW CODE COMPARISON ANALYTICS
-            showCodeComparisonAnalytics()
+//            showCodeComparisonAnalytics()
         }
 
         for (i in 0 until selectedQrCodesForAnalytics.size) {
@@ -320,6 +394,7 @@ class AnalyticsActivity : BaseActivity() {
                 binding.qrCodeConversion1.text = ""
                 binding.qrCodeRevenue1.text = ""
                 binding.qrCodeQualityScore1.text = ""
+                binding.qrCodeRoi1.text = ""
             }
             if (i == 0) {
                 Glide.with(context)
@@ -327,44 +402,115 @@ class AnalyticsActivity : BaseActivity() {
                     .into(binding.qrCodeImage1)
                 binding.qrCodeName.text = "QR 1"
                 binding.qrCodeScans.text = "Scans: ${item.scanDateList.size}"
-                binding.qrCodeExpenses.text = "Expenses: ${item.expenses}"
-                binding.qrCodeConversion.text = "Conversion: ${item.conversion}%"
-                binding.qrCodeRevenue.text = "Revenue: ${item.revenue}"
+                binding.qrCodeExpenses.text = "Expenses: ${if(item.expenses.isNotEmpty()){item.expenses}else{0}}"
+                binding.qrCodeConversion.text = "Conversion: ${if(item.conversion.isNotEmpty()){item.conversion}else{0}}%"
+                binding.qrCodeRevenue.text = "Revenue: ${if(item.revenue.isNotEmpty()){item.revenue}else{0}}"
                 val maxScanCount = qrCodesList.maxOfOrNull { it.totalScans } ?: 0
-                val maxRevenue = qrCodesList.maxOfOrNull { it.revenue } ?: 0F
-                //CALCULATE ROI
-                val qrCodeRoi = ((item.revenue - maxRevenue) / maxRevenue) * 100
-                val qrCodeNs = item.scanDateList.size / maxScanCount
-                val qrCodeNc = item.conversion / 100
-                val qrCodeNr = item.revenue / maxRevenue
-                val qrCodeNRoi = qrCodeRoi / 100
-                val qrCodeOverQualityScore =
-                    (0.3 * qrCodeNs) + (0.3 * qrCodeNc) + (0.2 * qrCodeNr) + (0.2 * qrCodeNRoi)
+                val maxRevenue = qrCodesList.maxOfOrNull {
+                    it.revenue.toIntOrNull() ?: 0
+                } ?: 0
+                // Calculate ROI
+                val qrCodeRoi = if (maxRevenue != 0) {
+                    (((item.revenue.toIntOrNull() ?: 0) - maxRevenue) / maxRevenue) * 100
+                } else {
+                    0 // Default value if maxRevenue is zero
+                }
+
+                val qrCodeNs = if (maxScanCount != 0) {
+                    item.scanDateList.size / maxScanCount
+                } else {
+                    0 // Default value if maxScanCount is zero
+                }
+
+                val qrCodeNc = if ((item.conversion.toIntOrNull() ?: 0) != 0) {
+                    (item.conversion.toIntOrNull() ?: 0) / 100
+                } else {
+                    0 // Default value if conversion is zero
+                }
+
+                val qrCodeNr = if (maxRevenue != 0) {
+                    (item.revenue.toIntOrNull() ?: 0) / maxRevenue
+                } else {
+                    0 // Default value if maxRevenue is zero
+                }
+
+                val qrCodeNRoi = if (maxRevenue != 0) {
+                    qrCodeRoi / 100
+                } else {
+                    0 // Default value if maxRevenue is zero
+                }
+
+                val qrCodeOverQualityScore = (0.3 * qrCodeNs) + (0.3 * qrCodeNc) + (0.2 * qrCodeNr) + (0.2 * qrCodeNRoi)
+                val revenue = item.revenue.toIntOrNull() ?: 0
+                val expenses = item.expenses.toIntOrNull() ?: 0
+
+                val roi = if (expenses != 0) {
+                    ((revenue - expenses).toDouble() / expenses) * 100
+                } else {
+                    0.0 // Avoid division by zero
+                }
                 binding.qrCodeQualityScore.text =
-                    "O-Q-S: ${Math.round(qrCodeOverQualityScore * 100)}"
+                    "Quality: ${Math.round(qrCodeOverQualityScore * 100)}%"
+                binding.qrCodeRoi.text = "ROI: ${roi.toInt()}%"
             } else if (i == 1) {
                 Glide.with(context)
                     .load(item.localImagePath)
                     .into(binding.qrCodeImage2)
                 binding.qrCodeName1.text = "QR 2"
                 binding.qrCodeScans1.text = "Scans: ${item.scanDateList.size}"
-                binding.qrCodeExpenses1.text = "Expenses: ${item.expenses}"
-                binding.qrCodeConversion1.text = "Conversion: ${item.conversion}%"
-                binding.qrCodeRevenue1.text = "Revenue: ${item.revenue}"
+                binding.qrCodeExpenses1.text = "Expenses: ${if(item.expenses.isNotEmpty()){item.expenses}else{0}}"
+                binding.qrCodeConversion1.text = "Conversion: ${if(item.conversion.isNotEmpty()){item.conversion}else{0}}%"
+                binding.qrCodeRevenue1.text = "Revenue: ${if(item.revenue.isNotEmpty()){item.revenue}else{0}}"
 
                 val maxScanCount = qrCodesList.maxOfOrNull { it.totalScans } ?: 0
-                val maxRevenue = qrCodesList.maxOfOrNull { it.revenue } ?: 0F
+                val maxRevenue = qrCodesList.maxOfOrNull {
+                    // Check if revenue is empty or null, then treat it as "0"
+                    it.revenue.toIntOrNull() ?: 0
+                } ?: 0
                 Log.d("TEST10000", "MAX SCANS COUNTS:${maxScanCount}, MAX REVENUE:${maxRevenue}")
-                //CALCULATE ROI
-                val qrCodeRoi = ((item.revenue - maxRevenue) / maxRevenue) * 100
-                val qrCodeNs = item.scanDateList.size / maxScanCount
-                val qrCodeNc = item.conversion / 100
-                val qrCodeNr = item.revenue / maxRevenue
-                val qrCodeNRoi = qrCodeRoi / 100
-                val qrCodeOverQualityScore =
-                    (0.3 * qrCodeNs) + (0.3 * qrCodeNc) + (0.2 * qrCodeNr) + (0.2 * qrCodeNRoi)
+                // Calculate ROI
+                val qrCodeRoi = if (maxRevenue != 0) {
+                    (((item.revenue.toIntOrNull() ?: 0) - maxRevenue) / maxRevenue) * 100
+                } else {
+                    0 // Default value if maxRevenue is zero
+                }
+
+                val qrCodeNs = if (maxScanCount != 0) {
+                    item.scanDateList.size / maxScanCount
+                } else {
+                    0 // Default value if maxScanCount is zero
+                }
+
+                val qrCodeNc = if ((item.conversion.toIntOrNull() ?: 0) != 0) {
+                    (item.conversion.toIntOrNull() ?: 0) / 100
+                } else {
+                    0 // Default value if conversion is zero
+                }
+
+                val qrCodeNr = if (maxRevenue != 0) {
+                    (item.revenue.toIntOrNull() ?: 0) / maxRevenue
+                } else {
+                    0 // Default value if maxRevenue is zero
+                }
+
+                val qrCodeNRoi = if (maxRevenue != 0) {
+                    qrCodeRoi / 100
+                } else {
+                    0 // Default value if maxRevenue is zero
+                }
+
+                val qrCodeOverQualityScore = (0.3 * qrCodeNs) + (0.3 * qrCodeNc) + (0.2 * qrCodeNr) + (0.2 * qrCodeNRoi)
+                val revenue = item.revenue.toIntOrNull() ?: 0
+                val expenses = item.expenses.toIntOrNull() ?: 0
+
+                val roi = if (expenses != 0) {
+                    ((revenue - expenses).toDouble() / expenses) * 100
+                } else {
+                    0.0 // Avoid division by zero
+                }
                 binding.qrCodeQualityScore1.text =
-                    "O-Q-S: ${Math.round(qrCodeOverQualityScore * 100)}"
+                    "Quality: ${Math.round(qrCodeOverQualityScore * 100)}%"
+                binding.qrCodeRoi1.text = "ROI: ${roi.toInt()}%"
             } else {
                 break
             }
@@ -372,14 +518,14 @@ class AnalyticsActivity : BaseActivity() {
     }
 
     private fun showScanCountAnalytics() {
-        val scanDateTimeStampList = selectedQrCodesForAnalytics.map { it.scanDateTimeStampList }
-            .flatten() // Flatten list of lists of timestamps
+        // Flatten the list of scan timestamps from all selected QR codes
+        val qrCodes = selectedQrCodesForAnalytics
 
         // Log to check if we have data
-        Log.d("Analytics", "Timestamps: $scanDateTimeStampList")
+        Log.d("Analytics", "QR Codes: $qrCodes")
 
-        // Prepare the chart data with the dynamic qrCodesList data
-        prepareChartData(scanDateTimeStampList, "daily", binding.lineChart)
+        // Prepare the chart data with each QR code's data
+        prepareChartData(qrCodes, "daily", binding.lineChart)
 
         // Set up the spinner to change the period (daily, weekly, monthly)
         binding.periodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -396,60 +542,70 @@ class AnalyticsActivity : BaseActivity() {
                     else -> "daily"
                 }
                 // Update the chart based on the selected period
-                prepareChartData(scanDateTimeStampList, period, binding.lineChart)
+                prepareChartData(qrCodes, period, binding.lineChart)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Default to "daily" if nothing is selected
-                prepareChartData(scanDateTimeStampList, "daily", binding.lineChart)
+                prepareChartData(qrCodes, "daily", binding.lineChart)
             }
         }
     }
 
     private fun prepareChartData(
-        timestamps: List<Long>,
+        qrCodes: List<CodeHistory>, // List of QR codes to process
         period: String, // "daily", "weekly", or "monthly"
         chart: LineChart
     ) {
-        // Group data by the selected period
-        val groupedData = groupDataByPeriod(timestamps, period)
+        // Initialize the chart data
+        val lineDataSets = mutableListOf<ILineDataSet>() // MutableList<ILineDataSet> instead of MutableList<LineDataSet>
 
-        // Log the grouped data
-        Log.d("Analytics", "Grouped Data: $groupedData")
+        // Loop through each QR code and prepare its individual data
+        qrCodes.mapIndexed {pIndex, qrCode ->
+            // Group data by the selected period for the current QR code
+            val groupedData = groupDataByPeriod(qrCode.scanDateTimeStampList, period) // Group data inside the loop
 
-        // Check if we have data to plot
-        if (groupedData.isEmpty()) {
-            Log.d("Analytics", "No data to display on the chart")
+
+            // Prepare entries for the chart
+            val entries = groupedData.entries.mapIndexed { index, entry ->
+                val totalScans = entry.value.size // Count how many scans occurred in each period
+                Entry(index.toFloat(), totalScans.toFloat()) // x: index, y: total scans
+            }
+
+            // Create a dataset for this QR code and add it to the list of datasets
+            val dataSet = LineDataSet(entries, "QR Code ${pIndex+1} - Time ($period)").apply {
+                color = if (pIndex == 0) Color.BLUE else Color.RED
+                valueTextColor = Color.BLACK
+                lineWidth = 2f
+                setCircleColor(if (pIndex == 0) Color.BLUE else Color.RED)
+                circleRadius = 5f
+            }
+
+            // Cast to ILineDataSet and add to the list
+            lineDataSets.add(dataSet as ILineDataSet)
         }
 
-        // Prepare entries for the chart
-        val entries = groupedData.entries.mapIndexed { index, entry ->
-            val totalScans = entry.value.size // Count how many scans occurred in each period
-            Entry(index.toFloat(), totalScans.toFloat()) // x: index, y: total scans
-        }
-
-        // Create a dataset
-        val dataSet = LineDataSet(entries, "Scans Over Time ($period)").apply {
-            color = Color.BLUE
-            valueTextColor = Color.BLACK
-            lineWidth = 2f
-            setCircleColor(Color.RED)
-            circleRadius = 5f
-        }
-
-        // Configure the chart
+        // Configure the chart with all datasets
         chart.apply {
-            data = LineData(dataSet)
+            data = LineData(lineDataSets) // Add all the datasets for the QR codes
+
+            // Get x-axis labels from the first QR code's data
+            val firstGroupedData = groupDataByPeriod(qrCodes.first().scanDateTimeStampList, period)
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
-                valueFormatter = IndexAxisValueFormatter(groupedData.keys.toList()) // Label x-axis
+                valueFormatter = IndexAxisValueFormatter(firstGroupedData.keys.toList()) // Label x-axis
             }
+
             axisRight.isEnabled = false
             description.isEnabled = false
             invalidate() // Refresh the chart
         }
     }
+
+
+
+
 
     private fun groupDataByPeriod(
         timestamps: List<Long>,
@@ -466,7 +622,7 @@ class AnalyticsActivity : BaseActivity() {
     }
 
     private fun groupByDay(timestamps: List<Long>, calendar: Calendar): Map<String, List<Long>> {
-        val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault()) // Format time as HH:mm
+        val dateFormat = SimpleDateFormat("EEEE", Locale.getDefault()) // Format time as HH:mm
         return timestamps.groupBy {
             calendar.timeInMillis = it
             calendar.set(Calendar.HOUR_OF_DAY, 0)
@@ -478,7 +634,7 @@ class AnalyticsActivity : BaseActivity() {
     }
 
     private fun groupByWeek(timestamps: List<Long>, calendar: Calendar): Map<String, List<Long>> {
-        val dateFormat = SimpleDateFormat("dd MMM", Locale.getDefault()) // Format as day and month
+        val dateFormat = SimpleDateFormat("'Week of' dd MMM", Locale.getDefault()) // Format as day and month
         return timestamps.groupBy {
             calendar.timeInMillis = it
             calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
@@ -506,80 +662,158 @@ class AnalyticsActivity : BaseActivity() {
 
 
     private fun showTimeAnalytics() {
-        // List of scan timestamps from your QR code list
-        val scanTimestamps = selectedQrCodesForAnalytics.flatMap { it.scanDateList }
-
-        // Prepare data for the histogram grouped by date
-        val (scanEntries, dateLabels) = prepareDateHistogramData(scanTimestamps)
-
-        // Set up the histogram chart
-        setupHistogram(binding.timeBarChart, scanEntries, dateLabels)
-    }
-
-    // Function to prepare histogram data grouped by date
-    private fun prepareDateHistogramData(scanTimestamps: List<String>): Pair<List<BarEntry>, List<String>> {
-        // Parse and group timestamps by date
-        val dateFormat = SimpleDateFormat("hh:mm a dd MMM yyyy", Locale.getDefault())
-        val groupedByDate = scanTimestamps.groupingBy { timestamp ->
-            val date = dateFormat.parse(timestamp)
-            SimpleDateFormat("dd MMM", Locale.getDefault()).format(date!!)
-        }.eachCount()
-
-        // Create BarEntry list for each date and keep track of the labels
-        val dateLabels = groupedByDate.keys.toList()
-        val barEntries = groupedByDate.entries.mapIndexed { index, entry ->
-            BarEntry(index.toFloat(), entry.value.toFloat())
+        // List of scan timestamps for each QR code from your QR code list
+        val qrCodeData = selectedQrCodesForAnalytics.map { qrCode ->
+            qrCode.scanDateList // A list of timestamps for each QR code
         }
 
-        return Pair(barEntries, dateLabels)
+        // Prepare data for the line chart for each QR code
+        val (entriesList, timeLabels) = prepareTimeLineData(qrCodeData)
+
+        // Set up the line chart with data for each QR code
+        setupLineChart(entriesList, timeLabels)
     }
 
-    // Function to set up the histogram chart
-    private fun setupHistogram(
-        barChart: BarChart,
-        scanEntries: List<BarEntry>,
-        dateLabels: List<String>
-    ) {
-        val barDataSet = BarDataSet(scanEntries, "Scans by Date").apply {
-            colors = generateColors(scanEntries) // Generate color gradient
-            valueTextSize = 12f
+    // Function to prepare line chart data for each QR code
+    private fun prepareTimeLineData(qrCodeData: List<List<String>>): Pair<List<List<Entry>>, List<String>> {
+        val timeFormat = SimpleDateFormat("hh:mm a dd MMM yyyy", Locale.getDefault())
+
+        // This will hold entries for each QR code
+        val entriesList = mutableListOf<List<Entry>>()
+
+        // Group by time for each QR code and generate entries for the line chart
+        val groupedByTimeList = qrCodeData.map { scanTimestamps ->
+            scanTimestamps.groupingBy { timestamp ->
+                val date = timeFormat.parse(timestamp)
+                SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date!!) // Extract time
+            }.eachCount()
         }
 
-        val barData = BarData(barDataSet)
-        barChart.apply {
-            data = barData
-            description.text = "Scan Distribution by Date"
-            setFitBars(true)
+        // Create entries and time labels for the chart
+        val timeLabels = groupedByTimeList.flatMap { groupedByTime ->
+            groupedByTime.keys.toList()
+        }.distinct()
 
-            // X-axis settings
+        // Map each QR code data to its corresponding entries
+        groupedByTimeList.forEach { groupedByTime ->
+            val entries = timeLabels.mapIndexed { index, timeLabel ->
+                val count = groupedByTime[timeLabel] ?: 0
+                Entry(index.toFloat(), count.toFloat())
+            }
+            entriesList.add(entries)
+        }
+
+        return Pair(entriesList, timeLabels)
+    }
+
+    // Function to set up the LineChart
+    private fun setupLineChart(entriesList: List<List<Entry>>, timeLabels: List<String>) {
+        // Create a LineDataSet for each QR code with different colors
+        val lineDataSets = entriesList.mapIndexed { index, entries ->
+            LineDataSet(entries, "QR Code ${index + 1}").apply {
+                color = if (index == 0) Color.BLUE else Color.RED // Assign different colors for each QR code
+                valueTextColor = Color.BLACK
+                lineWidth = 2f
+                setCircleColor(if (index == 0) Color.BLUE else Color.RED)
+                circleRadius = 5f
+            }
+        }
+
+        // Combine the datasets into one LineData
+        val lineData = LineData(lineDataSets)
+
+        // Configure the chart
+        binding.timeLineChart.apply {
+            data = lineData
+            description.isEnabled = false // Disable the description
+            setDrawGridBackground(false)
+
+            // Configure X-axis to display time
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
-                granularity = 1f // Ensure labels are displayed for each date
-                valueFormatter = IndexAxisValueFormatter(dateLabels) // Set date labels
+                setDrawGridLines(false)
+                valueFormatter = IndexAxisValueFormatter(timeLabels) // Set time labels
+                textColor = Color.BLACK
+                granularity = 1f // Ensure labels are displayed for each unique time
+            }
+
+            // Configure Y-axis
+            axisRight.isEnabled = false // Disable right axis
+            axisLeft.apply {
+                axisMinimum = 0f // Start Y-axis at 0
                 textColor = Color.BLACK
             }
 
-            // Y-axis settings
-            axisLeft.axisMinimum = 0f
-            axisRight.isEnabled = false // Disable right axis
-            axisLeft.textColor = Color.BLACK
-
+            // Enable the legend and animation
             legend.isEnabled = true
-            animateY(1000) // Optional: Add animation
+            animateY(1000) // Optional: Add animation for Y-axis
+
+            // Refresh the chart
+            invalidate()
         }
     }
 
 
+
+
+    // Function to prepare histogram data grouped by date
+//    private fun prepareDateHistogramData(scanTimestamps: List<String>): Pair<List<BarEntry>, List<String>> {
+//        // Parse and group timestamps by date
+//        val dateFormat = SimpleDateFormat("hh:mm a dd MMM yyyy", Locale.getDefault())
+//        val groupedByDate = scanTimestamps.groupingBy { timestamp ->
+//            val date = dateFormat.parse(timestamp)
+//            SimpleDateFormat("dd MMM", Locale.getDefault()).format(date!!)
+//        }.eachCount()
+//
+//        // Create BarEntry list for each date and keep track of the labels
+//        val dateLabels = groupedByDate.keys.toList()
+//        val barEntries = groupedByDate.entries.mapIndexed { index, entry ->
+//            BarEntry(index.toFloat(), entry.value.toFloat())
+//        }
+//
+//        return Pair(barEntries, dateLabels)
+//    }
+
+    // Function to set up the histogram chart
+//    private fun setupHistogram(
+//        lineChart: LineChart,
+//        scanEntries: List<BarEntry>,
+//        dateLabels: List<String>
+//    ) {
+//        val barDataSet = BarDataSet(scanEntries, "Scans by Date").apply {
+//            colors = generateColors(scanEntries) // Generate color gradient
+//            valueTextSize = 12f
+//        }
+//
+//        val barData = BarData(barDataSet)
+//        barChart.apply {
+//            data = barData
+//            description.text = "Scan Distribution by Date"
+//            setFitBars(true)
+//
+//            // X-axis settings
+//            xAxis.apply {
+//                position = XAxis.XAxisPosition.BOTTOM
+//                granularity = 1f // Ensure labels are displayed for each date
+//                valueFormatter = IndexAxisValueFormatter(dateLabels) // Set date labels
+//                textColor = Color.BLACK
+//            }
+//
+//            // Y-axis settings
+//            axisLeft.axisMinimum = 0f
+//            axisRight.isEnabled = false // Disable right axis
+//            axisLeft.textColor = Color.BLACK
+//
+//            legend.isEnabled = true
+//            animateY(1000) // Optional: Add animation
+//        }
+//    }
+
+
     private fun showConversionRateAnalytics() {
-        // Manually entered conversion data for QR codes
-//        val qrCodeConversions = mapOf(
-//            "QR Code 1" to 45,  // 45%
-//            "QR Code 2" to 30,  // 30%
-//            "QR Code 3" to 60,  // 60%
-//            "QR Code 4" to 20   // 20%
-//        )
+
         val qrCodeConversions = selectedQrCodesForAnalytics.mapIndexed { index, qrCode ->
-            "QR Code ${index + 1}" to qrCode.conversion.toInt()
+            "QR Code ${index + 1}" to (qrCode.conversion.toIntOrNull()?:0)
         }.toMap()
 
         // Calculate the overall conversion rate
@@ -593,16 +827,127 @@ class AnalyticsActivity : BaseActivity() {
     }
 
     private fun showRevenueAnalytics() {
-        // Example data: revenue and expenses for each QR code
-        val qrCodes = List(selectedQrCodesForAnalytics.size) { index ->
-            "QR ${index + 1}"
-        }
-        val revenue =
-            selectedQrCodesForAnalytics.map { it.revenue }//listOf(2000f, 2500f, 3000f, 4000f)
-        val expenses =
-            selectedQrCodesForAnalytics.map { it.expenses }//listOf(1500f, 1800f, 2200f, 2800f)
+        // Example data: revenue for each QR code
+        val qrCodeRevenues = selectedQrCodesForAnalytics.mapIndexed { index, qrCode ->
+            "QR Code ${index + 1}" to (qrCode.revenue.toIntOrNull() ?:0)
+        }.toMap()
+//        val revenue = selectedQrCodesForAnalytics.map { it.revenue } // List of revenue values
 
-        setupBarChart(qrCodes, revenue, expenses)
+        setupRevenueBarChart(qrCodeRevenues)
+    }
+
+    private fun setupRevenueBarChart(revenues: Map<String, Int>) {
+        val entries = revenues.values.mapIndexed { index, rate ->
+            BarEntry(index.toFloat(), rate.toFloat())
+        }
+
+// Ensure each QR Code has a unique legend label and alternate colors
+        val dataSets = revenues.values.mapIndexed { index, rate ->
+            BarDataSet(listOf(BarEntry(index.toFloat(), rate.toFloat())), "QR Code ${index + 1}").apply {
+                // Assign colors alternately: Blue for odd-indexed QR Codes, Red for even-indexed
+                color = if (index % 2 == 0) Color.BLUE else Color.RED
+                valueTextSize = 12f
+            }
+        }
+
+// Combine all data sets into BarData
+        val barData = BarData().apply {
+            dataSets.forEach { addDataSet(it) }
+        }
+
+// Configure the chart
+        binding.revenueBarChart.apply {
+            data = barData
+            description.isEnabled = false
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(revenues.keys.toList()) // Display QR Code names
+                position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setDrawGridLines(false)
+                textColor = Color.BLACK
+            }
+            axisLeft.apply {
+                axisMinimum = 0f
+                textColor = Color.BLACK
+            }
+            axisRight.isEnabled = false
+            legend.isEnabled = true
+            animateY(1000)
+            invalidate() // Refresh the chart
+        }
+
+    }
+
+
+
+    private fun showExpensesRevenueAnalytics() {
+        val qrCodes = List(selectedQrCodesForAnalytics.size) { index -> "QR ${index + 1}" }
+        val revenue = selectedQrCodesForAnalytics.map { it.revenue.toFloatOrNull() ?:0F } // List of revenue values
+        val expenses = selectedQrCodesForAnalytics.map { it.expenses.toFloatOrNull() ?:0F } // List of expense values
+
+
+        setupExpensesRevenueBarChart(qrCodes, revenue,expenses)
+    }
+
+    private fun setupExpensesRevenueBarChart(qrCodes: List<String>, revenue: List<Float>, expenses: List<Float>) {
+        // Create BarEntries for revenue and expenses
+        val revenueEntries = revenue.mapIndexed { index, value -> BarEntry(index.toFloat() + 0.4f, value) } // Shift revenue bars to the right
+        val expensesEntries = expenses.mapIndexed { index, value -> BarEntry(index.toFloat(), value) } // Keep expenses bars on the left
+
+        // Create data sets
+        val revenueDataSet = BarDataSet(revenueEntries, "Revenue").apply {
+            color = Color.RED // Red for revenue (right)
+            valueTextColor = Color.BLACK
+            valueTextSize = 10f
+        }
+        val expensesDataSet = BarDataSet(expensesEntries, "Expenses").apply {
+            color = Color.BLUE // Blue for expenses (left)
+            valueTextColor = Color.BLACK
+            valueTextSize = 10f
+        }
+
+        // Combine data sets into BarData
+        val barData = BarData(expensesDataSet, revenueDataSet).apply {
+            barWidth = 0.3f // Adjust bar width
+        }
+
+        // Configure the chart
+        binding.codeExpenseRevenueBarChart.apply {
+            data = barData
+            description.isEnabled = false
+            setFitBars(false) // Do not auto-fit bars; we'll group them manually
+
+            axisLeft.apply {
+                axisMinimum = 0f // Start y-axis at zero
+                granularity = 1f // Prevent irregular y-axis scaling
+                textColor = Color.BLACK
+            }
+            axisRight.isEnabled = false // Disable right y-axis
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(qrCodes) // Display QR codes on x-axis
+                position = XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setDrawGridLines(false)
+                textColor = Color.BLACK
+                axisMinimum = -0.5f // Adjust to fit grouped bars
+                axisMaximum = qrCodes.size.toFloat() // Ensure all bars fit within the chart
+            }
+
+            legend.apply {
+                isEnabled = true // Enable the chart legend
+                textColor = Color.BLACK
+            }
+
+            animateY(1000) // Optional: Animation for the Y-axis
+        }
+
+        // Group bars together (groupSpace, barSpace, barWidth)
+        val groupSpace = 0.2f
+        val barSpace = 0.05f
+        barData.groupBars(0f, groupSpace, barSpace)
+
+        // Refresh the chart
+        binding.codeExpenseRevenueBarChart.invalidate()
     }
 
     private fun showReturnOnInvestmentAnalytics() {
@@ -610,113 +955,75 @@ class AnalyticsActivity : BaseActivity() {
         val qrCodes = List(selectedQrCodesForAnalytics.size) { index ->
             "QR ${index + 1}"
         }
-        val revenue =
-            selectedQrCodesForAnalytics.map { it.revenue }//listOf(2000f, 2500f, 3000f, 4000f)
-        val expenses =
-            selectedQrCodesForAnalytics.map { it.expenses }//listOf(1500f, 1800f, 2200f, 2800f)
+        val revenue = selectedQrCodesForAnalytics.map { it.revenue.toFloatOrNull() ?:0F } // listOf(2000f, 2500f, 3000f, 4000f)
+        val expenses = selectedQrCodesForAnalytics.map { it.expenses.toFloatOrNull() ?:0F } // listOf(1500f, 1800f, 2200f, 2800f)
 
-        // Calculate ROI
+// Calculate ROI and cap it at 100%
         val roiList = revenue.mapIndexed { index, rev ->
             val exp = expenses[index]
-            if (exp != 0f) ((rev - exp) / exp) * 100 else 0f // Avoid division by zero
-        }
-
-        // Set up RecyclerView
-        binding.roiRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.roiRecyclerView.adapter = ROIAdapter(qrCodes, roiList)
-    }
-
-    private fun showCodeComparisonAnalytics() {
-
-        // Extract data from CodeHistory model
-        val qrCodes = selectedQrCodesForAnalytics.map { it.qrId } // Get QR Code IDs
-        val scanCounts =
-            selectedQrCodesForAnalytics.map { it.totalScans.toFloat() } // Get total scans
-        val conversionRates =
-            selectedQrCodesForAnalytics.map { it.conversion } // Get conversion rates
-
-        // Prepare Data
-        val scanEntries = ArrayList<BarEntry>()
-        val conversionEntries = ArrayList<BarEntry>()
-        for (i in qrCodes.indices) {
-            scanEntries.add(BarEntry(i.toFloat(), scanCounts[i]))
-            conversionEntries.add(BarEntry(i.toFloat(), conversionRates[i]))
-        }
-
-        // Create DataSets
-        val scanDataSet = BarDataSet(scanEntries, "Scan Count").apply {
-            color = ColorTemplate.COLORFUL_COLORS[0] // Assign first color
-        }
-        val conversionDataSet = BarDataSet(conversionEntries, "Conversion Rate (%)").apply {
-            color = ColorTemplate.COLORFUL_COLORS[1] // Assign second color
-        }
-
-        // Create BarData
-        val barData = BarData(scanDataSet, conversionDataSet).apply {
-            barWidth = 0.4f // Width of each bar
-        }
-
-        // Configure BarChart
-        binding.codeComparisonBarChart.apply {
-            data = barData
-            description.isEnabled = false // Disable description
-            setDrawGridBackground(false) // Remove grid background
-            axisLeft.axisMinimum = 0f // Start y-axis from zero
-            xAxis.apply {
-                isGranularityEnabled = true // Ensure granularity
-                labelCount = qrCodes.size
-                valueFormatter = IndexAxisValueFormatter(qrCodes) // Set QR Code labels
+            if (exp != 0f) {
+                val roi = ((rev - exp) / exp) * 100
+                minOf(roi, 100f) // Cap ROI at 100%
+            } else {
+                0f // Avoid division by zero
             }
-            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-            groupBars(0f, 0.2f, 0.02f) // Group bars with appropriate spacing
-            invalidate() // Refresh chart
         }
+
+
+//        // Set up RecyclerView
+//        binding.roiRecyclerView.layoutManager = LinearLayoutManager(this)
+//        binding.roiRecyclerView.adapter = ROIAdapter(qrCodes, roiList)
     }
 
+//    private fun showCodeComparisonAnalytics() {
+//
+//        // Extract data from CodeHistory model
+//        val qrCodes = selectedQrCodesForAnalytics.map { it.qrId } // Get QR Code IDs
+//        val scanCounts =
+//            selectedQrCodesForAnalytics.map { it.totalScans.toFloat() } // Get total scans
+//        val conversionRates =
+//            selectedQrCodesForAnalytics.map { it.conversion } // Get conversion rates
+//
+//        // Prepare Data
+//        val scanEntries = ArrayList<BarEntry>()
+//        val conversionEntries = ArrayList<BarEntry>()
+//        for (i in qrCodes.indices) {
+//            scanEntries.add(BarEntry(i.toFloat(), scanCounts[i]))
+//            conversionEntries.add(BarEntry(i.toFloat(), conversionRates[i]))
+//        }
+//
+//        // Create DataSets
+//        val scanDataSet = BarDataSet(scanEntries, "Scan Count").apply {
+//            color = ColorTemplate.COLORFUL_COLORS[0] // Assign first color
+//        }
+//        val conversionDataSet = BarDataSet(conversionEntries, "Conversion Rate (%)").apply {
+//            color = ColorTemplate.COLORFUL_COLORS[1] // Assign second color
+//        }
+//
+//        // Create BarData
+//        val barData = BarData(scanDataSet, conversionDataSet).apply {
+//            barWidth = 0.4f // Width of each bar
+//        }
+//
+//        // Configure BarChart
+//        binding.codeComparisonBarChart.apply {
+//            data = barData
+//            description.isEnabled = false // Disable description
+//            setDrawGridBackground(false) // Remove grid background
+//            axisLeft.axisMinimum = 0f // Start y-axis from zero
+//            xAxis.apply {
+//                isGranularityEnabled = true // Ensure granularity
+//                labelCount = qrCodes.size
+//                valueFormatter = IndexAxisValueFormatter(qrCodes) // Set QR Code labels
+//            }
+//            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+//            groupBars(0f, 0.2f, 0.02f) // Group bars with appropriate spacing
+//            invalidate() // Refresh chart
+//        }
+//    }
 
-    private fun setupBarChart(qrCodes: List<String>, revenue: List<Float>, expenses: List<Float>) {
-        // Create BarEntries for revenue and expenses
-        val revenueEntries = revenue.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
-        val expensesEntries =
-            expenses.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
 
-        // Create data sets
-        val revenueDataSet = BarDataSet(revenueEntries, "Revenue").apply {
-            color = Color.GREEN
-        }
-        val expensesDataSet = BarDataSet(expensesEntries, "Expenses").apply {
-            color = Color.RED
-        }
 
-        // Combine data sets into BarData
-        val barData = BarData(revenueDataSet, expensesDataSet).apply {
-            barWidth = 0.4f // Set bar width
-        }
-
-        // Configure the chart
-        binding.revenueBarChart.apply {
-            data = barData
-            description.isEnabled = false
-            setFitBars(true)
-            axisLeft.axisMinimum = 0f // Start y-axis at zero
-            axisRight.isEnabled = false // Disable right y-axis
-
-            // Customize x-axis
-            xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(qrCodes)
-                position = XAxis.XAxisPosition.BOTTOM
-                granularity = 1f
-                setDrawGridLines(false)
-            }
-
-            legend.isEnabled = true // Enable legend
-            animateY(1000) // Animate the chart vertically
-        }
-
-        // Group bars together
-        binding.revenueBarChart.groupBars(0f, 0.2f, 0.05f) // (groupSpace, barSpace, barWidth)
-        binding.revenueBarChart.invalidate() // Refresh the chart
-    }
 
     // Function to calculate the overall conversion rate
     private fun calculateOverallConversionRate(conversions: Map<String, Int>): Int {
@@ -730,27 +1037,43 @@ class AnalyticsActivity : BaseActivity() {
             BarEntry(index.toFloat(), rate.toFloat())
         }
 
-        val dataSet = BarDataSet(entries, "Conversion Rates").apply {
-            colors = listOf(Color.BLUE, Color.GREEN, Color.RED, Color.MAGENTA)
-            valueTextSize = 12f
+// Ensure each QR Code has a unique legend label and alternate colors
+        val dataSets = conversions.values.mapIndexed { index, rate ->
+            BarDataSet(listOf(BarEntry(index.toFloat(), rate.toFloat())), "QR Code ${index + 1}").apply {
+                // Assign colors alternately: Blue for odd-indexed QR Codes, Red for even-indexed
+                color = if (index % 2 == 0) Color.BLUE else Color.RED
+                valueTextSize = 12f
+            }
         }
 
-        val barData = BarData(dataSet)
+// Combine all data sets into BarData
+        val barData = BarData().apply {
+            dataSets.forEach { addDataSet(it) }
+        }
+
+// Configure the chart
         binding.conversionRateBarChart.apply {
             data = barData
-            description.text = "Conversion Rates by QR Code"
+            description.isEnabled = false
             xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(conversions.keys.toList())
-                granularity = 1f
+                valueFormatter = IndexAxisValueFormatter(conversions.keys.toList()) // Display QR Code names
                 position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setDrawGridLines(false)
                 textColor = Color.BLACK
             }
-            axisLeft.axisMinimum = 0f
+            axisLeft.apply {
+                axisMinimum = 0f
+                textColor = Color.BLACK
+            }
             axisRight.isEnabled = false
             legend.isEnabled = true
             animateY(1000)
+            invalidate() // Refresh the chart
         }
+
     }
+
 
     // Function to generate a color gradient for the bars
     private fun generateColors(scanEntries: List<BarEntry>): List<Int> {
@@ -846,7 +1169,7 @@ class AnalyticsActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         menu!!.findItem(R.id.create).isVisible = true
-        menu.findItem(R.id.compare).isVisible = true
+//        menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
         menu.findItem(R.id.analytics).isVisible = false
         return true
@@ -871,10 +1194,10 @@ class AnalyticsActivity : BaseActivity() {
                 true
             }
 
-            R.id.compare -> {
-                startActivity(Intent(context, CodeComparisonActivity::class.java))
-                true
-            }
+//            R.id.compare -> {
+//                startActivity(Intent(context, CodeComparisonActivity::class.java))
+//                true
+//            }
 
             else -> {
                 // Pass the event to the superclass to handle other menu items

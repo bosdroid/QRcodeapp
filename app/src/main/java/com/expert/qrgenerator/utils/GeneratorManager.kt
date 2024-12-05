@@ -52,16 +52,21 @@ class GeneratorManager {
             val color = com.github.sumimakito.awesomeqr.option.color.Color().apply {
                 background = 0xFFFFFFFF.toInt() // Default background color is white
 
-                // If a color is provided, use it; otherwise, use previous color
+                // Only set dark color if a custom color is provided
                 if (col.isNotEmpty()) {
+                    // Set the custom color
+                    previousColor = Color.parseColor("#$col")
                     this.dark = Color.parseColor("#$col")
                 } else {
+                    // Do not set dark color if no custom color is provided
                     previousColor?.let {
                         this.dark = it
                     }
                 }
             }
+
             renderOption.color = color
+
 
             // Set QR code background image
             val background = StillBackground().apply {
@@ -137,7 +142,7 @@ class GeneratorManager {
                 "0",
                 "",
                 System.currentTimeMillis().toString(),
-                ""
+                "","","",""
             )
 
             // Create an intent to start the DesignActivity

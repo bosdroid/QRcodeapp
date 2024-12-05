@@ -519,6 +519,7 @@
     <string name="choose_qr">Choose QR</string>
     <string name="done">Done</string>
     <string name="quality_score">Quality Score: %1$s</string>
+    <string name="expense_revenue_text">Expenses/Revenue Analytics</string>
     <string-array name="mode_list">
         <item>Inventory</item>
         <item>Seller</item>

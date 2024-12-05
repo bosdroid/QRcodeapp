@@ -885,7 +885,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
         menu!!.findItem(R.id.create).isVisible = true
-        menu.findItem(R.id.compare).isVisible = true
+//        menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
         menu.findItem(R.id.analytics).isVisible = true
         return true
@@ -907,10 +907,10 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
                 true
             }
-            R.id.compare->{
-                startActivity(Intent(context, CodeComparisonActivity::class.java))
-                true
-            }
+//            R.id.compare->{
+//                startActivity(Intent(context, CodeComparisonActivity::class.java))
+//                true
+//            }
             R.id.analytics->{
                 startActivity(Intent(context, AnalyticsActivity::class.java))
                 true

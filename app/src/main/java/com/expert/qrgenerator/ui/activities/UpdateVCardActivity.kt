@@ -195,7 +195,7 @@ class UpdateVCardActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
         menu!!.findItem(R.id.create).isVisible = true
-        menu.findItem(R.id.compare).isVisible = true
+//        menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
         return true
     }
@@ -216,10 +216,10 @@ class UpdateVCardActivity : BaseActivity() {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
                 true
             }
-            R.id.compare->{
-                startActivity(Intent(context, CodeComparisonActivity::class.java))
-                true
-            }
+//            R.id.compare->{
+//                startActivity(Intent(context, CodeComparisonActivity::class.java))
+//                true
+//            }
             else -> {
                 // Pass the event to the superclass to handle other menu items
                 super.onOptionsItemSelected(item)

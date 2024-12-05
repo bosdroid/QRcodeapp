@@ -67,7 +67,7 @@ class ApiRepositoryImpl @Inject constructor(private val apiServices: ApiServices
         val response = apiServices.createDynamicQrCode(
             bodyJson.get("login").asString,
             bodyJson.get("qrId").asString,
-            bodyJson.get("qrType").asString,
+            if(bodyJson.has("qrType")) { bodyJson.get("qrType").asString} else{ ""},
             bodyJson.get("userUrl").asString,
             bodyJson.get("userType").asString)
         if (response.isSuccessful) {
