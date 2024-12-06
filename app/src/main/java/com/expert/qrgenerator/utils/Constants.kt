@@ -13,6 +13,9 @@ import com.expert.qrgenerator.model.User
 import com.google.api.services.drive.Drive
 import com.google.api.services.sheets.v4.Sheets
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import java.util.regex.Pattern
 
 
@@ -60,6 +63,23 @@ class Constants {
                     "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
                     ")+"
         )
+
+        fun generateDynamicFakeTimestamps(index: Int): List<String> {
+            val dateList = mutableListOf<String>()
+            val calendar = Calendar.getInstance()
+
+            for (i in 1..10) {
+                calendar.add(Calendar.DAY_OF_YEAR, -(index + i -1))
+                calendar.add(Calendar.HOUR_OF_DAY, -(index + i))
+                calendar.add(Calendar.MINUTE, -(index * 10 % 60 + i))
+                val timestampInSeconds = calendar.timeInMillis / 1000 // Convert milliseconds to seconds
+                dateList.add(timestampInSeconds.toString())
+            }
+            return dateList
+        }
+
+
+
 
         private fun getBackgroundImageFolderFile(context: Context): File {
             return File(context.externalCacheDir, BACKGROUND_IMAGE_PATH)

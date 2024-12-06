@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.TooltipCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,9 +23,11 @@ import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
 import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.dismiss
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.getDateTimeFromTimeStamp1
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.showAlert
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.startLoading
 import com.expert.qrgenerator.ui.activities.DesignActivity
@@ -33,6 +36,9 @@ import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.viewmodel.DynamicQrViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
@@ -170,48 +176,54 @@ class ChooseTypeFragment : Fragment() {
         binding.staticLayoutContinueBtn.setOnClickListener {
             val value = binding.staticLinkLayoutInputField.text.toString().trim().lowercase()
 
-            // Check if a protocol is selected
-            if (selectedProtocol.isEmpty()) {
-                BaseActivity.hideSoftKeyboard(requireActivity(), binding.staticLinkLayoutInputField.rootView)
-                BaseActivity.showAlert(
+            if(value.isNotEmpty() && value == "preparetestdata"){
+                generateFakeTestData()
+                binding.staticLinkLayoutInputField.setText("")
+                BaseActivity.hideSoftKeyboard(
                     requireActivity(),
-                    requireActivity().resources.getString(R.string.protocol_error)
+                    binding.staticLinkLayoutInputField
                 )
+                binding.staticLinkLayoutInputField.clearFocus()
             }
-            // Check if the input field is empty
-            else if (value.isEmpty()) {
-                BaseActivity.showAlert(
-                    requireActivity(),
-                    requireActivity().resources.getString(R.string.required_data_input_error)
-                )
-            }
-            // Check if the input contains 'http://' or 'https://'
-            else if (value.contains("http://") || value.contains("https://")) {
-                BaseActivity.showAlert(
-                    requireActivity(),
-                    requireActivity().resources.getString(R.string.without_protocol_error)
-                )
-            }
-            // Validate the URL format using a regular expression
-            else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$").matcher(value).find()) {
-                BaseActivity.showAlert(
-                    requireActivity(),
-                    requireActivity().resources.getString(R.string.valid_website_error)
-                )
-            }
-            // If all validations pass, encode the data and generate a QR code
             else {
-
-                if (selectedQrType == "link"){
-                    encodedData = "$selectedProtocol$value"
-                    binding.staticLinkLayoutInputField.setText("")
-                    BaseActivity.hideSoftKeyboard(requireActivity(),binding.staticLinkLayoutInputField)
-                    binding.staticLinkLayoutInputField.clearFocus()
-                    GeneratorManager.generateQRCode(requireActivity(), encodedData, selectedQrType)
+                // Check if a protocol is selected
+                if (selectedProtocol.isEmpty()) {
+                    BaseActivity.hideSoftKeyboard(
+                        requireActivity(),
+                        binding.staticLinkLayoutInputField.rootView
+                    )
+                    BaseActivity.showAlert(
+                        requireActivity(),
+                        requireActivity().resources.getString(R.string.protocol_error)
+                    )
                 }
-                else{
-                    if(Constants.userData != null) {
+                // Check if the input field is empty
+                else if (value.isEmpty()) {
+                    BaseActivity.showAlert(
+                        requireActivity(),
+                        requireActivity().resources.getString(R.string.required_data_input_error)
+                    )
+                }
+                // Check if the input contains 'http://' or 'https://'
+                else if (value.contains("http://") || value.contains("https://")) {
+                    BaseActivity.showAlert(
+                        requireActivity(),
+                        requireActivity().resources.getString(R.string.without_protocol_error)
+                    )
+                }
+                // Validate the URL format using a regular expression
+                else if (!Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?\$")
+                        .matcher(value).find()
+                ) {
+                    BaseActivity.showAlert(
+                        requireActivity(),
+                        requireActivity().resources.getString(R.string.valid_website_error)
+                    )
+                }
+                // If all validations pass, encode the data and generate a QR code
+                else {
 
+                    if (selectedQrType == "link") {
                         encodedData = "$selectedProtocol$value"
                         binding.staticLinkLayoutInputField.setText("")
                         BaseActivity.hideSoftKeyboard(
@@ -219,67 +231,83 @@ class ChooseTypeFragment : Fragment() {
                             binding.staticLinkLayoutInputField
                         )
                         binding.staticLinkLayoutInputField.clearFocus()
-                        val qrId = System.currentTimeMillis()
-                        val userId = Constants.userData?.personId
-                        val hashMap = hashMapOf<String, String>().apply {
-                            put("login", "$userId")
-                            put("qrId", "$qrId")
-                            put("qrType", selectedQrType)
-                            put("userUrl", encodedData)
-                            put("userType", "free")
-                        }
-
-                        startLoading(requireActivity())
-                        lifecycleScope.launch {
-                            viewModel.createDynamicQrCode(hashMap)
-                        }
-                        viewModel.dynamicQrCodeResponse.observe(
+                        GeneratorManager.generateQRCode(
                             requireActivity(),
-                            Observer { response ->
-                                dismiss()
-                                response?.let {
-                                    val genUrl = it.get("generatedUrl").asString
-                                    val qrHistory = CodeHistory(
-                                        "$userId",
-                                        "$qrId",
-                                        encodedData,
-                                        selectedQrType,
-                                        "free",
-                                        "qr",
-                                        "create",
-                                        "",
-                                        "1",
-                                        genUrl,
-                                        System.currentTimeMillis().toString(),
-                                        "","","",""
-                                    )
+                            encodedData,
+                            selectedQrType
+                        )
+                    } else {
+                        if (Constants.userData != null) {
+
+                            encodedData = "$selectedProtocol$value"
+                            binding.staticLinkLayoutInputField.setText("")
+                            BaseActivity.hideSoftKeyboard(
+                                requireActivity(),
+                                binding.staticLinkLayoutInputField
+                            )
+                            binding.staticLinkLayoutInputField.clearFocus()
+                            val qrId = System.currentTimeMillis()
+                            val userId = Constants.userData?.personId
+                            val hashMap = hashMapOf<String, String>().apply {
+                                put("login", "$userId")
+                                put("qrId", "$qrId")
+                                put("qrType", selectedQrType)
+                                put("userUrl", encodedData)
+                                put("userType", "free")
+                            }
+
+                            startLoading(requireActivity())
+                            lifecycleScope.launch {
+                                viewModel.createDynamicQrCode(hashMap)
+                            }
+                            viewModel.dynamicQrCodeResponse.observe(
+                                requireActivity(),
+                                Observer { response ->
+                                    dismiss()
+                                    response?.let {
+                                        val genUrl = it.get("generatedUrl").asString
+                                        val qrHistory = CodeHistory(
+                                            "$userId",
+                                            "$qrId",
+                                            encodedData,
+                                            selectedQrType,
+                                            "free",
+                                            "qr",
+                                            "create",
+                                            "",
+                                            "1",
+                                            genUrl,
+                                            System.currentTimeMillis().toString(),
+                                            "", "", "", ""
+                                        )
 //                                    val insertedId = appViewModel.insert(qrHistory)
 //                                    qrHistory.id = insertedId.toInt()
-                                    val intent = Intent(context, DesignActivity::class.java).apply {
-                                        // Add encoded data and QR history to the intent extras
-                                        putExtra("ENCODED_TEXT", genUrl)
-                                        putExtra("QR_HISTORY", qrHistory)
-                                    }
+                                        val intent =
+                                            Intent(context, DesignActivity::class.java).apply {
+                                                // Add encoded data and QR history to the intent extras
+                                                putExtra("ENCODED_TEXT", genUrl)
+                                                putExtra("QR_HISTORY", qrHistory)
+                                            }
 
-                                    // Start the DesignActivity with the intent
-                                    startActivity(intent)
-                                } ?: run {
-                                    showAlert(
-                                        requireActivity(),
-                                        "Something went wrong, please try again!"
-                                    )
+                                        // Start the DesignActivity with the intent
+                                        startActivity(intent)
+                                    } ?: run {
+                                        showAlert(
+                                            requireActivity(),
+                                            "Something went wrong, please try again!"
+                                        )
+                                    }
+                                })
+                        } else {
+                            listener?.login(object : LoginCallback {
+                                override fun onSuccess() {
+                                    onResume()
                                 }
                             })
+                        }
                     }
-                    else{
-                        listener?.login(object : LoginCallback {
-                            override fun onSuccess() {
-                                onResume()
-                            }
-                        })
-                    }
-                }
 
+                }
             }
         }
 //        BaseActivity.hideSoftKeyboard(requireActivity(), binding.staticLinkLayoutInputField.rootView)
@@ -289,5 +317,71 @@ class ChooseTypeFragment : Fragment() {
         return binding.root
     }
 
+    private fun generateFakeTestData() {
+        startLoading(requireActivity())
+        CoroutineScope(Dispatchers.Main).launch {
+            for (i in 0..2) { // Iterate through the cases
+                when (i) {
+                    0 -> {
+                        val qrHistory = CodeHistory(
+                            Constants.userData?.personId ?: "qrmagicapp",
+                            System.currentTimeMillis().toString(),
+                            "https://www.google.com",
+                            "advance",
+                            "free",
+                            "qr",
+                            "fake",
+                            "",
+                            "1",
+                            "",
+                            System.currentTimeMillis().toString(),
+                            "", "5", "50", "20"
+                        )
+                        DataRepository.saveFakeTestData(qrHistory.qrId,0)
+                        appViewModel.insert(qrHistory)
+                    }
+                    1 -> {
+                        val qrHistory = CodeHistory(
+                            Constants.userData?.personId ?: "qrmagicapp",
+                            System.currentTimeMillis().toString(),
+                            "https://www.microsoft.com",
+                            "advance",
+                            "free",
+                            "qr",
+                            "fake",
+                            "",
+                            "1",
+                            "",
+                            System.currentTimeMillis().toString(),
+                            "", "8", "80", "40"
+                        )
+                        DataRepository.saveFakeTestData(qrHistory.qrId,1)
+                        appViewModel.insert(qrHistory)
+                    }
+                    2 -> {
+                        val qrHistory = CodeHistory(
+                            Constants.userData?.personId ?: "qrmagicapp",
+                            System.currentTimeMillis().toString(),
+                            "https://www.bing.com",
+                            "advance",
+                            "free",
+                            "qr",
+                            "fake",
+                            "",
+                            "1",
+                            "",
+                            System.currentTimeMillis().toString(),
+                            "", "12", "120", "60"
+                        )
+                        DataRepository.saveFakeTestData(qrHistory.qrId,2)
+                        appViewModel.insert(qrHistory)
+                    }
+                }
+                delay(1000) // Wait for 1 second before proceeding to the next iteration
+            }
+            dismiss()
+            Toast.makeText(requireActivity(), "Fake Test Data has been generated!", Toast.LENGTH_SHORT).show()
+        }
+    }
 
 }

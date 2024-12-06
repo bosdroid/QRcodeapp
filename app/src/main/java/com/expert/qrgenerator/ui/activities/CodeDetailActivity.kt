@@ -264,6 +264,17 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        // Remove the runnable or cancel the task when the activity is paused
+        feedbackHandler.removeCallbacks(feedbackRunnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clean up resources, cancel any ongoing tasks if necessary
+        feedbackHandler.removeCallbacks(feedbackRunnable)
+    }
 
     // Sets up the ActionBar/Toolbar for the activity
     private fun setUpToolbar() {
@@ -400,6 +411,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 //        binding.codeDetailImageType.setImageResource(R.drawable.qrcode)
         Glide.with(context)
             .load(codeHistory!!.localImagePath)
+            .error(R.drawable.qrcode)
             .override(200, 200) // Set the desired width and height
             .into(binding.codeDetailImageType)
 

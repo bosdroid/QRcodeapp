@@ -15,7 +15,28 @@ object DataRepository {
     // Firebase Database reference
     private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
 
-    fun getAllLiveScanHistory(qrId:String, callback: TrackableScansCallback) {
+    fun saveFakeTestData(qrId: String,index:Int) {
+        val trackableScansRef =
+            databaseReference.child(Constants.FIREBASE_TRACKABLE_SCANS).child(qrId)
+        val fakeTimestamps = Constants.generateDynamicFakeTimestamps(index)
+        for (item in fakeTimestamps) {
+            val trackableScan = TrackableScan(
+                qrId, item.toLong()
+            )
+
+            trackableScansRef.push().setValue(trackableScan)
+                .addOnSuccessListener {
+
+                }
+                .addOnFailureListener { error ->
+
+                }
+        }
+
+
+    }
+
+    fun getAllLiveScanHistory(qrId: String, callback: TrackableScansCallback) {
         val trackableScanList = mutableListOf<TrackableScan>()
 
         databaseReference.child(Constants.FIREBASE_TRACKABLE_SCANS).child(qrId)
@@ -23,7 +44,8 @@ object DataRepository {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         for (postSnapshot in dataSnapshot.children) {
-                            postSnapshot.getValue(TrackableScan::class.java)?.let { trackableScanList.add(it) }
+                            postSnapshot.getValue(TrackableScan::class.java)
+                                ?.let { trackableScanList.add(it) }
                         }
                         callback.onTrackableScansLoaded(trackableScanList)
                     } else {
@@ -32,19 +54,22 @@ object DataRepository {
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w("DataRepository", "Error fetching background images", databaseError.toException())
+                    Log.w(
+                        "DataRepository",
+                        "Error fetching background images",
+                        databaseError.toException()
+                    )
                     callback.onTrackableScansError()
                 }
             })
     }
-
 
     /**
      * Fetches the list of SCAN HISTORY from Firebase.
      *
      * @param callback Callback to handle the result or error.
      */
-    fun getAllScanHistory(qrId:String, callback: TrackableScansCallback) {
+    fun getAllScanHistory(qrId: String, callback: TrackableScansCallback) {
         val trackableScanList = mutableListOf<TrackableScan>()
 
         databaseReference.child(Constants.FIREBASE_TRACKABLE_SCANS).child(qrId)
@@ -52,7 +77,8 @@ object DataRepository {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         for (postSnapshot in dataSnapshot.children) {
-                            postSnapshot.getValue(TrackableScan::class.java)?.let { trackableScanList.add(it) }
+                            postSnapshot.getValue(TrackableScan::class.java)
+                                ?.let { trackableScanList.add(it) }
                         }
                         callback.onTrackableScansLoaded(trackableScanList)
                     } else {
@@ -61,7 +87,11 @@ object DataRepository {
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w("DataRepository", "Error fetching background images", databaseError.toException())
+                    Log.w(
+                        "DataRepository",
+                        "Error fetching background images",
+                        databaseError.toException()
+                    )
                     callback.onTrackableScansError()
                 }
             })
@@ -72,8 +102,8 @@ object DataRepository {
      *
      * @param callback Callback to handle the result or error.
      */
-    fun addUserFeedback(message:String, callback: (String)-> Unit) {
-        val data = HashMap<String,String>()
+    fun addUserFeedback(message: String, callback: (String) -> Unit) {
+        val data = HashMap<String, String>()
         data["message"] = message
 
         databaseReference.child(Constants.FIREBASE_USER_FEEDBACKS).push().setValue(data)
@@ -107,7 +137,11 @@ object DataRepository {
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w("DataRepository", "Error fetching background images", databaseError.toException())
+                    Log.w(
+                        "DataRepository",
+                        "Error fetching background images",
+                        databaseError.toException()
+                    )
                     callback.onBackgroundImagesError()
                 }
             })
@@ -135,7 +169,11 @@ object DataRepository {
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w("DataRepository", "Error fetching logo images", databaseError.toException())
+                    Log.w(
+                        "DataRepository",
+                        "Error fetching logo images",
+                        databaseError.toException()
+                    )
                     callback.onLogoImagesError()
                 }
             })
@@ -154,8 +192,10 @@ object DataRepository {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         for (postSnapshot in dataSnapshot.children) {
-                            val imageUrl = postSnapshot.child("image_url").getValue(String::class.java)
-                            val fontUrl = postSnapshot.child("font_url").getValue(String::class.java)
+                            val imageUrl =
+                                postSnapshot.child("image_url").getValue(String::class.java)
+                            val fontUrl =
+                                postSnapshot.child("font_url").getValue(String::class.java)
                             if (imageUrl != null && fontUrl != null) {
                                 fontList.add(Fonts(imageUrl, fontUrl))
                             }
@@ -173,37 +213,41 @@ object DataRepository {
             })
     }
 
-    fun getChatGptApiKey(){
-        databaseReference.child("Keys").child("chatgpt_api_key").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val apiKey = snapshot.getValue(String::class.java)
-                if (apiKey != null) {
-                    // Use the API key
-                    Constants.chatGptApiKey = apiKey
-                    println("API Key: $apiKey")
-                } else {
-                    println("API Key not found!")
+    fun getChatGptApiKey() {
+        databaseReference.child("Keys").child("chatgpt_api_key")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val apiKey = snapshot.getValue(String::class.java)
+                    if (apiKey != null) {
+                        // Use the API key
+                        Constants.chatGptApiKey = apiKey
+                        println("API Key: $apiKey")
+                    } else {
+                        println("API Key not found!")
+                    }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                println("Failed to fetch API Key: ${error.message}")
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    println("Failed to fetch API Key: ${error.message}")
+                }
+            })
     }
 
-    fun getAiPrompts(){
-        databaseReference.child("AI_PROMPTS").addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                Constants.singlePrompt = snapshot.child("single_prompt").getValue(String::class.java) as String
-                Constants.comparePrompt = snapshot.child("compare_prompt").getValue(String::class.java) as String
-                Log.d("TEST1000",Constants.singlePrompt)
-                Log.d("TEST1000",Constants.comparePrompt)
-            }
+    fun getAiPrompts() {
+        databaseReference.child("AI_PROMPTS")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Constants.singlePrompt =
+                        snapshot.child("single_prompt").getValue(String::class.java) as String
+                    Constants.comparePrompt =
+                        snapshot.child("compare_prompt").getValue(String::class.java) as String
+                    Log.d("TEST1000", Constants.singlePrompt)
+                    Log.d("TEST1000", Constants.comparePrompt)
+                }
 
-            override fun onCancelled(error: DatabaseError) {
-                println("Failed to fetch API Key: ${error.message}")
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    println("Failed to fetch API Key: ${error.message}")
+                }
+            })
     }
 }
