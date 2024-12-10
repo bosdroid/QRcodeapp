@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.QrCodeHistoryAdapter
@@ -56,6 +55,7 @@ class BarcodeHistoryActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         logEvent()
+        appViewModel.loadUpdateData() // Add this method in ViewModel if not already present
         getDisplayCreateHistory()
     }
 
@@ -118,7 +118,7 @@ class BarcodeHistoryActivity : BaseActivity() {
         startLoading(context)
 
         // Observe the ViewModel's LiveData for QR Code history
-        appViewModel.allCreateQRCodeHistory.observe(this@BarcodeHistoryActivity, Observer { list ->
+        appViewModel.allCreateQRCodeHistory.observe(this@BarcodeHistoryActivity) { list ->
             // Dismiss loading indicator
             dismiss()
 
@@ -136,7 +136,7 @@ class BarcodeHistoryActivity : BaseActivity() {
                 binding.qrCodeHistoryRecyclerview.visibility = View.GONE
                 binding.emptyView.visibility = View.VISIBLE
             }
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

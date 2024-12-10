@@ -1,14 +1,13 @@
 package com.expert.qrgenerator.room
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.ListValue
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,27 +47,20 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
     // Function to load all data from the repository into LiveData
     private fun loadData() {
         viewModelScope.launch {
-            val dynamicQrCodes = repository.getAllDynamicQrCodes()
-            val allQRCodeHistory = repository.getAllQRCodeHistory()
-            val allScanQRCodeHistory = repository.getAllScanQRCodeHistory()
-            val allTrackableQRCodes = repository.getAllTrackableQRCodes("trackable")
-            val allCreateQRCodeHistory = repository.getAllCreateQRCodeHistory()
-            val allListValues = repository.getAllListValues()
-
-            // Log to check data
-            Log.d("AppViewModel", "dynamicQrCodes: $dynamicQrCodes")
-            Log.d("AppViewModel", "allQRCodeHistory: $allQRCodeHistory")
-            Log.d("AppViewModel", "allScanQRCodeHistory: $allScanQRCodeHistory")
-            Log.d("AppViewModel", "allCreateQRCodeHistory: $allCreateQRCodeHistory")
-            Log.d("AppViewModel", "allListValues: $allListValues")
-
             // Update LiveData
-            _dynamicQrCodes.postValue(dynamicQrCodes)
-            _allQRCodeHistory.postValue(allQRCodeHistory)
-            _allScanQRCodeHistory.postValue(allScanQRCodeHistory)
-            _allCreateQRCodeHistory.postValue(allCreateQRCodeHistory)
-            _allTrackableQRCodes.postValue(allTrackableQRCodes)
-            _allListValues.postValue(allListValues)
+            _dynamicQrCodes.postValue(repository.getAllDynamicQrCodes())
+            _allQRCodeHistory.postValue(repository.getAllQRCodeHistory())
+            _allScanQRCodeHistory.postValue(repository.getAllScanQRCodeHistory())
+            _allCreateQRCodeHistory.postValue(repository.getAllCreateQRCodeHistory())
+            _allTrackableQRCodes.postValue(repository.getAllTrackableQRCodes("trackable"))
+            _allListValues.postValue(repository.getAllListValues())
+        }
+    }
+
+    fun loadUpdateData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = repository.getAllCreateQRCodeHistory()
+            _allCreateQRCodeHistory.postValue(data)
         }
     }
 

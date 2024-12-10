@@ -245,6 +245,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         DataRepository.getChatGptApiKey()
         DataRepository.getAiPrompts()
+        DataRepository.getChartsDescription()
         // Initialize fragments
         val scannerFragment = ScannerFragment()
         val generatorFragment = GeneratorFragment()

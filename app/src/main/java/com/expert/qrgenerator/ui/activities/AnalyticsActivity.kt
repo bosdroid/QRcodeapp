@@ -270,6 +270,13 @@ class AnalyticsActivity : BaseActivity() {
     private fun showAllData() {
         Log.d("TEST1000", selectedQrCodesForAnalytics.toString())
 
+        binding.codesComparisonDesc.text = Constants.chartCodeComparisonDesc
+        binding.scanCountDesc.text = Constants.chartScanCountDesc
+        binding.timeDesc.text = Constants.chartTimeDesc
+        binding.conversionRateDesc.text = Constants.chartConversionRateDesc
+        binding.revenueDesc.text = Constants.chartRevenueDesc
+        binding.expenseRevenueDesc.text = Constants.chartExpenseRevenueDesc
+
         // HANDLE TOP TWO QR CODES
         showTopTwoQrCodes()
         // SHOW OVERALL SCORE QUALITY

@@ -498,61 +498,21 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
 
         }
 
-        binding.conversionInputField.addTextChangedListener(object :TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
+        binding.updateConversionRevenueExpenseBtn.setOnClickListener {
+            val conversionInput = binding.conversionInputField.text.toString().trim()
+            val revenueInput = binding.revenueInputField.text.toString().trim()
+            val expensesInput = binding.expensesInputField.text.toString().trim()
+            if(conversionInput.isNotEmpty() && conversionInput.toInt() > 100){
+                showAlert(context,"Conversion will not more than 100%")
             }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+            else{
+                codeHistory!!.conversion = conversionInput
+                codeHistory!!.revenue = revenueInput
+                codeHistory!!.expenses = expensesInput
+                appViewModel.updateHistory(codeHistory!!)
+                showAlert(context,"Results parameters has been updated!")
             }
-
-            override fun afterTextChanged(s: Editable?) {
-                val inputValue = s.toString()
-                if(inputValue.isNotEmpty() && inputValue.toInt() <=100){
-                    codeHistory!!.conversion = s.toString()
-                    appViewModel.updateHistory(codeHistory!!)
-                }
-                else{
-                    binding.conversionInputField.error = "Conversion will not more than 100%"
-                }
-            }
-
-        })
-        binding.revenueInputField.addTextChangedListener(object :TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                if(s.toString().isNotEmpty()){
-                    codeHistory!!.revenue = s.toString()
-                    appViewModel.updateHistory(codeHistory!!)
-                }
-            }
-
-        })
-        binding.expensesInputField.addTextChangedListener(object :TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                if(s.toString().isNotEmpty()){
-                    codeHistory!!.expenses = s.toString()
-                    appViewModel.updateHistory(codeHistory!!)
-                }
-            }
-
-        })
+        }
     }
 
     private fun getTrackableScanHistory() {

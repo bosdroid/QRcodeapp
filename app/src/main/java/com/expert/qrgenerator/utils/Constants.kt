@@ -53,6 +53,12 @@ class Constants {
         var chatGptApiKey = ""
         var singlePrompt = ""
         var comparePrompt = ""
+        var chartCodeComparisonDesc = ""
+        var  chartScanCountDesc = ""
+        var chartTimeDesc = ""
+        var chartConversionRateDesc = ""
+        var chartRevenueDesc = ""
+        var chartExpenseRevenueDesc = ""
         val allowedCharactersRegex = "[^A-Za-z0-9_]".toRegex()
         val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
             "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +

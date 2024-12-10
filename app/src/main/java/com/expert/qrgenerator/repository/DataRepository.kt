@@ -250,4 +250,29 @@ object DataRepository {
                 }
             })
     }
+
+    fun getChartsDescription() {
+        databaseReference.child("CHARTS_DESCRIPTIONS")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Constants.chartCodeComparisonDesc =
+                        snapshot.child("codes_comparison_desc").getValue(String::class.java) as String
+                    Constants.chartScanCountDesc =
+                        snapshot.child("scan_count_desc").getValue(String::class.java) as String
+                    Constants.chartTimeDesc =
+                        snapshot.child("time_desc").getValue(String::class.java) as String
+                    Constants.chartConversionRateDesc =
+                        snapshot.child("conversion_rate_desc").getValue(String::class.java) as String
+                    Constants.chartRevenueDesc =
+                        snapshot.child("revenue_desc").getValue(String::class.java) as String
+                    Constants.chartExpenseRevenueDesc =
+                        snapshot.child("expense_revenue_desc").getValue(String::class.java) as String
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Failed to fetch API Key: ${error.message}")
+                }
+            })
+    }
 }
