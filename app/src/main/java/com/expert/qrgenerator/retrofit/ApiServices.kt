@@ -16,6 +16,12 @@ import retrofit2.http.Path
 
 interface ApiServices {
 
+    @FormUrlEncoded
+    @POST("api/saveFcmTokens.php")
+    suspend fun saveFcmToken(
+        @Field("user_id") userId: String,
+        @Field("fcm_token") fcmToken: String):Response<JsonObject?>
+
     // THIS IS THE POST REQUEST FOR CREATING VCARD QR CODE
     @FormUrlEncoded
     @POST("api/savetrackabledata.php")

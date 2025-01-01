@@ -1,14 +1,19 @@
 package com.expert.qrgenerator.utils
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import android.view.animation.AnimationUtils
+import android.view.animation.CycleInterpolator
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.AppCompatImageView
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.model.QRItem
 import com.expert.qrgenerator.model.QRTypes
 import com.expert.qrgenerator.model.Sheet
+import com.expert.qrgenerator.model.Tip
 import com.expert.qrgenerator.model.User
 import com.google.api.services.drive.Drive
 import com.google.api.services.sheets.v4.Sheets
@@ -59,6 +64,7 @@ class Constants {
         var chartConversionRateDesc = ""
         var chartRevenueDesc = ""
         var chartExpenseRevenueDesc = ""
+        var tipsList = mutableListOf<Tip>()
         val allowedCharactersRegex = "[^A-Za-z0-9_]".toRegex()
         val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
             "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
@@ -69,6 +75,20 @@ class Constants {
                     "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
                     ")+"
         )
+
+        fun startShakeAnimation(imageView: AppCompatImageView) {
+            val shakeAnimation = AnimationUtils.loadAnimation(imageView.context, R.anim.shake)
+            imageView.startAnimation(shakeAnimation)
+        }
+
+        fun clearShakeAnimation(imageView: AppCompatImageView){
+            imageView.clearAnimation()
+        }
+
+        fun getTip(key:String):Tip? {
+            val matchingTip = tipsList.find { it.key == key }
+            return matchingTip
+        }
 
         fun generateDynamicFakeTimestamps(index: Int): List<String> {
             val dateList = mutableListOf<String>()

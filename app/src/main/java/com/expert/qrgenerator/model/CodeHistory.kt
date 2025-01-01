@@ -22,7 +22,9 @@ data class CodeHistory(
     @ColumnInfo(name = "notes") var notes: String, // Additional notes
     @ColumnInfo(name = "conversion") var conversion: String = "0",
     @ColumnInfo(name = "revenue") var revenue: String = "0",
-    @ColumnInfo(name = "expenses") var expenses: String = "0"
+    @ColumnInfo(name = "expenses") var expenses: String = "0",
+    @ColumnInfo(name = "tags") var tags:String = "",
+    @ColumnInfo(name = "folder") var folder:String? = null
 ) : Serializable {
 
     @PrimaryKey(autoGenerate = true)
@@ -32,6 +34,7 @@ data class CodeHistory(
     @Ignore var totalScans:Int = 0
     @Ignore var scanDateList:List<String> = emptyList()
     @Ignore var scanDateTimeStampList = mutableListOf<Long>()
+    @Ignore var isSelected: Boolean = false
 
     // Provides a string representation of the CodeHistory object
     override fun toString(): String {

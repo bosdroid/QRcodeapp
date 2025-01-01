@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.expert.qrgenerator.databinding.FragmentYouTubeDialogBinding
+import com.expert.qrgenerator.model.Tip
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
@@ -13,7 +14,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFram
 
 
 
-class YouTubeDialogFragment(private val videoId: String) : DialogFragment() {
+class YouTubeDialogFragment(private val tip: Tip) : DialogFragment() {
 
     private lateinit var binding:FragmentYouTubeDialogBinding
 
@@ -24,6 +25,7 @@ class YouTubeDialogFragment(private val videoId: String) : DialogFragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentYouTubeDialogBinding.inflate(inflater, container, false)
+        binding.description.text = tip.description
         val iFramePlayerOptions: IFramePlayerOptions = IFramePlayerOptions.Builder()
             .controls(0)
             .build()
@@ -55,7 +57,7 @@ class YouTubeDialogFragment(private val videoId: String) : DialogFragment() {
             }
 
             override fun onReady(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.loadVideo(videoId, 0F)
+                youTubePlayer.loadVideo(tip.video_id, 0F)
             }
 
             override fun onStateChange(

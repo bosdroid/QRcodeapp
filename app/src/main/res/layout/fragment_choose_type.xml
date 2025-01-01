@@ -45,6 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_info"
+                    android:visibility="gone"
                     android:layout_marginStart="@dimen/tenDpMargin"
                     android:id="@+id/info_image_view"
                     />
@@ -84,7 +85,15 @@
                     android:layout_marginStart="@dimen/tenDpMargin"
                     />
 
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_info"
+                    android:visibility="gone"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/tenDpMargin"
+                    android:id="@+id/info_image_view1"
+                    />
             </RadioGroup>
             <RadioGroup
                 android:layout_width="match_parent"
@@ -112,7 +121,15 @@
                     android:layout_marginStart="@dimen/tenDpMargin"
                     />
 
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_info"
+                    android:visibility="gone"
+                    android:layout_marginStart="@dimen/tenDpMargin"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/info_image_view2"
+                    />
             </RadioGroup>
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"

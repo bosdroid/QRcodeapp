@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.Folder
+import com.expert.qrgenerator.model.FolderWithCount
 import com.expert.qrgenerator.model.ListValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +41,12 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
     private val _allTrackableQRCodes = MutableLiveData<List<CodeHistory>>()
     val allTrackableQRCodes: LiveData<List<CodeHistory>> get() = _allTrackableQRCodes
 
+    private val _allQRCodesTags = MutableLiveData<List<String>>()
+    val allQRCodesTags: LiveData<List<String>> get() = _allQRCodesTags
+
+    private val _allFolders = MutableLiveData<List<Folder>>()
+    val allFolders: LiveData<List<Folder>> get() = _allFolders
+
     init {
         // Load data into LiveData upon initialization
         loadData()
@@ -54,6 +62,8 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
             _allCreateQRCodeHistory.postValue(repository.getAllCreateQRCodeHistory())
             _allTrackableQRCodes.postValue(repository.getAllTrackableQRCodes("trackable"))
             _allListValues.postValue(repository.getAllListValues())
+            _allQRCodesTags.postValue(repository.getAllTags())
+//            _allFolders.postValue(repository.getAllFolders())
         }
     }
 
@@ -92,6 +102,34 @@ class AppViewModel @Inject constructor(private val repository: DatabaseRepositor
     fun updateHistory(qrHistory: CodeHistory) {
         viewModelScope.launch {
             repository.updateHistory(qrHistory)
+        }
+    }
+
+    fun allCreateQRCodeHistory(folder:String?):LiveData<List<CodeHistory>>{
+        return repository.getAllCreateQRCodeHistory(folder)
+    }
+
+    fun allFolders():LiveData<List<FolderWithCount>>{
+        return repository.getAllFolders()
+    }
+
+    fun insertFolder(folder: Folder) {
+        viewModelScope.launch {
+            repository.insertFolder(folder)
+        }
+    }
+
+    // Function to update a folder
+    fun updateFolder(folder: Folder) {
+        viewModelScope.launch {
+            repository.updateFolder(folder)
+        }
+    }
+
+    // Function to delete a folder
+    fun deleteFolder(folder: Folder) {
+        viewModelScope.launch {
+            repository.deleteFolder(folder)
         }
     }
 

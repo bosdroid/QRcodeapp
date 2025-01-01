@@ -53,13 +53,13 @@ class TapTargetHelper(private val activity: Activity) {
     // Function for showing a sequence of targets
     fun showSequence(
         key: String,
-        nestedScrollView: NestedScrollView,
+        nestedScrollView: NestedScrollView?,
         targets: List<TargetData>,
         onSequenceFinish: (() -> Unit)? = null,
         onSequenceCanceled: (() -> Unit)? = null,
         onSequenceStep: ((target: TargetData, targetClicked: Boolean) -> Unit)? = null
     ) {
-//        if (isTargetCompleted(key)) return // Skip if already completed
+        if (isTargetCompleted(key)) return // Skip if already completed
 
         // Map TargetData to TapTarget
         val targetMap = targets.associateWith { target ->
@@ -90,7 +90,7 @@ class TapTargetHelper(private val activity: Activity) {
         var currentIndex = 0
 
         fun scrollToTarget(targetData: TargetData, callback: () -> Unit) {
-            nestedScrollView.post {
+            nestedScrollView!!.post {
                 nestedScrollView.smoothScrollTo(0, targetData.view.top)
                 nestedScrollView.postDelayed(callback, 300)
             }
@@ -105,43 +105,40 @@ class TapTargetHelper(private val activity: Activity) {
 
             val targetData = targetKeys[currentIndex]
             val tapTarget = tapTargets[currentIndex]
+             if(nestedScrollView != null) {
+                 scrollToTarget(targetData) {
 
-            scrollToTarget(targetData) {
-                scaleToFit(targetData.view) // Automatically scale the target view
-                TapTargetView.showFor(activity, tapTarget, object : TapTargetView.Listener() {
-                    override fun onTargetClick(view: TapTargetView) {
-                        super.onTargetClick(view)
-                        currentIndex++
-                        showNextTarget()
-                    }
+                     TapTargetView.showFor(activity, tapTarget, object : TapTargetView.Listener() {
+                         override fun onTargetClick(view: TapTargetView) {
+                             super.onTargetClick(view)
+                             currentIndex++
+                             showNextTarget()
+                         }
 
-                    override fun onTargetCancel(view: TapTargetView) {
-                        super.onTargetCancel(view)
-                        onSequenceCanceled?.invoke()
-                    }
-                })
-            }
+                         override fun onTargetCancel(view: TapTargetView) {
+                             super.onTargetCancel(view)
+                             onSequenceCanceled?.invoke()
+                         }
+                     })
+                 }
+             }
+            else{
+                 TapTargetView.showFor(activity, tapTarget, object : TapTargetView.Listener() {
+                     override fun onTargetClick(view: TapTargetView) {
+                         super.onTargetClick(view)
+                         currentIndex++
+                         showNextTarget()
+                     }
+
+                     override fun onTargetCancel(view: TapTargetView) {
+                         super.onTargetCancel(view)
+                         onSequenceCanceled?.invoke()
+                     }
+                 })
+             }
         }
 
         showNextTarget()
-    }
-
-
-    private fun scaleToFit(view: View) {
-        view.post {
-            val displayMetrics = view.context.resources.displayMetrics
-            val maxWidth = (displayMetrics.widthPixels) // 80% of screen width
-            val maxHeight = (displayMetrics.heightPixels * 0.4).toInt() // 80% of screen height
-
-            val layoutParams = view.layoutParams
-            val scaleFactorWidth = maxWidth.toFloat() / view.width
-            val scaleFactorHeight = maxHeight.toFloat() / view.height
-            val scaleFactor = minOf(scaleFactorWidth, scaleFactorHeight, 1f) // Scale down if needed
-
-            layoutParams.width = (view.width * scaleFactor).toInt()
-            layoutParams.height = (view.height * scaleFactor).toInt()
-            view.layoutParams = layoutParams
-        }
     }
 
 

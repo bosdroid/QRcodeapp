@@ -137,6 +137,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-messaging:23.2.1'
 
     // RETROFIT NETWORK LIBRARY
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"

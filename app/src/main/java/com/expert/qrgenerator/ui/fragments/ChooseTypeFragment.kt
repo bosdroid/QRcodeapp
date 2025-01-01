@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.TooltipCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,6 +24,7 @@ import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
 import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.Folder
 import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.ui.activities.BaseActivity
@@ -32,6 +34,7 @@ import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.showAlert
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.startLoading
 import com.expert.qrgenerator.ui.activities.DesignActivity
 import com.expert.qrgenerator.ui.fragments.ScannerFragment.ScannerInterface
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.viewmodel.DynamicQrViewModel
@@ -45,7 +48,7 @@ import java.util.regex.Pattern
 @AndroidEntryPoint
 class ChooseTypeFragment : Fragment() {
 
-    private lateinit var binding:FragmentChooseTypeBinding
+    private lateinit var binding: FragmentChooseTypeBinding
     private lateinit var adapter: QRTypesAdapter
 
     private var fragmentReplaceListener: OnFragmentReplaceListener? = null
@@ -60,6 +63,12 @@ class ChooseTypeFragment : Fragment() {
     // Variable to hold the encoded data for QR code generation
     private var encodedData: String = ""
     private var listener: ChooseTypeInterface? = null
+    private lateinit var appSettings: AppSettings
+
+    companion object{
+        lateinit var infoImageView3:AppCompatImageView
+        lateinit var infoImageView4:AppCompatImageView
+    }
 
     interface ChooseTypeInterface {
         fun login(callback: LoginCallback)
@@ -67,6 +76,8 @@ class ChooseTypeFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        appSettings = AppSettings(context)
+
 //        (requireActivity() as? BaseActivity)?.logCustomEvent(
 //            eventName = "screen_choose_type_opened"
 //        )
@@ -96,6 +107,12 @@ class ChooseTypeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentChooseTypeBinding.inflate(inflater, container, false)
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val layoutManager = GridLayoutManager(requireActivity(), 2) // 2 columns
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -110,19 +127,23 @@ class ChooseTypeFragment : Fragment() {
             }
         }
         binding.chooseTypesRecyclerView.layoutManager = layoutManager
-        adapter = QRTypesAdapter(Constants.getQRTypes(requireActivity())){ type,position ->
-            BaseActivity.logCustomEvent(requireActivity(),"qr_type_chosen","type",type)
-            fragmentReplaceListener?.replaceFragment(position)
-        }
+        adapter = QRTypesAdapter(Constants.getQRTypes(requireActivity()))
+
         binding.chooseTypesRecyclerView.adapter = adapter
+        adapter.setItemClickListener(object : QRTypesAdapter.OnItemClickListener {
+            override fun itemClickListener(type: String, position: Int) {
+                BaseActivity.logCustomEvent(requireActivity(), "qr_type_chosen", "type", type)
+                fragmentReplaceListener?.replaceFragment(position)
+            }
 
-        binding.infoImageView.setOnClickListener {
-//            TooltipCompat.setTooltipText(binding.infoImageView, getString(R.string.static_link_hint_message))
-//            binding.infoImageView.performLongClick()
-            val dialog = YouTubeDialogFragment("Jh1AnV5opZA")
-            dialog.show(childFragmentManager, "YouTubeDialogFragment")
-        }
-
+            override fun itemIconClickListener(position: Int) {
+                if (position == 0) {
+                    openTipDialog("four")
+                } else {
+                    openTipDialog("five")
+                }
+            }
+        })
 
 // Set up a listener for changes in the protocol selection
         binding.staticTypeGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -130,9 +151,11 @@ class ChooseTypeFragment : Fragment() {
                 R.id.advance_type_rb -> {
                     selectedQrType = "advance"
                 }
+
                 R.id.regular_type_rb -> {
                     selectedQrType = "link"
                 }
+
                 else -> {
                     // Handle other cases if necessary
                 }
@@ -145,16 +168,18 @@ class ChooseTypeFragment : Fragment() {
                 R.id.http_protocol_rb -> {
                     selectedProtocol = "http://"
                 }
+
                 R.id.https_protocol_rb -> {
                     selectedProtocol = "https://"
                 }
+
                 else -> {
                     // Handle other cases if necessary
                 }
             }
         }
 
-        binding.staticLinkLayoutInputField.addTextChangedListener(object : TextWatcher{
+        binding.staticLinkLayoutInputField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -176,7 +201,7 @@ class ChooseTypeFragment : Fragment() {
         binding.staticLayoutContinueBtn.setOnClickListener {
             val value = binding.staticLinkLayoutInputField.text.toString().trim().lowercase()
 
-            if(value.isNotEmpty() && value == "preparetestdata"){
+            if (value.isNotEmpty() && value == "preparetestdata") {
                 generateFakeTestData()
                 binding.staticLinkLayoutInputField.setText("")
                 BaseActivity.hideSoftKeyboard(
@@ -184,8 +209,7 @@ class ChooseTypeFragment : Fragment() {
                     binding.staticLinkLayoutInputField
                 )
                 binding.staticLinkLayoutInputField.clearFocus()
-            }
-            else {
+            } else {
                 // Check if a protocol is selected
                 if (selectedProtocol.isEmpty()) {
                     BaseActivity.hideSoftKeyboard(
@@ -313,8 +337,66 @@ class ChooseTypeFragment : Fragment() {
 //        BaseActivity.hideSoftKeyboard(requireActivity(), binding.staticLinkLayoutInputField.rootView)
 //        binding.staticLinkLayoutInputField.requestFocus()
 //        openKeyboard(requireActivity())
+        manageTipsSequentially(listOf("one", "two", "three", "four", "five"))
 
-        return binding.root
+        appViewModel.allFolders().observe(requireActivity()) { list ->
+            if (list.isNotEmpty()) {
+                val hasFavouriteFolder = list.any { it.name.lowercase() == "favourite" }
+                if (!hasFavouriteFolder) {
+                    appViewModel.insertFolder(Folder(name = "favourite"))
+                }
+            } else {
+                appViewModel.insertFolder(Folder(name = "favourite"))
+            }
+        }
+    }
+
+    private fun manageTipsSequentially(
+        keys: List<String>
+    ) {
+        // Start with the first unhidden tip
+        for (key in keys) {
+            if (!appSettings.getBoolean("${key}_status")) {
+                // Show the tip for the current key
+                when (key) {
+                    "one" -> showTip(binding.infoImageView, key)
+                    "two" -> showTip(binding.infoImageView1, key)
+                    "three" -> showTip(binding.infoImageView2, key)
+                    "four" -> showTip(infoImageView3, key)
+                    "five" -> showTip(infoImageView4, key)
+                }
+                return // Stop once a tip is shown
+            }
+        }
+    }
+
+
+    private fun showTip(view: AppCompatImageView, value: String) {
+        view.setOnClickListener {
+            Constants.clearShakeAnimation(view)
+            view.visibility = View.GONE
+            appSettings.putBoolean("${value}_status", true) // Mark as hidden
+            openTipDialog(value)
+
+            // Trigger the next tip display
+            manageTipsSequentially(listOf("one", "two", "three", "four", "five"))
+        }
+
+        if (appSettings.getBoolean("${value}_status")) {
+            view.visibility = View.GONE
+        } else {
+            view.visibility = View.VISIBLE
+            Constants.startShakeAnimation(view)
+        }
+    }
+
+
+    private fun openTipDialog(key: String) {
+        val tip = Constants.getTip(key)
+        if (tip != null) {
+            val dialog = YouTubeDialogFragment(tip)
+            dialog.show(childFragmentManager, "YouTubeDialogFragment")
+        }
     }
 
     private fun generateFakeTestData() {
@@ -337,9 +419,10 @@ class ChooseTypeFragment : Fragment() {
                             System.currentTimeMillis().toString(),
                             "", "5", "50", "20"
                         )
-                        DataRepository.saveFakeTestData(qrHistory.qrId,0)
+                        DataRepository.saveFakeTestData(qrHistory.qrId, 0)
                         appViewModel.insert(qrHistory)
                     }
+
                     1 -> {
                         val qrHistory = CodeHistory(
                             Constants.userData?.personId ?: "qrmagicapp",
@@ -355,9 +438,10 @@ class ChooseTypeFragment : Fragment() {
                             System.currentTimeMillis().toString(),
                             "", "8", "80", "40"
                         )
-                        DataRepository.saveFakeTestData(qrHistory.qrId,1)
+                        DataRepository.saveFakeTestData(qrHistory.qrId, 1)
                         appViewModel.insert(qrHistory)
                     }
+
                     2 -> {
                         val qrHistory = CodeHistory(
                             Constants.userData?.personId ?: "qrmagicapp",
@@ -373,14 +457,18 @@ class ChooseTypeFragment : Fragment() {
                             System.currentTimeMillis().toString(),
                             "", "12", "120", "60"
                         )
-                        DataRepository.saveFakeTestData(qrHistory.qrId,2)
+                        DataRepository.saveFakeTestData(qrHistory.qrId, 2)
                         appViewModel.insert(qrHistory)
                     }
                 }
                 delay(1000) // Wait for 1 second before proceeding to the next iteration
             }
             dismiss()
-            Toast.makeText(requireActivity(), "Fake Test Data has been generated!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireActivity(),
+                "Fake Test Data has been generated!",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

@@ -24,10 +24,37 @@
         />
 
     <item
-        android:title="@string/compare"
-        android:icon="@drawable/ic_compare"
+        android:title="@string/add_folder"
+        android:icon="@drawable/ic_add_folder"
         app:iconTint="@color/purple_700"
-        android:id="@+id/compare"
+        android:id="@+id/add_folder"
+        app:showAsAction="ifRoom"
+        android:visible="false"
+        />
+
+    <item
+        android:title="@string/edit_text"
+        android:icon="@drawable/ic_edit"
+        app:iconTint="@color/purple_700"
+        android:id="@+id/edit_mode"
+        app:showAsAction="ifRoom"
+        android:visible="false"
+        />
+
+    <item
+        android:title="@string/files_move"
+        android:icon="@drawable/ic_files_move"
+        app:iconTint="@color/purple_700"
+        android:id="@+id/move_items"
+        app:showAsAction="ifRoom"
+        android:visible="false"
+        />
+
+    <item
+        android:title="@string/filtering"
+        android:icon="@drawable/ic_filter"
+        app:iconTint="@color/purple_700"
+        android:id="@+id/filtering"
         app:showAsAction="never"
         android:visible="false"
         />

@@ -37,13 +37,12 @@
             android:textColor="@color/black"
             />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/itemStarImage"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_star"
-            app:tint="@color/yellow"
+            android:src="@drawable/ic_info"
             android:visibility="gone"
             />
     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -343,6 +343,18 @@
 
             </RelativeLayout>
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/qr_image_wrapper_layout"
+                android:src="@drawable/ic_info"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+                android:id="@+id/info_image_view"
+                />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

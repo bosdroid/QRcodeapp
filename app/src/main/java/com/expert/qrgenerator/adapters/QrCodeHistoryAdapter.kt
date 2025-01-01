@@ -15,11 +15,15 @@ class QrCodeHistoryAdapter(
     private val qrCodeHistoryList: ArrayList<CodeHistory>
 ) : RecyclerView.Adapter<QrCodeHistoryAdapter.ItemViewHolder>() {
 
+    var multiSelectMode = false // Multi-select mode flag
     private var listener: OnItemClickListener? = null
 
     // Interface to handle item click events
     interface OnItemClickListener {
         fun onItemClick(position: Int)
+        fun onItemClickMore(history: CodeHistory,position: Int)
+        fun onSelectionChanged(position: Int, isSelected: Boolean)
+        fun onMultiSelectModeEnabled()
     }
 
     // Function to set the OnItemClickListener
@@ -30,6 +34,7 @@ class QrCodeHistoryAdapter(
     // ViewHolder class to represent each item in the RecyclerView
     class ItemViewHolder(
         private val binding: QrCodeHistoryItemDesignBinding,
+        private val adapter: QrCodeHistoryAdapter,
         private val mListener: OnItemClickListener
     ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -62,7 +67,9 @@ class QrCodeHistoryAdapter(
             binding.qrCodeHistoryItemText.text = qrHistory.data
             binding.qrCodeHistoryItemCreatedDate.text =
                 BaseActivity.getFormattedDate(context, qrHistory.createdAt.toLong())
-
+             if (qrHistory.tags.isNotEmpty() && qrHistory.tags != "null"){
+                 binding.qrCodeHistoryItemTagsText.text = "tags: ${qrHistory.tags}"
+             }
             // Display notes if available, otherwise hide the notes section
             if (qrHistory.notes.isNotEmpty()) {
                 binding.qrCodeHistoryItemNotesText.visibility = View.VISIBLE
@@ -75,11 +82,48 @@ class QrCodeHistoryAdapter(
             } else {
                 binding.qrCodeHistoryItemNotesText.visibility = View.GONE
             }
-
-            // Handle item click event
-            itemView.setOnClickListener {
-                mListener.onItemClick(layoutPosition)
+            binding.qrCodeHistoryItemCheckbox.setOnCheckedChangeListener(null) // Reset listener
+            binding.qrCodeHistoryItemCheckbox.visibility = if (adapter.multiSelectMode) View.VISIBLE else View.GONE
+            if (adapter.multiSelectMode) {
+                binding.qrCodeHistoryItemCheckbox.isChecked = qrHistory.isSelected
             }
+            // Handle item click event
+            binding.root.setOnClickListener {
+//
+                if (adapter.multiSelectMode) {
+                    val isSelected = binding.qrCodeHistoryItemCheckbox.isChecked
+                    binding.qrCodeHistoryItemCheckbox.isChecked = !isSelected
+                    qrHistory.isSelected = !isSelected
+                    mListener.onSelectionChanged(layoutPosition, !isSelected)
+                } else {
+                    mListener.onItemClick(layoutPosition)
+                }
+            }
+
+            binding.qrCodeHistoryItemCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (adapter.multiSelectMode) {
+                    mListener.onSelectionChanged(layoutPosition, isChecked)
+                    qrHistory.isSelected = isChecked
+//                    adapter.notifyItemChanged(layoutPosition)
+                }
+            }
+
+//            binding.root.setOnLongClickListener {
+//                if (!adapter.multiSelectMode) {
+//                    adapter.multiSelectMode = true
+//                    mListener.onMultiSelectModeEnabled()
+//                    qrHistory.isSelected = true
+//                    binding.qrCodeHistoryItemCheckbox.isChecked = true
+//                    mListener.onSelectionChanged(layoutPosition, true)
+//                    adapter.notifyDataSetChanged()
+//                }
+//                true
+//            }
+
+            binding.qrCodeHistoryItemMore.setOnClickListener {
+                mListener.onItemClickMore(qrHistory,layoutPosition)
+            }
+
         }
     }
 
@@ -90,7 +134,7 @@ class QrCodeHistoryAdapter(
         )
 
         // Ensure the listener is set before returning the ViewHolder
-        return ItemViewHolder(binding, listener ?: throw IllegalStateException("OnItemClickListener not set"))
+        return ItemViewHolder(binding, this,listener ?: throw IllegalStateException("OnItemClickListener not set"))
     }
 
     // Binds data to the ViewHolder at the given position

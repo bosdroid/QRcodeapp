@@ -1,12 +1,19 @@
 package com.expert.qrgenerator.room
 
+import androidx.lifecycle.LiveData
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.Folder
+import com.expert.qrgenerator.model.FolderWithCount
 import com.expert.qrgenerator.model.ListValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
+
+    fun getAllTags():List<String>{
+        return qrDao.getAllTags()
+    }
 
     // GET a new QR code history record
     fun getHistoryItem(qrHistory: CodeHistory): CodeHistory? {
@@ -43,6 +50,15 @@ class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
         return qrDao.getAllCreateQRCodeHistory()
     }
 
+    // Get all create QR code history records
+    fun getAllCreateQRCodeHistory(folder: String?): LiveData<List<CodeHistory>> {
+        return qrDao.getAllCreateQRCodeHistory(folder)
+    }
+
+//    fun getAllCreateQRCodeHistory(tag:String): LiveData<List<CodeHistory>> {
+//        return qrDao.getAllScanQRCodeHistoryByTag(tag)
+//    }
+
     // Get all list values
     fun getAllListValues(): List<ListValue> {
         return qrDao.getAllListValues()
@@ -61,5 +77,25 @@ class DatabaseRepository @Inject constructor(private val qrDao: QRDao) {
     // Get all trackable QR codes
     fun getAllTrackableQRCodes(type: String): List<CodeHistory> {
         return qrDao.getAllTrackableQRCodes(type)
+    }
+
+    // Insert a folder
+     fun insertFolder(folder: Folder) {
+        qrDao.insertFolder(folder)
+    }
+
+    // Get all folders
+     fun getAllFolders(): LiveData<List<FolderWithCount>> {
+        return qrDao.getAllFolders()
+    }
+
+    // Update a folder
+     fun updateFolder(folder: Folder) {
+        qrDao.updateFolder(folder)
+    }
+
+    // Delete a folder
+     fun deleteFolder(folder: Folder) {
+        qrDao.deleteFolder(folder)
     }
 }

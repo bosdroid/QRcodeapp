@@ -1,7 +1,10 @@
 package com.expert.qrgenerator.room
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.Folder
+import com.expert.qrgenerator.model.FolderWithCount
 import com.expert.qrgenerator.model.ListValue
 
 @Dao
@@ -12,14 +15,14 @@ interface QRDao {
      * @param qrHistory The QR code history data to be inserted.
      */
     @Insert
-    fun insert(qrHistory: CodeHistory):Long
+    fun insert(qrHistory: CodeHistory): Long
 
     /**
      * GET a new QR code history record into the database.
      * @param qrHistory The QR code history data to be inserted.
      */
     @Query("SELECT * FROM barcode_history WHERE login=:loginId")
-    fun getHistoryItem(loginId: String):CodeHistory?
+    fun getHistoryItem(loginId: String): CodeHistory?
 
     /**
      * Updates an existing QR code history record in the database.
@@ -56,12 +59,24 @@ interface QRDao {
     fun getAllScanQRCodeHistory(): List<CodeHistory>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
-    @Query("SELECT * FROM barcode_history ORDER BY qrId")
+    @Query("SELECT * FROM barcode_history WHERE folder='' ORDER BY qrId")
     fun getAllCreateQRCodeHistory(): List<CodeHistory>
+
+    // THIS FUNCTION WILL GET ALL THE QR CODES HISTORY
+//    @Query("SELECT * FROM barcode_history WHERE folder=:folder ORDER BY qrId")
+    @Query(
+        """
+    SELECT * 
+    FROM barcode_history 
+    WHERE (:folder IS NULL AND folder IS NULL) OR (folder = :folder) 
+    ORDER BY qrId
+"""
+    )
+    fun getAllCreateQRCodeHistory(folder: String?): LiveData<List<CodeHistory>>
 
     // THIS FUNCTION WILL GET ALL THE QR CODES WITH TYPE TRACKABLE
     @Query("SELECT * FROM barcode_history WHERE type=:type OR type='advance'  ORDER BY qrId")
-    fun getAllTrackableQRCodes(type:String): List<CodeHistory>
+    fun getAllTrackableQRCodes(type: String): List<CodeHistory>
 
     /**
      * Inserts a new list value record into the database.
@@ -77,4 +92,48 @@ interface QRDao {
     @Query("SELECT * FROM list_values ORDER BY id DESC")
     fun getAllListValues(): List<ListValue>
 
+
+    @Query("SELECT tags FROM barcode_history")
+    fun getAllTags(): List<String>
+
+    @Query(
+        """
+        SELECT * FROM barcode_history
+        WHERE 
+            CASE 
+                WHEN (SELECT COUNT(*) FROM barcode_history WHERE tags LIKE '%' || :tag || '%') > 0 THEN tags LIKE '%' || :tag || '%'
+                ELSE 1
+            END
+        """
+    )
+    fun getAllScanQRCodeHistoryByTag(tag: String): LiveData<List<CodeHistory>>
+
+    // Insert a folder
+    @Insert
+    fun insertFolder(folder: Folder)
+
+    // Get all folders
+//    @Query("SELECT * FROM folders")
+    @Transaction
+    @Query("""
+        SELECT 
+            folders.id AS id, 
+            folders.name AS name, 
+            folders.createdAt AS createdAt,
+            (SELECT COUNT(*) FROM barcode_history WHERE folder = folders.name) AS codeHistoryCount
+        FROM folders
+    """)
+    fun getAllFolders(): LiveData<List<FolderWithCount>>
+
+    // Get a folder by id
+    @Query("SELECT * FROM folders WHERE id = :folderId")
+    fun getFolderById(folderId: Long): Folder?
+
+    // Update a folder
+    @Update
+    fun updateFolder(folder: Folder)
+
+    // Delete a folder
+    @Delete
+    fun deleteFolder(folder: Folder)
 }

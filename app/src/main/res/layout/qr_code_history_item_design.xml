@@ -1,92 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="@dimen/eightDpMargin"
-    >
+    android:layout_margin="@dimen/eightDpMargin">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/qr_code_history_top_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="5dp"
-            android:gravity="center_vertical"
-            android:id="@+id/qr_code_history_top_layout"
-            >
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-         <androidx.appcompat.widget.AppCompatImageView
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:src="@drawable/ic_text"
-             app:tint="@color/black"
-             android:id="@+id/qr_code_history_item_type_icon"
-             />
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/qr_code_history_item_type_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_text"
+                    app:tint="@color/black" />
+
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="@dimen/eightDpMargin"
+                    android:id="@+id/qr_code_history_item_checkbox"
+                    android:visibility="gone"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
                 android:layout_marginStart="@dimen/eightDpMargin"
                 android:layout_marginLeft="@dimen/eightDpMargin"
                 android:layout_marginEnd="@dimen/eightDpMargin"
                 android:layout_marginRight="@dimen/eightDpMargin"
-                >
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/mediumText"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:id="@+id/qr_code_history_item_id"
-                    />
-             <com.google.android.material.textview.MaterialTextView
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:textSize="@dimen/largeText"
-                 android:textColor="@color/black"
-                 android:textStyle="bold"
-                 android:id="@+id/qr_code_history_item_text"
-                 />
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/smallText"
-                    android:layout_marginTop="@dimen/defaultDpMargin"
-                    android:id="@+id/qr_code_history_item_created_date"
-                    />
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/qr_code_history_item_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/qr_code_history_item_notes_text"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/mediumText"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textColor="@color/dark_gray"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/qr_code_history_item_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/largeText"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/qr_code_history_item_created_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/defaultDpMargin"
+                    android:textSize="@dimen/smallText" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/qr_code_history_item_notes_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_margin="@dimen/defaultDpMargin"
-                    />
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/mediumText" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/qr_code_history_item_tags_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/defaultDpMargin"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/smallText" />
             </LinearLayout>
+
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/qr_code_history_item_more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_next_arrow"
-                app:tint="@color/black"
-                android:id="@+id/qr_code_history_item_next_arrow"
-                />
+                android:src="@drawable/ic_more"
+                app:tint="@color/black" />
 
 
         </LinearLayout>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

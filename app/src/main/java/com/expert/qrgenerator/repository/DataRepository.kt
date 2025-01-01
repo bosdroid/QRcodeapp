@@ -6,6 +6,7 @@ import com.expert.qrgenerator.interfaces.FontsCallback
 import com.expert.qrgenerator.interfaces.LogoImagesCallback
 import com.expert.qrgenerator.interfaces.TrackableScansCallback
 import com.expert.qrgenerator.model.Fonts
+import com.expert.qrgenerator.model.Tip
 import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.utils.Constants
 import com.google.firebase.database.*
@@ -272,6 +273,26 @@ object DataRepository {
 
                 override fun onCancelled(error: DatabaseError) {
                     println("Failed to fetch API Key: ${error.message}")
+                }
+            })
+    }
+
+    fun getTips() {
+        val tipsList = mutableListOf<Tip>()
+        databaseReference.child("TIPS")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    tipsList.clear() // Clear list to avoid duplicates on updates
+                    for (childSnapshot in snapshot.children) {
+                        val tip = childSnapshot.getValue(Tip::class.java)
+                        tip?.let { tipsList.add(it) }
+                    }
+                    Constants.tipsList.addAll(tipsList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("Failed to fetch API Key: ${error.message}")
+                    Constants.tipsList.addAll(emptyList())
                 }
             })
     }

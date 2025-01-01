@@ -11,6 +11,19 @@ import javax.inject.Inject
 
 class ApiRepositoryImpl @Inject constructor(private val apiServices: ApiServices) : ApiRepository {
 
+    override suspend fun saveFcmToken(body: HashMap<String, String>): JsonObject? {
+        val bodyJson = Gson().toJsonTree(body).asJsonObject
+        Log.d("TEST199", bodyJson.toString())
+        val response = apiServices.saveFcmToken(
+            bodyJson.get("user_id").asString,
+            bodyJson.get("fcm_token").asString
+        )
+        if (response.isSuccessful) {
+            return response.body()?.asJsonObject
+        }
+        return null
+    }
+
     override suspend fun saveTrackableData(body: HashMap<String, String>): JsonObject? {
         val bodyJson = Gson().toJsonTree(body).asJsonObject
         Log.d("TEST199", bodyJson.toString())

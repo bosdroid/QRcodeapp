@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/border"
+            android:paddingBottom="@dimen/defaultDpMargin"
+            android:layout_marginTop="@dimen/tenDpMargin"
+            android:gravity="center"
+            >
+
+            <Spinner
+                android:id="@+id/spinnerFolders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/defaultDpMargin"
+                />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+</LinearLayout>

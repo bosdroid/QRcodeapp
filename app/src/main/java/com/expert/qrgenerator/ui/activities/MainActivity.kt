@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.Log
@@ -74,6 +75,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -89,11 +91,12 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-     ChooseTypeFragment.ChooseTypeInterface,OnFragmentReplaceListener {
+    ChooseTypeFragment.ChooseTypeInterface, OnFragmentReplaceListener {
 
     // Binding for ActivityMain layout
     private lateinit var binding: ActivityMainBinding
@@ -246,6 +249,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         DataRepository.getChatGptApiKey()
         DataRepository.getAiPrompts()
         DataRepository.getChartsDescription()
+        DataRepository.getTips()
         // Initialize fragments
         val scannerFragment = ScannerFragment()
         val generatorFragment = GeneratorFragment()
@@ -275,12 +279,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         .addToBackStack("scanner")
                         .commit()
                 }
+
                 R.id.bottom_generator -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, generatorFragment, "generator")
                         .addToBackStack("generator")
                         .commit()
                 }
+
                 else -> false
             }
             true
@@ -302,8 +308,50 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //                .addToBackStack("scanner")
 //                .commit()
 //        }
+        if (Constants.userData != null) {
+            saveFcmTokenOnServer()
+        }
 
 
+        checkAndRequestNotificationPermission()
+
+    }
+
+    private fun saveFcmTokenOnServer() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("TAG", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+            val token = task.result
+            val body = HashMap<String, String>()
+            body["user_id"] = Constants.userData!!.personId
+            body["fcm_token"] = token
+            viewModel.saveFcmToken(body)
+        })
+    }
+
+    private fun checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+            } else {
+                requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private val requestNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+        } else {
+            // Permission denied
+//            onNotificationPermissionDenied()
+        }
     }
 
 
@@ -377,14 +425,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    private fun updateToolbar(toggle:ActionBarDrawerToggle) {
+    private fun updateToolbar(toggle: ActionBarDrawerToggle) {
         val backStackEntryCount = supportFragmentManager.backStackEntryCount
         if (backStackEntryCount > 0) {
             // Show back arrow
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             toggle.isDrawerIndicatorEnabled = false
             contentBinding.toolbar.setNavigationOnClickListener {
-                hideKeyboard(context,this@MainActivity)
+                hideKeyboard(context, this@MainActivity)
                 onBackPressed()
             }
         } else {
@@ -486,18 +534,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 // Save user details in app settings
                 appSettings.putUser(Constants.user, user)
                 Constants.userData = user
-
+                saveFcmTokenOnServer()
                 // Notify the callback or restart the fragment
-                callback?.onSuccess() ?: (supportFragmentManager.findFragmentById(R.id.fragment_container) as? ScannerFragment)?.restart()
+                callback?.onSuccess()
+                    ?: (supportFragmentManager.findFragmentById(R.id.fragment_container) as? ScannerFragment)?.restart()
 
                 // Handle new user sign-in
 //                if (isLastSignUser == "new") {
-                    appSettings.putBoolean(Constants.isLogin, true)
-                    Toast.makeText(
-                        context,
-                        getString(R.string.user_signin_success_text),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                appSettings.putBoolean(Constants.isLogin, true)
+                Toast.makeText(
+                    context,
+                    getString(R.string.user_signin_success_text),
+                    Toast.LENGTH_SHORT
+                ).show()
 //                }
 
                 // Start TablesActivity if requestLogin is "login"
@@ -575,7 +624,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu,menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         menu!!.findItem(R.id.create).isVisible = false
 //        menu.findItem(R.id.compare).isVisible = true
         menu.findItem(R.id.history).isVisible = true
@@ -591,24 +640,29 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 // hideSoftKeyboard(context, mDrawer)
                 true
             }
-            R.id.create->{
+
+            R.id.create -> {
                 startActivity(Intent(context, MainActivity::class.java)).apply {
                     finish()
                 }
                 true
             }
-            R.id.history->{
+
+            R.id.history -> {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
                 true
             }
-//            R.id.compare->{
-//                startActivity(Intent(context, CodeComparisonActivity::class.java))
-//                true
-//            }
-            R.id.analytics->{
+
+            R.id.filtering -> {
+                startActivity(Intent(context, CategoryQrCodesActivity::class.java))
+                true
+            }
+
+            R.id.analytics -> {
                 startActivity(Intent(context, AnalyticsActivity::class.java))
                 true
             }
+
             else -> {
                 // Pass the event to the superclass to handle other menu items
                 super.onOptionsItemSelected(item)
@@ -648,32 +702,35 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this) { revokeTask ->
 //            // Check if revoking access was successful
 //            if (revokeTask.isSuccessful) {
-                // Sign out from Google account
-                mGoogleSignInClient.signOut().addOnCompleteListener(this) { signOutTask ->
-                    if (signOutTask.isSuccessful) {
-                        dismiss()
-                        // Clear local settings and user data
-                        appSettings.remove(Constants.isLogin)
-                        appSettings.remove(Constants.user)
-                        Constants.userData = null
+        // Sign out from Google account
+        mGoogleSignInClient.signOut().addOnCompleteListener(this) { signOutTask ->
+            if (signOutTask.isSuccessful) {
+                dismiss()
+                // Clear local settings and user data
+                appSettings.remove(Constants.isLogin)
+                appSettings.remove(Constants.user)
+                Constants.userData = null
 //                        Constants.sheetService = null
 //                        Constants.mService = null
 
-                        // Show success message
-                        Toast.makeText(context, getString(R.string.logout_success_text), Toast.LENGTH_SHORT).show()
+                // Show success message
+                Toast.makeText(context, getString(R.string.logout_success_text), Toast.LENGTH_SHORT)
+                    .show()
 
-                        // Restart ScannerFragment
-                        val scannerFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? ScannerFragment
-                        scannerFragment?.restart()
+                // Restart ScannerFragment
+                val scannerFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragment_container) as? ScannerFragment
+                scannerFragment?.restart()
 
-                        // Check if user is logged in or not
-                        checkUserLoginStatus()
-                    } else {
-                        // Handle Google sign-out failure
-                        dismiss()
-                        Toast.makeText(context, getString(R.string.logout_failure_text), Toast.LENGTH_SHORT).show()
-                    }
-                }
+                // Check if user is logged in or not
+                checkUserLoginStatus()
+            } else {
+                // Handle Google sign-out failure
+                dismiss()
+                Toast.makeText(context, getString(R.string.logout_failure_text), Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
 //            } else {
 //                // Handle Google access revoke failure
 //                Toast.makeText(context, getString(R.string.logout_failure_text), Toast.LENGTH_SHORT).show()
@@ -742,7 +799,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //                        // Show an alert if the sign-in fails
 //                        showAlert(context, exception.localizedMessage ?: "Unknown error occurred")
 //                    }
-                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                val task: Task<GoogleSignInAccount> =
+                    GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 handleSignInResult(task)
             }
         }
@@ -775,7 +833,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //             showError("Sign-in failed. Please try again.")
         }
     }
-
 
 
     override fun onBackPressed() {
@@ -884,7 +941,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onResume() {
         super.onResume()
         checkUserLoginStatus()
-        if(Constants.isOpenVcardScreen){
+        if (Constants.isOpenVcardScreen) {
             Constants.isOpenVcardScreen = false
             replaceFragment(32)
         }
@@ -944,6 +1001,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     // For example, show a message to the user or disable related functionality
                 }
             }
+
             else -> {
                 // Handle unexpected request codes if necessary
             }
@@ -960,12 +1018,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun onPause() {
-        hideKeyboard(context,this)
+        hideKeyboard(context, this)
         super.onPause()
     }
 
     override fun onDestroy() {
-        hideKeyboard(context,this)
+        hideKeyboard(context, this)
         super.onDestroy()
 
     }
@@ -975,17 +1033,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //          GeneratorManager.generateQRCode(context,"${Constants.BASE_URL}track.php?id=${System.currentTimeMillis()}","trackable")
 //        }
 //        else{
-            val fragment = fragments[position]
-            val isLoggedIn = appSettings.getBoolean(Constants.isLogin)
-            if (fragment is VCardFragment && !isLoggedIn){
-                startLogin()
-            }
-            else {
-                val fragmentTransaction = supportFragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragment_container, fragment)
-                fragmentTransaction.addToBackStack(null)
-                fragmentTransaction.commit()
-            }
+        val fragment = fragments[position]
+        val isLoggedIn = appSettings.getBoolean(Constants.isLogin)
+        if (fragment is VCardFragment && !isLoggedIn) {
+            startLogin()
+        } else {
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.fragment_container, fragment)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+        }
 //        }
 
     }

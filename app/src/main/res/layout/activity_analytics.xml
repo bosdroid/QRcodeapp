@@ -26,8 +26,7 @@
             android:gravity="center_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></androidx.appcompat.widget.Toolbar>
-
+            app:layout_constraintTop_toTopOf="parent"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -53,18 +52,22 @@
                android:layout_margin="@dimen/eightDpMargin"
                >
 
-               <com.google.android.material.button.MaterialButton
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="@string/ai_compare"
-                   android:textStyle="bold"
-                   android:id="@+id/ai_compare_btn"
-                   android:textColor="@color/white"
-                   />
-              <View
+              <LinearLayout
                   android:layout_width="0dp"
                   android:layout_weight="1"
-                  android:layout_height="wrap_content"/>
+                  android:layout_height="match_parent"
+                  android:orientation="horizontal"
+                  android:gravity="center"
+                  >
+
+                  <androidx.appcompat.widget.AppCompatImageView
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:src="@drawable/ic_info"
+                      android:visibility="gone"
+                      android:id="@+id/info_image_view"
+                      />
+              </LinearLayout>
                <com.google.android.material.button.MaterialButton
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
@@ -82,7 +85,15 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp">
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_info"
+                    android:visibility="gone"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:id="@+id/info_image_view1"
+                    />
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/qr_codes_data_layout"
                     android:layout_width="match_parent"
@@ -97,7 +108,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-
                         android:gravity="center_vertical"
                         android:padding="4dp"
                         >
@@ -110,7 +120,6 @@
                             android:gravity="center"
                             android:textSize="@dimen/largeText"
                             android:textStyle="bold" />
-
 
                     </LinearLayout>
                     <com.google.android.material.textview.MaterialTextView
@@ -415,6 +424,40 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/ai_comparison_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/eightDpMargin"
+                app:cardCornerRadius="10dp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ai_compare"
+                        android:textStyle="bold"
+                        android:id="@+id/ai_compare_btn"
+                        android:textColor="@color/white"
+                        />
+
+                   <com.google.android.material.textview.MaterialTextView
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:id="@+id/ai_response_view"
+                       android:textColor="@color/black"
+                       android:textSize="@dimen/mediumText"
+                       />
+                   </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
                 android:id="@+id/overall_quality_score_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -465,7 +508,15 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp">
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_info"
+                    android:visibility="gone"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:id="@+id/info_image_view2"
+                    />
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -525,7 +576,15 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp">
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_info"
+                    android:visibility="gone"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:id="@+id/info_image_view3"
+                    />
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -574,7 +633,15 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp">
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_info"
+                    android:visibility="gone"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:id="@+id/info_image_view4"
+                    />
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -636,7 +703,15 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp">
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_info"
+                    android:visibility="gone"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:id="@+id/info_image_view5"
+                    />
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -723,7 +798,15 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/eightDpMargin"
                 app:cardCornerRadius="10dp">
-
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_info"
+                    android:visibility="gone"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/eightDpMargin"
+                    android:id="@+id/info_image_view6"
+                    />
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

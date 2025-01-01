@@ -343,10 +343,10 @@ class CodeComparisonActivity : BaseActivity() {
                 startActivity(Intent(context, BarcodeHistoryActivity::class.java))
                 true
             }
-            R.id.compare->{
-                startActivity(Intent(context, CodeComparisonActivity::class.java))
-                true
-            }
+//            R.id.compare->{
+//                startActivity(Intent(context, CodeComparisonActivity::class.java))
+//                true
+//            }
             else -> {
                 // Pass the event to the superclass to handle other menu items
                 super.onOptionsItemSelected(item)

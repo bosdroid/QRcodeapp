@@ -68,6 +68,18 @@ class CreateFragment : Fragment() {
                 intent.putExtra("HISTORY_ITEM", historyItem)
                 requireActivity().startActivity(intent)
             }
+
+            override fun onItemClickMore(history: CodeHistory, position: Int) {
+
+            }
+
+            override fun onSelectionChanged(position: Int, isSelected: Boolean) {
+
+            }
+
+            override fun onMultiSelectModeEnabled() {
+
+            }
         })
     }
 

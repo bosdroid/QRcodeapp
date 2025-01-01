@@ -32,7 +32,7 @@ object DatabaseModule {
             "magic_qr_generator_database"
         )
             // Handle migrations destructively if the schema is updated
-            .addMigrations(AppDatabase.MIGRATION_5_6)
+            .addMigrations(AppDatabase.MIGRATION_6_7,AppDatabase.MIGRATION_7_8,AppDatabase.MIGRATION_8_9)
             // Allow queries on the main thread (not recommended for production use)
             .allowMainThreadQueries()
             .build()

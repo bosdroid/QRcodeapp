@@ -72,4 +72,10 @@ class MainActivityViewModel @Inject constructor(
             }
         }
     }
+
+    fun saveFcmToken(body: HashMap<String, String>){
+        viewModelScope.launch {
+            apiRepository.saveFcmToken(body)
+        }
+    }
 }

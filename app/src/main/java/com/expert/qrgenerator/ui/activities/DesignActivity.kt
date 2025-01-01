@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,6 +34,8 @@ import com.expert.qrgenerator.databinding.LogoImageHintLayoutBinding
 import com.expert.qrgenerator.model.CodeHistory
 import com.expert.qrgenerator.model.Fonts
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.ui.fragments.YouTubeDialogFragment
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.GeneratorManager
 import com.expert.qrgenerator.utils.ImageManager
@@ -97,6 +100,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     private var fileName: String = ""
     private var existingVCard: String = ""
+    private lateinit var appSettings: AppSettings
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -134,7 +138,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
 
     // Initialize all views and set up listeners
     private fun initViews() {
-
+         appSettings = AppSettings(context)
         // Set up button click listeners
         binding.nextStepBtn.setOnClickListener(this)
         binding.backgroundBtn.setOnClickListener(this)
@@ -203,9 +207,36 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         // Make QR sign text visible
         binding.qrSignText.visibility = View.VISIBLE
 
+        openTipDialog(binding.infoImageView)
+
+
         // SAVE QR URL AND QR ID IF QR TYPE IS TRACKABLE
         if(originalInputText.isNotEmpty() && qrHistory!!.type == "trackable"){
             saveTrackableQrData(qrHistory!!.qrId,originalInputText)
+        }
+    }
+
+    private fun openTipDialog(view:AppCompatImageView,value:String = "six"){
+        view.setOnClickListener {
+            Constants.clearShakeAnimation(view)
+            view.visibility = View.GONE
+            appSettings.putBoolean("${value}_status", true) // Mark as hidden
+            openTipDialog(value)
+        }
+
+        if (appSettings.getBoolean("${value}_status")) {
+            view.visibility = View.GONE
+        } else {
+            view.visibility = View.VISIBLE
+            Constants.startShakeAnimation(view)
+        }
+    }
+
+    private fun openTipDialog(key: String) {
+        val tip = Constants.getTip(key)
+        if (tip != null) {
+            val dialog = YouTubeDialogFragment(tip)
+            dialog.show(supportFragmentManager, "YouTubeDialogFragment")
         }
     }
 

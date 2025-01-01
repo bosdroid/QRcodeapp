@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.expert.qrgenerator.model.CodeHistory
+import com.expert.qrgenerator.model.Folder
 import com.expert.qrgenerator.model.ListValue
 
 /**
@@ -13,7 +14,7 @@ import com.expert.qrgenerator.model.ListValue
  *
  * @property qrDao Provides access to the QRDao for data operations.
  */
-@Database(entities = [CodeHistory::class, ListValue::class], version = 6, exportSchema = false)
+@Database(entities = [CodeHistory::class, ListValue::class, Folder::class], version = 9, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     // Abstract method to get the QRDao instance for interacting with the QR-related data.
@@ -62,5 +63,31 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("ALTER TABLE barcode_history_temp RENAME TO barcode_history")
             }
         }
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Step 1: Add the new column 'tags' to the existing table
+                database.execSQL("ALTER TABLE barcode_history ADD COLUMN tags TEXT NOT NULL DEFAULT 'null'")
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Create the new Folder table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `folders` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                        `name` TEXT NOT NULL, 
+                        `createdAt` INTEGER NOT NULL DEFAULT ${System.currentTimeMillis()}
+                    )
+                """)
+            }
+        }
+
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE barcode_history ADD COLUMN folder TEXT DEFAULT null")
+            }
+        }
+
     }
 }

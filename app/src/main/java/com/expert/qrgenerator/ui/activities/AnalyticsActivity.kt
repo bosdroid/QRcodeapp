@@ -1,5 +1,6 @@
 package com.expert.qrgenerator.ui.activities
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -19,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -37,6 +39,8 @@ import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.ui.fragments.CodeComparisonAnalyticsFragment
+import com.expert.qrgenerator.ui.fragments.YouTubeDialogFragment
+import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TapTargetHelper
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
@@ -84,6 +88,8 @@ class AnalyticsActivity : BaseActivity() {
 
     private val viewModel: CodeDetailViewModel by viewModels()
 
+    private lateinit var appSettings: AppSettings
+
     // Register the ActivityResultLauncher
     private val selectedQrCodesResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -125,7 +131,7 @@ class AnalyticsActivity : BaseActivity() {
         binding = ActivityAnalyticsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         context = this
-
+        appSettings = AppSettings(context)
         setUpToolbar()
 
         tapTargetHelper = TapTargetHelper(this)
@@ -136,7 +142,55 @@ class AnalyticsActivity : BaseActivity() {
         }, 2000)
         // Start fetching data
 
+        manageTipsSequentially(listOf("twelve", "thirteen", "fourteen", "fifteen", "sixteen","seventeen", "eighteen"))
+    }
 
+    private fun manageTipsSequentially(
+        keys: List<String>
+    ) {
+        // Start with the first unhidden tip
+        for (key in keys) {
+            if (!appSettings.getBoolean("${key}_status")) {
+                // Show the tip for the current key
+                when (key) {
+                    "twelve" -> showTip(binding.infoImageView, key)
+                    "thirteen" -> showTip(binding.infoImageView1, key)
+                    "fourteen" -> showTip(binding.infoImageView2, key)
+                    "fifteen" -> showTip(binding.infoImageView3, key)
+                    "sixteen" -> showTip(binding.infoImageView4, key)
+                    "seventeen" -> showTip(binding.infoImageView5, key)
+                    "eighteen" -> showTip(binding.infoImageView6, key)
+                }
+                return // Stop once a tip is shown
+            }
+        }
+    }
+
+    private fun showTip(view: AppCompatImageView, value: String) {
+        view.setOnClickListener {
+            Constants.clearShakeAnimation(view)
+            view.visibility = View.GONE
+            appSettings.putBoolean("${value}_status", true) // Mark as hidden
+            openTipDialog(value)
+
+            // Trigger the next tip display
+            manageTipsSequentially(listOf("twelve", "thirteen", "fourteen", "fifteen", "sixteen","seventeen", "eighteen"))
+        }
+
+        if (appSettings.getBoolean("${value}_status")) {
+            view.visibility = View.GONE
+        } else {
+            view.visibility = View.VISIBLE
+            Constants.startShakeAnimation(view)
+        }
+    }
+
+    private fun openTipDialog(key: String) {
+        val tip = Constants.getTip(key)
+        if (tip != null) {
+            val dialog = YouTubeDialogFragment(tip)
+            dialog.show(supportFragmentManager, "YouTubeDialogFragment")
+        }
     }
 
     private fun startTapTargetSequence() {
@@ -144,6 +198,11 @@ class AnalyticsActivity : BaseActivity() {
             "walk_through",
             binding.nestedScrollView,
             listOf(
+                TargetData(
+                    binding.aiCompareBtn,
+                    "AI COMPARE",
+                    "AI Compare use for Ai comparison results"
+                ),
                 TargetData(
                     binding.chooseQrCodesBtn,
                     "Choose QR Codes",
@@ -154,36 +213,32 @@ class AnalyticsActivity : BaseActivity() {
                     "QR Codes Metrics",
                     "Here each QR code display the metrics and quality score."
                 ),
-                TargetData(
-                    binding.scanCountAnalyticsLayout,
-                    "QR Codes Scan Count",
-                    "Here analyze the selected Qr codes scans count with time period"
-                ),
-                TargetData(
-                    binding.timeAnalyticsLayout,
-                    "QR Codes Times",
-                    "Here each QR code display the metrics and overall quality score."
-                ),
-                TargetData(
-                    binding.conversionRateLayout,
-                    "Selected QR Codes Conversion",
-                    "Here display the comparison result with each other and overall conversion rate"
-                ),
-                TargetData(
-                    binding.revenueAnalyticsLayout,
-                    "Selected QR Codes Revenue",
-                    "Here display the selected QR Codes revenue behaviour in bar chart"
-                ),
-                TargetData(
-                    binding.roiAnalyticsLayout,
-                    "Selected QR Codes ROI",
-                    "Here display the return on investment percentage for each selected qr code"
-                ),
-                TargetData(
-                    binding.codeComparisonAnalyticsLayout,
-                    "Selected QR Codes Comparison",
-                    "Here display the bar chart that show the comparison each qr code based on scan count and conversion rate"
-                ),
+//                TargetData(
+//                    binding.scanCountAnalyticsLayout,
+//                    "QR Codes Scan Count",
+//                    "Here analyze the selected Qr codes scans count with time period"
+//                ),
+//                TargetData(
+//                    binding.timeAnalyticsLayout,
+//                    "QR Codes Times",
+//                    "Here each QR code display the metrics and overall quality score."
+//                ),
+//                TargetData(
+//                    binding.conversionRateLayout,
+//                    "Selected QR Codes Conversion",
+//                    "Here display the comparison result with each other and overall conversion rate"
+//                ),
+//                TargetData(
+//                    binding.revenueAnalyticsLayout,
+//                    "Selected QR Codes Revenue",
+//                    "Here display the selected QR Codes revenue behaviour in bar chart"
+//                ),
+//                TargetData(
+//                    binding.codeComparisonAnalyticsLayout,
+//                    "Expenses and Revenue",
+//                    "Here display the expense and revenue comparison for each qr code"
+//                ),
+
             )
         )
     }
@@ -339,8 +394,13 @@ class AnalyticsActivity : BaseActivity() {
                         viewModel.callAiRecommendationRequest(finalPrompt) { result ->
                             binding.aiCompareBtn.text = getString(R.string.ai_compare)
                             binding.aiCompareBtn.isEnabled = true
+
+                            val finalResult = result.split("\n").joinToString("\n") { line ->
+                                convertToBulletList(line)
+                            }
                             dismiss()
-                            showAlert(context, result)
+                            binding.aiResponseView.text = finalResult
+
                         }
                     }
                 }
@@ -348,6 +408,32 @@ class AnalyticsActivity : BaseActivity() {
                 showAlert(context, getString(R.string.qr_codes_selected_size_error))
             }
         }
+    }
+
+    private fun convertToBulletList(input: String): String {
+        var isRecommendationSection = false
+
+        return input.lines().joinToString("\n") { line ->
+            when {
+                // Check for the start of the "Recommendations:" section
+                line.trim() == "Recommendations:" -> {
+                    isRecommendationSection = true
+                    "To Do:" // Replace "Recommendations:" with "To Do:"
+                }
+                // Process lines under "Recommendations:"
+                isRecommendationSection && line.trim().startsWith("-") -> {
+                    "* " + line.trim().removePrefix("-").trim() // Replace dashes with *
+                }
+                // Exit "Recommendations:" section if a blank line or new section starts
+                isRecommendationSection && line.isBlank() -> {
+                    isRecommendationSection = false
+                    line
+                }
+                // Replace numbered items outside "Recommendations:"
+                line.trim().matches(Regex("""^\d+\.\s.*""")) -> line.replace(Regex("""^\d+\.\s"""), "• ")
+                else -> line // Keep other lines unchanged
+            }
+        }.replace("Recommendations:", "To Do:")
     }
 
     private fun buildComparisonPrompt(qrCodes: List<CodeHistory>): String {
@@ -390,6 +476,7 @@ class AnalyticsActivity : BaseActivity() {
         return qrCodes.any { it.totalScans < 10 }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showTwoSelectedQrCodesData() {
         if (selectedQrCodesForAnalytics.isNotEmpty()) {
             // SHOW CODE COMPARISON ANALYTICS
@@ -576,7 +663,7 @@ class AnalyticsActivity : BaseActivity() {
                     0 // Default value if maxRevenue is zero
                 }
 
-// Calculate the overall quality score
+                // Calculate the overall quality score
                 val qrCodeOverQualityScore =
                     (0.3 * qrCodeNs) + (0.3 * qrCodeNc) + (0.2 * qrCodeNr) + (0.2 * qrCodeNRoi)
 

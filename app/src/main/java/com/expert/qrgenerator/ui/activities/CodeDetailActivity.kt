@@ -51,6 +51,7 @@ import com.expert.qrgenerator.model.TableObject
 import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.room.AppViewModel
+import com.expert.qrgenerator.ui.fragments.YouTubeDialogFragment
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.DialogPrefs
@@ -261,6 +262,54 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 R.id.https_protocol_rb -> "https://"
                 else -> ""
             }
+        }
+
+        manageTipsSequentially(listOf("seven", "eight", "nine", "ten", "eleven"))
+    }
+
+    private fun manageTipsSequentially(
+        keys: List<String>
+    ) {
+        // Start with the first unhidden tip
+        for (key in keys) {
+            if (!appSettings.getBoolean("${key}_status")) {
+                // Show the tip for the current key
+                when (key) {
+                    "seven" -> showTip(binding.infoImageView, key)
+                    "eight" -> showTip(binding.infoImageView1, key)
+                    "nine" -> showTip(binding.infoImageView2, key)
+                    "ten" -> showTip(binding.infoImageView3, key)
+                    "eleven" -> showTip(binding.infoImageView4, key)
+                }
+                return // Stop once a tip is shown
+            }
+        }
+    }
+
+    private fun showTip(view: AppCompatImageView, value: String) {
+        view.setOnClickListener {
+            Constants.clearShakeAnimation(view)
+            view.visibility = View.GONE
+            appSettings.putBoolean("${value}_status", true) // Mark as hidden
+            openTipDialog(value)
+
+            // Trigger the next tip display
+            manageTipsSequentially(listOf("seven", "eight", "nine", "ten", "eleven"))
+        }
+
+        if (appSettings.getBoolean("${value}_status")) {
+            view.visibility = View.GONE
+        } else {
+            view.visibility = View.VISIBLE
+            Constants.startShakeAnimation(view)
+        }
+    }
+
+    private fun openTipDialog(key: String) {
+        val tip = Constants.getTip(key)
+        if (tip != null) {
+            val dialog = YouTubeDialogFragment(tip)
+            dialog.show(supportFragmentManager, "YouTubeDialogFragment")
         }
     }
 
