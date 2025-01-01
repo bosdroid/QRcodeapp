@@ -90,6 +90,8 @@ class AnalyticsActivity : BaseActivity() {
 
     private lateinit var appSettings: AppSettings
 
+    val tipList = listOf("twelve", "thirteen", "fourteen", "fifteen", "sixteen","seventeen", "eighteen")
+
     // Register the ActivityResultLauncher
     private val selectedQrCodesResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -142,17 +144,17 @@ class AnalyticsActivity : BaseActivity() {
         }, 2000)
         // Start fetching data
 
-        manageTipsSequentially(listOf("twelve", "thirteen", "fourteen", "fifteen", "sixteen","seventeen", "eighteen"))
+        manageTipsSequentially(tipList)
     }
 
     private fun manageTipsSequentially(
         keys: List<String>
     ) {
         // Start with the first unhidden tip
-        for (key in keys) {
-            if (!appSettings.getBoolean("${key}_status")) {
+//        for (key in keys) {
+//            if (!appSettings.getBoolean("${key}_status")) {
                 // Show the tip for the current key
-                when (key) {
+        when (val key = keys[currentTipIndex]) {
                     "twelve" -> showTip(binding.infoImageView, key)
                     "thirteen" -> showTip(binding.infoImageView1, key)
                     "fourteen" -> showTip(binding.infoImageView2, key)
@@ -162,23 +164,26 @@ class AnalyticsActivity : BaseActivity() {
                     "eighteen" -> showTip(binding.infoImageView6, key)
                 }
                 return // Stop once a tip is shown
-            }
-        }
+//            }
+//        }
     }
-
+    private var currentTipIndex = 0
     private fun showTip(view: AppCompatImageView, value: String) {
         view.setOnClickListener {
+            if (currentTipIndex != tipList.size-1){
+                currentTipIndex ++
+            }
             Constants.clearShakeAnimation(view)
-            view.visibility = View.GONE
+//            view.visibility = View.GONE
             appSettings.putBoolean("${value}_status", true) // Mark as hidden
             openTipDialog(value)
 
             // Trigger the next tip display
-            manageTipsSequentially(listOf("twelve", "thirteen", "fourteen", "fifteen", "sixteen","seventeen", "eighteen"))
+            manageTipsSequentially(tipList)
         }
 
         if (appSettings.getBoolean("${value}_status")) {
-            view.visibility = View.GONE
+            view.visibility = View.VISIBLE
         } else {
             view.visibility = View.VISIBLE
             Constants.startShakeAnimation(view)

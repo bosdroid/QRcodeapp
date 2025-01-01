@@ -3,6 +3,8 @@ package com.expert.qrgenerator.ui.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -59,6 +61,8 @@ class ChooseTypeFragment : Fragment() {
     var selectedQrType = "advance"
 
     var isUpdating = false
+
+    val tipList = listOf("one", "two", "three", "four", "five")
 
     // Variable to hold the encoded data for QR code generation
     private var encodedData: String = ""
@@ -334,10 +338,10 @@ class ChooseTypeFragment : Fragment() {
                 }
             }
         }
-//        BaseActivity.hideSoftKeyboard(requireActivity(), binding.staticLinkLayoutInputField.rootView)
-//        binding.staticLinkLayoutInputField.requestFocus()
-//        openKeyboard(requireActivity())
-        manageTipsSequentially(listOf("one", "two", "three", "four", "five"))
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            manageTipsSequentially(tipList)
+        },2000)
 
         appViewModel.allFolders().observe(requireActivity()) { list ->
             if (list.isNotEmpty()) {
@@ -355,10 +359,10 @@ class ChooseTypeFragment : Fragment() {
         keys: List<String>
     ) {
         // Start with the first unhidden tip
-        for (key in keys) {
-            if (!appSettings.getBoolean("${key}_status")) {
+        //        for (key in keys) {
+//            if (!appSettings.getBoolean("${key}_status")) {
                 // Show the tip for the current key
-                when (key) {
+                when (val key = keys[currentTipIndex]) {
                     "one" -> showTip(binding.infoImageView, key)
                     "two" -> showTip(binding.infoImageView1, key)
                     "three" -> showTip(binding.infoImageView2, key)
@@ -366,24 +370,27 @@ class ChooseTypeFragment : Fragment() {
                     "five" -> showTip(infoImageView4, key)
                 }
                 return // Stop once a tip is shown
-            }
-        }
+//            }
+//        }
     }
 
-
+    private var currentTipIndex = 0
     private fun showTip(view: AppCompatImageView, value: String) {
         view.setOnClickListener {
+            if (currentTipIndex != tipList.size-1){
+                currentTipIndex ++
+            }
             Constants.clearShakeAnimation(view)
-            view.visibility = View.GONE
+//            view.visibility = View.GONE
             appSettings.putBoolean("${value}_status", true) // Mark as hidden
             openTipDialog(value)
 
             // Trigger the next tip display
-            manageTipsSequentially(listOf("one", "two", "three", "four", "five"))
+            manageTipsSequentially(tipList)
         }
 
         if (appSettings.getBoolean("${value}_status")) {
-            view.visibility = View.GONE
+            view.visibility = View.VISIBLE
         } else {
             view.visibility = View.VISIBLE
             Constants.startShakeAnimation(view)

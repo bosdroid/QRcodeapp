@@ -219,13 +219,13 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     private fun openTipDialog(view:AppCompatImageView,value:String = "six"){
         view.setOnClickListener {
             Constants.clearShakeAnimation(view)
-            view.visibility = View.GONE
+//            view.visibility = View.GONE
             appSettings.putBoolean("${value}_status", true) // Mark as hidden
             openTipDialog(value)
         }
 
         if (appSettings.getBoolean("${value}_status")) {
-            view.visibility = View.GONE
+            view.visibility = View.VISIBLE
         } else {
             view.visibility = View.VISIBLE
             Constants.startShakeAnimation(view)

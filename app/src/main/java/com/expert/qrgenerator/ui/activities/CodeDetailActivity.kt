@@ -126,6 +126,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private lateinit var feedbackHandler: Handler
     private lateinit var feedbackRunnable: Runnable
     private lateinit var appSettings: AppSettings
+    val tipList = listOf("seven", "eight", "nine", "ten", "eleven")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -264,41 +265,45 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
-        manageTipsSequentially(listOf("seven", "eight", "nine", "ten", "eleven"))
+        manageTipsSequentially(tipList)
     }
 
     private fun manageTipsSequentially(
         keys: List<String>
     ) {
         // Start with the first unhidden tip
-        for (key in keys) {
-            if (!appSettings.getBoolean("${key}_status")) {
-                // Show the tip for the current key
-                when (key) {
-                    "seven" -> showTip(binding.infoImageView, key)
-                    "eight" -> showTip(binding.infoImageView1, key)
-                    "nine" -> showTip(binding.infoImageView2, key)
-                    "ten" -> showTip(binding.infoImageView3, key)
-                    "eleven" -> showTip(binding.infoImageView4, key)
-                }
-                return // Stop once a tip is shown
-            }
+//        for (key in keys) {
+//            if (!appSettings.getBoolean("${key}_status")) {
+        // Show the tip for the current key
+        when (val key = keys[currentTipIndex]) {
+            "seven" -> showTip(binding.infoImageView, key)
+            "eight" -> showTip(binding.infoImageView1, key)
+            "nine" -> showTip(binding.infoImageView2, key)
+            "ten" -> showTip(binding.infoImageView3, key)
+            "eleven" -> showTip(binding.infoImageView4, key)
         }
+        return // Stop once a tip is shown
+//            }
+//        }
     }
 
+    private var currentTipIndex = 0
     private fun showTip(view: AppCompatImageView, value: String) {
         view.setOnClickListener {
+            if (currentTipIndex != tipList.size - 1) {
+                currentTipIndex++
+            }
             Constants.clearShakeAnimation(view)
-            view.visibility = View.GONE
+//            view.visibility = View.GONE
             appSettings.putBoolean("${value}_status", true) // Mark as hidden
             openTipDialog(value)
 
             // Trigger the next tip display
-            manageTipsSequentially(listOf("seven", "eight", "nine", "ten", "eleven"))
+            manageTipsSequentially(tipList)
         }
 
         if (appSettings.getBoolean("${value}_status")) {
-            view.visibility = View.GONE
+            view.visibility = View.VISIBLE
         } else {
             view.visibility = View.VISIBLE
             Constants.startShakeAnimation(view)
@@ -533,7 +538,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                         viewModel.callAiRecommendationRequest(prompt) { result ->
                             dismiss()
                             binding.aiRecommendationView.text = result
-                            binding.aiRecommendationBtn.isEnabled =  true
+                            binding.aiRecommendationBtn.isEnabled = true
                         }
                     }
 
@@ -551,15 +556,14 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             val conversionInput = binding.conversionInputField.text.toString().trim()
             val revenueInput = binding.revenueInputField.text.toString().trim()
             val expensesInput = binding.expensesInputField.text.toString().trim()
-            if(conversionInput.isNotEmpty() && conversionInput.toInt() > 100){
-                showAlert(context,"Conversion will not more than 100%")
-            }
-            else{
+            if (conversionInput.isNotEmpty() && conversionInput.toInt() > 100) {
+                showAlert(context, "Conversion will not more than 100%")
+            } else {
                 codeHistory!!.conversion = conversionInput
                 codeHistory!!.revenue = revenueInput
                 codeHistory!!.expenses = expensesInput
                 appViewModel.updateHistory(codeHistory!!)
-                showAlert(context,"Results parameters has been updated!")
+                showAlert(context, "Results parameters has been updated!")
             }
         }
     }
@@ -659,7 +663,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
         val promptTemplate = """
         ${Constants.singlePrompt}
     """.trimIndent()
-        Log.d("TEST1000",promptTemplate.replace("{messageLines}", qrData))
+        Log.d("TEST1000", promptTemplate.replace("{messageLines}", qrData))
         return promptTemplate.replace("{messageLines}", qrData)
     }
 
@@ -838,10 +842,12 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
                 onBackPressed()
                 true
             }
-            R.id.analytics->{
+
+            R.id.analytics -> {
                 startActivity(Intent(context, AnalyticsActivity::class.java))
                 true
             }
+
             R.id.create -> {
                 startActivity(Intent(context, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
