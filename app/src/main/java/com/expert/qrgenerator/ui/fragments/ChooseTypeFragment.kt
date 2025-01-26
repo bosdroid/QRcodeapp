@@ -7,13 +7,11 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.TooltipCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -21,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.expert.qrgenerator.R
 import com.expert.qrgenerator.adapters.QRTypesAdapter
-import com.expert.qrgenerator.adapters.QrCodeComparisonAdapter
 import com.expert.qrgenerator.databinding.FragmentChooseTypeBinding
 import com.expert.qrgenerator.interfaces.LoginCallback
 import com.expert.qrgenerator.interfaces.OnFragmentReplaceListener
@@ -31,11 +28,11 @@ import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.room.AppViewModel
 import com.expert.qrgenerator.ui.activities.BaseActivity
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.dismiss
-import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.getDateTimeFromTimeStamp1
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.logCustomEvent
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.safeSubstring
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.showAlert
 import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.startLoading
 import com.expert.qrgenerator.ui.activities.DesignActivity
-import com.expert.qrgenerator.ui.fragments.ScannerFragment.ScannerInterface
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.GeneratorManager
@@ -401,6 +398,8 @@ class ChooseTypeFragment : Fragment() {
     private fun openTipDialog(key: String) {
         val tip = Constants.getTip(key)
         if (tip != null) {
+            logCustomEvent(requireActivity(),"choose_type_screen","event",
+                tip.description.safeSubstring(160))
             val dialog = YouTubeDialogFragment(tip)
             dialog.show(childFragmentManager, "YouTubeDialogFragment")
         }

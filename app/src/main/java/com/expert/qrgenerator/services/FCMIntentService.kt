@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.expert.qrgenerator.R
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.logCustomEvent
 import com.expert.qrgenerator.ui.activities.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -30,7 +31,8 @@ class FCMIntentService : FirebaseMessagingService() {
     private fun generateNotification(context: Context, message: String) {
         val icon = R.mipmap.ic_launcher
         val title = getString(R.string.app_name)
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationIntent = Intent(this, MainActivity::class.java).apply {
@@ -46,7 +48,11 @@ class FCMIntentService : FirebaseMessagingService() {
             val audioAttributes = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                 .build()
-            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, title, NotificationManager.IMPORTANCE_DEFAULT).apply {
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                title,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
                 description = ""
                 vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000)
                 setSound(uri, audioAttributes)
@@ -88,6 +94,8 @@ class FCMIntentService : FirebaseMessagingService() {
 
             notificationManager.notify(0, notificationBuilder.build())
         }
+
+        logCustomEvent(this, "fcm_notification_service", "event", "scan notification received")
     }
 
     override fun onNewToken(p0: String) {

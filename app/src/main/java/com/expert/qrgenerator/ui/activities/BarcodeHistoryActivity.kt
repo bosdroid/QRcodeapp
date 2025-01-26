@@ -404,6 +404,7 @@ class BarcodeHistoryActivity : BaseActivity() {
                     // Adding a new folder
                     val newFolder = Folder(name = folderName)
                     appViewModel.insertFolder(newFolder)
+                    logCustomEvent(context,"barcode_history_screen","event","new folder created")
                     Toast.makeText(this, "Folder added", Toast.LENGTH_SHORT).show()
                 } else {
                     // Updating an existing folder

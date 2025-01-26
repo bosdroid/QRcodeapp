@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.safeSubstring
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
@@ -235,6 +236,8 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
     private fun openTipDialog(key: String) {
         val tip = Constants.getTip(key)
         if (tip != null) {
+            logCustomEvent(context,"design_screen","event",
+                tip.description.safeSubstring(160))
             val dialog = YouTubeDialogFragment(tip)
             dialog.show(supportFragmentManager, "YouTubeDialogFragment")
         }

@@ -47,6 +47,14 @@ open class BaseActivity : AppCompatActivity() {
         private var downloadTask: DownloadTask? = null
         var alert: AlertDialog? = null
 
+        fun String.safeSubstring(maxLength: Int): String {
+            return if (this.length > maxLength) {
+                this.substring(0, maxLength)
+            } else {
+                this
+            }
+        }
+
         fun logCustomEvent(context: Context,eventName: String, paramKey: String? = null, paramValue: String? = null) {
             val bundle = Bundle()
             val mainAnalytics = FirebaseAnalytics.getInstance(context)

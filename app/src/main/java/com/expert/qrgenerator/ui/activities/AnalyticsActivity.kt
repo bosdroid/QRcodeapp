@@ -1,9 +1,7 @@
 package com.expert.qrgenerator.ui.activities
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -15,22 +13,14 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.expert.qrgenerator.R
-import com.expert.qrgenerator.adapters.ROIAdapter
-import com.expert.qrgenerator.adapters.ViewPagerAnalyticsAdapter
 import com.expert.qrgenerator.databinding.ActivityAnalyticsBinding
 import com.expert.qrgenerator.interfaces.TrackableScansCallback
 import com.expert.qrgenerator.model.CodeHistory
@@ -38,15 +28,12 @@ import com.expert.qrgenerator.model.TargetData
 import com.expert.qrgenerator.model.TrackableScan
 import com.expert.qrgenerator.repository.DataRepository
 import com.expert.qrgenerator.room.AppViewModel
-import com.expert.qrgenerator.ui.fragments.CodeComparisonAnalyticsFragment
 import com.expert.qrgenerator.ui.fragments.YouTubeDialogFragment
 import com.expert.qrgenerator.utils.AppSettings
 import com.expert.qrgenerator.utils.Constants
 import com.expert.qrgenerator.utils.TapTargetHelper
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -54,15 +41,11 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.github.mikephil.charting.utils.ColorTemplate
-import com.google.android.material.tabs.TabLayoutMediator
-import com.squareup.picasso.Picasso
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.safeSubstring
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -193,6 +176,8 @@ class AnalyticsActivity : BaseActivity() {
     private fun openTipDialog(key: String) {
         val tip = Constants.getTip(key)
         if (tip != null) {
+            logCustomEvent(context,"analytics_screen","event",
+                tip.description.safeSubstring(160))
             val dialog = YouTubeDialogFragment(tip)
             dialog.show(supportFragmentManager, "YouTubeDialogFragment")
         }

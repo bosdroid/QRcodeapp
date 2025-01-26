@@ -60,6 +60,7 @@ import com.expert.qrgenerator.utils.TableGenerator
 import com.expert.qrgenerator.viewmodel.CodeDetailViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.expert.qrgenerator.ui.activities.BaseActivity.Companion.safeSubstring
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
@@ -313,6 +314,8 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
     private fun openTipDialog(key: String) {
         val tip = Constants.getTip(key)
         if (tip != null) {
+            logCustomEvent(context,"code_detail_screen","event",
+                tip.description.safeSubstring(160))
             val dialog = YouTubeDialogFragment(tip)
             dialog.show(supportFragmentManager, "YouTubeDialogFragment")
         }
