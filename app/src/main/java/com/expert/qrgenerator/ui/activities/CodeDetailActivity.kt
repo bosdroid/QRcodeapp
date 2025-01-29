@@ -309,6 +309,16 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             view.visibility = View.VISIBLE
             Constants.startShakeAnimation(view)
         }
+        val tip = Constants.getTip(value)
+        tip?.let {
+            if (it.video_id.isEmpty() && it.description.isEmpty()){
+                view.visibility = View.GONE
+                if (currentTipIndex != tipList.size-1){
+                    currentTipIndex ++
+                }
+                manageTipsSequentially(tipList)
+            }
+        }
     }
 
     private fun openTipDialog(key: String) {

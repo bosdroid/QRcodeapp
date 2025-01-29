@@ -26,65 +26,72 @@ class YouTubeDialogFragment(private val tip: Tip) : DialogFragment() {
         // Inflate the layout for this fragment
         binding = FragmentYouTubeDialogBinding.inflate(inflater, container, false)
         binding.description.text = tip.description
-        val iFramePlayerOptions: IFramePlayerOptions = IFramePlayerOptions.Builder()
-            .controls(0)
-            .build()
-        binding.youtubePlayerView.initialize(object :YouTubePlayerListener{
-            override fun onApiChange(youTubePlayer: YouTubePlayer) {
+        if (tip.video_id.isEmpty()){
+            binding.youtubePlayerView.visibility = View.GONE
+            binding.description.setPadding(16, 16, 16, 16)
+        }
+        else{
+            val iFramePlayerOptions: IFramePlayerOptions = IFramePlayerOptions.Builder()
+                .controls(0)
+                .build()
+            binding.youtubePlayerView.initialize(object :YouTubePlayerListener{
+                override fun onApiChange(youTubePlayer: YouTubePlayer) {
 
-            }
+                }
 
-            override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
+                override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
 
-            }
+                }
 
-            override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
+                override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
 
-            }
+                }
 
-            override fun onPlaybackQualityChange(
-                youTubePlayer: YouTubePlayer,
-                playbackQuality: PlayerConstants.PlaybackQuality
-            ) {
+                override fun onPlaybackQualityChange(
+                    youTubePlayer: YouTubePlayer,
+                    playbackQuality: PlayerConstants.PlaybackQuality
+                ) {
 
-            }
+                }
 
-            override fun onPlaybackRateChange(
-                youTubePlayer: YouTubePlayer,
-                playbackRate: PlayerConstants.PlaybackRate
-            ) {
+                override fun onPlaybackRateChange(
+                    youTubePlayer: YouTubePlayer,
+                    playbackRate: PlayerConstants.PlaybackRate
+                ) {
 
-            }
+                }
 
-            override fun onReady(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.loadVideo(tip.video_id, 0F)
-            }
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+                    youTubePlayer.loadVideo(tip.video_id, 0F)
+                }
 
-            override fun onStateChange(
-                youTubePlayer: YouTubePlayer,
-                state: PlayerConstants.PlayerState
-            ) {
+                override fun onStateChange(
+                    youTubePlayer: YouTubePlayer,
+                    state: PlayerConstants.PlayerState
+                ) {
 
-            }
+                }
 
-            override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
+                override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
 
-            }
+                }
 
-            override fun onVideoId(youTubePlayer: YouTubePlayer, videoId: String) {
+                override fun onVideoId(youTubePlayer: YouTubePlayer, videoId: String) {
 
-            }
+                }
 
-            override fun onVideoLoadedFraction(
-                youTubePlayer: YouTubePlayer,
-                loadedFraction: Float
-            ) {
+                override fun onVideoLoadedFraction(
+                    youTubePlayer: YouTubePlayer,
+                    loadedFraction: Float
+                ) {
 
-            }
+                }
 
-        },true,iFramePlayerOptions)
+            },true,iFramePlayerOptions)
 
-        lifecycle.addObserver(binding.youtubePlayerView)
+            lifecycle.addObserver(binding.youtubePlayerView)
+        }
+
 
       return binding.root
     }
