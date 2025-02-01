@@ -127,7 +127,7 @@ class AnalyticsActivity : BaseActivity() {
         }, 2000)
         // Start fetching data
 
-        manageTipsSequentially(tipList)
+        //manageTipsSequentially(tipList)
     }
 
     private fun manageTipsSequentially(

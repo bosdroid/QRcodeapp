@@ -337,7 +337,7 @@ class ChooseTypeFragment : Fragment() {
         }
 
         Handler(Looper.getMainLooper()).postDelayed({
-            manageTipsSequentially(tipList)
+            //manageTipsSequentially(tipList)
         },2000)
 
         appViewModel.allFolders().observe(requireActivity()) { list ->
@@ -419,7 +419,7 @@ class ChooseTypeFragment : Fragment() {
     private fun generateFakeTestData() {
         startLoading(requireActivity())
         CoroutineScope(Dispatchers.Main).launch {
-            for (i in 0..2) { // Iterate through the cases
+            for (i in 0..0) { // Iterate through the cases
                 when (i) {
                     0 -> {
                         val qrHistory = CodeHistory(

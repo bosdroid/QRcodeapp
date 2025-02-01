@@ -266,7 +266,7 @@ class CodeDetailActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
-        manageTipsSequentially(tipList)
+        //manageTipsSequentially(tipList)
     }
 
     private fun manageTipsSequentially(

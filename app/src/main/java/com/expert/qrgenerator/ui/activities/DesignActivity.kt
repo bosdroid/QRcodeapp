@@ -208,7 +208,7 @@ class DesignActivity : BaseActivity(), View.OnClickListener {
         // Make QR sign text visible
         binding.qrSignText.visibility = View.VISIBLE
 
-        openTipDialog(binding.infoImageView)
+        //openTipDialog(binding.infoImageView)
 
 
         // SAVE QR URL AND QR ID IF QR TYPE IS TRACKABLE
