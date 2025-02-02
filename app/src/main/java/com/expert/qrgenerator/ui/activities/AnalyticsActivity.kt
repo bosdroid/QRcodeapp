@@ -308,7 +308,7 @@ class AnalyticsActivity : BaseActivity() {
     fun handleRequestCompletion(completed: Int, total: Int) {
         if (completed == total) {
             // Filter QR codes with at least one scan
-            qrCodesList = qrCodesList.filter { it.totalScans > 0 }.toMutableList()
+//            qrCodesList = qrCodesList.filter { it.totalScans > 0 }.toMutableList()
 
             // Select the top 1 or 2 QR codes for analytics
             selectedQrCodesForAnalytics.clear()
@@ -762,13 +762,15 @@ class AnalyticsActivity : BaseActivity() {
         chart.apply {
             data = LineData(lineDataSets) // Add all the datasets for the QR codes
 
-            // Get x-axis labels from the first QR code's data
-            val firstGroupedData = groupDataByPeriod(qrCodes.first().scanDateTimeStampList, period)
-            xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                setDrawGridLines(false)
-                valueFormatter =
-                    IndexAxisValueFormatter(firstGroupedData.keys.toList()) // Label x-axis
+            if (qrCodes.isNotEmpty()){
+                // Get x-axis labels from the first QR code's data
+                val firstGroupedData = groupDataByPeriod(qrCodes.first().scanDateTimeStampList, period)
+                xAxis.apply {
+                    position = XAxis.XAxisPosition.BOTTOM
+                    setDrawGridLines(false)
+                    valueFormatter =
+                        IndexAxisValueFormatter(firstGroupedData.keys.toList()) // Label x-axis
+                }
             }
 
             axisRight.isEnabled = false
