@@ -35,19 +35,16 @@ group = publishedGroupId
 version = libraryVersion
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion '32.0.0'
+    compileSdk 35
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 34
-        versionCode 63
-        versionName libraryVersion
+        targetSdkVersion 35
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     buildTypes {
@@ -56,6 +53,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'com.budiyev.android.codescanner'
 }
 
 dependencies {
@@ -85,15 +83,15 @@ artifacts {
     archives javadocJar
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                artifactId = 'code-scanner'
-                groupId = publishedGroupId
-                version = libraryVersion
-            }
-        }
-    }
-}
+//afterEvaluate {
+//    publishing {
+//        publications {
+//            release(MavenPublication) {
+//                from components.release
+//                artifactId = 'code-scanner'
+//                groupId = publishedGroupId
+//                version = libraryVersion
+//            }
+//        }
+//    }
+//}
